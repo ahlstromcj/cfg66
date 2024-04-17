@@ -1,0 +1,62 @@
+%-------------------------------------------------------------------------------
+% cli
+%-------------------------------------------------------------------------------
+%
+% \file        cli.tex
+% \library     Documents
+% \author      Chris Ahlstrom
+% \date        2024-04-16
+% \update      2024-04-16
+% \version     $Revision$
+% \license     $XPC_GPL_LICENSE$
+%
+%     Provides a description of the entities in the cfg66 library.
+%
+%-------------------------------------------------------------------------------
+
+\section{Cli Namespace}
+\label{sec:cli_namespace}
+
+   This section provides a useful walkthrough of the \texttt{cli} namespace of
+   the \textsl{cfg66} library.
+   In addition, a \texttt{C}-only module is provided.
+
+   Here are the classes (or modules) in this namespace:
+
+   \begin{itemize}
+      \item \texttt{cliparser\_c}
+      \item \texttt{cli::parser}
+   \end{itemize}
+
+\subsection{cliparser\_c Module}
+\label{subsec:cli_namespace_c}
+
+   This module is actually a \texttt{C++} module that implements a number of
+   \texttt{extern "C"} functions.
+   The functions themselves access an internal and hidden
+   \texttt{cli::parser} object and call its member functions to
+   perform the functions.
+
+   This module provides a \texttt{C} structure that mirrors
+   \texttt{options::spec}, plus some free functions to access this
+   structure.
+
+\subsection{cli::parser}
+\label{subsec:cli_namespace_parser}
+
+   The \texttt{cli::parser} class contains a number of options in a
+   \texttt{cfg::options} object.
+   Many of the member functions are pass-alongs to this object.
+
+   It also holds values indicating if some basic options (help, version,
+   verbosity, log-file usage) are set.
+   The \texttt{parse()} function looks for stock option such as
+   \texttt{--help} and \texttt{--option log filename}.
+   The \texttt{--} sequence can terminate a list of options.
+
+   It is meant to be similar to getopt, but much more flexible and
+   perhaps easier to set up.
+
+%-------------------------------------------------------------------------------
+% vim: ts=3 sw=3 et ft=tex
+%-------------------------------------------------------------------------------

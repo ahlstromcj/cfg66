@@ -1,0 +1,339 @@
+%-------------------------------------------------------------------------------
+% cfg
+%-------------------------------------------------------------------------------
+%
+% \file        cfg.tex
+% \library     Documents
+% \author      Chris Ahlstrom
+% \date        2024-04-16
+% \update      2024-04-16
+% \version     $Revision$
+% \license     $XPC_GPL_LICENSE$
+%
+%     Provides a description of the entities in the cfg66 library.
+%
+%-------------------------------------------------------------------------------
+
+\section{Cfg Namespace}
+\label{sec:cfg_namespace}
+
+   This section provides a useful walkthrough of the \texttt{cfg} namespace of
+   the \textsl{cfg66} library.
+
+   Here are the classes (or modules) in this namespace:
+
+   \begin{itemize}
+      \item \texttt{cfg::appinfo}
+      \item \texttt{cfg::basesettings}
+      \item \texttt{cfg::comments}
+      \item \texttt{cfg::configfile}
+      \item \texttt{cfg::history}
+      \item \texttt{cfg::inisections}
+      \item \texttt{cfg::memento}
+      \item \texttt{cfg::options}
+      \item \texttt{cfg::optionsmaps}
+      \item \texttt{cfg::palette}
+   \end{itemize}
+
+\subsection{cfg::appinfo}
+\label{subsec:cfg_namespace_appinfo}
+
+   The \texttt{cfg::appinfo} class encapsulates basic information about
+   an application:
+
+   \begin{itemize}
+      \item \textsl{Kind}.
+         Indicates if the application is a headless application (such as a
+         daemon), a command-line, \textsl{ncurses}, GUI, or test application.
+         In some cases it can be useful to know how the application is
+         running.
+      \item \textsl{Name}.
+         Provides the short name of the application, which can be shown
+         in warning messages or be used to name the application as a node, for
+         example, in \textsl{JACK}.
+      \item \textsl{Version}.
+         Provides a version number, or optionally, a variant on the
+         \textsl{Name} plus the version number.
+      \item \textsl{Home directory}.
+         Provides the name of the configuration directory for the application,
+         such as \texttt{/home/user/.config/appname}.
+         Modified by the \texttt{--home} option.
+      \item \textsl{Config file}.
+         Provides the name of the main configuration file, such as
+         \texttt{appname.rc}.
+         Modified by the \texttt{--config} option.
+      \item \textsl{Client name}.
+         Provides a variant on the application name, useful in session
+         managers, for example.
+         An example under \textsl{NSM} would be \texttt{seq66v2.nUKIE}.
+      \item \textsl{App Tag}.
+         Seems the same as \textsl{Version}. Must clarify!
+      \item \textsl{Arg0}.
+         Holds the complete path to the executable as run.
+      \item \textsl{Package}.
+         Provides the name of the package, which could be the same as the
+         application or library name.
+      \item \textsl{Session Tag}.
+         Useful in long error/warning/info messages. Must clarify!
+      \item \textsl{Icon}.
+         Provides the base name of the application icon, if not empty.
+      \item \textsl{Version text}.
+         Reconstructed version information for the application.
+      \item \textsl{API engine}.
+         Some applications might use various libraries.
+         For example, for a MIDI application it might be one of these
+         MIDI libraries:
+         \texttt{rtmidi},
+         \texttt{rtl66},
+         or \texttt{portmidi}.
+      \item \textsl{API version}.
+         Indicates which version of an API is in force.
+         In some cases this can be detected at run-time.
+      \item \textsl{GUI version}.
+         Indicates the GUI or "curses" version, such as \textsl{Qt 6.1}
+         or \textsl{Gtkmm 3.0}.
+      \item \textsl{Short client name}.
+         Similar to \textsl{client name}, but never has anything appended
+         to it.
+      \item \textsl{Client name tag}.
+         Provides the name to show on the console in error/warning/info messages,
+         the short client name surrounded by brackets, such as
+         \texttt{[seq66]}.
+   \end{itemize}
+
+   All of these items can be set at once using the \texttt{appinfo}
+   constructor that has a large number of parameters.
+   In addition, there are a many "free" functions in the \texttt{cfg}
+   namespace for setting and getting these values.
+   See \texttt{appinfo.hpp} for a summary.
+
+\subsection{cfg::basesettings}
+\label{subsec:cfg_namespace_basesettings}
+
+   Provides common settings useful in any application.
+
+   \begin{itemize}
+      \item \textsl{File name}.
+         Hold the (optional) name of the file that holds the settings data.
+      \item \textsl{Modified}.
+         Indicates if the setting have been modifies.
+      \item \textsl{Config format}.
+         A free-form string indicating the format of the data, such as
+         \texttt{INI}, \texttt{XML}, or \texttt{JSON}.
+      \item \textsl{Config type}.
+         A short string that indicates something about the
+         format or content of the file. For example, in Seq66,
+         common values were 'rc' and 'usr', with these
+         values also representing the file extension.
+      \item \textsl{Ordinal version}.
+         A simple integer that is incremented each time a change is
+         made in the configuration that isn't detectable during parsing.
+      \item \textsl{Comments}.
+         An object holding the main comments that describe something
+         about the settings file.
+   \end{itemize}
+
+   Also included are an error flag and an accompanying message that the
+   application can display.
+
+\subsection{cfg::comments}
+\label{subsec:cfg_namespace_comments}
+
+   Holds a string describing something general about the configuration.
+   Provides some setter and getter functions.
+
+\subsection{cfg::configfile}
+\label{subsec:cfg_namespace_configfile}
+
+   Provides some items common to configuration files, including
+   an extensive set of functions to parse sections and configuration
+   variables in an
+   INI format in a line-by-line fashion.
+
+   These are the main externally-accessible values:
+
+   \begin{itemize}
+      \item \textsl{File extension}.
+         Common values are 'rc' and 'session'.
+      \item \textsl{File name}.
+         Provides the file name, normally as a full-path file-specification.
+      \item \textsl{File version}.
+         Provides the current version of the derived configuration file format.
+         Set in the constructor of the configfile-derived object,
+         and incremented in that object whenever a new way of reading,
+         writing, or formatting the configuration file is created.
+   \end{itemize}
+
+   Also too many to list, but it includes functions such as
+   \texttt{get\_integer()} and \texttt{write\_integer()}.
+
+   These work by having the whole file read into an
+   \texttt{std::ifstream}, and then searching the string over and over
+   to read all the variables.
+   Sounds inefficient, but in practise it is very fast.
+
+   Finally, there are free functions to delete a configuration file and
+   to make a copy of a configuration file.
+
+\subsection{cfg::history}
+\label{subsec:cfg_namespace_history}
+
+   One of the things not handled so well in \textsl{Seq66} is the
+   undo/redo functionality.
+   The \texttt{history} template class implements undo/redo using the 
+   \texttt{memento} class described below. It follows
+   the \textsl{Design Patterns} book (\cite{dpatterns}) starting on page 62.
+   Also informative is \cite{deque}.
+   Also see the \texttt{cfg::memento} class below.
+
+   The heart of the \texttt{history} template is the history list:
+
+   \begin{verbatim}
+      std::deque<memento<TYPE>> m_history_list;
+   \end{verbatim}
+
+   Member functions are provided to see if history entries are
+   undoable/redoable, undo and redo them, check the maximum size of the list,
+   The \texttt{history.cpp} module provide a small test of history for
+   the \texttt{cfg::options} class.
+
+\subsection{cfg::inisections}
+\label{subsec:cfg_namespace_inisections}
+
+   The \texttt{inisections.hpp} file actually declares four classes:
+
+   \begin{itemize}
+      \item \texttt{cfg::inimap}.
+         Defines two types:
+         \begin{itemize}
+            \item \texttt{optionref}.
+               \texttt{std::reference\_wrapper<options::spec>}.
+            \item \texttt{optionmap}.
+               \texttt{std::map<std::string, optionref>}.
+         \end{itemize}
+         Also defined is a function to add an named \texttt{cfg::option}
+         to the option map.
+      \item \texttt{cfg::inisection}.
+         This object contains a \texttt{specification} structure that
+         provides the name of a section, it's description, and
+         a container of options.
+         It is represent in a configuration file by a section or tag name
+         enclosed in brackets:  \texttt{[output-ports]} as an example.
+         Each section can also define a file extension
+         (e.g. \texttt{.rc}) to indicate its locus.
+      \item \texttt{cfg::inifile}.
+         Defines four types:
+         \begin{itemize}
+            \item \texttt{specref}.
+                \texttt{std::reference\_wrapper<inisection::specification>}.
+            \item \texttt{specrefs}.
+                \texttt{std::vector<specref>}.
+            \item \texttt{sectionlist}.
+               \texttt{std::vector<inisection>}.
+            \item \texttt{specification}.
+               This structure holds the configuration file's extension,
+               directory, base name, description, and a vector of
+               \texttt{specrefs}.
+         \end{itemize}
+      \item \texttt{cfg::inifiles}.
+         Holds a list of inifile objects. Represents all of the files, and all of
+         the options that are held by the files.  The options are in a single list,
+         and the INI items look them up by name.
+         NOT SURE THIS CONCEPT IS USEFUL.
+      \item \texttt{cfg::xxx}.
+   \end{itemize}
+
+   There is a lot to this module.
+   For now, see the comment in the \texttt{.hpp} and \texttt{.cpp} files.
+
+\subsection{cfg::memento}
+\label{subsec:cfg_namespace_memento}
+
+   The \texttt{cfg::memento} template class is a small object that holds one
+   copy of a state object.
+   It provides these functions:
+
+   \begin{itemize}
+      \item \texttt{memento (const TYPE \& s)}.
+      \item \texttt{bool set\_state (const TYPE \& s)}.
+      \item \texttt{const TYPE \& get\_state () const}.
+   \end{itemize}
+
+   The \texttt{cfg::history} class stores a "history list":
+   \texttt{std::deque<memento<TYPE>>}.
+
+\subsection{cfg::options}
+\label{subsec:cfg_namespace_options}
+
+   The \texttt{cfg::options} holds a number of items needed for the
+   specification, reading, and writing of options.
+   The options can be read from configuration file or from the command-line.
+   These items are nested in the class:
+
+   \begin{itemize}
+      \item \textsl{Static data}.
+         Flags and numbers are provided to indicate if the option is enabled
+         and how it is to be output in a nice format into an INI file.
+      \item \textsl{kind}.
+         Indicates if the option is boolean, numerical, a filename, list,
+         string and some others. This enumeration makes it easier to
+         process the option.
+      \item \textsl{spec}.
+         This nested structure contains these values. For brevity, the
+         \texttt{option\_} portion of the name and the type are not shown:
+         \begin{itemize}
+            \item \texttt{code}.
+               Optional single-character name.
+            \item \texttt{kind}.
+               Is it boolean, integer, string...?
+            \item \texttt{cli\_enabled}.
+               Normally true; false disables.
+            \item \texttt{default}.
+               Either a value or "true"/"false".
+            \item \texttt{value}.
+               The actual value as parsed.
+            \item \texttt{read\_from\_cli}.
+               Option already set from CLI.
+            \item \texttt{modified}.
+               Option changed since read/save.
+            \item \texttt{desc}.
+               A one-line description of option.
+            \item \texttt{built\_in}.
+               This option is present in all apps.
+         \end{itemize}
+      \item \textsl{option}.
+         The \texttt{cfg::options::option} is a simple pair of the
+         name of the option and the \texttt{spec} that describes it.
+      \item \textsl{container}.
+         The \texttt{cfg::options::container} is a map (dictionary) of
+         option \texttt{spec}s keyed bythe name of the option.
+   \end{itemize}
+
+   Also specified are the name of the source file and the name of the
+   source section in that file.
+
+   Included are quite a number of functions for looking up option values
+   and option characteristics.
+   Also include are free functions to make options.
+
+   The \texttt{options.cpp} module not only contains many comments explaining
+   the module, but also a statically-initialized list of
+   default options that any application can use.
+   It is also a great example of how to creat a list of options.
+
+\subsection{cfg::optionsmaps}
+\label{subsec:cfg_namespace_optionsmaps}
+
+   Presently not used in this library. More to come?
+
+\subsection{cfg::palette}
+\label{subsec:cfg_namespace_}
+
+   The \texttt{cfg::palette} template class can be used to define
+   a palette of color code pair with a platform-specific color class
+   such as \texttt{QColor} from \textsl{Qt}.
+   This is a feature copped from \textsl{Seq66}.
+
+%-------------------------------------------------------------------------------
+% vim: ts=3 sw=3 et ft=tex
+%-------------------------------------------------------------------------------

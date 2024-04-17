@@ -1,0 +1,197 @@
+%-------------------------------------------------------------------------------
+% tests
+%-------------------------------------------------------------------------------
+%
+% \file        tests.tex
+% \library     Documents
+% \author      Chris Ahlstrom
+% \date        2024-04-16
+% \update      2024-04-16
+% \version     $Revision$
+% \license     $XPC_GPL_LICENSE$
+%
+%     Provides a pointed description of some tests, which also helps understand
+%     usage of the cfg66 library.
+%
+%-------------------------------------------------------------------------------
+
+\section{Cfg66 Tests}
+\label{sec:cfg66_tests}
+
+   This section provides a useful walkthrough of the testing
+   of the \textsl{cfg66} library.
+   They illustrate the various ways in which the \textsl{Cfg66} library
+   can be used by a developer.
+
+   The tests so far are these executables:
+
+    \begin{itemize}
+        \item \texttt{cliparser\_test\_c}
+        \item \texttt{cliparser\_test}
+        \item \texttt{history\_test}
+        \item \texttt{ini\_test}
+        \item \texttt{manager\_test}
+        \item \texttt{options\_test}
+    \end{itemize}
+
+    These tests are supported by data structures define in the following
+    header files:
+
+    \begin{itemize}
+        \item texttt{ctrl\_spec.hpp}
+        \item texttt{drums\_spec.hpp}
+        \item texttt{mutes\_spec.hpp}
+        \item texttt{palette\_spec.hpp}
+        \item texttt{playlist\_spec.hpp}
+        \item texttt{rc\_spec.hpp}
+        \item texttt{session\_spec.hpp}
+        \item texttt{test\_spec.hpp}
+        \item texttt{usr\_spec.hpp}
+    \end{itemize}
+
+    These header files will be discussed as needed in the following sections.
+
+\subsection{Cfg66 cliparser\_test\_c Test}
+\label{subsec:cfg66_tests_cliparser_test_c}
+
+    This test of the \texttt{C} command-line interface uses the free
+    functions in \texttt{cliparser\_c.h}. The test module itself
+    sets up a small set of test options:
+
+    \begin{verbatim}
+    static options_spec s_test_options [] =
+    {
+        //   Name          Code  Kind     Enabled   Default     Value      Dirty
+        {
+            "alertable",    'a', "boolean", true,   "false",    "false",   false,
+            "If specified, the application is alertable."
+        }, . . .
+    };
+    \end{verbatim}
+
+    The test makes changes to the options and verifies that they
+    took hold.
+    The test command is simple:
+
+    \begin{verbatim}
+        $ ./build/test/cliparser_test_c
+    \end{verbatim}
+
+    It shows the changes and a result statement.
+
+\subsection{Cfg66 cliparser\_test Test}
+\label{subsec:cfg66_tests_cliparser_test}
+
+    This test uses the following tests options (only one is shown)
+    static initialization:
+
+    \begin{verbatim}
+    static cfg::options::container s_test_options
+    {
+        //   Name, Code,  Kind, Enabled,
+        //   Default, Value, FromCli, Dirty,
+        //   Description, Built-in
+        {
+            {
+                "alertable",
+                {
+                    'a', "boolean", cfg::options::enabled,
+                    "false", "false", false, false,
+                    "If specified, the application is alertable.",
+                    false
+                }
+            }, . . .
+        }
+    };
+    \end{verbatim}
+
+    It serves as a good example of how to create a list of options.
+    More flexible than GNU's getopt setup and simplifies generating help
+    text.
+
+    The test makes changes to the options and verifies that they
+    took hold.
+    The test command is not as simple as the \texttt{C} version, as
+    verbosity is needed to see the changes:
+
+    \begin{verbatim}
+        $ ./build/test/cliparser_test --verbose
+    \end{verbatim}
+
+    It shows the changes and a result statement.
+    This test needs a little bit of cleanup.
+
+\subsection{Cfg66 history\_test Test}
+\label{subsec:cfg66_tests_history_test}
+
+    The history test also sets up a test options "array".
+    Then it makes changes to the options, such as changing variables,
+    undoing the change, and redoing the change.
+    It shows the changes and a result statement.
+
+    See this test file for some "To do" items.
+
+\subsection{Cfg66 ini\_test Test}
+\label{subsec:cfg66_tests_ini_test}
+
+   This test program uses all of these "data" headers:
+
+   \begin{itemize}
+      \item texttt{ctrl\_spec.hpp}
+      \item texttt{drums\_spec.hpp}
+      \item texttt{mutes\_spec.hpp}
+      \item texttt{palette\_spec.hpp}
+      \item texttt{playlist\_spec.hpp}
+      \item texttt{rc\_spec.hpp}
+      \item texttt{session\_spec.hpp}
+      \item texttt{usr\_spec.hpp}
+    \end{itemize}
+
+    It defines these static test items:
+
+    \begin{itemize}
+      \item \texttt{cfg::options::container s\_test\_options}.
+         This sets up a single option called "test",
+         used as a command-line option.
+      \item \texttt{cfg::inisection::specification s\_simple\_ini\_spec}.
+         This sets up an \texttt{[experiments]} section with a number of
+         option-variable definitions.
+      \item \texttt{cfg::inisection::specification s\_section\_spec}.
+         This sets up an \texttt{[section-test]} section.
+      \item \texttt{cfg::inifile::specification exp\_file\_data}
+         This items sets up the "experiment" configuration directory
+         using
+         \texttt{cfg::inisection::specification s\_simple\_ini\_spec}.
+         \texttt{cfg::inisection::specification s\_section\_spec}.
+    \end{itemize}
+
+    Additional sections are defined and add to a
+    \texttt{cfg::inifile::specification} declaration.
+
+    Hmmm. some are unsued.
+
+\subsection{Cfg66 manager\_test Test}
+\label{subsec:cfg66_tests_manager_test}
+
+   This test defines 
+   \texttt{cfg::appinfo s\_application\_info}.
+   This is used here:
+   \texttt{cfg::initialize\_appinfo(s\_application\_info, argv[0])}.
+
+   The "To do" here is to actually implement \texttt{simple\_smoke\_test}.
+
+\subsection{Cfg66 options\_test Test}
+\label{subsec:cfg66_tests_options_test}
+
+   This test program uses only the "data" header
+   \texttt{test\_spec.hpp} which defines
+   \texttt{cfg::options::container s\_test\_options}.
+   This container is used to initialize a
+   \texttt{cli::parser}.
+   That object then gets the command-line arguments.
+
+   Obviously, we still have a lot of work to do with these tests.
+
+%-------------------------------------------------------------------------------
+% vim: ts=3 sw=3 et ft=tex
+%-------------------------------------------------------------------------------

@@ -1,0 +1,345 @@
+High-level structure of the cfg66 library
+Chris Ahlstrom
+2024-01-19 to 2024-01-21
+
+enum class cfg::appkind
+
+/*
+ * The setters and getters of these members are free functions.
+ */
+
+struct cfg::appinfo
+{
+    appkind _app_kind;
+    std::string _app_name; _app_version; _home_cfg_directory; _home_cfg_file;
+        _app_tag; _arg_0; _package_name; _session_tag; _app_icon_name;
+        _app_version_text; _api_engine; _api_version; _gui_version;
+        _client_name; _client_name_short; _client_name_tag;
+}
+
+class cfg::basesettings
+{
+    std::string m_file_name; m_config_format; m_config_type;
+    cfg::comments m_comments_block;
+    int m_ordinal_version; bool m_modified;
+    mutable std::string m_error_message; mutable bool m_is_error;
+}
+
+class cfg::comments
+{
+    std::string m_comments_block; . . .
+}
+
+class cfg::configfile
+{
+    static std::string sm_error_message; static bool sm_is_error;
+    static int sm_int_missing; sm_int_default;
+    static float sm_float_missing; sm_float_default;
+    static tokenization sm_file_extensions;
+    std::string m_file_extension; m_name; m_version; m_file_version;
+    virtual bool parse () = 0; virtual bool write () = 0;
+}
+
+class cfg::history<TYPE>
+{
+    std::deque<memento<TYPE>> m_history_list;
+    const size_t m_max_size; size_t m_present;
+    bool add (const TYPE & s); const TYPE & undo (); const TYPE & redo ();
+}
+
+class cfg::inimap
+{
+    using optionref = std::reference_wrapper<options::spec>;
+    using optionmap = std::map<std::string, optionref>;
+    optionmap m_option_map;
+    bool add_option (const std::string & option_name, cfg::options::spec & op);
+}
+
+class cfg::inisection
+{
+    struct specification
+    {
+        std::string sec_name; std::string sec_description;
+        cfg::options::container sec_optionlist;
+    };
+    using names = std::vector<std::string>;
+
+    std::string m_extension; m_name;
+    names m_option_names;
+    cfg::options m_options;
+}
+
+class cfg::inifile
+{
+    using specref = std::reference_wrapper<inisection::specification>;
+    using specrefs = std::vector<specref>;
+    using sectionlist = std::vector<inisection>;
+    struct specification
+    {
+        std::string file_extension; std::string file_directory;
+        std::string file_basename; std::string file_description;
+        specrefs file_sections;
+    };
+    std::string m_directory; m_name; m_extension; m_description;
+    sectionlist m_section_list;
+    bool add (inisection & section);
+    const sectionlist & sections () const;
+    bool add_options_to_map (inimap & mapp);
+}
+
+class cfg::inifiles
+{
+    using ref = std::reference_wrapper<inifile>;
+    using refs = std::vector<inifile>;
+    std::string m_name;
+    refs m_file_list;
+    inimap m_all_options;
+    bool add (const inifile & file);
+    bool add_options_to_map (inimap & mapp);
+}
+
+class cfg::memento<TYPE>
+{
+    TYPE m_state;
+    bool set_state (const TYPE & s); const TYPE & get_state () const;
+}
+
+class cfg::options
+{
+    friend class cli::parser;
+    enum class kind;
+    class spec
+    {
+        friend class options;
+
+        char option_code;
+        std::string option_kind;
+        bool option_cli_enabled;
+        std::string option_default;
+        std::string option_value;
+        bool option_read_from_cli;
+        bool option_modified;
+        std::string option_desc;
+        bool option_built_in;
+    };
+    using option = std::pair<std::string, spec>;
+    using container = std::map<std::string, spec>;
+    std::string m_source_file;
+    std::string m_source_section;
+    container m_option_pairs;
+}
+
+class cfg::optionmap
+{
+    // not yet in use, but present in cfg::inimap
+}
+
+class cfg::palette
+{
+    // currently used only in ini_test
+}
+
+class cli::parser
+{
+    cfg::options m_option_set;
+    bool m_help_request; m_version_request; m_verbose_request;
+        m_description_request; m_use_log_file;
+
+    std::string m_log_file;
+    bool parse (int argc, char * argv []);
+    bool check_option (...);
+    bool add (const cfg::options & opt);
+    bool add (const cfg::options::option & s);
+    std::string description (const std::string & name) const;
+    std::string value (const std::string & name) const
+}
+
+module ::cliparser_c : cli::parser wrapper
+
+class session::climanager : public smanager
+{
+    bool m_session_active;
+    int m_poll_period_ms;
+    virtual bool create_session ();
+    virtual bool close_session (std::string & msg, bool ok) override;
+    virtual bool save_session (std::string & msg, bool ok) override;
+    virtual bool create_project ();
+    virtual bool run () override;
+    virtual void session_manager_name (const std::string & mgrname) override;
+        etc.
+
+    bool read_configuration ();
+}
+
+class session::configuration : public cfg::basesettings
+{
+    friend class manager;
+    using pointer = std::unique_ptr<configuration>;
+    session::directories::entries m_file_entries;
+    session::directories m_dir_manager;
+    bool m_verbose;
+    bool m_use_log_file;
+    bool m_auto_option_save;
+
+}
+
+class session::manager
+{
+    session::configuration m_session_config;
+    cli::parser m_parse_mgr;
+    std::string m_capabilities;
+    std::string m_manager_name;
+    std::string m_manager_path;
+     . . .
+}
+
+class session::directories
+{
+    friend class manager;
+    using pointer = std::unique_ptr<directories>;
+    using entry = struct
+    {
+        std::string _section;
+        bool _active;
+        std::string _directory;
+        std::string _basename;
+        std::string _extension;
+    };
+    using entries = std::vector<entry>;
+    using filespecs = std::map<std::string, std::string>;
+    entries m_file_entries;
+    filespecs m_file_specs;
+    mutable std::string m_home_config_path;
+    std::string m_session_path;
+    bool m_session_path_override;
+}
+
+util: filefunctions
+
+    dependency ::tokenization
+
+util: msgfunctions
+
+util: strfunctions
+
+    dependency ::tokenization
+
+class util::named_bools
+{
+    using container = std::map<std::string, bool>;
+    container m_container;
+    bool add (const std::string & name, bool value);
+    bool get (const std::string & name) const;
+    void set (const std::string & name, bool value = true);
+}
+
+Internal cfg66 relationships:
+
+    alias ::tokenization = std::vector<std::string>
+    struct cfg::appinfo
+        containment enum cfg::appkind
+        static appinfo and free functions for it
+
+    class cfg::basesettings
+        containment class cfg::comments
+
+    cfg::basesettings
+        containment cfg::comments
+
+    class session::configuration
+        inherits cfg::basesettings
+        alias pointer = std::unique_ptr<configuration>
+        session::directories
+        session::directories::entries
+
+    class cfg::configfile
+        containment static tokenization
+        dependency std::ifstream
+        dependency std::ofstream
+
+    class session::directories
+        friend class manager
+        alias pointer = std::unique_ptr<directories>
+        alias entry = struct (directory attributes)
+        alias entries = std::vector<entry>
+        alias filespecs = std::map<std::string, std::string>
+        containment entries
+        containment filespecs
+
+    class cfg::history<TYPE>
+        containment std::deque<memento<TYPE>>
+
+    class cfg::memento<TYPE>
+        containment TYPE
+
+    class cfg::inimap
+        alias optionref = std::reference_wrapper<options::spec>
+        alias optionmap = std::map<std::string, optionref>
+        containment cfg::inimap::optionmap
+        dependency cfg::options::spec
+
+    class cfg::inisection
+
+        alias names = std::vector<std::string>
+        dependency struct specification
+            containment cfg::options::container
+
+        containment names
+        containment cfg::options
+
+    class cfg::inifile
+
+        alias specref = std::reference_wrapper<inisection::specification>
+        alias specrefs = std::vector<specref>
+        alias sectionlist = std::vector<inisection>
+        dependency struct specification
+            containment specrefs
+
+        containment sectionlist
+        dependency cfg::inisection
+        dependency cfg::inifile::sectionlist
+        dependency cfg::inimap
+
+    class cfg::inifiles
+
+        alias ref = std::reference_wrapper<inifile>
+        alias refs = std::vector<inifile>
+        containment refs
+        containment inimap
+
+    class session::manager
+
+        containment session::configuration
+        containment cli::parser
+        dependency cfg::options
+        dependency directories::entries
+
+    class util::named_bools
+
+        alias container = std::map<std::string, bool>
+        containment container
+
+    class cfg::options
+
+        friend class cli::parser
+        enum class cfg::options kind
+        nested class cfg::options::spec
+            friend class options
+        alias option = std::pair<std::string, spec>
+        alias container = std::map<std::string, spec>
+        containment container
+
+    class cfg::optionmap
+
+    class cfg::palette
+
+    class cli::parser
+
+        containment cfg::options m_option_set
+        dependency cfg::options
+
+    class session::climanager
+        inherits session::smanager
+
+
+# vim: sw=4 ts=4 wm=8 et ft=cpp

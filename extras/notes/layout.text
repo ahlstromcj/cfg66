@@ -1,0 +1,412 @@
+All:
+
+    [Seq66]
+      config-type = "xxx"
+      version = 0
+
+    [comments]
+
+Ctrl:
+
+    [midi-control-settings]
+
+    drop-empty-controls = false
+    control-buss = 2
+    midi-enabled = true
+    button-offset = 0
+    button-rows = 4
+    button-columns = 8
+    keyboard-layout = qwerty  (why not "qwerty"?)
+
+    [loop-control]
+
+     0 "1" [ 0 0x00 0 0 0 ] [ 0 0x00 0 0 0 ] [ 0 0x00 0 0 0 ] # Loop 0
+
+    [mute-group-control]
+
+     0 "!" [ 0 0x00 0 0 0 ] [ 0 0x00 0 0 0 ] [ 0 0x00 0 0 0 ] # Mute 0
+
+    [automation-control]
+
+     0 "'" [ 0 0x00 0 0 0 ] [ 0 0x00 0 0 0 ] [ 0 0x00 0 0 0 ] # BPM Up
+
+    [midi-control-out-settings]
+
+    set-size = 32
+    output-buss = 255
+    midi-enabled = false
+    button-offset = 0
+    button-rows = 4
+    button-columns = 8
+
+    [midi-control-out]
+
+     0 [ 0x00 0 0 ] [ 0x00 0 0 ] [ 0x00 0 0 ] [ 0x00 0 0 ]
+
+    [mute-control-out]
+
+     0 [ 0x00 0 0 ] [ 0x00 0 0 ] [ 0x00 0 0 ]
+
+    [automation-control-out]
+
+    0 [ 0x00 0 0 ] [ 0x00 0 0 ] [ 0x00 0 0 ]  # Panic
+
+    [macro-control-out]
+
+    footer = 0xF7
+    header = 0xF0 0x00 0x00
+    reset = $header 0x00 $footer
+    shutdown = $header 0x00 $footer
+    startup = $header 0x00 $footer
+
+Drums:
+
+    [notemap-flags]
+
+    map-type = ""
+    gm-channel = 1
+    reverse = false
+
+    [Drum 36]
+
+    dev-name = "Bass Drum Gated Reverb"
+    gm-name = "Bass Drum 1"
+    dev-note = 36
+    gm-note = 35
+
+Mutes:
+
+    [mute-group-flags]
+
+    load-mute-groups = both
+    save-mutes-to = both
+    strip-empty = true
+    mute-group-rows = 4
+    mute-group-columns = 8
+    mute-group-count = 32
+    mute-group-selected = -1
+    groups-format = binary
+    toggle-active-only = false
+
+    [mute-groups]
+
+     0 [ 1 1 1 1 0 0 0 0 ] [ 0 ... 0 ] [ 0 ... 0 ] [ 0 0 0 0 0 0 0 0 ] "Column 0"
+
+Palette:
+
+    [palette]
+
+     0            "Black" [ 0xFF000000 ]            "White" [ 0xFFFFFFFF ]
+
+    [ui-palette]
+
+     0       "Foreground" [ 0xFF000000 ]       "Foreground" [ 0xFFFFFFFF ]
+
+    [brushes]
+
+    empty = nobrush
+    note = solid
+    scale = dense3
+    backseq = dense2
+
+Playlist:
+
+    [playlist-options]
+
+    unmute-new-song = false
+    deep-verify = false
+
+    [playlist]
+
+    number = 0
+    name = "CA's Legacy Midi Files"
+    directory = "/pub/Audio/MIDI/archives/Ca/mid/FM Synth/"
+
+    0 "b4uacufm.mid"
+    1 "brecluse.mid"
+
+Rc:
+
+    [Seq66]
+
+    config-type = "rc"  (see "All")
+    version = 2         (see "All")
+    verbose = false
+    sets-mode = normal
+    port-naming = short
+    init-disabled-ports = false
+
+    [midi-control-file]
+
+    active = true
+    name = "qseq66-lp-mini-alt.ctrl"
+
+    [mute-group-file]
+
+    active = false
+    name = "qseq66.mutes"
+
+    [usr-file]
+
+    active = true
+    name = "qseq66.usr"
+
+    [playlist]
+
+    active = false
+    name = "qseq66.playlist"
+    base-directory = ""
+
+    [note-mapper]
+
+    active = false
+    name = "qseq66.drums"
+
+    [palette-file]
+
+    active = false
+    name = "qseq66.palette"
+
+    [midi-meta-events]
+
+    tempo-track = 0
+
+    [manual-ports]
+
+    virtual-ports = false
+    output-port-count = 8
+    input-port-count = 4
+
+    [midi-input]
+
+    4      # number of input MIDI busses
+
+    0 1    "[0] 0:0 seq66:system midi_capture_1"        # Midi-Through
+
+    [midi-input-map]
+
+    1   # map is active
+
+    0   "announce"
+
+    [midi-clock]
+
+    7      # number of MIDI clocks (output busses)
+
+    0 0    "[0] 14:0 Midi Through Port-0"
+
+    [midi-clock-map]
+
+    1   # map is active
+
+    0   "Midi Through Port-0"
+
+    [midi-clock-mod-ticks]
+
+    ticks = 64
+    record-by-channel = false
+
+    [reveal-ports]
+
+    show-system-ports = false
+
+    [metronome]
+
+    output-buss = 4
+    output-channel = 9
+    beats-per-bar = 4
+    beat-width = 4
+    main-patch = 15
+    main-note = 75
+    main-note-velocity = 120
+    main-note-length = 0
+    sub-patch = 33
+    sub-note = 76
+    sub-note-velocity = 84
+    sub-note-length = 0
+
+    [interaction-method]
+
+    snap-split = false
+    double-click-edit = true
+
+    [jack-transport]
+
+    transport-type = slave
+    song-start-mode = auto
+    jack-midi = true
+    jack-auto-connect = true
+
+    [auto-option-save]
+
+    auto-save-rc = true
+    save-old-triggers = false
+    save-old-mutes = false
+
+    [last-used-dir]
+
+    "/home/user/data/midi"
+
+    [recent-files]
+
+    full-paths = false
+    load-most-recent = true
+    count = 2
+
+    "/home/user/data/midi/Chameleon-HHancock-Ov.midi"
+
+Usr:
+
+    [user-midi-bus-definitions]
+
+    3     # number of user-defined MIDI busses
+
+    [user-midi-bus-0]       # (3 of them)
+
+    "2x2 A (SuperNova/Q/TX81Z/DrumStation)"
+
+    16      # number of instrument settings
+
+     0 1 "SuperNova"
+     1 1 "SuperNova"
+
+    [user-instrument-definitions]
+
+    1     # instrument list count
+
+    [user-instrument-0]
+
+    "Waldorf Micro Q"
+
+    128    # number of MIDI controller number & name pairs
+
+    0 ""
+    1 "WMQ Modulation Wheel"
+
+    [user-interface-settings]
+
+    swap-coordinates = false
+    mainwnd-rows = 4
+    mainwnd-columns = 8
+    mainwnd-spacing = 2
+    default-zoom = 2
+    global-seq-feature = false
+    progress-bar-thick = false
+    inverse-colors = false
+    dark-theme = false
+    window-redraw-rate = 40
+    window-scale = 1
+    window-scale-y = 1
+
+    [user-midi-ppqn]
+
+    default-ppqn = 192
+    use-file-ppqn = true
+
+    [user-midi-settings]
+
+    convert-to-smf-1 = true
+    beats-per-bar = 4
+    beats-per-minute = 120
+    beat-width = 4
+    buss-override = -1
+    velocity-override = -1
+    bpm-precision = 0
+    bpm-step-increment = 1
+    bpm-page-increment = 10
+    bpm-minimum = 2
+    bpm-maximum = 600
+
+    [user-options]
+
+    daemonize = false
+    log = "/home/user/.config/seq66/seq66.log"
+
+    [user-ui-tweaks]
+
+    key-height = 10
+    key-view = octave-letters
+    note-resume = false
+    style-sheet-active = false
+    style-sheet = "flat-rounded.qss"
+    fingerprint-size = 128
+    progress-box-width = 0.8
+    progress-box-height = 0.4
+    progress-note-min = 0
+    progress-note-max = 127
+    lock-main-window = false
+
+    [user-session]
+
+    session = none
+    url = ""
+    visibility = true
+
+    [new-pattern-editor]
+
+    armed = false
+    thru = false
+    record = false
+    qrecord = false
+    record-style = merge
+    wrap-around = false
+
+=========================================================================
+
+Additional "type" strings to consider (to add to "int", "string", "float" etc.)
+
+    "stanza" with parameters of "5x3" (5 values in 3 groups), "3x4" (3 values in
+    4 groups), and 3x3
+
+    "ctrl_in_stanza"         5x3 ] Used for loop, mute-group, and automation control
+    "mute_ctrl_out_stanza"   3x3 ]
+    "auto_ctrl_out_stanza"   3x3 ]-- combine and use a group count of 3 or 4
+    "midi_ctrl_out_stanza"   3x4 ]
+    "ctrl_out_stanza"        3x3/4
+    "macro_ctrl_out"         A special string of values
+
+Types of values:
+
+    Basic:
+
+        name = string (or integer, float, boolean, and unquoted string)
+
+    Control (MIDI control in):
+
+        slot number; control-key; 5x3 stanzas; # control-name
+
+    MIDI control out:
+
+        slot number; 3x4 stanzas            (need comment)
+
+    Mute control out:
+
+        slot number; 3x3 stanzats; # control-name
+
+    Drum section:
+
+        "[Drum xx]", with many different xx sections.
+
+    Mute groups:
+
+        slot number; 8x4 stanzas; "mutegroup name"
+
+    Palette entry:
+
+        slot number; color/element name; ARGB value; inverse name; ARGB value
+
+    Playlist:
+
+        slot number; "songname.midi"
+
+Stanzas:
+
+    1.  See util::tokenize_stanzas(), used only by mutegroup!!!
+    2.  See the midicontrolfile::stanza class:
+        a. midicontrolfile::parse_control_stanza()
+        b. midicontrolfile::parse_midi_control_out()
+    
+
+
+
+

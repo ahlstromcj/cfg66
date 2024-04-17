@@ -1,0 +1,138 @@
+%-------------------------------------------------------------------------------
+% session
+%-------------------------------------------------------------------------------
+%
+% \file        session.tex
+% \library     Documents
+% \author      Chris Ahlstrom
+% \date        2024-04-16
+% \update      2024-04-16
+% \version     $Revision$
+% \license     $XPC_GPL_LICENSE$
+%
+%     Provides a description of the entities in the cfg66 library.
+%
+%-------------------------------------------------------------------------------
+
+\section{Session Namespace}
+\label{sec:session_namespace}
+
+   This section provides a useful walkthrough of the \texttt{session} namespace of
+   the \textsl{cfg66} library.
+   In addition, a \texttt{C}-only module is provided.
+
+   Here are the classes (or modules) in this namespace:
+
+   \begin{itemize}
+      \item \texttt{session::climanager}
+      \item \texttt{session::configuration}
+      \item \texttt{session::directories}
+      \item \texttt{session::manager}
+   \end{itemize}
+
+\subsection{session::climanager}
+\label{subsec:session_namespace_climanager}
+
+   The \texttt{session::climanager} class is derived from
+   \texttt{session::manager} and overrides a number of virtual functions
+   It also provides a function to read a configuration file.
+   It provides a \texttt{run()} loop which does nothing
+   but check for calls to close and save the session and wait for a small
+   polling period.
+
+\subsection{session::configuration}
+\label{subsec:session_namespace_configuration}
+
+   The \texttt{session::configuration} class is derived from
+   \texttt{cfg::basesettings}.
+   It contains a \texttt{session::directories} management class
+   and a set of
+   \texttt{directories::entries} items.
+   Options for help, a log-file, and auto-save are provided.
+
+\subsection{session::directories}
+\label{subsec:session_namespace_directories}
+
+   The \texttt{session::directories} class manages a set of
+   \texttt{entry} directory item.
+
+   Each \texttt{entry} specifies:
+
+   \begin{itemize}
+      \item Name of the section covered by a configuration file.
+      \item It active/inactive status.
+      \item The directory for the files(s).
+      \item The base name of the file(s).
+      \item The optional extension of the file(s).
+   \end{itemize}
+
+   Provides the full path specification of each file, constructed
+   from the entries, and keyed by the section name.
+   The "home" configuration path and the session path are also specified.
+
+   The \texttt{directories.cpp} module explains the directory layouts
+   and provides default "rc" and "log" directory specifications.
+
+\subsection{session::manager}
+\label{subsec:session_namespace_manager}
+
+   The \texttt{session::manager} class is base class for providing an
+   application with "session" information, where a session is a group of
+   configuration items that allow an application to run in a sequestered
+   environment. Think of the \textsl{JACK Session Manager} or the 
+   \textsl{New/Non Session Manager}.
+
+   The base session manager class holds the following information:
+
+   \begin{itemize}
+      \item \texttt{session::configuration}.
+         See the section about this class above.
+      \item \texttt{cli::parser}.
+         Provides access to the command-line parser.
+      \item \textsl{Capabilities}.
+         This application-dependent string publishes some information about
+         the application. Useful with the
+         \textsl{New/Non Session Manager}.
+      \item \textsl{Manager name}.
+         The name of the session manager. For example, it is returned by the
+         \textsl{New/Non Session Manager}.
+      \item \textsl{Manager path}.
+         This item holds the directory where the session information is to
+         be stored.
+         For example, the \textsl{New/Non Session Manager} returns a string
+         like
+         \texttt{/home/user/NSM Sessions/JackSession/seq66.nUKIE}.
+      \item \textsl{Display name}.
+         This is the name of the session to be displayed, such as
+         \textsl{JackSession} in the string above.
+      \item \textsl{Client ID}.
+         This is the name of the client (e.g. for managing port
+         connections), such as \textsl{Seq66} or \textsl{seq66.nUKIE}.
+   \end{itemize}
+
+   Also included are indicators for \texttt{--help}, dirty status, and error
+   messages.
+
+   A large number of \texttt{virtual} members functions are included.
+   Some of the important functions are for the following actions:
+
+   \begin{itemize}
+      \item Parsing an option (configuration) file.
+      \item Parsing the command line.
+      \item Creating, writing, and reading a configuration file.
+      \item Creating, saving, and closing a session.
+      \item Creating a session directory.
+      \item Creating a "project".
+      \item Creating a manager.
+      \item Running a session, often in a loop or a GUI thread.
+   \end{itemize}
+   
+   The \texttt{manager.cpp} module contains a short
+   statically-initialized list of
+   default options.
+
+   Note that there are currently a number of "To Dos" in this class.
+
+%-------------------------------------------------------------------------------
+% vim: ts=3 sw=3 et ft=tex
+%-------------------------------------------------------------------------------

@@ -1,0 +1,142 @@
+# Sample "session" file.
+
+# session-path represents the desired session directory. If empty, it is
+# simply the application's configuration directory as returned by
+# cfg::get_home_cfg_directory() [e.g. "~/.config/seq66v2"].  The caller can
+# relocate all other application directories and files to a totally different
+# directory by specifying a full path. Or the caller can specify a single
+# sub-directory name, whose parent directory is ~/.config/seq66v2".
+#
+
+[Cfg66]
+
+config-type = "session"
+session-path = "/home/user/MidiProjects"    # vice "/home/user/.config/seq66v2"
+version = 0
+verbose = false
+use-log-file = false
+
+# [comments] holds user documentation for this file.
+
+[comments]
+
+This file is a sample for reference as we build the Cfg66 session management
+scheme.
+
+# Specifies the location and main configuration file for an application.
+#
+# The section name describes the type of file. It is used for path lookups. It
+# will also be used as the extension if "ext" is blank.
+#
+# The possible kinds of values for "directory":
+#
+#   -   Empty (""). The session-path defined above is used.
+#   -   Plain name (e.g. "rc" or "cfg"). The directory name noted above
+#       is appended with "/name" and is used as the configuration directory.
+#   -   Absolute path.  Can place the configuration directory basically
+#       anywhere.
+#   -   Session manager directory.  In this case, the session-path
+#       is specified by the session manager, and all other directories are
+#       relative to that directory.
+#
+# The possible kinds of values for "file-name":
+#
+#   -   Empty. The "file-name" is the app-name (no extension).
+#   -   Name. The "file-name" is given as is.  No extension is needed; the
+#       "ext" value will be appended anyway.
+
+[rc]
+
+active = true
+directory = ""              # "rc" or "cfg" if desired
+file-name = "seq66v2"
+ext = ".rc"
+
+[logs]
+
+active = true
+directory = "logs"          # for log files, summaries, etc.
+file-name = ""              # for main log only
+ext = ".log"
+
+# An example from the Seq66 application.  This same file will be present
+# in Seq66v2.
+
+[usr]
+
+active = true
+directory = ""
+file-name = "seq66v2.usr"
+ext = ".usr"
+
+# Provides a flag and play-list file.
+
+[playlist]
+
+active = false
+directory = ""
+file-name = ""
+ext = ".playlist"
+
+# Provides a flag and file-name for note-mapping.
+
+[note-mapper]
+
+active = false
+directory = ""
+file-name = "seq66v2.drums"
+ext = ".drums"
+
+# Provides a flag and a file-name to allow modifying the palette.
+
+[mute-groups]
+
+active = false
+directory = ""
+file-name = "seq66v2.mutes"
+ext = ".mutes"
+
+[midi-control]
+
+active = false
+directory = ""
+file-name = "seq66v2.ctrl"
+ext = ".ctrl"
+
+# Provides a flag and a file-name to allow modifying the palette.
+
+[palette]
+
+active = false
+directory = ""
+name = "seq66v2.palette"
+ext = ".palette"
+
+# Provides a flag and a file-name to allow modifying the palette.
+
+[keymap]
+
+active = false
+directory = ""
+name = ""
+ext = ".keymap"
+
+# 'auto-save-rc' sets automatic saving of the running configuration
+# 'rc' and other files.
+
+[auto-option-save]
+
+auto-save-rc = true
+
+# save-old-triggers = "false"
+# save-old-mutes = "false"
+
+[user-session]
+
+session = none
+url = ""
+visibility = true
+
+# End of /home/user/.config/seq66v2/seq66v2.session
+#
+# vim: sw=4 ts=4 wm=4 et ft=dosini

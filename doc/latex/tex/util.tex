@@ -1,0 +1,82 @@
+%-------------------------------------------------------------------------------
+% util
+%-------------------------------------------------------------------------------
+%
+% \file        util.tex
+% \library     Documents
+% \author      Chris Ahlstrom
+% \date        2024-04-16
+% \update      2024-04-16
+% \version     $Revision$
+% \license     $XPC_GPL_LICENSE$
+%
+%     Provides a description of the entities in the cfg66 library.
+%
+%-------------------------------------------------------------------------------
+
+\section{Util Namespace}
+\label{sec:util_namespace}
+
+   This section provides a useful walkthrough of the \texttt{util} namespace of
+   the \textsl{cfg66} library.
+
+   Here are the classes (or modules) in this namespace:
+
+   \begin{itemize}
+      \item \texttt{util::filefunctions module}
+      \item \texttt{util::msgfunctions module}
+      \item \texttt{util::named\_bools}
+      \item \texttt{util::strfunctions module}
+   \end{itemize}
+
+   All of the modules are \texttt{C++} modules with free functions
+   in the \texttt{util} namespace.
+
+\subsection{util::filefunctions module}
+\label{subsec:util_namespace_filefunctions}
+
+   The \texttt{util::filefunctions} module contains a large number of
+   function dealing file-names and files.
+
+   The file functions are basically wrappers around the \texttt{C FILE *}
+   API.
+
+   The file-name functions are useful for building paths and for splitting
+   paths into parts.
+
+   Really, just skim the \texttt{filefunctions} modules to learn what is
+   there.  They include every convenient function we needed in implementing
+   \textsl{Seq66}.
+
+\subsection{util::msgfunctions module}
+\label{subsec:util_namespace_msgfunctions}
+
+   The \texttt{util::msgfunctions} module defines functions for writing
+   messages to the console along with tags showing the short name of the
+   application that wrote them, and in color.
+
+   Also included are some "async safe" functions for output and for
+   converting unsigned numbers to string arrays.
+
+\subsection{util::named\_bools}
+\label{subsec:util_namespace_filefunctions}
+
+   The \texttt{util::name\_bools} class
+   makes it easy to look up and set a "small" number of
+   boolean values by name.
+
+   This class could be useful if one does not want the full capability
+   of the classes in the \texttt{cfg} namespace.
+
+\subsection{util::strfunctions module}
+\label{subsec:util_namespace_strfunctions}
+
+   The \texttt{util::strfunctions} module defines functions for manipulating
+   strings: tokenization, left/right space trimming, conversion between
+   strings and values with the added feature of defaulting, word-wrapping,
+   and formatting of \texttt{std::string} values without using
+   \texttt{std::stringstream}.
+
+%-------------------------------------------------------------------------------
+% vim: ts=3 sw=3 et ft=tex
+%-------------------------------------------------------------------------------

@@ -1,0 +1,211 @@
+
+    "rc"
+        "[Seq66]"           -----> how to handle for all files?
+            "config-type"
+            "version"
+            "verbose"       -----> move to 'session' file
+            "sets-mode"     -----> move to "mutes" [mute-group-flags]
+            "port-naming"   -----> add [port-options]
+            "init-disabled-ports"  ditto
+        "[playlist]"        -----> goes in 'session' file
+            "active"
+            "name"
+            "base-directory"
+        "[midi-meta-events]"
+            "tempo-track"
+        "[manual-ports]"
+            "virtual-ports"
+            "output-port-count"
+            "input-port-count"
+        "[midi-clock-mod-ticks]"
+            "ticks"
+            "record-by-channel"
+        "[reveal-ports]"
+            "show-system-ports"
+        "[metronome]"
+            "output-buss"
+            "output-channel"
+            "beats-per-bar"
+            "beat-width"
+            "main-patch"
+            "main-note"
+            "main-note-velocity"
+            "main-note-length"
+            "sub-patch"
+            "sub-note"
+            "sub-note-velocity"
+            "sub-note-length"
+        "[interaction-method]"
+            "snap-split"
+            "double-click-edit"
+        "[jack-transport]"
+            "transport-type"
+            "song-start-mode"
+            "jack-midi"
+            "jack-auto-connect"
+        "[auto-option-save]"
+            "auto-save-rc"
+            "save-old-triggers"
+            "save-old-mutes"
+        "[recent-files]"
+            "full-paths"
+            "load-most-recent"
+            "count"
+
+    "usr"
+
+        [comments]
+        [user-midi-bus-definitions]
+        [user-instrument-definitions]
+
+        "[Seq66]"           -----> how to handle for all files?
+            "config-type"
+            "version"
+        "[user-interface-settings]
+            "swap-coordinates"
+            "mainwnd-rows"
+            "mainwnd-columns"
+            "mainwnd-spacing"
+            "default-zoom"
+            "global-seq-feature"
+            "progress-bar-thick"
+            "inverse-colors"
+            "dark-theme"
+            "window-redraw-rate"
+            "window-scale"
+            "window-scale-y"
+        "[user-midi-ppqn]"
+            "default-ppqn"
+            "use-file-ppqn"
+        "[user-midi-settings]"
+            "convert-to-smf-1"
+            "beats-per-bar"
+            "beats-per-minute"
+            "beat-width"
+            "buss-override"
+            "velocity-override"
+            "bpm-precision"
+            "bpm-step-increment"
+            "bpm-page-increment"
+            "bpm-minimum"
+            "bpm-maximum"
+        "[user-options]
+            "daemonize = false
+
+            Move to 'session' file: log = "/home/user/.config/seq66/seq66.log"
+
+        "[user-ui-tweaks]"
+            "key-height"
+            "key-view"
+            "note-resume"
+            "style-sheet-active"
+            "style-sheet"
+            "fingerprint-size"
+            "progress-box-width"
+            "progress-box-height"
+            "progress-note-min"
+            "progress-note-max"
+            "lock-main-window"
+
+        Move to the 'session' file:
+
+        "[user-session]
+            "session"
+            "url"
+            "visibility"
+
+        "[new-pattern-editor]"
+            "armed"
+            "thru"
+            "record"
+            "qrecord"
+            "record-style"
+            "wrap-around"
+
+    "ctrl"
+
+        [comments]
+        [loop-control]
+        [mute-group-control]
+        [automation-control]
+        [midi-control-out]
+        [mute-control-out]
+        [automation-control-out]
+
+        "[Seq66]"           -----> how to handle for all files?
+            "config-type"
+            "version"
+        "[midi-control-settings]"
+            "drop-empty-controls"
+            "control-buss"
+            "midi-enabled"
+            "button-offset"
+            "button-rows"
+            "button-columns"
+            "keyboard-layout"
+        "[midi-control-out-settings]"
+            "set-size"
+            "output-buss"
+            "midi-enabled"
+            "button-offset"
+            "button-rows"
+            "button-columns"
+        "[macro-control-out]"
+            "footer"
+            "header"
+            "reset"
+            "shutdown"
+            "startup"
+
+    "mutes"
+
+        [comments]
+        [mute-groups]
+
+        "[Seq66]"           -----> how to handle for all files?
+            "config-type"
+            "version"
+        "[mute-group-flags]"
+            "load-mute-groups"
+            "save-mutes-to"
+            "strip-empty"
+            "mute-group-rows"
+            "mute-group-columns"
+            "mute-group-count"
+            "mute-group-selected"
+            "groups-format"
+            "toggle-active-only"
+
+    "playlist"
+
+        "[Seq66]"           -----> how to handle for all files?
+            "config-type"
+            "version"
+        "[playlist-options]"
+            "unmute-new-song"
+            "deep-verify"
+        "[playlist]"                repeated as needed
+            "number"
+            "name"
+            "directory"
+            "0 "b4uacufm.mid""
+
+    "palette"
+
+        [comments]
+
+        "[Seq66]"           -----> how to handle for all files?
+            "config-type"
+            "version"
+        "[palette]"
+             0       "Black" [ 0xFF000000 ]        "White" [ 0xFFFFFFFF ]
+        "[ui-palette]"
+             0       "Foreground" [ 0xFF000000 ]   "Foreground" [ 0xFFFFFFFF ]
+        "[brushes]"
+            "empty"
+            "note"
+            "scale"
+            "backseq"
+
+// vim: sw=4 ts=4 wm=4 et ft=cpp
+
