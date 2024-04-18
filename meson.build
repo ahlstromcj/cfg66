@@ -6,7 +6,7 @@
 # \library     cfg66
 # \author      Chris Ahlstrom
 # \date        2022-06-22
-# \updates     2024-04-17
+# \updates     2024-04-18
 # \license     $XPC_SUITE_GPL_LICENSE$
 #
 #  This file is part of the "cfg66" library. It was part of the libs66
@@ -29,7 +29,7 @@
 
 project('cfg66',
    [ 'c', 'cpp' ],
-   version: '0.1.0',
+   version: '0.1.1',
    license: 'GPLv3',
    meson_version: '>=1.1.0',
    default_options: [
@@ -43,14 +43,16 @@ project('cfg66',
 #-----------------------------------------------------------------------------
 
 cfg66_description = 'Refactoring the base Seq66 configuration/utility modules.'
-cfg66_date = '2024-04-17'
+cfg66_date = '2024-04-18'
 cfg66_version = meson.project_version()
 cfg66_api_version = '0.1'
 cfg66_build_type = get_option('buildtype')
 cfg66_debug = get_option('buildtype').contains('debug')
 cfg66_project_base = 'cfg66-@0@'.format(cfg66_api_version)
+cfg66_library_base = 'libcfg66-@0@'.format(cfg66_api_version)
 cfg66_project_root = meson.project_source_root()
 cfg66_libtype = get_option('default_library')
+cfg66_data_dir = get_option('datadir') / 'cfg66-@0@'.format(cfg66_api_version)
 cfg66_subproj = meson.is_subproject()
 
 if cfg66_debug
@@ -60,16 +62,11 @@ if cfg66_debug
 endif
 
 #-----------------------------------------------------------------------------
-# Easy access to directory options.  Interim until meson version 0.64.0
-# We want to be able to install the header files to subdirectories of,
-# for example, /usr/local/include/cfg66-0.1, just as they appear in this
-# project.
-#
-# CURRENTLY A DUPLICATE of the same symbols in cfg66/meson.build !!!!
-#
+# Easy access to directory options.
 #-----------------------------------------------------------------------------
 
 cfg66_dir = 'cfg66-@0@'.format(cfg66_api_version)
+cfg66_sub_dir = join_paths(cfg66_dir, 'cfg66')                       # hmmmm
 cfg66_prefix = get_option('prefix')
 cfg66_bindir = join_paths(cfg66_prefix, get_option('bindir'))
 cfg66_includedir = join_paths(cfg66_prefix, get_option('includedir'), cfg66_dir)
@@ -80,6 +77,7 @@ cfg66_metainfodir = join_paths(cfg66_datadir, 'metainfo')
 cfg66_docdir = join_paths(cfg66_prefix, cfg66_datadir, 'doc', cfg66_dir)
 cfg66_project_root = meson.project_source_root()
 cfg66_libtype = get_option('default_library')
+libraries_root = '.'
 libraries_include_top = '.'
 libcfg66_include_top = join_paths(libraries_include_top, 'include')
 
@@ -119,9 +117,13 @@ libcfg66_includedirs = include_directories(libcfg66_include_top,
    'include/util'
    )
 
+#-----------------------------------------------------------------------------
+# Used by the cfg66_version() function.
+#-----------------------------------------------------------------------------
+
 build_args += [
-   '-DCFG66_NAME=' + meson.project_name(),
-   '-DCFG66_VERSION=' + meson.project_version()
+   '-DCFG66_NAME=' + '"' + meson.project_name() + '"',
+   '-DCFG66_VERSION=' + '"' + meson.project_version() + '"'
    ]
 
 #-----------------------------------------------------------------------------
@@ -145,11 +147,7 @@ subdir('src')
 # Dependencies on Linux
 #-----------------------------------------------------------------------------
 #
-# Later:
-#
-#  if host_machine.system() == 'linux'
-#     . . .
-#  endif
+# None.
 #
 #-----------------------------------------------------------------------------
 
@@ -185,14 +183,14 @@ endif
 #
 #-----------------------------------------------------------------------------
 
-cfg66_library = static_library(
+cfg66_library_build = library(
    cfg66_project_base,
    libcfg66_sources,
    install: true,
    install_dir: cfg66_libdir,
-   c_args: build_args,
+   cpp_args: build_args,
    dependencies: empty_depends,
-   include_directories: libcfg66_includedirs
+   include_directories: [ libcfg66_includedirs ]
    )
 
 #-----------------------------------------------------------------------------
@@ -200,8 +198,8 @@ cfg66_library = static_library(
 #-----------------------------------------------------------------------------
 
 cfg66_dep = declare_dependency(
-   include_directories: libcfg66_includedirs,
-   link_with: cfg66_library
+   include_directories: [ libcfg66_includedirs ],
+   link_with: [ cfg66_library_build ]
    )
 
 #-----------------------------------------------------------------------------
@@ -217,21 +215,28 @@ install_headers(libcfg66_headers, subdir: cfg66_dir, preserve_path: true)
 pkg_mod = import('pkgconfig')
 
 pkg_mod.generate(
-   cfg66_library,
+   cfg66_library_build,
    filebase: cfg66_project_base,
    version: cfg66_version,
    name: cfg66_project_base,
    description: cfg66_description,
    install_dir: alt_pkgconfig_libdir,
-   subdirs: cfg66_dir,                # not cfg66_project_base
-   libraries: cfg66_library
+   subdirs: cfg66_dir,
+   libraries: cfg66_library_build
    )
 
-if get_option('enable-tests')
-   subdir('tests')
-endif
+if meson.is_subproject()
 
-if not meson.is_subproject()
+   libcfg66_include_dep = declare_dependency(
+      include_directories : libcfg66_includedirs
+      )
+
+   libcfg66_library_dep = declare_dependency(
+      include_directories : libcfg66_includedirs,
+      link_with : cfg66_library_build
+      )
+
+else
 
 # TODO: figure out where to put and install the logo
 
@@ -244,6 +249,15 @@ if not meson.is_subproject()
          ),
       install_dir : get_option('docdir')
       )
+
+   libcfg66_dep = declare_dependency(
+      include_directories : libcfg66_includedirs,
+      link_with : cfg66_library_build
+      )
+
+   if get_option('enable-tests')
+      subdir('tests')
+   endif
 
 endif
 
@@ -262,7 +276,7 @@ summary(
       'Sub Dir' : cfg66_project_base,
       'Build Type' : cfg66_build_type,
       'Library Type' : cfg66_libtype,
-      'Subproject?' : cfg66_subproj
+      'Subproject' : cfg66_subproj
    },
    section: 'Cfg66 Project'
    )
@@ -285,4 +299,3 @@ summary(
 #----------------------------------------------------------------------------
 # vim: ts=3 sw=3 ft=meson
 #----------------------------------------------------------------------------
-

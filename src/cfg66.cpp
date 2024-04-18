@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-04-15
- * \updates       2024-04-15
+ * \updates       2024-04-18
  * \license       GNU GPLv2 or above
  *
  */
@@ -34,7 +34,11 @@
 std::string
 cfg66_version ()
 {
-    static std::string s_info = "cfg66-0.1 library 2024-04-15";
+    /*
+     * static std::string s_info = "cfg66-0.1 library 2024-04-15";
+     */
+
+    static std::string s_info = CFG66_NAME "-" CFG66_VERSION " " __DATE__ ;
     return s_info;
 }
 
