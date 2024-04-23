@@ -6,7 +6,7 @@
 # \library     cfg66
 # \author      Chris Ahlstrom
 # \date        2022-06-22
-# \updates     2024-04-18
+# \updates     2024-04-23
 # \license     $XPC_SUITE_GPL_LICENSE$
 #
 #  This file is part of the "cfg66" library. It was part of the libs66
@@ -43,7 +43,7 @@ project('cfg66',
 #-----------------------------------------------------------------------------
 
 cfg66_description = 'Refactoring the base Seq66 configuration/utility modules.'
-cfg66_date = '2024-04-18'
+cfg66_date = '2024-04-23'
 cfg66_version = meson.project_version()
 cfg66_api_version = '0.1'
 cfg66_build_type = get_option('buildtype')
@@ -197,7 +197,7 @@ cfg66_library_build = library(
 # Make this library usable as a Meson subproject.
 #-----------------------------------------------------------------------------
 
-cfg66_dep = declare_dependency(
+libcfg66_dep = declare_dependency(
    include_directories: [ libcfg66_includedirs ],
    link_with: [ cfg66_library_build ]
    )
@@ -248,11 +248,6 @@ else
          'doc/cfg66-library-guide.pdf'
          ),
       install_dir : get_option('docdir')
-      )
-
-   libcfg66_dep = declare_dependency(
-      include_directories : libcfg66_includedirs,
-      link_with : cfg66_library_build
       )
 
    if get_option('enable-tests')
