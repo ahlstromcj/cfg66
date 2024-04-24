@@ -6,7 +6,7 @@
 # \library     cfg66
 # \author      Chris Ahlstrom
 # \date        2022-06-22
-# \updates     2024-01-20
+# \updates     2024-04-24
 # \license     $XPC_SUITE_GPL_LICENSE$
 #
 #  This file is part of the "cfg66" library. See the top-level meson.build
@@ -14,7 +14,7 @@
 #
 #  Here we locate the library source-code files.  They reside in:
 #
-#     -  src. The main include directory, currently nothing needed there.
+#     -  src. The main include directory for non-namespace code.
 #     -  src/cfg. Contains code for parsing command lines.
 #
 #-----------------------------------------------------------------------------

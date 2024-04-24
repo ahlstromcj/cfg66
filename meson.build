@@ -6,7 +6,7 @@
 # \library     cfg66
 # \author      Chris Ahlstrom
 # \date        2022-06-22
-# \updates     2024-04-23
+# \updates     2024-04-24
 # \license     $XPC_SUITE_GPL_LICENSE$
 #
 #  This file is part of the "cfg66" library. It was part of the libs66
@@ -42,44 +42,38 @@ project('cfg66',
 # Information for this sub-project.
 #-----------------------------------------------------------------------------
 
-cfg66_description = 'Refactoring the base Seq66 configuration/utility modules.'
-cfg66_date = '2024-04-23'
-cfg66_version = meson.project_version()
+cfg66_pkg_description = 'Refactors base Seq66 configuration/utility modules.'
+cfg66_pkg_version = meson.project_version()
 cfg66_api_version = '0.1'
-cfg66_build_type = get_option('buildtype')
+cfg66_info_date = '2024-04-24'
+cfg66_info_build_type = get_option('buildtype')
+cfg66_info_build_root = meson.project_build_root()
+cfg66_info_lib_type = get_option('default_library')
+cfg66_info_project_root = meson.project_source_root()
 cfg66_debug = get_option('buildtype').contains('debug')
 cfg66_project_base = 'cfg66-@0@'.format(cfg66_api_version)
-cfg66_library_base = 'libcfg66-@0@'.format(cfg66_api_version)
-cfg66_project_root = meson.project_source_root()
-cfg66_libtype = get_option('default_library')
-cfg66_data_dir = get_option('datadir') / 'cfg66-@0@'.format(cfg66_api_version)
 cfg66_subproj = meson.is_subproject()
 
 if cfg66_debug
-   if not meson.is_subproject()
-      add_global_arguments('-DDEBUG', language : 'cpp')
+   if not cfg66_subproj
+      add_project_arguments('-DDEBUG', language : 'cpp')
    endif
 endif
 
 #-----------------------------------------------------------------------------
-# Easy access to directory options.
+# Easy access to directory options. Commented out the unnecessary ones.
+# Many of these definitions are simply informative.
 #-----------------------------------------------------------------------------
 
 cfg66_dir = 'cfg66-@0@'.format(cfg66_api_version)
-cfg66_sub_dir = join_paths(cfg66_dir, 'cfg66')                       # hmmmm
 cfg66_prefix = get_option('prefix')
 cfg66_bindir = join_paths(cfg66_prefix, get_option('bindir'))
 cfg66_includedir = join_paths(cfg66_prefix, get_option('includedir'), cfg66_dir)
 cfg66_libdir = join_paths(cfg66_prefix, get_option('libdir'), cfg66_dir)
 cfg66_datadir = join_paths(cfg66_prefix, get_option('datadir'), cfg66_dir)
-cfg66_localedir = join_paths(cfg66_prefix, get_option('localedir'))
-cfg66_metainfodir = join_paths(cfg66_datadir, 'metainfo')
 cfg66_docdir = join_paths(cfg66_prefix, cfg66_datadir, 'doc', cfg66_dir)
-cfg66_project_root = meson.project_source_root()
-cfg66_libtype = get_option('default_library')
-libraries_root = '.'
-libraries_include_top = '.'
-libcfg66_include_top = join_paths(libraries_include_top, 'include')
+libraries_top = meson.project_source_root()      # not '.'
+libcfg66_include_top = join_paths(libraries_top, 'include')
 
 #-----------------------------------------------------------------------------
 # The *.pc file goes into $libdir/cfg66-0.1/pkgconfig instead of
@@ -109,7 +103,7 @@ build_args = []
 # We prefer to use the style '#include "cfg/header.hpp".
 #-----------------------------------------------------------------------------
 
-libcfg66_includedirs = include_directories(libcfg66_include_top,
+libcfg66_includes = include_directories('.',    # libcfg66_include_top,
    'include',
    'include/cfg',
    'include/cli',
@@ -190,15 +184,17 @@ cfg66_library_build = library(
    install_dir: cfg66_libdir,
    cpp_args: build_args,
    dependencies: empty_depends,
-   include_directories: [ libcfg66_includedirs ]
+   include_directories: [ libcfg66_includes ]
    )
 
 #-----------------------------------------------------------------------------
-# Make this library usable as a Meson subproject.
+# Make this library usable as a Meson subproject.  This allows a subproject to
+# easily specify how it should be used. This makes it interchangeable with the
+# same dependency that is provided externally (i.e. installed) by the system.
 #-----------------------------------------------------------------------------
 
 libcfg66_dep = declare_dependency(
-   include_directories: [ libcfg66_includedirs ],
+   include_directories: [ libcfg66_includes ],
    link_with: [ cfg66_library_build ]
    )
 
@@ -217,9 +213,9 @@ pkg_mod = import('pkgconfig')
 pkg_mod.generate(
    cfg66_library_build,
    filebase: cfg66_project_base,
-   version: cfg66_version,
+   version: cfg66_pkg_version,
    name: cfg66_project_base,
-   description: cfg66_description,
+   description: cfg66_pkg_description,
    install_dir: alt_pkgconfig_libdir,
    subdirs: cfg66_dir,
    libraries: cfg66_library_build
@@ -227,12 +223,12 @@ pkg_mod.generate(
 
 if meson.is_subproject()
 
-   libcfg66_include_dep = declare_dependency(
-      include_directories : libcfg66_includedirs
+   libcfg66_include_dep = declare_dependency(      # maybe unnecessary
+      include_directories : libcfg66_includes
       )
 
    libcfg66_library_dep = declare_dependency(
-      include_directories : libcfg66_includedirs,
+      include_directories : libcfg66_includes,
       link_with : cfg66_library_build
       )
 
@@ -262,15 +258,17 @@ endif
 
 summary(
    {
-      'Date' : cfg66_date,
+      'Date' : cfg66_info_date,
       'Filebase' : cfg66_project_base,
-      'Version' : cfg66_version,
+      'Version' : cfg66_pkg_version,
       'Base' : cfg66_project_base,
-      'Description' : cfg66_description,
-      'Root' : cfg66_project_root,
+      'Description' : cfg66_pkg_description,
+      'Source Root' : cfg66_info_project_root,
+      'Headers Root' : libcfg66_include_top,
       'Sub Dir' : cfg66_project_base,
-      'Build Type' : cfg66_build_type,
-      'Library Type' : cfg66_libtype,
+      'Build Type' : cfg66_info_build_type,
+      'Build Root' : cfg66_info_build_root,
+      'Library Type' : cfg66_info_lib_type,
       'Subproject' : cfg66_subproj
    },
    section: 'Cfg66 Project'
@@ -283,7 +281,6 @@ summary(
       'bindir' : cfg66_bindir,
       'libdir' : cfg66_libdir,
       'datadir' : cfg66_datadir,
-      'appdatadir' : cfg66_datadir,
       'docdir': cfg66_docdir
    },
    section: 'Cfg66 Install Directories'
