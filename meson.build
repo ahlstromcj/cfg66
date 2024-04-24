@@ -29,10 +29,10 @@
 
 project('cfg66',
    [ 'c', 'cpp' ],
-   version: '0.1.1',
-   license: 'GPLv3',
-   meson_version: '>=1.1.0',
-   default_options: [
+   version : '0.1.1',
+   license : 'GPLv3',
+   meson_version : '>=1.1.0',
+   default_options : [
       'c_std=c11', 'cpp_std=c++14', 'warning_level=3',
       'default_library=both'
       ]
@@ -121,6 +121,18 @@ build_args += [
    ]
 
 #-----------------------------------------------------------------------------
+# Only make public interfaces visible
+#-----------------------------------------------------------------------------
+
+'''
+if target_machine.system() == 'windows' or target_machine.system() == 'cygwin'
+   build_args += '-DLIBPUBLIC="__declspec(dllexport)"'
+else
+   build_args += '-DLIBPUBLIC=__attribute__((visibility("default")))'
+endif
+'''
+
+#-----------------------------------------------------------------------------
 # Set up some "HAVE" macros.  By default the header file is generated in the
 # "build" directory. If configure_file() is moved to include/meson.build,
 # the the header goes into "build/include", which is what we want.
@@ -148,16 +160,6 @@ subdir('src')
 empty_depends = [ ]
 
 #-----------------------------------------------------------------------------
-# Only make public interfaces visible
-#-----------------------------------------------------------------------------
-
-if target_machine.system() == 'windows' or target_machine.system() == 'cygwin'
-   build_args += '-DLIBPUBLIC="__declspec(dllexport)"'
-else
-   build_args += '-DLIBPUBLIC=__attribute__((visibility("default")))'
-endif
-
-#-----------------------------------------------------------------------------
 # We recommemd using a recent version of meson by installing it outside the
 # Linux distro's repository.  For example, meson on Ubuntu is pretty damn
 # old.
@@ -180,11 +182,11 @@ endif
 cfg66_library_build = library(
    cfg66_project_base,
    libcfg66_sources,
-   install: true,
-   install_dir: cfg66_libdir,
-   cpp_args: build_args,
-   dependencies: empty_depends,
-   include_directories: [ libcfg66_includes ]
+   install : true,
+   install_dir : cfg66_libdir,
+   cpp_args : build_args,
+   dependencies : empty_depends,
+   include_directories : [ libcfg66_includes ]
    )
 
 #-----------------------------------------------------------------------------
@@ -194,15 +196,15 @@ cfg66_library_build = library(
 #-----------------------------------------------------------------------------
 
 libcfg66_dep = declare_dependency(
-   include_directories: [ libcfg66_includes ],
-   link_with: [ cfg66_library_build ]
+   include_directories : [ libcfg66_includes ],
+   link_with : [ cfg66_library_build ]
    )
 
 #-----------------------------------------------------------------------------
 # Make this library usable from the system's package manager.
 #-----------------------------------------------------------------------------
 
-install_headers(libcfg66_headers, subdir: cfg66_dir, preserve_path: true)
+install_headers(libcfg66_headers, subdir : cfg66_dir, preserve_path : true)
 
 #-----------------------------------------------------------------------------
 # Package config
@@ -212,27 +214,16 @@ pkg_mod = import('pkgconfig')
 
 pkg_mod.generate(
    cfg66_library_build,
-   filebase: cfg66_project_base,
-   version: cfg66_pkg_version,
-   name: cfg66_project_base,
-   description: cfg66_pkg_description,
-   install_dir: alt_pkgconfig_libdir,
-   subdirs: cfg66_dir,
-   libraries: cfg66_library_build
+   filebase : cfg66_project_base,
+   version : cfg66_pkg_version,
+   name : cfg66_project_base,
+   description : cfg66_pkg_description,
+   install_dir : alt_pkgconfig_libdir,
+   subdirs : cfg66_dir,
+   libraries : cfg66_library_build
    )
 
-if meson.is_subproject()
-
-   libcfg66_include_dep = declare_dependency(      # maybe unnecessary
-      include_directories : libcfg66_includes
-      )
-
-   libcfg66_library_dep = declare_dependency(
-      include_directories : libcfg66_includes,
-      link_with : cfg66_library_build
-      )
-
-else
+if not cfg66_subproj
 
 # TODO: figure out where to put and install the logo
 
@@ -271,7 +262,7 @@ summary(
       'Library Type' : cfg66_info_lib_type,
       'Subproject' : cfg66_subproj
    },
-   section: 'Cfg66 Project'
+   section : 'Cfg66 Project'
    )
 
 summary(
@@ -281,9 +272,9 @@ summary(
       'bindir' : cfg66_bindir,
       'libdir' : cfg66_libdir,
       'datadir' : cfg66_datadir,
-      'docdir': cfg66_docdir
+      'docdir' : cfg66_docdir
    },
-   section: 'Cfg66 Install Directories'
+   section : 'Cfg66 Install Directories'
    )
 
 #****************************************************************************

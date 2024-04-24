@@ -45,17 +45,10 @@ libcfg66_headers += files(
    )
 
 configure_file(
-   input: 'cfg66-config.h.in',
-   output: 'cfg66-config.h',
-   configuration: cdata
+   input : 'cfg66-config.h.in',
+   output : 'cfg66-config.h',
+   configuration : cdata
    )
-
-#-----------------------------------------------------------------------------
-# Headers are installed via the main meson.build file.
-#
-#     install_headers(libcfg66_headers)
-#
-#-----------------------------------------------------------------------------
 
 #****************************************************************************
 # meson.build (cfg66/include)
