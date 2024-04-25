@@ -31,6 +31,10 @@
 
 #include "cfg66.hpp"                   /* no-namespace function library    */
 
+/*
+ * Version information string.
+ */
+
 std::string
 cfg66_version ()
 {

@@ -78,7 +78,7 @@ cfg66_includedir = join_paths(cfg66_prefix, get_option('includedir'), cfg66_dir)
 cfg66_libdir = join_paths(cfg66_prefix, get_option('libdir'), cfg66_dir)
 cfg66_datadir = join_paths(cfg66_prefix, get_option('datadir'), cfg66_dir)
 cfg66_docdir = join_paths(cfg66_prefix, cfg66_datadir, 'doc', cfg66_dir)
-libraries_top = meson.project_source_root()      # not '.'
+libraries_top = meson.project_source_root()
 libcfg66_include_top = join_paths(libraries_top, 'include')
 
 #-----------------------------------------------------------------------------
@@ -159,7 +159,7 @@ subdir('src')
 # Dependencies on Linux
 #-----------------------------------------------------------------------------
 #
-# None.
+# None, yet.
 #
 #-----------------------------------------------------------------------------
 
@@ -188,7 +188,7 @@ empty_depends = [ ]
 cfg66_library_build = library(
    cfg66_project_base,
    libcfg66_sources,
-   install : true,
+   install : not cfg66_subproj,
    install_dir : cfg66_libdir,
    cpp_args : build_args,
    dependencies : empty_depends,
@@ -215,21 +215,25 @@ install_headers(libcfg66_headers, subdir : cfg66_dir, preserve_path : true)
 #-----------------------------------------------------------------------------
 # Package config
 #-----------------------------------------------------------------------------
-
-pkg_mod = import('pkgconfig')
-
-pkg_mod.generate(
-   cfg66_library_build,
-   filebase : cfg66_pkgconfig_name,
-   version : cfg66_pkg_version,
-   name : cfg66_project_base,
-   description : cfg66_pkg_description,
-   install_dir : alt_pkgconfig_libdir,
-   subdirs : cfg66_dir,
-   libraries : cfg66_library_build
-   )
+#  On Arch Linux, the .pc file is installed to /usr/local/lib/pkgconfig.
+#  On Ubuntu, the .pc file is installed to
+#     /usr/local/lib/x86_64-linux-gnu/pkgconfig.
+#-----------------------------------------------------------------------------
 
 if not cfg66_subproj
+
+   pkg_mod = import('pkgconfig')
+   pkg_mod.generate(
+      cfg66_library_build,
+      filebase : cfg66_pkgconfig_name,
+      version : cfg66_pkg_version,
+      name : cfg66_project_base,
+      description : cfg66_pkg_description,
+      install_dir : alt_pkgconfig_libdir,
+      subdirs : cfg66_dir,
+      libraries : cfg66_library_build,
+      url : 'https://github.com/ahlstromcj/cfg66',
+      )
 
 # TODO: figure out where to put and install the logo
 
