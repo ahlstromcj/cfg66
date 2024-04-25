@@ -6,7 +6,7 @@
 # \library     cfg66
 # \author      Chris Ahlstrom
 # \date        2022-06-22
-# \updates     2024-04-24
+# \updates     2024-04-25
 # \license     $XPC_SUITE_GPL_LICENSE$
 #
 #  This file is part of the "cfg66" library. It was part of the libs66
@@ -41,6 +41,11 @@ project('cfg66',
 #-----------------------------------------------------------------------------
 # Information for this sub-project.
 #-----------------------------------------------------------------------------
+#
+#  Tricky: the *.pc file must have a base name matching the name of the
+#  subproject *.wrap file.
+#
+#-----------------------------------------------------------------------------
 
 cfg66_pkg_description = 'Refactors base Seq66 configuration/utility modules.'
 cfg66_pkg_version = meson.project_version()
@@ -52,6 +57,7 @@ cfg66_info_lib_type = get_option('default_library')
 cfg66_info_project_root = meson.project_source_root()
 cfg66_debug = get_option('buildtype').contains('debug')
 cfg66_project_base = 'cfg66-@0@'.format(cfg66_api_version)
+cfg66_pkgconfig_name = 'libcfg66'
 cfg66_subproj = meson.is_subproject()
 
 if cfg66_debug
@@ -214,7 +220,7 @@ pkg_mod = import('pkgconfig')
 
 pkg_mod.generate(
    cfg66_library_build,
-   filebase : cfg66_project_base,
+   filebase : cfg66_pkgconfig_name,
    version : cfg66_pkg_version,
    name : cfg66_project_base,
    description : cfg66_pkg_description,
