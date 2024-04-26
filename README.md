@@ -1,4 +1,4 @@
-# README for Library Cfg66 0.1.0 2024-04-17
+# README for Library Cfg66 0.1.1 2024-04-26
 
 __Cfg66__ is a configuration library based on the "cfg" directories
 in the __Seq66__ project, but that is useful in other applications.
@@ -38,28 +38,44 @@ or classes in a namespace of the same name:
                 subdirectories, and application-specific item names.
     *   util:   Contains file functions, message functions, string functions,
                 and other functionality common to all our "66" applications.
-    *   PDF documentation built from LaTex.
+
+    Note that a work.sh script is provided to simplify or clarify various
+    operations such as cleaning, building, making a release, and installing
+    or uninstalling the library.
+
+##  Library Features
+
+    *   Can be built using GNU C++ or Clang C++.
     *   Basic dependencies: Meson 1.1 and above; C++14 and above.
+    *   The build system is Meson, and sample wrap files are provided
+        for using Cfg66 as a C++ subproject.
+    *   PDF documentation built from LaTeX.
 
-##  Additional Features (in progress)
+##  Code
 
-    *   To do. Beef up testing; use as a subproject.
-
-##  Usage
-
-##  Internal
-
+    *   The code is a mix of hard-core C++ and C-like functions.
+    *   The C++ STL and advanced language features are used as much as
+    *   possible
+    *   C++14 is required for some of its features.
+    *   The GNU and Clang C++ compilers are supported.
     *   Broken into modules for easier maintenance.
 
-##  Usage
+##  Fixes
+
+    *   Improved the work.sh, added an --uninstall option.
+
+##  Documentation
+
+    *   A PDF developers guide is in progress.
+
+## To Do
+
+    *   Beef up testing.
+    *   Beef up the LaTeX documentation.
 
 ## Recent Changes
 
     *   Version 0.1.0:
         *   Usage of meson instead of autotools, cmake, or qmake.
-
-## To Do
-
-    *   To do
 
 // vim: sw=4 ts=4 wm=2 et ft=markdown

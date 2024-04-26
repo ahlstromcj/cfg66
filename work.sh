@@ -34,10 +34,11 @@ export CFG66_SCRIPT_EDIT_DATE="2024-04-26"
 export CFG66_LIBRARY_API_VERSION="0.1"
 export CFG66_LIBRARY_VERSION="$CFG66_LIBRARY_API_VERSION.0"
 export CFG66="cfg66"
-export CFG66_LIBRARY="$CFG66-0.1"
+export CFG66_LIBRARY="$CFG66-$CFG66_LIBRARY_API_VERSION"
 
 PLATFORM="UNIX"
-INSTALL_PREFIX="/usr/local"
+INSTALL_PREFIX="/usr/local"         # "/usr", what about Windows?
+INSTALL_LIBDIR="lib"                # "lib/x86_64-linux-gnu" on Debian
 
 DOCLANG="no"         # --clang. Default is the native compiler.
 DOGNU="no"           # --gnu. Default is the native compiler.
@@ -49,9 +50,9 @@ DOINSTALL="no"       # --install. Requires the release be built already.
 DOUNINSTALL="no"     # --uninstall. Like --install, requires sudo/root.
 DOMAKE="yes"         # Default action after creating the build directory.
 DOREMAKE="no"        # currently UNUSED
-DOMAKEPDF="no"       # --pdf. Make the manual, a separate step, NOT READY.
+DOMAKEPDF="no"       # --pdf. Make the manual, always as a separate step.
 DOPACK="no"          # --pack. Clean and create a tar-file.
-DORELEASE="no"       # --release. as opposed to debug; also PDF made
+DORELEASE="no"       # --release. as opposed to debug; also PDF is made.
 DOSTATIC="yes"       # --static
 DOVERSION="no"       # --version. Duouble duh!
 EXTRAFLAGS=""
@@ -185,7 +186,7 @@ be more to come. Some options might not work on Windows.
                      one header file not being found... strange.
  --dist              Make a Meson dist package and exit.
  --clang             Rebuild the code using the Clang compilers.
- --pdf               Build just the PDF documentation and exit. In progress.
+ --pdf               Build just the PDF documentation and exit.
  --clean             Delete the usual derived files from the project. Also
                      do "git checkout doc/cfg66-developer-guide.pdf"
  --pack [ tag ]      A simple quick packaging of the code; the tag goes
@@ -241,7 +242,7 @@ if test $DOCLEAN = "yes" ; then
    rm -f doc/dox/*.log
    rm -f doc/latex/*.log
    echo "Build products removed from the cfg66/build directory."
-#  git checkout doc/cfg66-developer-guide.pdf
+   git checkout doc/cfg66-developer-guide.pdf
    echo "Previous version of developer guide restored."
 fi
 
@@ -408,7 +409,7 @@ if test "$DOUNINSTALL" = "yes" ; then
       ninja -C build uninstall
       if test "$PLATFORM" = "UNIX" ; then
          rm -rf "$INSTALL_PREFIX/include/$CFG66_LIBRARY"
-         rm -rf "$INSTALL_PREFIX/lib/$CFG66_LIBRARY"
+         rm -rf "$INSTALL_PREFIX/$INSTALL_LIBDIR/$POTEXT_LIBRARY"
          rm -rf "$INSTALL_PREFIX/share/doc/$CFG66"
 #        rm -rf "$INSTALL_PREFIX/man/man1/$CFG66.1"
       fi

@@ -2,7 +2,7 @@
 #
 # Cfg66 Library Wrapper
 # Chris Ahlstrom
-# 2024-04-15 to 2024-04-15
+# 2024-04-15 to 2024-04-26
 #
 #   Cfg66 wrapper for GitHub repository
 #
@@ -17,10 +17,9 @@ depth = 1
 [provide]
 
 #----------------------------------------------------------------------------
-# These dependencies are declared in cfg66/library/meson.build.
+# This dependency is declared in cfg66/meson.build.
 #----------------------------------------------------------------------------
 
-libcfg66_include = libcfg66_include_dep
 libcfg66_library = libcfg66_library_dep
 
 # vim: ft=dosini
