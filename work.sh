@@ -160,7 +160,7 @@ fi
 #------------------------------------------------------------------------------
 
 if test "$DOVERSION" = "yes" ; then
-   echo "Potext version $CFG66_LIBRARY_VERSION $CFG66_SCRIPT_EDIT_DATE"
+   echo "Cfg66 version $CFG66_LIBRARY_VERSION $CFG66_SCRIPT_EDIT_DATE"
    exit 0
 fi
 

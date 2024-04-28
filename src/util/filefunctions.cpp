@@ -82,11 +82,13 @@
 
 /*
  *  More legacy configuration macros.
+ *
+ * #if defined PLATFORM_UNIX?
  */
 
-#if defined PLATFORM_UNIX               // HAVE_LIMITS_H
+#if HAVE_LIMITS_H
 #include <limits.h>                     /* PATH_MAX                         */
-#elif defined HAVE_LINUX_LIMITS_H
+#elif HAVE_LINUX_LIMITS_H
 #include <linux/limits.h>               /* PATH_MAX                         */
 #endif
 

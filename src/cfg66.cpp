@@ -35,13 +35,9 @@
  * Version information string.
  */
 
-std::string
-cfg66_version ()
+const std::string &
+cfg66_version () noexcept
 {
-    /*
-     * static std::string s_info = "cfg66-0.1 library 2024-04-15";
-     */
-
     static std::string s_info = CFG66_NAME "-" CFG66_VERSION " " __DATE__ ;
     return s_info;
 }

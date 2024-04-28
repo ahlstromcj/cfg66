@@ -59,13 +59,14 @@
 
 \tableofcontents
 \listoffigures                         % print the list of figures
+\listoftables                          % print the list of tables
 
-% No tables as of now
-%
-% \listoftables                        % print the list of tables
+% changes the paragraph style to remove indenting and put a line between each
+% paragraph.  this could be moved up into the preamble, but then would
+% affect the spacing of the toc and lof, lot noted above.
 
-\parindent 0pt
-\parskip 9pt
+\setlength{\parindent}{2em}
+\setlength{\parskip}{1ex plus 0.5ex minus 0.2ex}
 
 \rhead{\rightmark}         % shows section number and section name
 
