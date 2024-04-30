@@ -28,7 +28,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2022-08-27
+ * \updates       2024-04-30
  * \license       GNU GPLv2 or above
  *
  *  This is actually an elegant little parser, and works well as long as one
@@ -118,7 +118,7 @@ private:
      *  read).
      */
 
-    static tokenization sm_file_extensions;
+    static lib66::tokenization sm_file_extensions;
 
 private:
 

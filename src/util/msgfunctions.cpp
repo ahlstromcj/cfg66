@@ -25,18 +25,18 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2018-11-10
- * \updates       2024-04-15
+ * \updates       2024-04-30
  * \license       GNU GPLv2 or above
  *
- *  One of the big new feature of some of these functions is writing the name of
- *  the application in color before each message that is put out.
+ *  One of the big features of some of these functions is writing the name
+ *  of the application in color before each message that is put out.
  */
 
 #include <cstring>                      /* std::strlen(3)                   */
 #include <cstdarg>                      /* see "man stdarg(3)"              */
 #include <iostream>
 
-#include "c_macros.h"                   /* not_nullptr() macro              */
+#include "cpp_types.hpp"                /* not_nullptr(), lib66::msglevel   */
 #include "platform_macros.h"            /* detects the build platform       */
 #include "cfg/appinfo.hpp"              /* application info functions       */
 #include "util/msgfunctions.hpp"        /* basic message functions          */
@@ -250,7 +250,7 @@ info_message (const std::string & msg, const std::string & data)
 {
     if (verbose())
     {
-        std::cout << cfg::get_client_tag(msglevel::info) << " " << msg;
+        std::cout << cfg::get_client_tag(lib66::msglevel::info) << " " << msg;
         if (! data.empty())
             std::cout << ": " << data;
 
@@ -263,7 +263,7 @@ info_message (const std::string & msg, const std::string & data)
 bool
 status_message (const std::string & msg, const std::string & data)
 {
-    std::cout << cfg::get_client_tag(msglevel::status) << " " << msg;
+    std::cout << cfg::get_client_tag(lib66::msglevel::status) << " " << msg;
     if (! data.empty())
         std::cout << ": " << data;
 
@@ -276,7 +276,7 @@ status_message (const std::string & msg, const std::string & data)
 bool
 session_message (const std::string & msg, const std::string & data)
 {
-    std::cout << cfg::get_client_tag(msglevel::session) << " " << msg;
+    std::cout << cfg::get_client_tag(lib66::msglevel::session) << " " << msg;
     if (! data.empty())
         std::cout << ": " << data;
 
@@ -303,7 +303,7 @@ session_message (const std::string & msg, const std::string & data)
 bool
 warn_message (const std::string & msg, const std::string & data)
 {
-    std::cerr << cfg::get_client_tag(msglevel::warn) << " " << msg;
+    std::cerr << cfg::get_client_tag(lib66::msglevel::warn) << " " << msg;
     if (! data.empty())
         std::cerr << ": " << data;
 
@@ -330,7 +330,7 @@ warn_message (const std::string & msg, const std::string & data)
 bool
 error_message (const std::string & msg, const std::string & data)
 {
-    std::cerr << cfg::get_client_tag(msglevel::error) << " " << msg;
+    std::cerr << cfg::get_client_tag(lib66::msglevel::error) << " " << msg;
     if (! data.empty())
         std::cerr << ": " << data;
 
@@ -365,7 +365,7 @@ debug_message (const std::string & msg, const std::string & data)
 {
     if (investigate())
     {
-        std::cerr << cfg::get_client_tag(msglevel::debug) << " ";
+        std::cerr << cfg::get_client_tag(lib66::msglevel::debug) << " ";
         if (cfg::is_a_tty(STDERR_FILENO))
             std::cerr << s_black;
 
@@ -402,7 +402,7 @@ debug_message (const std::string & msg, const std::string & data)
 bool
 file_error (const std::string & tag, const std::string & path)
 {
-    std::cerr << cfg::get_client_tag(msglevel::error) << " "
+    std::cerr << cfg::get_client_tag(lib66::msglevel::error) << " "
         << tag << ": '" << path << "'" << std::endl;
 
     return false;
@@ -423,7 +423,7 @@ file_error (const std::string & tag, const std::string & path)
 void
 file_message (const std::string & tag, const std::string & path)
 {
-    std::cout << cfg::get_client_tag(msglevel::status) << " "
+    std::cout << cfg::get_client_tag(lib66::msglevel::status) << " "
         << tag << ": '" << path << "'" << std::endl;
 }
 
@@ -433,11 +433,12 @@ file_message (const std::string & tag, const std::string & path)
  */
 
 void
-print_client_tag (msglevel el)
+print_client_tag (lib66::msglevel el)
 {
     std::string tag = cfg::get_client_tag(el);
-    bool iserror = el == msglevel::error || el == msglevel::warn ||
-        el == msglevel::debug;
+    bool iserror = el == lib66::msglevel::error ||
+        el == lib66::msglevel::warn ||
+        el == lib66::msglevel::debug;
 
     tag += " ";
     if (iserror)
@@ -500,7 +501,7 @@ void
 boolprint (const std::string & tag, bool flag)
 {
     std::string fmt = tag + " %s";
-    msgprintf(msglevel::info, fmt, flag ? "true" : "false");
+    msgprintf(lib66::msglevel::info, fmt, flag ? "true" : "false");
 }
 
 /**
@@ -517,7 +518,7 @@ void
 toggleprint (const std::string & tag, bool flag)
 {
     std::string fmt = tag + " %s";
-    msgprintf(msglevel::info, fmt, flag ? "on" : "off");
+    msgprintf(lib66::msglevel::info, fmt, flag ? "on" : "off");
 }
 
 /**
@@ -549,14 +550,14 @@ toggleprint (const std::string & tag, bool flag)
  */
 
 void
-msgprintf (msglevel lev, std::string fmt, ...)
+msgprintf (lib66::msglevel lev, std::string fmt, ...)
 {
     if (! fmt.empty())
     {
         /*
          * cppcheck: Using reference 'fmt' as parameter for va_start() results
-         * in undefined behaviour.  Also claims we need to add a va_end(), so we
-         * did, below, on 2019-04-21.
+         * in undefined behaviour.  Also claims we need to add a va_end(), so
+         * we did, below, on 2019-04-21.
          */
 
         va_list args;                                       /* Step 1       */
@@ -565,13 +566,13 @@ msgprintf (msglevel lev, std::string fmt, ...)
         std::string output = formatted(fmt, args);          /* Steps 2 & 3  */
         switch (lev)
         {
-        case msglevel::none:
+        case lib66::msglevel::none:
 
             std::cout
                 << cfg::get_client_tag(lev) << " " << output << std::endl;
             break;
 
-        case msglevel::info:
+        case lib66::msglevel::info:
 
             if (verbose())
             {
@@ -580,16 +581,16 @@ msgprintf (msglevel lev, std::string fmt, ...)
             }
             break;
 
-        case msglevel::status:
-        case msglevel::session:
+        case lib66::msglevel::status:
+        case lib66::msglevel::session:
 
             std::cout
                 << cfg::get_client_tag(lev) << " " << output << std::endl;
             break;
 
-        case msglevel::warn:
-        case msglevel::error:
-        case msglevel::debug:
+        case lib66::msglevel::warn:
+        case lib66::msglevel::error:
+        case lib66::msglevel::debug:
 
             std::cerr
                 << cfg::get_client_tag(lev) << " " << output << std::endl;

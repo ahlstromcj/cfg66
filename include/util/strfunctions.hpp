@@ -27,7 +27,7 @@
  *
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2023-10-23
+ * \updates       2024-04-30
  * \version       $Revision$
  *
  *    Also see the strfunctions.cpp module.
@@ -155,17 +155,17 @@ extern char bool_to_char (bool x);
 extern std::string pointer_to_string (void * ptr);
 extern int tokenize_stanzas
 (
-    tokenization & tokens,
+    lib66::tokenization & tokens,
     const std::string & source,
     std::string::size_type bleft = 0,
     const std::string & brackets = ""
 );
-extern tokenization tokenize
+extern lib66::tokenization tokenize
 (
     const std::string & source,
     const std::string & delimiters = " \t"
 );
-extern tokenization tokenize_quoted (const std::string & source);
+extern lib66::tokenization tokenize_quoted (const std::string & source);
 extern std::string simplify (const std::string & source);
 extern std::wstring widen_string (const std::string & source);
 extern std::string word_wrap

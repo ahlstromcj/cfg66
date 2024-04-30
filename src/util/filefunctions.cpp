@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2024-02-28
+ * \updates       2024-04-30
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -2414,7 +2414,7 @@ user_session (const std::string & appfolder)
 std::string
 find_file
 (
-    const tokenization & dirlist,
+    const lib66::tokenization & dirlist,
     const std::string & filename
 )
 {

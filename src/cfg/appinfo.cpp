@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2017-03-12
- * \updates       2024-04-16
+ * \updates       2024-04-30
  * \license       GNU GPLv2 or above
  *
  *  The first part of this file defines a couple of global structure
@@ -529,9 +529,9 @@ is_a_tty (int fd)
  */
 
 std::string
-get_client_tag (msglevel el)
+get_client_tag (lib66::msglevel el)
 {
-    if (el == msglevel::none)
+    if (el == lib66::msglevel::none)
     {
         return s_app_info._client_name_tag;
     }
@@ -549,8 +549,9 @@ get_client_tag (msglevel el)
         };
         std::string result = "[";
         int index = static_cast<int>(el);
-        bool iserror = el == msglevel::error || el == msglevel::warn ||
-            el == msglevel::debug;
+        bool iserror = el == lib66::msglevel::error ||
+            el == lib66::msglevel::warn ||
+            el == lib66::msglevel::debug;
 
         bool showcolor = is_a_tty(iserror ? STDERR_FILENO : STDOUT_FILENO);
         if (showcolor)

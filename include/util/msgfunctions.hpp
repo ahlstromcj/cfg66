@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom and other authors; see documentation
  * \date          2018-11-10
- * \updates       2022-12-06
+ * \updates       2024-04-30
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
@@ -37,7 +37,7 @@
  *  These items were extracted from Seq66's C++ basic_macros module.
  */
 
-#include "cpp_types.hpp"                /* string, vector, msglevel         */
+#include "cpp_types.hpp"                /* string, vector, lib66::msglevel  */
 
 /*
  *  Do not document a namespace; it breaks Doxygen.
@@ -97,7 +97,7 @@ extern bool session_message
 );
 extern void file_message (const std::string & tag, const std::string & path);
 extern bool file_error (const std::string & tag, const std::string & filename);
-extern void print_client_tag (msglevel el);
+extern void print_client_tag (lib66::msglevel el);
 extern void boolprint (const std::string & tag, bool flag);
 extern void toggleprint (const std::string & tag, bool flag);
 extern void async_safe_strprint (const char * msg, bool colorit = true);
@@ -108,7 +108,7 @@ extern void async_safe_utoa
     unsigned number,
     bool spacebefore = true
 );
-extern void msgprintf (msglevel lev, std::string fmt, ...);
+extern void msgprintf (lib66::msglevel lev, std::string fmt, ...);
 extern std::string msgsnprintf (std::string fmt, ...);
 
 }               // namespace util

@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2023-11-04
+ * \updates       2024-04-30
  * \license       GNU GPLv2 or above
  *
  *  std::streamoff is a signed integral type (usually long long) that can
@@ -74,7 +74,7 @@ int configfile::sm_int_default      = -9999;
 float configfile::sm_float_missing  = -9998.0f;
 float configfile::sm_float_default  = -9999.0f;
 
-tokenization configfile::sm_file_extensions
+lib66::tokenization configfile::sm_file_extensions
 {
     ".ctrl",
     ".drums",

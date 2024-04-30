@@ -27,7 +27,7 @@
  *
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2024-02-27
+ * \updates       2024-04-30
  * \version       $Revision$
  *
  *    Also see the filefunctions.cpp module.  The functions here use
@@ -196,7 +196,7 @@ extern std::string user_config (const std::string & appfolder = "");
 extern std::string user_session (const std::string & appfolder = "");
 extern std::string find_file
 (
-    const tokenization & dirlist,
+    const lib66::tokenization & dirlist,
     const std::string & filename
 );
 

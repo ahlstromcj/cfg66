@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2023-08-11
+ * \updates       2024-04-30
  * \license       See above.
  *
  *  The cli::options class provides a way to hold the state of command-line
@@ -1136,10 +1136,10 @@ options::integer_value (const std::string & name) const
  *  Spaces are stripped before processing.
  */
 
-static tokenization
+static lib66::tokenization
 range_tokens (const std::string & rangestring)
 {
-    tokenization result;
+    lib66::tokenization result;
     if (! rangestring.empty())
     {
         std::string cleaned;
@@ -1194,7 +1194,7 @@ options::integer_value_range
 ) const
 {
     std::string defstring = default_value(name);
-    tokenization range = range_tokens(defstring);
+    lib66::tokenization range = range_tokens(defstring);
     int result = -99999;
     if (range.size() == 3)
     {
@@ -1244,7 +1244,7 @@ options::floating_value_range
 ) const
 {
     std::string defstring = default_value(name);
-    tokenization range = range_tokens(defstring);
+    lib66::tokenization range = range_tokens(defstring);
     float result = -99999.0;
     if (range.size() == 3)
     {

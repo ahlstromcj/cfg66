@@ -28,22 +28,20 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2018-11-24
- * \updates       2024-02-05
+ * \updates       2024-04-30
  * \license       GNU GPLv2 or above
  *
  *    Provides some useful functions for displaying information about the
  *    application.  More flexible than macros.
- *
- *    Also see the cfg66_features.h module.
  */
 
 #include <string>
 
-#include "cpp_types.hpp"                /* string, vector, msglevel         */
+#include "cpp_types.hpp"                /* string, vector, lib66::msglevel  */
 #include "util/msgfunctions.hpp"        /* eun clas msglevel                */
 
 /*
- * This is the main namespace of Seq66.  Do not attempt to
+ * This is the main namespace of Cfg66.  Do not attempt to
  * Doxygenate the documentation here; it breaks Doxygen.
  */
 
@@ -287,7 +285,7 @@ extern const std::string & get_api_subdirectory ();
 extern const std::string & get_app_version ();
 extern const std::string & get_app_version_text ();
 extern const std::string & get_gui_version ();
-extern std::string get_client_tag (msglevel el = msglevel::none);
+extern std::string get_client_tag (lib66::msglevel el = lib66::msglevel::none);
 extern std::string get_session_tag (const std::string & refinement = "");
 extern std::string get_build_details ();
 extern bool get_app_cli ();

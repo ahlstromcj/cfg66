@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-24
- * \updates       2024-01-15
+ * \updates       2024-04-30
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -724,7 +724,7 @@ string_to_int_pair
     bool result = s.find_first_of(delimiter) != std::string::npos;
     if (result)
     {
-        tokenization numbers = tokenize(s, delimiter);
+        lib66::tokenization numbers = tokenize(s, delimiter);
         result = numbers.size() == 2;
         if (result)
         {
@@ -1146,7 +1146,7 @@ pointer_to_string (void * ptr)
 int
 tokenize_stanzas
 (
-    tokenization & tokens,
+    lib66::tokenization & tokens,
     const std::string & source,
     std::string::size_type bleft,
     const std::string & brackets
@@ -1226,14 +1226,14 @@ tokenize_stanzas
  *      Returns the number of tokens converted in a string vector.
  */
 
-tokenization
+lib66::tokenization
 tokenize
 (
     const std::string & source,
     const std::string & delimiters
 )
 {
-    tokenization result;
+    lib66::tokenization result;
     std::size_t previous = source.find_first_not_of(delimiters);
     while (previous != std::string::npos)
     {
@@ -1261,11 +1261,11 @@ tokenize
  *  out for apostrophes.  The quotes are stripped.
  */
 
-tokenization
+lib66::tokenization
 tokenize_quoted (const std::string & source)
 {
-    tokenization result;
-    tokenization temp = tokenize(source);
+    lib66::tokenization result;
+    lib66::tokenization temp = tokenize(source);
     if (! temp.empty())
     {
         bool quotes = false;
@@ -1334,7 +1334,7 @@ std::string
 simplify (const std::string & source)
 {
     std::string result;
-    tokenization tokens = tokenize(source);
+    lib66::tokenization tokens = tokenize(source);
     if (tokens.empty())
     {
         result = source;
@@ -1444,7 +1444,7 @@ word_wrap (const std::string & source, size_t margin, char commentchar)
     {
         std::string commenting{"  "};
         size_t linelen = 0;
-        tokenization words = tokenize(source, CFG66_WHITE_CHARS);
+        lib66::tokenization words = tokenize(source, CFG66_WHITE_CHARS);
         commenting[0] = commentchar;
         for (auto w : words)
         {
@@ -1516,7 +1516,7 @@ hanging_word_wrap
 
         size_t linelen = leftmargin;
         std::string padding(leftmargin, ' ');
-        tokenization words = tokenize(source, CFG66_WHITE_CHARS);
+        lib66::tokenization words = tokenize(source, CFG66_WHITE_CHARS);
         for (auto w : words)
         {
             bool room = (linelen + w.length()) < rightmargin;

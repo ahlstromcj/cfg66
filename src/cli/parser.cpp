@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2023-08-02
+ * \updates       2024-04-30
  * \license       See above.
  *
  *      While this parser follows the basics of GNU getopt fairly well,
@@ -409,7 +409,7 @@ parser::extract_value (std::string & token, std::string & value)
     bool result = seppos != std::string::npos;
     if (result)
     {
-        tokenization tokens = util::tokenize(token, ":=");
+        lib66::tokenization tokens = util::tokenize(token, ":=");
         result = tokens.size() == 2;        /* separator is not a token     */
         if (result)
         {

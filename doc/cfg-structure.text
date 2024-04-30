@@ -1,6 +1,6 @@
 High-level structure of the cfg66 library
 Chris Ahlstrom
-2024-01-19 to 2024-01-21
+2024-01-19 to 2024-04-30
 
 enum class cfg::appkind
 
@@ -35,7 +35,7 @@ class cfg::configfile
     static std::string sm_error_message; static bool sm_is_error;
     static int sm_int_missing; sm_int_default;
     static float sm_float_missing; sm_float_default;
-    static tokenization sm_file_extensions;
+    static lib66::tokenization sm_file_extensions;
     std::string m_file_extension; m_name; m_version; m_file_version;
     virtual bool parse () = 0; virtual bool write () = 0;
 }
@@ -216,13 +216,13 @@ class session::directories
 
 util: filefunctions
 
-    dependency ::tokenization
+    dependency lib66::::tokenization
 
 util: msgfunctions
 
 util: strfunctions
 
-    dependency ::tokenization
+    dependency lib66::::tokenization
 
 class util::named_bools
 {
@@ -235,7 +235,7 @@ class util::named_bools
 
 Internal cfg66 relationships:
 
-    alias ::tokenization = std::vector<std::string>
+    alias lib66::::tokenization = std::vector<std::string>
     struct cfg::appinfo
         containment enum cfg::appkind
         static appinfo and free functions for it
@@ -253,7 +253,7 @@ Internal cfg66 relationships:
         session::directories::entries
 
     class cfg::configfile
-        containment static tokenization
+        containment static lib66::tokenization
         dependency std::ifstream
         dependency std::ofstream
 

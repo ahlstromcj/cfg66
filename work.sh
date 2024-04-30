@@ -8,7 +8,7 @@
 # \library        cfg66
 # \author         Chris Ahlstrom
 # \date           2024-02-06
-# \update         2024-04-26
+# \update         2024-04-30
 # \version        $Revision$
 # \license        $XPC_SUITE_GPL_LICENSE$
 #
@@ -30,7 +30,7 @@ LANG=C
 export LANG
 CYGWIN=binmode
 export CYGWIN
-export CFG66_SCRIPT_EDIT_DATE="2024-04-26"
+export CFG66_SCRIPT_EDIT_DATE="2024-04-30"
 export CFG66_LIBRARY_API_VERSION="0.1"
 export CFG66_LIBRARY_VERSION="$CFG66_LIBRARY_API_VERSION.0"
 export CFG66="cfg66"
@@ -188,7 +188,7 @@ be more to come. Some options might not work on Windows.
  --clang             Rebuild the code using the Clang compilers.
  --pdf               Build just the PDF documentation and exit.
  --clean             Delete the usual derived files from the project. Also
-                     do "git checkout doc/cfg66-developer-guide.pdf"
+                     do "git checkout doc/cfg66-library-guide.pdf"
  --pack [ tag ]      A simple quick packaging of the code; the tag goes
                      into the tarball name.
  --help              Show this help text.
@@ -242,7 +242,7 @@ if test $DOCLEAN = "yes" ; then
    rm -f doc/dox/*.log
    rm -f doc/latex/*.log
    echo "Build products removed from the cfg66/build directory."
-   git checkout doc/cfg66-developer-guide.pdf
+   git checkout doc/cfg66-library-guide.pdf
    echo "Previous version of developer guide restored."
 fi
 
