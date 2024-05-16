@@ -165,6 +165,16 @@ public:
         return m_error_is_fatal;
     }
 
+    util::bytes & byte_list ()
+    {
+        return m_data;
+    }
+
+    const util::bytes & byte_list () const
+    {
+        return m_data;
+    }
+
     void clear ()
     {
         clear_errors();
@@ -188,15 +198,23 @@ public:
         return m_offset;
     }
 
-    size_t real_position () const
+    size_t position () const
     {
-        return m_position + m_offset;
+        return m_position;
     }
 
-    void seek (size_t pos)
+    size_t real_position () const
     {
-        if (pos < m_size)
+        return position() + offset();
+    }
+
+    bool seek (size_t pos)
+    {
+        bool result = pos < size();
+        if (result)
             m_position = pos;
+
+        return result;
     }
 
     void reset ()
@@ -226,9 +244,14 @@ public:
     util::ulong peek_long () const;
     util::ulonglong peek_longlong () const;
 
+    bool done () const
+    {
+        return m_position >= m_size;
+    }
+
     bool safe () const
     {
-        return m_position < m_size;
+        return ! done();
     }
 
     size_t remainder () const
@@ -243,6 +266,7 @@ public:
     }
 
     void put_short (util::ushort value);
+    void put_triple (util::ulong x);
     void put_long (util::ulong value);
     void put_longlong (util::ulonglong value);
     void put_varinum (util::ulong v);

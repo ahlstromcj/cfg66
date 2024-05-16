@@ -305,6 +305,29 @@ bytevector::put_short (util::ushort x)
 }
 
 /**
+ *  Writes 3 bytes, each extracted from the long value and shifted rightward
+ *  down to byte size, using the write_byte() function.
+ *
+ *  This function is kind of the reverse of tempo_us_to_bytes() defined in the
+ *  calculations.cpp module. In Seq66 it can be used in seq66 :: midifile ::
+ *  write_start_tempo().
+ *
+ * \warning
+ *      This code looks endian-dependent.
+ *
+ * \param x
+ *      The long value to be written to the MIDI file.
+ */
+
+void
+bytevector::put_triple (util::ulong x)
+{
+    put_byte((x & 0x00FF0000) >> 16);
+    put_byte((x & 0x0000FF00) >> 8);
+    put_byte((x & 0x000000FF));
+}
+
+/**
  *  Writes 4 bytes, each extracted from the long value and shifted rightward
  *  down to byte size, using the put_byte() function.
  *
