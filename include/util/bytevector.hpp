@@ -165,8 +165,6 @@ public:
         return m_error_is_fatal;
     }
 
-protected:
-
     void clear ()
     {
         clear_errors();
@@ -262,7 +260,7 @@ protected:
     bool read (const std::string & infilename);
     bool write (const std::string & outfilename);
 
-private:
+public:
 
     bool set_error (const std::string & msg) const;
     bool set_error_dump (const std::string & msg) const;
