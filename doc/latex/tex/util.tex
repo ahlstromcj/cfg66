@@ -6,7 +6,7 @@
 % \library     Documents
 % \author      Chris Ahlstrom
 % \date        2024-04-16
-% \update      2024-04-16
+% \update      2024-05-16
 % \version     $Revision$
 % \license     $XPC_GPL_LICENSE$
 %
@@ -23,14 +23,30 @@
    Here are the classes (or modules) in this namespace:
 
    \begin{itemize}
+      \item \texttt{util::bytevector class}
       \item \texttt{util::filefunctions module}
       \item \texttt{util::msgfunctions module}
-      \item \texttt{util::named\_bools}
+      \item \texttt{util::named\_bools class}
       \item \texttt{util::strfunctions module}
    \end{itemize}
 
    All of the modules are \texttt{C++} modules with free functions
    in the \texttt{util} namespace.
+
+\subsection{util::bytevector}
+\label{subsec:util_namespace_bytevector}
+
+   The \texttt{util::bytevector} class
+   provides an \texttt{std::vector} of "bytes" (\texttt{unsigned char}) with
+   functions to put bytes into the vector and read them out.
+   There are also functions to read a file and write the vector to the
+   file.
+
+   The bytes are treated as a stream of big-endian data.
+   Integers are extracted from the bytes a byte at a time, starting with
+   the most significant byte.
+   Since this data is big-endian, it is suitable for use with MIDI
+   files and network data streams.
 
 \subsection{util::filefunctions module}
 \label{subsec:util_namespace_filefunctions}
@@ -59,7 +75,7 @@
    converting unsigned numbers to string arrays.
 
 \subsection{util::named\_bools}
-\label{subsec:util_namespace_filefunctions}
+\label{subsec:util_namespace_named_bools}
 
    The \texttt{util::name\_bools} class
    makes it easy to look up and set a "small" number of

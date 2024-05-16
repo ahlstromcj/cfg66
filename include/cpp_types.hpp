@@ -27,7 +27,7 @@
  * \library       Any application or library
  * \author        Chris Ahlstrom
  * \date          2022-07-01
- * \updates       2024-04-30
+ * \updates       2024-05-12
  * \license       GNU GPL v2 or above
  *
  *  This file defines a minimal set of convenience macros for both C and C++11
@@ -55,7 +55,7 @@ namespace lib66
  *  multiple boolean parameters.
  */
 
-enum class toggler
+enum class toggle
 {
     off,                /**< A request to turn a state boolean to false.    */
     on,                 /**< A request to turn a state boolean to true.     */
@@ -73,11 +73,11 @@ enum class toggler
 
 enum class change
 {
-    no,             /**< Do not set a modify-flag.                    */
-    yes,            /**< Do set a modify-flag.                        */
-    recreate,       /**< Recreate the user-interface(s).                */
-    removed,        /**< Change was a removal; more specific than yes.  */
-    signal,         /**< Could alter the UI from a different thread.    */
+    no,                 /**< Do not set a modify-flag.                      */
+    yes,                /**< Do set a modify-flag.                          */
+    recreate,           /**< Recreate the user-interface(s).                */
+    removed,            /**< Change was a removal; more specific than yes.  */
+    signal,             /**< Could alter the UI from a different thread.    */
     max
 };
 
@@ -88,8 +88,8 @@ enum class change
 
 enum class notification
 {
-    no,             /**< Do not notify concerning a change.                 */
-    yes,            /**< Do set a modify-flag.                        */
+    no,                 /**< Do not notify concerning a change.             */
+    yes,                /**< Do set a modify-flag.                          */
     max
 };
 

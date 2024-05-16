@@ -6,7 +6,7 @@
 # \library     cfg66
 # \author      Chris Ahlstrom
 # \date        2022-06-22
-# \updates     2024-04-24
+# \updates     2024-05-16
 # \license     $XPC_SUITE_GPL_LICENSE$
 #
 #  This file is part of the "cfg66" library. See the top-level meson.build
@@ -38,6 +38,7 @@ libcfg66_headers += files(
    'session/configuration.hpp',
    'session/directories.hpp',
    'session/manager.hpp',
+   'util/bytevector.hpp',
    'util/filefunctions.hpp',
    'util/msgfunctions.hpp',
    'util/named_bools.hpp',
