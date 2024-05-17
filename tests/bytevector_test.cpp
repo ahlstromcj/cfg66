@@ -34,6 +34,7 @@
 
 #include "cfg/appinfo.hpp"              /* cfg::appinfo functions           */
 #include "util/bytevector.hpp"          /* util::bytevector big-endian code */
+#include "util/msgfunctions.hpp"        /* util::file_message(), etc.       */
 
 /*
  * Application information.
@@ -54,7 +55,7 @@ static cfg::appinfo s_application_info
     "",                                 // _app_icon_name (empty by default)
     "",                                 // _app_version_text derived
     "",                                 // _api_engine (empty by default)
-    "0.1",                              // _api_version (empty by default)
+    "0.2",                              // _api_version (empty by default)
     "",                                 // _gui_version (bogus here)
     "bvec",                             // _client_name_short
     "tag"                               // _client_name_tag
@@ -80,14 +81,25 @@ basic_string_io ()
     util::bytevector bv0;
     bv0.assign(fname);
 
-    std::string all = bv0.peek_string();
+    std::string all{bv0.peek_string()};
     bool result = all == fname;
     std::cout << "The whole string: '" << all << "'" << std::endl;
 
+    if (result)
+    {
+        util::bytevector bv1{fname};
+        std::string all{bv1.peek_string()};
+        bool result = all == fname;
+        if (result)
+        {
+            std::string data{bv1.peek_string(6, 4)};
+            result = data == "data";
+        }
+
+        // MORE TESTS TO COME
+    }
     return result;
 }
-
-#if defined USE_THIS_TEST
 
 /*
  *  File I/O test.
@@ -96,12 +108,64 @@ basic_string_io ()
 static bool
 big_endian_file_io ()
 {
+    static const util::ulong c_mthd_tag  = 0x4D546864;  /* magic no. 'MThd' */
+    static const util::ulong c_mtrk_tag  = 0x4D54726B;  /* magic no. 'MTrk' */
     std::string fname{"tests/data/1Bar.midi"};
-    bool result;
-    return false;
-}
+    util::bytevector bv0;
+    bool result = bv0.read(fname);
+    if (result)
+    {
+        util::file_message("Read", fname);
+        util::ulong ID = bv0.get_long();                /* hdr chunk        */
+        util::ulong hdrlength = bv0.get_long();         /* MThd length      */
+        util::ushort format;
+        util::ushort trackcount;
+        util::ushort fppqn;
+        result = ID == c_mthd_tag && hdrlength == 6;
+        if (result)
+        {
+            format = bv0.get_short();
+            trackcount = bv0.get_short();
+            fppqn = bv0.get_short();
+            result = format == 1 && trackcount == 1 && fppqn == 192;
+        }
+        if (result)
+        {
+            util::ulong trkID = bv0.get_long();         /* get 'MTrk'       */
+            util::ulong tracklen = bv0.get_long();      /* get track length */
+            result = trkID == c_mtrk_tag && tracklen == 309;
+            if (result)
+            {
+                util::bytevector trkbytes;
+                trkbytes.assign(bv0, bv0.position(), tracklen);
 
-#endif
+                util::ulong delta = trkbytes.get_varinum();  /* improve!!! */
+                util::byte bstatus = trkbytes.peek_byte();
+                result = delta == 0 && bstatus == 0xff;
+                if (result)
+                {
+                    util::bytevector bv1;
+                    bv1.put_long(ID);
+                    bv1.put_long(hdrlength);
+                    bv1.put_short(format);
+                    bv1.put_short(trackcount);
+                    bv1.put_short(fppqn);
+                    bv1.put_long(trkID);
+                    bv1.put_long(tracklen);
+                    bv1.put_varinum(delta);
+                    bv1.put_byte(bstatus);
+
+                    std::string outname{"tests/data/1Bar-out.midi"};
+                    result = bv1.write(outname);
+                }
+            }
+        }
+    }
+    else
+        util::file_error("Failed to read", fname);
+
+    return result;
+}
 
 /*
  * main() routine
@@ -114,8 +178,11 @@ main (int /* argc */ , char * argv [])
     bool success = cfg::initialize_appinfo(s_application_info, argv[0]);
     if (success)
     {
-        success = basic_string_io();
         std::cout << cfg::get_build_details() << std::endl;
+        success = basic_string_io();
+        if (success)
+            success = big_endian_file_io();
+
         if (success)
             std::cout << "util::bytevector C++ test succeeded" << std::endl;
         else

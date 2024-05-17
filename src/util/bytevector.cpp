@@ -581,28 +581,26 @@ bytevector::read (const std::string & infilename)
 
         std::ifstream ifs(infilename, m);
         result = ifs.is_open();
-        m_error_is_fatal = false;
         if (result)
         {
             size_t file_size;
             try
             {
+                clear();                        /* bytes, errors, etc.      */
                 (void) ifs.seekg(0, ifs.end);   /* seek to the file's end   */
-                file_size = ifs.tellg();      /* get the end offset       */
-            }
-            catch (...)
-            {
-                file_size = 0;
-            }
-            ifs.seekg(0, std::ios::beg);        /* seek to the file's start */
-            try
-            {
-                m_data.resize(file_size);     /* allocate the data        */
+                file_size = ifs.tellg();        /* get the end offset       */
+                ifs.seekg(0, std::ios::beg);    /* seek to the file's start */
+                m_data.resize(file_size);       /* allocate the data        */
                 ifs.read((char *)(m_data.data()), file_size);
+                m_size = file_size;
             }
             catch (const std::bad_alloc & ex)
             {
                 result = set_error("file stream allocation failed");
+            }
+            catch (...)
+            {
+                result = set_error("file stream error");
             }
             ifs.close();
         }

@@ -8,7 +8,7 @@
 # \library        cfg66
 # \author         Chris Ahlstrom
 # \date           2024-02-06
-# \update         2024-04-30
+# \update         2024-05-17
 # \version        $Revision$
 # \license        $XPC_SUITE_GPL_LICENSE$
 #
@@ -31,7 +31,7 @@ export LANG
 CYGWIN=binmode
 export CYGWIN
 export CFG66_SCRIPT_EDIT_DATE="2024-04-30"
-export CFG66_LIBRARY_API_VERSION="0.1"
+export CFG66_LIBRARY_API_VERSION="0.2"
 export CFG66_LIBRARY_VERSION="$CFG66_LIBRARY_API_VERSION.0"
 export CFG66="cfg66"
 export CFG66_LIBRARY="$CFG66-$CFG66_LIBRARY_API_VERSION"

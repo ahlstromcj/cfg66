@@ -1,8 +1,29 @@
-NEWS for Cfg66 0.1.1
+NEWS for Cfg66 0.2
 Chris Ahlstrom
-2024-04-15 to 2024-04-30
+2024-04-15 to 2024-05-17
 
 # Changelog
+
+## [0.2] - 2024-05-17
+
+### Added
+
+- Added the util::bytevector class to work with big-endian data (e.g. MIDI
+  files.
+- Added a test for the util::bytevector class. It is still in progress.
+
+### Fixed
+
+- No fixes unrelated to util::bytevector.
+
+### Changed
+
+- No changes  unrelated to util::bytevector, except for updating the
+  relevant meson.build files..
+
+### Removed
+
+- Nothing
 
 ## [0.1.1] - 2024-04-30
 

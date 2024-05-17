@@ -1,6 +1,8 @@
-Release Notes for Cfg66 v. 0.1.1 2024-04-30
+Release Notes for Cfg66 v. 0.2 2024-05-17
 
 - Cleanup, minor improvements, etc. as noted in the NEWS file.
+- Added a bytevector class to handle big-endian data in a vector,
+  with ability to read and write the data to a file.
 
 See NEWS for more details, and ChangeLog.
 

@@ -1,4 +1,4 @@
-# README for Library Cfg66 0.1.1 2024-04-30
+# README for Library Cfg66 0.2 2024-05-17
 
 __Cfg66__ is a configuration library based on the "cfg" directories
 in the __Seq66__ project, but that is useful in other applications.
@@ -81,5 +81,8 @@ or classes in a namespace of the same name:
         *   Many fixes to Meson files and the build script.
         *   Improvements in use as a Meson subproject.
         *   Moved msglevel and tokenization into "lib66" namespace.
+    *   Version 0.2:
+        *   Added the bytevector big-endian handling class and added
+            initial tests for it.
 
 // vim: sw=4 ts=4 wm=2 et ft=markdown

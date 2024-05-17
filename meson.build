@@ -6,7 +6,7 @@
 # \library     cfg66
 # \author      Chris Ahlstrom
 # \date        2022-06-22
-# \updates     2024-04-25
+# \updates     2024-05-17
 # \license     $XPC_SUITE_GPL_LICENSE$
 #
 #  This file is part of the "cfg66" library. It was part of the libs66
@@ -29,7 +29,7 @@
 
 project('cfg66',
    [ 'c', 'cpp' ],
-   version : '0.1.1',
+   version : '0.2',
    license : 'GPLv3',
    meson_version : '>=1.1.0',
    default_options : [
@@ -49,8 +49,8 @@ project('cfg66',
 
 cfg66_pkg_description = 'Refactors base Seq66 configuration/utility modules.'
 cfg66_pkg_version = meson.project_version()
-cfg66_api_version = '0.1'
-cfg66_info_date = '2024-04-24'
+cfg66_api_version = '0.2'
+cfg66_info_date = '2024-05-17'
 cfg66_info_build_type = get_option('buildtype')
 cfg66_info_build_root = meson.project_build_root()
 cfg66_info_lib_type = get_option('default_library')
@@ -82,7 +82,7 @@ libraries_top = meson.project_source_root()
 libcfg66_include_top = join_paths(libraries_top, 'include')
 
 #-----------------------------------------------------------------------------
-# The *.pc file goes into $libdir/cfg66-0.1/pkgconfig instead of
+# The *.pc file goes into $libdir/cfg66-0.x/pkgconfig instead of
 # $libdir/pkgconfig as the meson documentation asserts.  Not sure why, but
 # wiring the expected directory here works.
 #-----------------------------------------------------------------------------

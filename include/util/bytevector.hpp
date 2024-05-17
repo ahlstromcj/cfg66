@@ -199,13 +199,13 @@ public:
     {
         clear_errors();
         m_data.clear();
-        m_position = 0;
+        m_size = m_offset = m_position = 0;
     }
 
     void clear_errors ()
     {
         m_error_message.clear();
-        m_disable_reported = false;
+        m_error_is_fatal = m_disable_reported = false;
     }
 
     size_t size () const
