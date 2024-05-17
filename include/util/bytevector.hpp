@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-05-16
- * \updates       2024-05-16
+ * \updates       2024-05-17
  * \license       GNU GPLv2 or above
  *
  *  The bytevector class is meant for handling number binary data in chunks
@@ -155,6 +155,13 @@ public:
     bytevector & operator = (const bytevector &) = default;
     ~bytevector () = default;
 
+    void assign
+    (
+        const bytes & data,
+        size_t offset,
+        size_t amount
+    );
+
     const std::string & error_message () const
     {
         return m_error_message;
@@ -203,6 +210,10 @@ public:
         return m_position;
     }
 
+    /*
+     *  Can be useful in debugging.
+     */
+
     size_t real_position () const
     {
         return position() + offset();
@@ -222,8 +233,27 @@ public:
         m_position = 0;
     }
 
+    void increment () const
+    {
+        if (m_position < (size() - 1))
+            ++m_position;
+    }
+
+    void decrement () const
+    {
+        if (m_position > 0)
+            --m_position;
+    }
+
+    void skip (size_t sz)
+    {
+        if (m_position < (size() - sz))
+            m_position += sz;
+    }
+
     util::byte get_byte () const;
     util::ushort get_short () const;
+    util::ulong get_triple () const;
     util::ulong get_long () const;
     util::ulonglong get_longlong () const;
     util::ulong get_varinum ();

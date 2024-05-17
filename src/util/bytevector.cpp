@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-05-16
- * \updates       2024-05-16
+ * \updates       2024-05-17
  * \license       GNU GPLv2 or above
  */
 
@@ -95,9 +95,33 @@ bytevector::bytevector
         m_size = m_data.size();
     }
     else
+        assign(data, offset, amount);
+}
+
+/**
+ *  Passes an std::initializer_list<> to std::vector<>::operator =() to
+ *  assign part of the data vector to m_data.
+ */
+
+void
+bytevector::assign
+(
+    const bytes & data,
+    size_t offset,
+    size_t amount
+)
+{
+    bool ok = amount > 0;
+    if (ok)
     {
-        m_data = {data.begin() + offset, data.begin() + offset + amount};
-        m_size = m_data.size();
+        size_t high = offset + amount;
+        ok = high < data.size();
+        if (ok)
+        {
+            m_data = {data.begin() + offset, data.begin() + high};
+            m_size = m_data.size();
+            m_offset = offset;
+        }
     }
 }
 
@@ -143,6 +167,23 @@ bytevector::get_short () const
 }
 
 /**
+ *  Reads 3 bytes of data using get_byte().
+ *
+ * \return
+ *      Returns the four bytes, shifted appropriately and added together,
+ *      most-significant byte first, to sum to a long value.
+ */
+
+util::ulong
+bytevector::get_triple () const
+{
+    util::ulong result = get_byte() << 16;
+    result += get_byte() << 8;
+    result += get_byte();
+    return result;
+}
+
+/**
  *  Reads 4 bytes of data using get_byte().
  *
  * \return
@@ -153,8 +194,7 @@ bytevector::get_short () const
 util::ulong
 bytevector::get_long () const
 {
-    util::ulong result = get_byte();
-    result <<= 24;
+    util::ulong result = get_byte() << 24;
     result += get_byte() << 16;
     result += get_byte() << 8;
     result += get_byte();
@@ -306,14 +346,10 @@ bytevector::put_short (util::ushort x)
 
 /**
  *  Writes 3 bytes, each extracted from the long value and shifted rightward
- *  down to byte size, using the write_byte() function.
+ *  down to byte size, using the put_byte() function.
  *
  *  This function is kind of the reverse of tempo_us_to_bytes() defined in the
- *  calculations.cpp module. In Seq66 it can be used in seq66 :: midifile ::
- *  write_start_tempo().
- *
- * \warning
- *      This code looks endian-dependent.
+ *  calculations.cpp module of the rtl66 MIDI library.
  *
  * \param x
  *      The long value to be written to the MIDI file.
