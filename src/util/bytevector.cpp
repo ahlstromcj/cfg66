@@ -72,6 +72,25 @@ bytevector::bytevector () :
 }
 
 /**
+ *  Creates a vector of bytes from all characters in a string.
+ *
+ * \param s
+ *      Provides a std::string to use to initialize m_data.
+ */
+
+bytevector::bytevector (const std::string & s) :
+    m_size              (0),
+    m_offset            (0),
+    m_error_message     (),
+    m_error_is_fatal    (false),
+    m_disable_reported  (false),
+    m_data              (),                 /* vector of bytes              */
+    m_position          (0)                 /* byte position in vector      */
+{
+    assign(s, 0, 0);                        /* use the whole string         */
+}
+
+/**
  *  Creates a vector of bytes from all or part of another vector of bytes.
  *  Declared explicit so that a bytes parameter cannot cause bytevector(...)
  *  to be invoked.
@@ -122,17 +141,16 @@ bytevector::assign
     size_t amount
 )
 {
-    bool ok = amount > 0;
+    size_t high = offset + amount;
+    if (offset == 0 && amount == 0)
+        high = data.size() - 1;
+
+    bool ok = offset < data.size() && high < data.size();
     if (ok)
     {
-        size_t high = offset + amount;
-        ok = high < data.size();
-        if (ok)
-        {
-            m_data = {data.begin() + offset, data.begin() + high};
-            m_size = m_data.size();
-            m_offset = offset;
-        }
+        m_data = {data.begin() + offset, data.begin() + high};
+        m_size = m_data.size();
+        m_offset = offset;
     }
 }
 
@@ -144,8 +162,47 @@ bytevector::assign
     size_t amount
 )
 {
-    const auto & dvec = data.byte_list();
-    assign (dvec, offset, amount);
+    const auto & dvec = data.byte_list();       /* const bytes & */
+    assign(dvec, offset, amount);
+}
+
+void
+bytevector::assign
+(
+    const std::string & s,
+    size_t offset,
+    size_t amount
+)
+{
+    if (! s.empty())
+    {
+        size_t high = offset + amount;
+        if (offset == 0 && amount == 0)
+            high = s.length() - 1;
+
+        bool ok = offset < s.length() && high < s.length();
+        if (ok)
+        {
+            size_t index = 0;
+            m_data.clear();
+            for (auto c : s)
+            {
+                if (index >= offset)
+                {
+                    if (index <= high)
+                    {
+                        util::byte b = static_cast<util::byte>(c);
+                        m_data.push_back(b);
+                    }
+                    else
+                        break;
+                }
+                ++index;
+            }
+            m_size = m_data.size();
+            m_offset = offset;
+        }
+    }
 }
 
 /*-------------------------------------------------------------------------
@@ -275,7 +332,7 @@ bytevector::get_varinum ()
 }
 
 /**
- *  A overloaded function to simplify reading midi_control data from the MIDI
+ *  A overloaded function to simplify reading midi_control data from the
  *  file. It uses a standard string object instead of a buffer. The
  *  seq66::midifile class defines read_string(), but does not use it.
  *
@@ -342,6 +399,30 @@ bytevector::peek_longlong () const
     result += util::ulonglong(peek_byte(5)) << 16;
     result += util::ulonglong(peek_byte(6)) << 8;
     result += util::ulonglong(peek_byte(7));
+    return result;
+}
+
+/**
+ *  A bit too brute force, at this time.
+ */
+
+std::string
+bytevector::peek_string (size_t offset, size_t amount)
+{
+    std::string result;
+    size_t high = offset + amount;
+    if (offset == 0 && amount == 0)
+        high = m_data.size() - 1;
+
+    bool ok = offset < m_data.size() && high < m_data.size();
+    if (ok)
+    {
+        for (size_t index = offset; index <= high; ++index)
+        {
+            char c = static_cast<char>(m_data[index]);
+            result.push_back(c);
+        }
+    }
     return result;
 }
 

@@ -6,13 +6,19 @@
 # \library     cfg66
 # \author      Chris Ahlstrom
 # \date        2022-06-22
-# \updates     2024-04-23
+# \updates     2024-05-17
 # \license     $XPC_SUITE_GPL_LICENSE$
 #
 #  This file is part of the "cfg66" library. See the top-level meson.build
 #  file for license information.
 #
 #-----------------------------------------------------------------------------
+
+bytevector_test_exe = executable(
+   'bytevector_test',
+   sources : [ 'bytevector_test.cpp' ],
+   dependencies : [ libcfg66_dep ]
+   )
 
 cliparser_test_c_exe = executable(
    'cliparser_test_c',
@@ -50,6 +56,7 @@ ini_test_exe = executable(
    dependencies : [ libcfg66_dep ]
    )
 
+test('C++ ByteVector Test', bytevector_test_exe)
 test('C Parser Test', cliparser_test_c_exe)
 test('C++ Parser Test', cliparser_test_exe)
 test('C++ Manager Test', manager_test_exe)

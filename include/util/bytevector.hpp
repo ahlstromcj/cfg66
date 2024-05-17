@@ -144,6 +144,7 @@ private:
 public:
 
     bytevector ();
+    bytevector (const std::string & s);
     explicit bytevector
     (
         const bytes & data,
@@ -158,14 +159,20 @@ public:
     void assign
     (
         const bytevector & data,
-        size_t offset,
-        size_t amount
+        size_t offset = 0,
+        size_t amount = 0
     );
     void assign
     (
         const bytes & data,
-        size_t offset,
-        size_t amount
+        size_t offset = 0,
+        size_t amount = 0
+    );
+    void assign
+    (
+        const std::string & s,
+        size_t offset = 0,
+        size_t amount = 0
     );
 
     const std::string & error_message () const
@@ -279,6 +286,7 @@ public:
     util::ushort peek_short () const;
     util::ulong peek_long () const;
     util::ulonglong peek_longlong () const;
+    std::string peek_string (size_t offset = 0, size_t amount = 0);
 
     bool done () const
     {
