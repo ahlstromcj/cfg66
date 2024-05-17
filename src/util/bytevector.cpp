@@ -73,6 +73,17 @@ bytevector::bytevector () :
 
 /**
  *  Creates a vector of bytes from all or part of another vector of bytes.
+ *  Declared explicit so that a bytes parameter cannot cause bytevector(...)
+ *  to be invoked.
+ *
+ * \param data
+ *      Provides a util::bytes vector to use to initialize m_data.
+ *
+ * \param offset
+ *      Provides the offset into \a data from which to start copying bytes.
+ *
+ * \param amount
+ *      The number of bytes to be copied, starting at \a offset.
  */
 
 bytevector::bytevector
@@ -123,6 +134,18 @@ bytevector::assign
             m_offset = offset;
         }
     }
+}
+
+void
+bytevector::assign
+(
+    const bytevector & data,
+    size_t offset,
+    size_t amount
+)
+{
+    const auto & dvec = data.byte_list();
+    assign (dvec, offset, amount);
 }
 
 /*-------------------------------------------------------------------------

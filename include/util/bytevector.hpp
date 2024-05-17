@@ -144,7 +144,7 @@ private:
 public:
 
     bytevector ();
-    bytevector
+    explicit bytevector
     (
         const bytes & data,
         size_t offset   = 0,
@@ -155,6 +155,12 @@ public:
     bytevector & operator = (const bytevector &) = default;
     ~bytevector () = default;
 
+    void assign
+    (
+        const bytevector & data,
+        size_t offset,
+        size_t amount
+    );
     void assign
     (
         const bytes & data,
