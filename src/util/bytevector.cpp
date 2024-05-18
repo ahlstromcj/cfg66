@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-05-16
- * \updates       2024-05-17
+ * \updates       2024-05-18
  * \license       GNU GPLv2 or above
  */
 
@@ -222,7 +222,7 @@ bytevector::assign
 util::byte
 bytevector::get_byte () const
 {
-    if (safe())
+    if (m_position < m_data.size())
         return m_data[m_position++];
     else if (! m_disable_reported)
         (void) set_error_dump("'End-of-vector', further reading disabled");
@@ -332,15 +332,16 @@ bytevector::get_varinum ()
 }
 
 /**
- *  A overloaded function to simplify reading midi_control data from the
- *  file. It uses a standard string object instead of a buffer. The
- *  seq66::midifile class defines read_string(), but does not use it.
+ *  A function to simplify reading data from a file, starting from the
+ *  current position in getting the data. It uses a standard
+ *  string object instead of a buffer.
  *
  * \param b
  *      The std::string to receive the data.
  *
  * \param sz
- *      The number of bytes to be read.
+ *      The number of bytes to be read. If zero (the default), then
+ *      the position is reset and the whole vector is obtained.
  *
  * \return
  *      Returns the string, empty if an error occurs.
@@ -350,6 +351,11 @@ std::string
 bytevector::get_string (size_t sz)
 {
     std::string result;
+    if (sz == 0)
+    {
+        reset();
+        sz = m_data.size();
+    }
     for (size_t i = 0; i < sz; ++i)
     {
         if (m_position < m_data.size())
@@ -704,7 +710,7 @@ bytevector::set_error_dump (const std::string & msg) const
     snprintf
     (
         temp, sizeof temp, "At %zu/%zu (0x%zx/0x%zx): ",
-        m_position, m_size, m_position, m_size
+        m_position, m_data.size(), m_position, m_data.size()
     );
     std::string result = temp;
     result += msg;

@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-05-16
- * \updates       2024-05-17
+ * \updates       2024-05-18
  * \license       GNU GPLv2 or above
  *
  *  The bytevector class is meant for handling number binary data in chunks
@@ -91,7 +91,9 @@ class bytevector
 private:
 
     /**
-     *  Holds the initial or final size of the MIDI bytevector.
+     *  Holds the initial or final size of the MIDI bytevector.  It is a
+     *  nominal size set when allocating data. The true size is always
+     *  m_data.size().
      */
 
     size_t m_size;
@@ -234,7 +236,7 @@ public:
 
     bool seek (size_t pos)
     {
-        bool result = pos < size();
+        bool result = pos < m_data.size();
         if (result)
             m_position = pos;
 
@@ -248,7 +250,7 @@ public:
 
     void increment () const
     {
-        if (m_position < (size() - 1))
+        if (m_position < (m_data.size() - 1))
             ++m_position;
     }
 
@@ -260,7 +262,7 @@ public:
 
     void skip (size_t sz)
     {
-        if (m_position < (size() - sz))
+        if (m_position < (m_data.size() - sz))
             m_position += sz;
     }
 
@@ -270,7 +272,7 @@ public:
     util::ulong get_long () const;
     util::ulonglong get_longlong () const;
     util::ulong get_varinum ();
-    std::string get_string (size_t len);
+    std::string get_string (size_t len = 0);
 
     util::byte peek_byte () const
     {
@@ -279,7 +281,7 @@ public:
 
     util::byte peek_byte (size_t offset) const
     {
-        return (m_position + offset) < m_size ?
+        return (m_position + offset) < m_data.size() ?
             m_data[m_position + offset] : 0 ;
     }
 
@@ -288,19 +290,13 @@ public:
     util::ulonglong peek_longlong () const;
     std::string peek_string (size_t offset = 0, size_t amount = 0);
 
-    bool done () const
-    {
-        return m_position >= m_size;
-    }
-
-    bool safe () const
-    {
-        return ! done();
-    }
+    /*
+     * Useful in testing the completeness of reading data.
+     */
 
     size_t remainder () const
     {
-        return m_size - m_position;
+        return m_data.size() - m_position;
     }
 
     void put_byte (util::byte c)
@@ -317,7 +313,7 @@ public:
 
     void poke_byte (util::byte c, size_t pos)
     {
-        if (pos < m_size)
+        if (pos < m_data.size())
             m_data[pos] = c;
     }
 
