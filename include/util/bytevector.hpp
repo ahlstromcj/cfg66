@@ -210,6 +210,11 @@ public:
         m_error_is_fatal = m_disable_reported = false;
     }
 
+    bool fatal_error () const
+    {
+        return m_error_is_fatal;
+    }
+
     size_t nominal_size () const
     {
         return m_nominal_size;
@@ -278,18 +283,8 @@ public:
     util::ulonglong get_longlong () const;
     util::ulong get_varinum ();
     std::string get_string (size_t len = 0);
-
-    util::byte peek_byte () const
-    {
-        return m_data[m_position];
-    }
-
-    util::byte peek_byte (size_t offset) const
-    {
-        return (m_position + offset) < m_data.size() ?
-            m_data[m_position + offset] : 0 ;
-    }
-
+    util::byte peek_byte () const;
+    util::byte peek_byte (size_t offset) const;
     util::ushort peek_short () const;
     util::ulong peek_long () const;
     util::ulonglong peek_longlong () const;

@@ -141,7 +141,7 @@ bytevector::assign
     size_t amount
 )
 {
-    size_t high = offset + amount;
+    size_t high = offset + amount - 1;
     if (offset == 0 && amount == 0)
         high = data.size() - 1;
 
@@ -176,7 +176,7 @@ bytevector::assign
 {
     if (! s.empty())
     {
-        size_t high = offset + amount;
+        size_t high = offset + amount - 1;
         if (offset == 0 && amount == 0)
             high = s.length() - 1;
 
@@ -225,7 +225,7 @@ bytevector::get_byte () const
     if (m_position < m_data.size())
         return m_data[m_position++];
     else if (! m_disable_reported)
-        (void) set_error_dump("'End-of-vector', further reading disabled");
+        (void) set_error_dump("End of data encountered");
 
     return 0;
 }
@@ -375,6 +375,28 @@ bytevector::get_string (size_t sz)
  * peek() functions
  *-------------------------------------------------------------------------*/
 
+util::byte
+bytevector::peek_byte () const
+{
+    if (m_position < m_data.size())
+        return m_data[m_position];
+    else if (! m_disable_reported)
+        (void) set_error_dump("'End-of-vector', further reading disabled");
+
+    return 0;
+}
+
+util::byte
+bytevector::peek_byte (size_t offset) const
+{
+    if ((m_position + offset) < m_data.size())
+        return m_data[m_position + offset];
+    else
+        util::msgprintf(lib66::msglevel::warn, "Peeking past data!");
+
+    return 0;
+}
+
 util::ushort
 bytevector::peek_short () const
 {
@@ -416,7 +438,7 @@ std::string
 bytevector::peek_string (size_t offset, size_t amount)
 {
     std::string result;
-    size_t high = offset + amount;
+    size_t high = offset + amount - 1;
     if (offset == 0 && amount == 0)
         high = m_data.size() - 1;
 
@@ -685,6 +707,7 @@ bytevector::set_error (const std::string & msg) const
     m_error_message = msg;
     errprint(msg.c_str());
     m_error_is_fatal = true;
+    m_disable_reported = true;
     return false;
 }
 
@@ -715,10 +738,11 @@ bytevector::set_error_dump (const std::string & msg) const
     std::string result = temp;
     result += msg;
     util::msgprintf(lib66::msglevel::error, "%s", result.c_str());
-    m_error_message = result;
-    m_error_is_fatal = true;
-    m_disable_reported = true;
-    return false;
+    return set_error(result);
+//  m_error_message = result;
+//  m_error_is_fatal = true;
+//  m_disable_reported = true;
+//  return false;
 }
 
 /**
