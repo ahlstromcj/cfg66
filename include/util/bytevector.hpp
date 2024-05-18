@@ -96,7 +96,7 @@ private:
      *  m_data.size().
      */
 
-    size_t m_size;
+    size_t m_nominal_size;
 
     /**
      *  Provides an option offset to indicate that this buffer was taken
@@ -201,7 +201,7 @@ public:
     {
         clear_errors();
         m_data.clear();
-        m_size = m_offset = m_position = 0;
+        m_nominal_size = m_offset = m_position = 0;
     }
 
     void clear_errors ()
@@ -210,9 +210,14 @@ public:
         m_error_is_fatal = m_disable_reported = false;
     }
 
-    size_t size () const
+    size_t nominal_size () const
     {
-        return m_size;
+        return m_nominal_size;
+    }
+
+    size_t size ()
+    {
+        return m_data.size();
     }
 
     size_t offset () const

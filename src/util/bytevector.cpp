@@ -60,7 +60,7 @@ static const int c_util_line_max = 1024;
  */
 
 bytevector::bytevector () :
-    m_size              (0),
+    m_nominal_size      (0),
     m_offset            (0),
     m_error_message     (),
     m_error_is_fatal    (false),
@@ -79,7 +79,7 @@ bytevector::bytevector () :
  */
 
 bytevector::bytevector (const std::string & s) :
-    m_size              (0),
+    m_nominal_size      (0),
     m_offset            (0),
     m_error_message     (),
     m_error_is_fatal    (false),
@@ -111,7 +111,7 @@ bytevector::bytevector
     size_t offset,
     size_t amount
 ) :
-    m_size              (0),
+    m_nominal_size      (0),
     m_offset            (offset),
     m_error_message     (),
     m_error_is_fatal    (false),
@@ -122,7 +122,7 @@ bytevector::bytevector
     if (offset == 0 && amount == 0)
     {
         m_data = data;
-        m_size = m_data.size();
+        m_nominal_size = m_data.size();
     }
     else
         assign(data, offset, amount);
@@ -149,7 +149,7 @@ bytevector::assign
     if (ok)
     {
         m_data = {data.begin() + offset, data.begin() + high};
-        m_size = m_data.size();
+        m_nominal_size = m_data.size();
         m_offset = offset;
     }
 }
@@ -199,7 +199,7 @@ bytevector::assign
                 }
                 ++index;
             }
-            m_size = m_data.size();
+            m_nominal_size = m_data.size();
             m_offset = offset;
         }
     }
@@ -598,7 +598,7 @@ bytevector::read (const std::string & infilename)
                 ifs.seekg(0, std::ios::beg);    /* seek to the file's start */
                 m_data.resize(file_size);       /* allocate the data        */
                 ifs.read((char *)(m_data.data()), file_size);
-                m_size = file_size;
+                m_nominal_size = file_size;
             }
             catch (const std::bad_alloc & ex)
             {
