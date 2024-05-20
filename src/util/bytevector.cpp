@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-05-16
- * \updates       2024-05-18
+ * \updates       2024-05-20
  * \license       GNU GPLv2 or above
  */
 
@@ -148,7 +148,7 @@ bytevector::assign
     bool ok = offset < data.size() && high < data.size();
     if (ok)
     {
-        m_data = {data.begin() + offset, data.begin() + high};
+        m_data = {data.begin() + offset, data.begin() + high + 1};
         m_nominal_size = m_data.size();
         m_offset = offset;
     }
@@ -223,10 +223,15 @@ util::byte
 bytevector::get_byte () const
 {
     if (m_position < m_data.size())
+    {
         return m_data[m_position++];
+    }
     else if (! m_disable_reported)
+    {
+//      unsigned long pos = (unsigned long)(real_position());
         (void) set_error_dump("End of data encountered");
-
+//      (void) set_error_dump("End of data encountered at", pos);
+    }
     return 0;
 }
 
@@ -732,17 +737,13 @@ bytevector::set_error_dump (const std::string & msg) const
     char temp[80];
     snprintf
     (
-        temp, sizeof temp, "At %zu/%zu (0x%zx/0x%zx): ",
-        m_position, m_data.size(), m_position, m_data.size()
+        temp, sizeof temp, "At 0x%zx of 0x%zx (real 0x%zx): ",
+        position(), m_data.size(), real_position()
     );
     std::string result = temp;
     result += msg;
     util::msgprintf(lib66::msglevel::error, "%s", result.c_str());
     return set_error(result);
-//  m_error_message = result;
-//  m_error_is_fatal = true;
-//  m_disable_reported = true;
-//  return false;
 }
 
 /**
@@ -763,7 +764,7 @@ bool
 bytevector::set_error_dump (const std::string & msg, unsigned long value) const
 {
     char temp[64];
-    snprintf(temp, sizeof temp, ". Bad value 0x%lx.", value);
+    snprintf(temp, sizeof temp, "; 0x%lx.", value);
     std::string result = msg;
     result += temp;
     return set_error_dump(result);
