@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-05-16
- * \updates       2024-05-20
+ * \updates       2024-05-21
  * \license       GNU GPLv2 or above
  */
 
@@ -205,6 +205,26 @@ bytevector::assign
     }
 }
 
+/**
+ *  Defined here for gdb debugging.
+ */
+
+size_t
+bytevector::position () const
+{
+    return m_position;
+}
+
+/**
+ *  Can be useful in debugging.
+ */
+
+size_t
+bytevector::real_position () const
+{
+    return position() + offset();
+}
+
 /*-------------------------------------------------------------------------
  * get() functions
  *-------------------------------------------------------------------------*/
@@ -228,9 +248,7 @@ bytevector::get_byte () const
     }
     else if (! m_disable_reported)
     {
-//      unsigned long pos = (unsigned long)(real_position());
         (void) set_error_dump("End of data encountered");
-//      (void) set_error_dump("End of data encountered at", pos);
     }
     return 0;
 }
@@ -396,6 +414,17 @@ bytevector::peek_byte (size_t offset) const
 {
     if ((m_position + offset) < m_data.size())
         return m_data[m_position + offset];
+    else
+        util::msgprintf(lib66::msglevel::warn, "Peeking past data!");
+
+    return 0;
+}
+
+util::byte
+bytevector::peek_byte_at (size_t offset) const
+{
+    if (offset < m_data.size())
+        return m_data[offset];
     else
         util::msgprintf(lib66::msglevel::warn, "Peeking past data!");
 

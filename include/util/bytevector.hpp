@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-05-16
- * \updates       2024-05-18
+ * \updates       2024-05-21
  * \license       GNU GPLv2 or above
  *
  *  The bytevector class is meant for handling number binary data in chunks
@@ -230,19 +230,8 @@ public:
         return m_offset;
     }
 
-    size_t position () const
-    {
-        return m_position;
-    }
-
-    /*
-     *  Can be useful in debugging.
-     */
-
-    size_t real_position () const
-    {
-        return position() + offset();
-    }
+    size_t position () const;
+    size_t real_position () const;
 
     bool seek (size_t pos)
     {
@@ -285,6 +274,7 @@ public:
     std::string get_string (size_t len = 0);
     util::byte peek_byte () const;
     util::byte peek_byte (size_t offset) const;
+    util::byte peek_byte_at (size_t offset) const;
     util::ushort peek_short () const;
     util::ulong peek_long () const;
     util::ulonglong peek_longlong () const;
