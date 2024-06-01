@@ -27,7 +27,7 @@
  *
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2024-04-30
+ * \updates       2024-06-01
  * \version       $Revision$
  *
  *    Also see the strfunctions.cpp module.
@@ -150,7 +150,7 @@ extern bool strings_match (const std::string & target, const std::string & x);
 extern std::string tolower (const std::string & source);
 extern std::string toupper (const std::string & source);
 extern std::string capitalize (const std::string & source);
-extern std::string bool_to_string (bool x);
+extern std::string bool_to_string (bool x, bool yesno = false);
 extern char bool_to_char (bool x);
 extern std::string pointer_to_string (void * ptr);
 extern int tokenize_stanzas
