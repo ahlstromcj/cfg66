@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2023-08-11
+ * \updates       2024-06-14
  * \license       See above.
  *
  * Operations to support:
@@ -67,7 +67,7 @@
  *          -   On or more inisection::specifications for the section
  *              description and a relatively small set of options.
  *          -   A copy of inisection::specification for comments.
- *          -   An inifile::specification to provide location and description
+ *          -   An inisections::specification to provide location and description
  *              plus a list of inisection::specifications for the file.
  *              These are std::reference_wrappers for the inisection data.
  *      -   Creations of inisections from the inisection::specifications.
@@ -76,7 +76,7 @@
  *
  * Classes and structures:
 
-inifile ::
+inisections ::
     specification ::
         sectionrefs : vector<reference_wrapper<inisection::specficiations>>
     sectionrefs
@@ -111,12 +111,12 @@ inimap::inimap () : m_option_map   ()
 }
 
 /**
- *  This function looks at an inifile::specification. Each of those contains
+ *  This function looks at an inisections::specification. Each of those contains
  *  a list of inisection::specifications, and each of those contains
  *  a set of options in a cfg::options::container.
  *
  *  We loop through the inisection::specifications in the
- *  inifile::specification, and add each of them to the map.
+ *  inisections::specification, and add each of them to the map.
  *
  *  If this function fails, it means a section name is not unique. All
  *  section names must be unique.
@@ -311,7 +311,7 @@ const inisection::specification inifile_comment_data
 };
 
 /*------------------------------------------------------------------------
- * inifile
+ * inisections
  *------------------------------------------------------------------------*/
 
 /*
@@ -324,7 +324,7 @@ static std::string s_stock_file_intro
     "It follows a format similar to the INI files of MS-DOS."
 };
 
-inifile::inifile (const std::string & ininame) :
+inisections::inisections (const std::string & ininame) :
     m_app_version   ("Cfg66-based application configuration file"),
     m_directory     (),
     m_name          (),
@@ -362,10 +362,10 @@ inifile::inifile (const std::string & ininame) :
  *              of named options::spec structures.
  */
 
-inifile::inifile
+inisections::inisections
 (
     const std::string & ininame,
-    inifile::specification & spec
+    inisections::specification & spec
 ) :
     m_app_version   ("Cfg66-based application configuration file"),
     m_directory     (),
@@ -399,7 +399,7 @@ inifile::inifile
 }
 
 bool
-inifile::add_options_to_map (inimap & mapp)
+inisections::add_options_to_map (inimap & mapp)
 {
     bool result = true;
     for (auto sect : sections())
@@ -417,7 +417,7 @@ inifile::add_options_to_map (inimap & mapp)
  */
 
 std::string
-inifile::settings_text () const
+inisections::settings_text () const
 {
     std::string result = m_app_version + "\n";
     std::string filespec = util::filename_concatenate (m_directory, m_name);
@@ -457,16 +457,16 @@ inifiles::inifiles (const std::string & name) :
 }
 
 /**
- *  Adds an inifile to the list. In addition, it adds all of the options from
+ *  Adds an inisections to the list. In addition, it adds all of the options from
  *  all the inisections into the inimap.
  */
 
 bool
-inifiles::add (const inifile & file)
+inifiles::add (const inisections & file)
 {
     m_file_list.push_back(file);
 
-    inifile & ncfile = const_cast<inifile &>(file);
+    inisections & ncfile = const_cast<inisections &>(file);
     bool result = ncfile.add_options_to_map(m_all_options);
     return result;
 }

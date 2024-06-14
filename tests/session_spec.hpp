@@ -28,11 +28,11 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-07-22
- * \updates       2023-08-08
+ * \updates       2024-06-14
  * \license       See above.
  *
  *  This is the first of a set of test/demo header files to set up a large
- *  configuration file for the inifile/inisection/options hierarchy. These
+ *  configuration file for the inisections/inisection/options hierarchy. These
  *  files are useful for testing, but will likely be suitable for usage in
  *  a real application (Seq66v2).
  *
@@ -50,7 +50,7 @@
  *      "ports" (NEW) (or keep them in 'rc'?)
  *
  *  For this file, all of the sections of the 'session' file are defined by
- *  the inifile::specification session_data declaration near the end of this
+ *  the inisections::specification session_data declaration near the end of this
  *  file.
  *
  *  Note that this header file should be included only once in an application.
@@ -509,12 +509,12 @@ inisection::specification session_playlist_file_data
 };
 
 /*------------------------------------------------------------------------
- * All sections of the 'session' inifile
+ * All sections of the 'session' configuration
  *------------------------------------------------------------------------*/
 
 inisection::specification session_comments = inifile_comment_data;
 
-inifile::specification session_data
+inisections::specification session_data
 {
     "session",      /* the file extension for any 'session' file.           */
     "",             /* use value from appinfo's get_home_cfg_directory()    */

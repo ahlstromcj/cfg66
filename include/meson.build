@@ -6,7 +6,7 @@
 # \library     cfg66
 # \author      Chris Ahlstrom
 # \date        2022-06-22
-# \updates     2024-05-16
+# \updates     2024-06-14
 # \license     $XPC_SUITE_GPL_LICENSE$
 #
 #  This file is part of the "cfg66" library. See the top-level meson.build
@@ -28,6 +28,7 @@ libcfg66_headers += files(
    'cfg/comments.hpp',
    'cfg/configfile.hpp',
    'cfg/history.hpp',
+   'cfg/inifile.hpp',
    'cfg/inisections.hpp',
    'cfg/memento.hpp',
    'cfg/options.hpp',

@@ -27,7 +27,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-08-05
- * \updates       2023-08-08
+ * \updates       2024-06-14
  * \license       See above.
  *
  *
@@ -390,7 +390,7 @@ inisection::specification ctrl_macro_data
 };
 
 /*------------------------------------------------------------------------
- * All sections of the 'ctrl' inifile
+ * All sections of the 'ctrl' inisection
  *------------------------------------------------------------------------*/
 
 inisection::specification ctrl_comments = inifile_comment_data;
@@ -400,7 +400,7 @@ const std::string ctrl_intro =
     "settings, and macros."
     ;
 
-inifile::specification ctrl_data
+inisections::specification ctrl_data
 {
     "ctrl",         /* the file extension for any 'ctrl file.               */
     "",             /* use value from appinfo's get_home_cfg_directory()    */

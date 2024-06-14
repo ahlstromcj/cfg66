@@ -27,7 +27,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-08-05
- * \updates       2023-08-08
+ * \updates       2024-06-14
  * \license       See above.
  *
  */
@@ -144,12 +144,12 @@ inisection::specification playlist_list_data
 };
 
 /*------------------------------------------------------------------------
- * All sections of the 'playlist' inifile
+ * All sections of the 'playlist' configuration
  *------------------------------------------------------------------------*/
 
 inisection::specification playlist_comments = inifile_comment_data;
 
-inifile::specification playlist_data
+inisections::specification playlist_data
 {
     "playlist",     /* the file extension for any 'playlist' file.          */
     "",             /* use value from appinfo's get_home_cfg_directory()    */

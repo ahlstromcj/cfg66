@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-02-25
- * \updates       2023-08-11
+ * \updates       2024-06-14
  * \license       See above.
  *
  *  We want to provide a list of { filename, sectionname } pairs, and
@@ -44,7 +44,7 @@
  *
  *      -   inispecification
  *      -   inisection
- *      -   inifile
+ *      -   inisections
  *      -   inifiles (very tentative at this time)
  */
 
@@ -265,14 +265,14 @@ public:
 };          // inisection
 
 /*------------------------------------------------------------------------
- * inifile
+ * inisections
  *------------------------------------------------------------------------*/
 
 /**
  *  Provides a list of INI section names for a given INI file.
  */
 
-class inifile
+class inisections
 {
 
 public:
@@ -357,12 +357,12 @@ private:
 
 public:
 
-    inifile () = default;
-    inifile (const std::string & ininame);
-    inifile (const std::string & ininame, inifile::specification & spec);
-    inifile (const inifile & inif) = default;
-    inifile & operator = (const inifile & inif) = default;
-    ~inifile () = default;
+    inisections () = default;
+    inisections (const std::string & ininame);
+    inisections (const std::string & ininame, inisections::specification & spec);
+    inisections (const inisections & inif) = default;
+    inisections & operator = (const inisections & inif) = default;
+    ~inisections () = default;
 
     std::string settings_text () const;
 
@@ -389,14 +389,14 @@ public:
 
     bool add_options_to_map (inimap & mapp);
 
-};          // class inifile
+};          // class inisections
 
 /*------------------------------------------------------------------------
  * inifiles
  *------------------------------------------------------------------------*/
 
 /**
- *  Holds a list of inifile objects. Represents all of the files, and all of
+ *  Holds a list of inisections objects. Represents all of the files, and all of
  *  the options that are held by the files.  The options are in a single list,
  *  and the INI items look them up by name.
  *
@@ -408,8 +408,8 @@ class inifiles
 
 public:
 
-    using ref = std::reference_wrapper<inifile>;
-    using refs = std::vector<inifile>;
+    using ref = std::reference_wrapper<inisections>;
+    using refs = std::vector<inisections>;
 
 private:
 
@@ -421,7 +421,7 @@ private:
     std::string m_name;
 
     /**
-     *  Holds a vector of references to inifile objects.
+     *  Holds a vector of references to inisections objects.
      */
 
     refs m_file_list;
@@ -441,7 +441,7 @@ public:
     inifiles & operator = (const inifiles & inif) = default;
     ~inifiles () = default;
 
-    bool add (const inifile & file);
+    bool add (const inisections & file);
     bool add_options_to_map (inimap & mapp);
 
     void clear ()

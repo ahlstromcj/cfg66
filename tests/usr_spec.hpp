@@ -27,7 +27,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-08-04
- * \updates       2023-08-06
+ * \updates       2024-06-14
  * \license       See above.
  *
  *
@@ -658,12 +658,12 @@ inisection::specification usr_pattern_data
 };
 
 /*------------------------------------------------------------------------
- * All sections of the 'usr' inifile
+ * All sections of the 'usr' configuration
  *------------------------------------------------------------------------*/
 
 inisection::specification usr_comments = inifile_comment_data;
 
-inifile::specification usr_data
+inisections::specification usr_data
 {
     "usr",          /* the file extension for any 'usr' file.               */
     "",             /* use value from appinfo's get_home_cfg_directory()    */

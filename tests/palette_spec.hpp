@@ -27,7 +27,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-08-06
- * \updates       2023-08-08
+ * \updates       2024-06-14
  * \license       See above.
  *
  */
@@ -151,12 +151,12 @@ inisection::specification palette_brush_data
 };
 
 /*------------------------------------------------------------------------
- * All sections of the 'palette' inifile
+ * All sections of the 'palette' configuration
  *------------------------------------------------------------------------*/
 
 inisection::specification palette_comments = inifile_comment_data;
 
-inifile::specification palette_data
+inisections::specification palette_data
 {
     "palette",      /* the file extension for any 'palette' file.           */
     "",             /* use value from appinfo's get_home_cfg_directory()    */

@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-07-22
- * \updates       2023-08-08
+ * \updates       2024-06-14
  * \license       See above.
  *
  */
@@ -680,12 +680,12 @@ inisection::specification rc_recent_files_data
 };
 
 /*------------------------------------------------------------------------
- * All sections of the 'rc' inifile
+ * All sections of the 'rc' configuration
  *------------------------------------------------------------------------*/
 
 inisection::specification rc_comments = inifile_comment_data;
 
-inifile::specification rc_data
+inisections::specification rc_data
 {
     "rc",           /* the file extension for any 'rc' file.                */
     "",             /* use value from appinfo's get_home_cfg_directory()    */

@@ -1,16 +1,18 @@
 NEWS for Cfg66 0.2
 Chris Ahlstrom
-2024-04-15 to 2024-05-17
+2024-04-15 to 2024-06-14
 
 # Changelog
 
-## [0.2] - 2024-05-17
+## [0.2] - 2024-06-14
 
 ### Added
 
 - Added the util::bytevector class to work with big-endian data (e.g. MIDI
   files.
-- Added a test for the util::bytevector class. It is still in progress.
+- Added a test for the util::bytevector class.
+- Renamed the cfg::inifile class to "inisections" because it was misleading.
+- Added an actual cfg::inifile class to extend cfg::configfile.
 
 ### Fixed
 

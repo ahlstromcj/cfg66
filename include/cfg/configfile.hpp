@@ -28,7 +28,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2024-04-30
+ * \updates       2024-06-14
  * \license       GNU GPLv2 or above
  *
  *  This is actually an elegant little parser, and works well as long as one
@@ -201,6 +201,7 @@ public:
     configfile (configfile &&) = delete;
     configfile (const configfile &) = delete;
     configfile & operator = (const configfile &) = delete;
+    configfile & operator = (configfile &&) = delete;
 
     /**
      *  A rote destructor needed for a base class.

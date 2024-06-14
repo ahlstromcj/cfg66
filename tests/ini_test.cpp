@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-07-25
- * \updates       2024-01-17
+ * \updates       2024-06-14
  * \license       See above.
  *
  *  Rationale:
@@ -70,7 +70,7 @@
 #include "cli/parser.hpp"               /* cli::parser class                */
 
 /*
- * inifile::specification objects
+ * inisections::specification objects
  *
  *  The following string keeps track of the characters used so far.
  *
@@ -144,7 +144,7 @@ static cfg::options::container s_test_options
 
 /**
  *  Below we set up two INI "files", on with an 'exp' extension and one
- *  with an 'expex' extension. The cfg::inifile::specification for
+ *  with an 'expex' extension. The cfg::inisections::specification for
  *  each contains two cfg::inisection::specification structures.
  *
  *  We want to be able to construct an inifiles describing them, then
@@ -283,7 +283,7 @@ static cfg::inisection::specification s_section_spec
     }
 };
 
-static cfg::inifile::specification exp_file_data
+static cfg::inisections::specification exp_file_data
 {
     "exp", "~/.config/experiment/", "exp.session",
     "This is a test INI file specification.",
@@ -349,7 +349,7 @@ static cfg::inisection::specification s_dummy_ini_spec
     }
 };
 
-static cfg::inifile::specification expex_file_data
+static cfg::inisections::specification expex_file_data
 {
     "expex", "~/.config/experiment/", "expex.session",
     "This is another test INI file specification.",
@@ -441,7 +441,7 @@ main (int argc, char * argv [])
             clip.add(experiment.option_set());
         }
 #else
-        cfg::inifile ini_experiment("experiment", exp_file_data);
+        cfg::inisections ini_experiment("experiment", exp_file_data);
         std::string settings = ini_experiment.settings_text();
         std::cout
             << "INIFILE SETTINGS:\n\n"

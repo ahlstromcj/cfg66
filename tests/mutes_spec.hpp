@@ -27,7 +27,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-08-06
- * \updates       2023-08-08
+ * \updates       2024-06-14
  * \license       See above.
  *
  */
@@ -165,12 +165,12 @@ inisection::specification mutes_groups_data
 };
 
 /*------------------------------------------------------------------------
- * All sections of the 'mutes' inifile
+ * All sections of the 'mutes' configuration
  *------------------------------------------------------------------------*/
 
 inisection::specification mutes_comments = inifile_comment_data;
 
-inifile::specification mutes_data
+inisections::specification mutes_data
 {
     "mutes",        /* the file extension for any 'mutes' file.             */
     "",             /* use value from appinfo's get_home_cfg_directory()    */

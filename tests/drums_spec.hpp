@@ -27,7 +27,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-08-06
- * \updates       2023-08-08
+ * \updates       2024-06-14
  * \license       See above.
  *
  */
@@ -131,12 +131,12 @@ inisection::specification drums_section_data
 };
 
 /*------------------------------------------------------------------------
- * All sections of the 'drums' inifile
+ * All sections of the 'drums' configuration
  *------------------------------------------------------------------------*/
 
 inisection::specification drums_comments = inifile_comment_data;
 
-inifile::specification drums_data
+inisections::specification drums_data
 {
     "drums",        /* the file extension for any 'drums' file.             */
     "",             /* use value from appinfo's get_home_cfg_directory()    */
