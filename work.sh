@@ -8,7 +8,7 @@
 # \library        cfg66
 # \author         Chris Ahlstrom
 # \date           2024-02-06
-# \update         2024-05-17
+# \update         2024-06-01
 # \version        $Revision$
 # \license        $XPC_SUITE_GPL_LICENSE$
 #
@@ -30,7 +30,7 @@ LANG=C
 export LANG
 CYGWIN=binmode
 export CYGWIN
-export CFG66_SCRIPT_EDIT_DATE="2024-04-30"
+export CFG66_SCRIPT_EDIT_DATE="2024-06-01"
 export CFG66_LIBRARY_API_VERSION="0.2"
 export CFG66_LIBRARY_VERSION="$CFG66_LIBRARY_API_VERSION.0"
 export CFG66="cfg66"
@@ -409,7 +409,7 @@ if test "$DOUNINSTALL" = "yes" ; then
       ninja -C build uninstall
       if test "$PLATFORM" = "UNIX" ; then
          rm -rf "$INSTALL_PREFIX/include/$CFG66_LIBRARY"
-         rm -rf "$INSTALL_PREFIX/$INSTALL_LIBDIR/$POTEXT_LIBRARY"
+         rm -rf "$INSTALL_PREFIX/$INSTALL_LIBDIR/$CFG66_LIBRARY"
          rm -rf "$INSTALL_PREFIX/share/doc/$CFG66"
 #        rm -rf "$INSTALL_PREFIX/man/man1/$CFG66.1"
       fi

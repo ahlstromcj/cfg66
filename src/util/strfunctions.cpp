@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-24
- * \updates       2024-04-30
+ * \updates       2024-06-01
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -1082,11 +1082,20 @@ capitalize (const std::string & source)
  */
 
 std::string
-bool_to_string (bool x)
+bool_to_string (bool x, bool yesno)
 {
-    static const std::string s_true  { "true"  };
-    static const std::string s_false { "false" };
-    return x ? s_true : s_false ;
+    if (yesno)
+    {
+        static const std::string s_yes  { "yes" };
+        static const std::string s_no   { "no" };
+        return x ? s_yes : s_no ;
+    }
+    else
+    {
+        static const std::string s_true  { "true" };
+        static const std::string s_false { "false" };
+        return x ? s_true : s_false ;
+    }
 }
 
 /**
