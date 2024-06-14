@@ -6,7 +6,7 @@
 % \library     Documents
 % \author      Chris Ahlstrom
 % \date        2024-04-16
-% \update      2024-04-16
+% \update      2024-06-13
 % \version     $Revision$
 % \license     $XPC_GPL_LICENSE$
 %
@@ -38,44 +38,48 @@
 \subsection{cfg::appinfo}
 \label{subsec:cfg_namespace_appinfo}
 
-   The \texttt{cfg::appinfo} class encapsulates basic information about
+   The \texttt{cfg::appinfo} structure encapsulates basic information about
    an application:
 
    \begin{itemize}
-      \item \textsl{Kind}.
+      \item \textsl{cfg::appkind}.
          Indicates if the application is a headless application (such as a
          daemon), a command-line, \textsl{ncurses}, GUI, or test application.
          In some cases it can be useful to know how the application is
          running.
-      \item \textsl{Name}.
+      \item \textsl{App name}.
          Provides the short name of the application, which can be shown
          in warning messages or be used to name the application as a node, for
          example, in \textsl{JACK}.
-      \item \textsl{Version}.
+      \item \textsl{App version}.
          Provides a version number, or optionally, a variant on the
          \textsl{Name} plus the version number.
-      \item \textsl{Home directory}.
+      \item \textsl{App home configuration directory}.
          Provides the name of the configuration directory for the application,
          such as \texttt{/home/user/.config/appname}.
          Modified by the \texttt{--home} option.
-      \item \textsl{Config file}.
+      \item \textsl{Home configuration file}.
          Provides the name of the main configuration file, such as
          \texttt{appname.rc}.
          Modified by the \texttt{--config} option.
       \item \textsl{Client name}.
-         Provides a variant on the application name, useful in session
+         Either the short application name or a variant of it, useful in session
          managers, for example.
          An example under \textsl{NSM} would be \texttt{seq66v2.nUKIE}.
-      \item \textsl{App Tag}.
-         Seems the same as \textsl{Version}. Must clarify!
+      \item \textsl{App tag}.
+         The short application name with the version number tacked on.
       \item \textsl{Arg0}.
-         Holds the complete path to the executable as run.
-      \item \textsl{Package}.
+         Holds the complete path to the executable as determined at run-time.
+      \item \textsl{Package name}.
          Provides the name of the package, which could be the same as the
          application or library name.
       \item \textsl{Session Tag}.
-         Useful in long error/warning/info messages. Must clarify!
-      \item \textsl{Icon}.
+         Provides the session name for the application; it can be the
+         application name, a modification of the application name, or
+         something completely different, such as a session name given by
+         a user.
+         Useful in long error/warning/info messages.
+      \item \textsl{App icon}.
          Provides the base name of the application icon, if not empty.
       \item \textsl{Version text}.
          Reconstructed version information for the application.
@@ -98,7 +102,7 @@
       \item \textsl{Client name tag}.
          Provides the name to show on the console in error/warning/info messages,
          the short client name surrounded by brackets, such as
-         \texttt{[seq66]}.
+         \texttt{[seq66v2]}.
    \end{itemize}
 
    All of these items can be set at once using the \texttt{appinfo}
@@ -114,12 +118,14 @@
 
    \begin{itemize}
       \item \textsl{File name}.
-         Hold the (optional) name of the file that holds the settings data.
+         Holds the (optional) name of the file that holds the settings data.
       \item \textsl{Modified}.
-         Indicates if the setting have been modifies.
+         Indicates if the settings have been modified.
       \item \textsl{Config format}.
          A free-form string indicating the format of the data, such as
          \texttt{INI}, \texttt{XML}, or \texttt{JSON}.
+         For "66" libraries and applications, the \texttt{INI}
+         format is sufficient.
       \item \textsl{Config type}.
          A short string that indicates something about the
          format or content of the file. For example, in Seq66,
@@ -127,14 +133,16 @@
          values also representing the file extension.
       \item \textsl{Ordinal version}.
          A simple integer that is incremented each time a change is
-         made in the configuration that isn't detectable during parsing.
+         made in the configuration format or values-present
+         that isn't detectable during parsing.
       \item \textsl{Comments}.
          An object holding the main comments that describe something
          about the settings file.
+      \item \textsl{Is error}.
+         Indicated if there was a error during parsing.
+      \item \textsl{Error message}.
+         If an error occurred, the error message is stored for display.
    \end{itemize}
-
-   Also included are an error flag and an accompanying message that the
-   application can display.
 
 \subsection{cfg::comments}
 \label{subsec:cfg_namespace_comments}
