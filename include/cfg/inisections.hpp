@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-02-25
- * \updates       2024-06-14
+ * \updates       2024-06-15
  * \license       See above.
  *
  *  We want to provide a list of { filename, sectionname } pairs, and
@@ -377,12 +377,12 @@ public:
         m_section_list.clear();
     }
 
-    sectionlist & sections ()
+    sectionlist & section_list ()
     {
         return m_section_list;
     }
 
-    const sectionlist & sections () const
+    const sectionlist & section_list () const
     {
         return m_section_list;
     }
@@ -475,12 +475,15 @@ public:
  * Reusable objects for "[Cfg66]" and "[comments]"
  *------------------------------------------------------------------------*/
 
-extern /* const */ inisection::specification inifile_cfg66_data;
-extern const inisection::specification inifile_comment_data;
+extern inisection::specification inifile_cfg66_data;
+extern inisection::specification inifile_comment_data;
 
 /*------------------------------------------------------------------------
 * Free functions
 *------------------------------------------------------------------------*/
+
+extern const inisection & get_inifile_cfg66_section ();
+extern const inisection & get_inifile_comment_section ();
 
 }           // namespace cfg
 

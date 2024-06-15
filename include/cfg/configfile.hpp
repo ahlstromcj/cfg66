@@ -28,7 +28,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2024-06-14
+ * \updates       2024-06-15
  * \license       GNU GPLv2 or above
  *
  *  This is actually an elegant little parser, and works well as long as one
@@ -381,7 +381,11 @@ protected:
     );
     int find_tag (std::ifstream & file, const std::string & tag);
     int get_tag_value (const std::string & tag);
-    void write_date (std::ofstream & file, const std::string & tag);
+    void write_date
+    (
+        std::ofstream & file,
+        const std::string & tag = ""
+    );
     bool next_data_line (std::ifstream & file, bool strip = true);
     bool next_section (std::ifstream & file, const std::string & tag);
     std::string get_variable

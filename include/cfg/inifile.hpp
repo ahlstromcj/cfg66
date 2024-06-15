@@ -28,7 +28,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2024-06-14
+ * \updates       2024-06-15
  * \license       GNU GPLv2 or above
  *
  *  This is actually an elegant little parser, and works well as long as one
@@ -47,20 +47,6 @@ namespace cfg
 
 class inifile : public configfile
 {
-
-#if 0
-    friend bool delete_configuration
-    (
-        const std::string & path,
-        const std::string & basename
-    );
-    friend bool copy_configuration
-    (
-        const std::string & source,
-        const std::string & basename,
-        const std::string & destination
-    );
-#endif
 
 private:
 
@@ -93,11 +79,7 @@ public:
     inifile & operator = (inifile &&) = delete;
     virtual ~inifile() = default;
 
-    virtual bool parse () override
-    {
-        return false;       // TODO
-    }
-
+    virtual bool parse () override;
     virtual bool write () override;
 
 protected:
@@ -115,6 +97,12 @@ protected:
         return m_line[0] == '[';
     }
      */
+
+    void write_section
+    (
+        std::ofstream & file,
+        const inisection & section
+    );
 
 };          // class inifile
 

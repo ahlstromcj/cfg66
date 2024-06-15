@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-06-14
+ * \updates       2024-06-15
  * \license       See above.
  *
  * Operations to support:
@@ -261,7 +261,7 @@ inisection::description_commented () const
  *  this section specification.
  */
 
-/* const */ inisection::specification inifile_cfg66_data
+inisection::specification inifile_cfg66_data
 {
     "[Cfg66]",
     {
@@ -291,7 +291,7 @@ inisection::description_commented () const
     }
 };
 
-const inisection::specification inifile_comment_data
+inisection::specification inifile_comment_data
 {
     "[comments]",
     {
@@ -402,7 +402,7 @@ bool
 inisections::add_options_to_map (inimap & mapp)
 {
     bool result = true;
-    for (auto sect : sections())
+    for (auto sect : section_list())
     {
         result = sect.add_options_to_map(mapp);
         if (! result)
@@ -414,13 +414,15 @@ inisections::add_options_to_map (inimap & mapp)
 /**
  *  In the actual file writing, we will let the enclosing file class (a
  *  variant on cfg::configfile) write the date first.
+ *
+ *  IS THIS USEFUL???
  */
 
 std::string
 inisections::settings_text () const
 {
     std::string result = m_app_version + "\n";
-    std::string filespec = util::filename_concatenate (m_directory, m_name);
+    std::string filespec = util::filename_concatenate(m_directory, m_name);
     result += s_stock_file_intro + "\n";
     result += filespec + "\n";
     result += m_description + "\n";
@@ -474,6 +476,20 @@ inifiles::add (const inisections & file)
 /*------------------------------------------------------------------------
  * Free functions
  *------------------------------------------------------------------------*/
+
+const inisection &
+get_inifile_cfg66_section ()
+{
+    static inisection s_ini_section(inifile_cfg66_data, "");
+    return s_ini_section;
+}
+
+const inisection &
+get_inifile_comment_section ()
+{
+    static inisection s_ini_section(inifile_comment_data, "");
+    return s_ini_section;
+}
 
 }           // namespace cfg
 
