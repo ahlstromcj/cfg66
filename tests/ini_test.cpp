@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-07-25
- * \updates       2024-06-14
+ * \updates       2024-06-15
  * \license       See above.
  *
  *  Rationale:
@@ -65,6 +65,7 @@
 #include <cstdlib>                      /* EXIT_SUCCESS, EXIT_FAILURE       */
 #include <iostream>                     /* std::cout                        */
 
+#include "cfg/inifile.hpp"              /* cfg::inifile class, etc.     */
 #include "cfg/inisections.hpp"          /* cfg::inisections class, etc.     */
 #include "cfg/options.hpp"              /* cfg::options class               */
 #include "cli/parser.hpp"               /* cli::parser class                */
@@ -451,10 +452,18 @@ main (int argc, char * argv [])
         if (success)
         {
             if (clip.help_request())
+            {
                 std::cout
                     << "Command-line --help Text:\n\n"
                     << clip.help_text()
                     ;
+            }
+            else
+            {
+                cfg::inisections sections("foo", exp_file_data);
+                cfg::inifile f(sections, "foo", "session");
+                success = f.write();
+            }
         }
     }
     else

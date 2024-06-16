@@ -139,8 +139,8 @@ inifile::write_section
 )
 {
     file
-        << section.name() << "\n\n"
-        << section.section_description() << "\n\n"
+        << "\n" << section.name() << "\n\n"
+        << section.description_commented() << "\n"
         ;
 
     for (const auto & s : section.option_names())

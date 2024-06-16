@@ -200,7 +200,7 @@ public:
     inisection () = default;
     inisection
     (
-        inisection::specification & spec,
+        inisection::specification & spec,   /* name, description, opt list  */
         const std::string & extension,      /* mandatory file-kind ('rc')   */
         const std::string & sectname = ""   /* can override the name        */
     );

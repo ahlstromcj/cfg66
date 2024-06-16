@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-04-30
+ * \updates       2024-06-16
  * \license       See above.
  *
  *  The cli::options class provides a way to hold the state of command-line
@@ -398,7 +398,13 @@ options::reset ()
 void
 options::initialize ()
 {
-    for (auto & specs : option_pairs())
+    init_container(option_pairs());
+}
+
+void
+options::init_container (container & pairs)
+{
+    for (auto & specs : pairs)
     {
         spec & sp = specs.second;
         sp.option_value = sp.option_default;

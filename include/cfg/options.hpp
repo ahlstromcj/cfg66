@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2023-08-11
+ * \updates       2024-06-16
  * \license       See above.
  *
  *  Supports variables of the following types:
@@ -262,6 +262,7 @@ public:
 
     static std::string kind_to_string (kind k);
     static kind string_to_kind (const std::string & s);
+    static void init_container (container & pairs); /* used in inisection   */
 
     void reset ();
     void initialize ();

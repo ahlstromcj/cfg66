@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2024-06-15
+ * \updates       2024-06-16
  * \license       GNU GPLv2 or above
  *
  *  std::streamoff is a signed integral type (usually long long) that can
@@ -900,18 +900,17 @@ configfile::get_tag_value (const std::string & tag)
 void
 configfile::write_date (std::ofstream & file, const std::string & tag)
 {
-    file
-        << "# Cfg66-style configuration file for "
-        << get_app_version_text() << "\n"
-        ;
+    std::string ver = get_app_version_text();
+    if (ver.empty())
+        ver = "an application";
+
+    file << "# Cfg66-style configuration file for " << ver << "\n";
     if (! tag.empty())
-    {
         file << "# " << tag << "\n";
-    }
+
     file
-        << "#\n# " << name() << "\n"
-        << "# Written " << get_current_date_time() << "\n"
-        << "#\n"
+        << "#\n# File: " << name() << "\n"
+        << "# Written: " << get_current_date_time() << "\n"
         ;
 }
 

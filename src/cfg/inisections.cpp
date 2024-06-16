@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-06-15
+ * \updates       2024-06-16
  * \license       See above.
  *
  * Operations to support:
@@ -111,19 +111,19 @@ inimap::inimap () : m_option_map   ()
 }
 
 /**
- *  This function looks at an inisections::specification. Each of those contains
- *  a list of inisection::specifications, and each of those contains
+ *  This function looks at an inisections::specification. Each of those
+ *  contains a list of inisection::specifications, and each of those contains
  *  a set of options in a cfg::options::container.
  *
  *  We loop through the inisection::specifications in the
  *  inisections::specification, and add each of them to the map.
  *
- *  If this function fails, it means a section name is not unique. All
- *  section names must be unique.
+ *  If this function fails, it means a section name is not unique. All section
+ *  names must be unique.
  *
- *  What about [comments] and [Cfg66] though? They are basically read-only
- *  and will never be modified, except via access from each INI file
- *  module. They don't need to be in this map.  We should skip them.
+ *  What about [comments] and [Cfg66] though? They are basically read-only and
+ *  will never be modified, except via access from each INI file module. They
+ *  don't need to be in this map.  We should skip them.
  */
 
 bool
@@ -156,6 +156,11 @@ inimap::add_option (const std::string & option_name, options::spec & op)
  *
  *  Note that we might be able to use the key value to change the order of
  *  the options.
+ *
+ *  Also note that the options are initialized by this constructor. This means
+ *  that the option value is set to the default (saves the programmer having
+ *  to add the value to the specification) and turns off the modified and
+ *  read-from-cli flags.
  */
 
 inisection::inisection
@@ -170,8 +175,8 @@ inisection::inisection
     m_option_names          (),
     m_options               (extension, sectname)   /* pairs filled below   */
 {
-    options opset = option_set();
-    options::container opspecs = opset.option_pairs();
+    options::container & opspecs = spec.sec_optionlist;
+    options::init_container(opspecs);
     for (const auto & opt : opspecs)
     {
         options::option p = std::make_pair(opt.first, opt.second);
