@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-06-16
+ * \updates       2024-06-17
  * \license       See above.
  *
  *  Supports variables of the following types:
@@ -342,17 +342,7 @@ public:
         float & minimum, float & maximum
     ) const;
 
-protected:
-
-    void source_file (const std::string & f)
-    {
-        m_source_file = f;
-    }
-
-    void source_section (const std::string & s)
-    {
-        m_source_section = s;
-    }
+public:
 
     bool option_is_boolean (const std::string & name) const;
 
@@ -417,8 +407,8 @@ protected:
     }
 
     /**
-     *  A "section" option has no variables, just one item of data.
-     *  Clumsy?
+     *  A "section" option has no variables, just one item of data, possibly
+     *  with multiple lines. Clumsy?
      */
 
     bool option_is_section (const spec & s) const
@@ -437,6 +427,18 @@ protected:
     bool option_exists (container::const_iterator oit) const
     {
         return oit != m_option_pairs.end();
+    }
+
+protected:
+
+    void source_file (const std::string & f)
+    {
+        m_source_file = f;
+    }
+
+    void source_section (const std::string & s)
+    {
+        m_source_section = s;
     }
 
 private:

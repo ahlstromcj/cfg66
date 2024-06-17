@@ -24,7 +24,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2024-06-15
+ * \updates       2024-06-17
  * \license       GNU GPLv2 or above
  *
  */
@@ -41,17 +41,17 @@ namespace cfg
  * \param name
  *      The name of the configuration file.
  *
- * \param fileext
+ * \param cfgtype
  *      The file-extension for this type of configuration file.
  */
 
 inifile::inifile
 (
     inisections & sections,
-    const std::string & name,
-    const std::string & fileext
+    const std::string & filename,
+    const std::string & cfgtype
 ) :
-    configfile      (name, fileext),
+    configfile      (filename, cfgtype),
     m_ini_sections  (sections)
 {
     // no code needed
@@ -64,13 +64,81 @@ inifile::inifile
 bool
 inifile::parse ()
 {
-    std::ifstream file(name(), std::ios::in | std::ios::ate);
-    bool result = ! set_up_ifstream(file);
+    std::ifstream file(file_name(), std::ios::in | std::ios::ate);
+    bool result = set_up_ifstream(file);
     if (result)
     {
-        // TODO
+        util::file_message("Read", file_name());
+        std::string s = parse_version(file);
+        if (s.empty() || file_version_old(file))
+        {
+            /*
+             * To do:
+             *
+             *      1.  Flag for saving in the new format.
+             *      2.  Verify the config-type valuie (e.g. "rc").
+             *
+             *          rc().auto_save(true);
+             *          file_type() == get_variable
+             *          (
+             *              file, "[Cfg66]", "config-type", 0 // position
+             *          )
+             */
+        }
+        if (result)
+        {
+            /*
+             *  To do: modify the stored comment.
+             */
+
+            std::string comments = parse_comments(file);
+            if (! comments.empty())
+            {
+#if defined PLATFORM_DEBUG
+                printf("[comments] %s\n", comments.c_str());
+#endif
+                // TODO
+            }
+
+            inisections::sectionlist & sections = m_ini_sections.section_list();
+            for (auto & section : sections)
+                parse_section(file, section);
+        }
     }
     return result;
+}
+
+void
+inifile::parse_section
+(
+    std::ifstream & file,
+    inisection & section
+)
+{
+    const options & opset = section.option_set();
+    options::container opspecs = opset.option_pairs();
+    for (const auto & opt : opspecs)
+    {
+        if (opset.option_is_section(opt.second))
+        {
+            std::string value = parse_section_option(file, section.name());
+#if defined PLATFORM_DEBUG
+            printf("%s %s\n", section.name().c_str(), value.c_str());
+#endif
+        }
+        else
+        {
+            const std::string & name = opt.first;
+            std::string value = get_variable(file, section.name(), name); // 0
+#if defined PLATFORM_DEBUG
+            printf
+            (
+                "%s %s = %s\n",
+                section.name().c_str(), name.c_str(), value.c_str()
+            );
+#endif
+        }
+    }
 }
 
 /**
@@ -80,19 +148,19 @@ inifile::parse ()
 bool
 inifile::write ()
 {
-    std::ofstream file(name(), std::ios::out | std::ios::trunc);
+    std::ofstream file(file_name(), std::ios::out | std::ios::trunc);
     bool result = file.is_open();
     if (result)
     {
         /*
-         * Stock INI file header
+         * Stock INI file header.
          */
 
-        util::file_message("Write", name());
+        util::file_message("Write", file_name());
         write_date(file);
 
         /*
-         * Stock [Cfg66] and [comments] sections
+         * Stock [Cfg66] and [comments] sections.
          */
 
         const inisection & cfg66sec = get_inifile_cfg66_section();
@@ -102,7 +170,7 @@ inifile::write ()
         write_section(file, commsec);
 
         /*
-         * The rest of the sections
+         * Write the rest of the sections.
          */
 
         const inisections::sectionlist & sections = m_ini_sections.section_list();
@@ -112,13 +180,14 @@ inifile::write ()
         }
 
         /*
-         * Stock INI file footer
+         * Write the stock INI file footer.
          */
 
+        write_cfg66_footer(file);
     }
     else
     {
-        util::file_error("Write open fail", name());
+        util::file_error("Write open fail", file_name());
         result = false;
     }
     return result;
@@ -143,20 +212,13 @@ inifile::write_section
         << section.description_commented() << "\n"
         ;
 
-    for (const auto & s : section.option_names())
-    {
-        file << section.option_set().setting_line(s) << "\n";
-    }
-
-#if 0
     const options & opset = section.option_set();
     options::container opspecs = opset.option_pairs();
     for (const auto & opt : opspecs)
     {
         const std::string & name = opt.first;
-        file << opt.setting_line(name) << "\n";     /* ugh, too indirect!   */
+        file << opset.setting_line(name) << "\n";   /* ugh, too indirect!   */
     }
-#endif
 }
 
 }           // namespace cfg

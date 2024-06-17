@@ -1,0 +1,53 @@
+# Cfg66-style configuration file for an application
+#
+# File: tests/data/fooout.rc
+# Written: 2024-06-17 09:28:16
+
+[Cfg66]
+
+# This file holds the main configuration data for Cfg66-compliant
+# applications. It follows a format similar to the old INI files of MS-DOS.
+# 'config-type' can be used to make sure the right kind of file is in use.
+# 'version' helps the application to detect older configuration files. See the
+# 'session' specification for the common 'quiet' and 'verbose' options.
+
+config-type = "session"                 # The type of configuration file.
+version = 0                             # Configuration file version.
+
+[comments]
+
+# [comments] holds user documentation for this file. The first empty, hash-
+# commented, or tag line ends the comment. Use a space for line breaks.
+
+Add your comment block here.
+
+[experiments]
+
+# This section is just a bunch of dummies for some simple tests. By itself, it
+# shows the output string for a list of described options. This description
+# string is deliberately long to show how word-wrapping and commenting with
+# '#' can work. Also note that white space such as newlines are converted to
+# spaces for this purpose. Further note that this output can be dumped to a
+# configuration file to save the settings. Lastly, note that, by default,
+# options are output ordered alphabetically by their long option name.
+
+boolean-value = false                   
+count = 0                               
+filename-value = "~/.config/seq66v2/seq66v2.session"
+floating-value = 0.0                    # Floating-point (or double) test option.
+integer-value = 0                       # Integer test option.
+overflow-option = null                  
+string-value = "I am a string."         
+
+[section-test]
+
+# This "section" option shows how only one bald string is contained in a
+# section option.
+
+This is actually a multi-line '[section]' value.
+This is the second line of the [section] value.
+Normally, this is the ONLY value in an [section] option.
+
+# End of tests/data/fooout.rc
+#
+# vim: sw=4 ts=4 wm=4 et ft=dosini

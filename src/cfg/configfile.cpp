@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2024-06-16
+ * \updates       2024-06-17
  * \license       GNU GPLv2 or above
  *
  *  std::streamoff is a signed integral type (usually long long) that can
@@ -91,26 +91,33 @@ lib66::tokenization configfile::sm_file_extensions
  *  Provides the string constructor for a configuration file.
  *
  * \param name
- *      The name of the configuration file.
+ *      The name of the configuration file. It can have a path, or not.
+ *      It can have a file-extension, or not. If not, then the \a cfgtype
+ *      parameter is appended, with a period before it.
  *
- * \param fileext
- *      The file-extension for this type of configuration file.
+ * \param cfgtype
+ *      The type of configuration file, such as 'rc' or 'session'. This is
+ *      generally used as the file-extension.
  */
 
 configfile::configfile
 (
-    const std::string & name,
-    const std::string & fileext
+    const std::string & filename,
+    const std::string & cfgtype
 ) :
-    m_file_extension    (fileext),
-    m_name              (name),
-    m_version           ("0"),
-    m_file_version      ("0"),
-    m_line              (),
-    m_line_number       (0),
-    m_line_pos          (0)
+    m_file_type     (cfgtype),
+    m_file_name     (filename),
+    m_version       ("0"),
+    m_file_version  ("0"),
+    m_line          (),
+    m_line_number   (0),
+    m_line_pos      (0)
 {
-    // no code needed
+    if (! util::name_has_extension(filename))
+    {
+        m_file_name += ".";
+        m_file_name += cfgtype;
+    }
 }
 
 /**
@@ -154,8 +161,32 @@ configfile::trimline () const
 std::string
 configfile::parse_comments (std::ifstream & file)
 {
+#if 0
     std::string result;
     if (line_after(file, "[comments]", 0, false))   /* 1st line w/out strip */
+    {
+        do
+        {
+            result += line();
+            result += "\n";
+
+        } while (next_data_line(file, false));      /* no strip here either */
+    }
+    return result;
+#else
+    return parse_section_option(file, "[comments]");
+#endif
+}
+
+std::string
+configfile::parse_section_option
+(
+    std::ifstream & file,
+    const std::string & secname
+)
+{
+    std::string result;
+    if (line_after(file, secname, 0, false))   /* 1st line w/out strip */
     {
         do
         {
@@ -492,6 +523,12 @@ configfile::get_boolean
     return util::string_to_bool(value, defalt);
 }
 
+/**
+ *  Note that this function is very basic. In inifile::write(), we instead
+ *  get the stock [Cfg66] section via the function cfg ::
+ *  get_inifile_cfg66_section() and write that.
+ */
+
 void
 configfile::write_cfg66_header
 (
@@ -510,7 +547,7 @@ void
 configfile::write_cfg66_footer (std::ofstream & file)
 {
     file
-        << "\n# End of " << name() <<
+        << "\n# End of " << file_name() <<
         "\n#\n# vim: sw=4 ts=4 wm=4 et ft=dosini\n"
         ;
 }
@@ -676,6 +713,12 @@ configfile::write_file_status
         << "name = " << quoted << "\n"
         ;
 }
+
+/**
+ *  Note that this function is very basic. In inifile::write(), we instead
+ *  get the stock [comment] section via the function cfg ::
+ *  get_inifile_comment_section() and write that.
+ */
 
 void
 configfile::write_comment
@@ -909,7 +952,7 @@ configfile::write_date (std::ofstream & file, const std::string & tag)
         file << "# " << tag << "\n";
 
     file
-        << "#\n# File: " << name() << "\n"
+        << "#\n# File: " << file_name() << "\n"
         << "# Written: " << get_current_date_time() << "\n"
         ;
 }
@@ -958,9 +1001,9 @@ configfile::set_up_ifstream (std::ifstream & instream)
             char temp[128];
             snprintf
             (
-                temp, sizeof temp, "Version not found: %s\n", name().c_str()
+                temp, sizeof temp, "Version not found: %s\n", file_name().c_str()
             );
-            result = make_error_message(file_extension(), temp);
+            result = make_error_message(file_type(), temp);
         }
         else
         {
@@ -978,8 +1021,8 @@ configfile::set_up_ifstream (std::ifstream & instream)
     else
     {
         char temp[128];
-        snprintf(temp, sizeof temp, "Read open fail: %s\n", name().c_str());
-        result = make_error_message(file_extension(), temp);
+        snprintf(temp, sizeof temp, "Read open fail: %s\n", file_name().c_str());
+        result = make_error_message(file_type(), temp);
     }
     return result;
 }

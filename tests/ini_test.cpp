@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-07-25
- * \updates       2024-06-15
+ * \updates       2024-06-17
  * \license       See above.
  *
  *  Rationale:
@@ -65,7 +65,8 @@
 #include <cstdlib>                      /* EXIT_SUCCESS, EXIT_FAILURE       */
 #include <iostream>                     /* std::cout                        */
 
-#include "cfg/inifile.hpp"              /* cfg::inifile class, etc.     */
+#include "cfg/appinfo.hpp"              /* cfg::appinfo functions           */
+#include "cfg/inifile.hpp"              /* cfg::inifile class, etc.         */
 #include "cfg/inisections.hpp"          /* cfg::inisections class, etc.     */
 #include "cfg/options.hpp"              /* cfg::options class               */
 #include "cli/parser.hpp"               /* cli::parser class                */
@@ -380,6 +381,8 @@ main (int argc, char * argv [])
     int rcode = EXIT_FAILURE;
     cfg::options optionset(s_test_options);
     cli::parser clip(optionset);
+    cfg::set_client_name("ini");
+
     bool success = clip.parse(argc, argv);      /* NO OPTIONS YET */
     if (success)
     {
@@ -460,9 +463,14 @@ main (int argc, char * argv [])
             }
             else
             {
-                cfg::inisections sections("foo", exp_file_data);
-                cfg::inifile f(sections, "foo", "session");
-                success = f.write();
+                cfg::inisections sections("fooout", exp_file_data);
+                cfg::inifile f_out(sections, "tests/data/fooout", "rc");
+                success = f_out.write();
+                if (success)
+                {
+                    cfg::inifile f_in(sections, "tests/data/fooin", "rc");
+                    success = f_in.parse();
+                }
             }
         }
     }

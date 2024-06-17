@@ -28,7 +28,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2024-06-15
+ * \updates       2024-06-16
  * \license       GNU GPLv2 or above
  *
  *  This is actually an elegant little parser, and works well as long as one
@@ -61,6 +61,10 @@ private:
 
 #endif
 
+    /**
+     *  The set of "[xyz]" sections, with values, in the file.
+     */
+
     inisections m_ini_sections;
 
 public:
@@ -69,7 +73,7 @@ public:
     (
         inisections & sections,
         const std::string & name,
-        const std::string & fileext
+        const std::string & cfgtype
     );
 
     inifile () = delete;
@@ -98,6 +102,11 @@ protected:
     }
      */
 
+    void parse_section
+    (
+        std::ifstream & file,
+        inisection & section
+    );
     void write_section
     (
         std::ofstream & file,

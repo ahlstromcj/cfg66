@@ -28,7 +28,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2024-06-15
+ * \updates       2024-06-17
  * \license       GNU GPLv2 or above
  *
  *  This is actually an elegant little parser, and works well as long as one
@@ -137,14 +137,14 @@ private:
      *  The file extension of the configuration file.
      */
 
-    std::string m_file_extension;
+    std::string m_file_type;
 
     /**
      *  Provides the name of the configuration or other file being parsed.
      *  This will normally be a full-path specification.
      */
 
-    std::string m_name;
+    std::string m_file_name;
 
     /**
      *  Provides the current version of the derived configuration file format.
@@ -194,7 +194,7 @@ public:
     configfile
     (
         const std::string & name,
-        const std::string & fileext
+        const std::string & cfgtype
     );
 
     configfile () = delete;
@@ -216,22 +216,27 @@ public:
     virtual bool write () = 0;
 
     std::string parse_comments (std::ifstream & file);
+    std::string parse_section_option
+    (
+        std::ifstream & file,
+        const std::string & secname
+    );
     std::string parse_version (std::ifstream & file);
     bool file_version_old (std::ifstream & file);
 
-    const std::string & file_extension () const
+    const std::string & file_type () const
     {
-        return m_file_extension;
+        return m_file_type;
     }
 
-    const std::string & name () const
+    const std::string & file_name () const
     {
-        return m_name;
+        return m_file_name;
     }
 
-    void name (const std::string & n)
+    void file_name (const std::string & n)
     {
-        m_name = n;
+        m_file_name = n;
     }
 
     const std::string & version () const

@@ -153,7 +153,7 @@ extern bool filename_split_ext
 (
     const std::string & fullpath,
     std::string & path,
-    std::string & filebare,
+    std::string & filebase,
     std::string & ext
 );
 extern std::string file_path_set

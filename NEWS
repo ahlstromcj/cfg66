@@ -1,10 +1,10 @@
 NEWS for Cfg66 0.2
 Chris Ahlstrom
-2024-04-15 to 2024-06-14
+2024-04-15 to 2024-06-17
 
 # Changelog
 
-## [0.2] - 2024-06-14
+## [0.2] - 2024-06-17
 
 ### Added
 
@@ -13,14 +13,17 @@ Chris Ahlstrom
 - Added a test for the util::bytevector class.
 - Renamed the cfg::inifile class to "inisections" because it was misleading.
 - Added an actual cfg::inifile class to extend cfg::configfile.
+- Beefed up the ini\_test application to write and parse a sample
+  configuration file.
 
 ### Fixed
 
-- No fixes unrelated to util::bytevector.
+- Fixes related to util::bytevector.
+- Many fixes found while implementing the inifile class.
 
 ### Changed
 
-- No changes  unrelated to util::bytevector, except for updating the
+- No changes unrelated to util::bytevector, except for updating the
   relevant meson.build files..
 
 ### Removed
