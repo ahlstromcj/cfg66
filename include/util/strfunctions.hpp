@@ -119,7 +119,7 @@ extern bool string_to_int_pair
 (
     const std::string & s,
     int & v1, int & v2,
-    const std::string & delimiter
+    const std::string & delimiter = " "
 );
 extern double string_to_double
 (

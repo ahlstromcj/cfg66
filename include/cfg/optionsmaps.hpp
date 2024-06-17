@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-01-08
- * \updates       2023-07-22
+ * \updates       2024-06-17
  * \license       See above.
  *
  */
@@ -134,7 +134,7 @@ public:
 
     bool option_is_int (const std::string & s) const
     {
-        return s.option_kind == "int";
+        return s.option_kind == "integer";
     }
 
     bool option_is_float (const std::string & s) const

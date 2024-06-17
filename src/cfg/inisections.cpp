@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-06-16
+ * \updates       2024-06-17
  * \license       See above.
  *
  * Operations to support:
@@ -188,7 +188,8 @@ inisection::inisection
 std::string
 inisection::settings_text () const
 {
-    std::string result = description_commented();
+    std::string result = "\n";
+    result += description_commented();
     result += "\n";
     result += name();
     result += "\n\n";
@@ -281,15 +282,15 @@ inisection::specification inifile_cfg66_data
             "config-type",
             {
                 options::code_null, "string", options::disabled,
-                "session", "session", false, false,
+                "session", "", false, false,
                 "The type of configuration file.", false
             }
         },
         {
             "version",
             {
-                options::code_null, "int", options::disabled,
-                "0", "0", false, false,
+                options::code_null, "integer", options::disabled,
+                "0", "", false, false,
                 "Configuration file version.", false
             }
         }
@@ -308,7 +309,7 @@ inisection::specification inifile_comment_data
             "comment",
             {
                 options::code_null, "section", options::disabled,
-                "Add your comment block here.", "Add your comment block here.",
+                "Add your comment block here.", "",
                 false, false, "Configuration file user comments.", false
             }
         }
@@ -330,7 +331,7 @@ static std::string s_stock_file_intro
 };
 
 inisections::inisections (const std::string & ininame) :
-    m_app_version   ("Cfg66-based application configuration file"),
+    m_app_version   ("Cfg66-based configuration file"),
     m_directory     (),
     m_name          (),
     m_extension     (),
@@ -373,9 +374,9 @@ inisections::inisections
     inisections::specification & spec
 ) :
     m_app_version   ("Cfg66-based application configuration file"),
-    m_directory     (),
-    m_name          (),
-    m_extension     (),
+    m_directory     (spec.file_directory),
+    m_name          (spec.file_basename),
+    m_extension     (spec.file_extension),
     m_description   (spec.file_description),
     m_section_list  ()
 {
@@ -419,35 +420,20 @@ inisections::add_options_to_map (inimap & mapp)
 /**
  *  In the actual file writing, we will let the enclosing file class (a
  *  variant on cfg::configfile) write the date first.
- *
- *  IS THIS USEFUL???
  */
 
 std::string
 inisections::settings_text () const
 {
-    std::string result = m_app_version + "\n";
     std::string filespec = util::filename_concatenate(m_directory, m_name);
-    result += s_stock_file_intro + "\n";
-    result += filespec + "\n";
-    result += m_description + "\n";
+    std::string result = "# ";
+    result += m_app_version + "\n# INI: "; // result += s_stock_file_intro + "\n"
+    result += filespec + "\n# ";
+    result += m_description + "\n#";
 
     for (auto sec : m_section_list)
-    {
         result += sec.settings_text();
-    }
 
-#if 0
-    std::string result = description_commented();
-    result += "\n";
-    result += name();
-    result += "\n\n";
-    for (const auto & s : option_names())
-    {
-        result += option_set().setting_line(s);
-        result += "\n";
-    }
-#endif
     return result;
 }
 

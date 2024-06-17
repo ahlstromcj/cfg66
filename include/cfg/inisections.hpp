@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-02-25
- * \updates       2024-06-15
+ * \updates       2024-06-17
  * \license       See above.
  *
  *  We want to provide a list of { filename, sectionname } pairs, and
@@ -252,12 +252,12 @@ public:
         return m_option_names;
     }
 
-    options option_set ()
+    options & option_set ()
     {
         return m_options;
     }
 
-    const options option_set () const
+    const options & option_set () const
     {
         return m_options;
     }

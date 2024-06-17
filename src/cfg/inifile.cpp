@@ -89,16 +89,15 @@ inifile::parse ()
         {
             /*
              *  To do: modify the stored comment.
-             */
 
             std::string comments = parse_comments(file);
             if (! comments.empty())
             {
-#if defined PLATFORM_DEBUG
+#if defined PLATFORM_DEBUG_TMI
                 printf("[comments] %s\n", comments.c_str());
 #endif
-                // TODO
             }
+             */
 
             inisections::sectionlist & sections = m_ini_sections.section_list();
             for (auto & section : sections)
@@ -115,28 +114,23 @@ inifile::parse_section
     inisection & section
 )
 {
-    const options & opset = section.option_set();
+    options & opset = section.option_set();
     options::container opspecs = opset.option_pairs();
-    for (const auto & opt : opspecs)
+#if defined PLATFORM_DEBUG_TMI
+    printf("SECTION %s\n", section.name().c_str());
+#endif
+    for (auto & opt : opspecs)
     {
+        const std::string & name = opt.first;
         if (opset.option_is_section(opt.second))
         {
             std::string value = parse_section_option(file, section.name());
-#if defined PLATFORM_DEBUG
-            printf("%s %s\n", section.name().c_str(), value.c_str());
-#endif
+            (void) opset.set_value(name, value);
         }
         else
         {
-            const std::string & name = opt.first;
-            std::string value = get_variable(file, section.name(), name); // 0
-#if defined PLATFORM_DEBUG
-            printf
-            (
-                "%s %s = %s\n",
-                section.name().c_str(), name.c_str(), value.c_str()
-            );
-#endif
+            std::string value = get_variable(file, section.name(), name);
+            (void) opset.set_value(name, value);
         }
     }
 }
@@ -161,13 +155,17 @@ inifile::write ()
 
         /*
          * Stock [Cfg66] and [comments] sections.
-         */
+         *
+         * It's too problematic to have these built in.
+         *
 
         const inisection & cfg66sec = get_inifile_cfg66_section();
         write_section(file, cfg66sec);
 
         const inisection & commsec = get_inifile_comment_section();
         write_section(file, commsec);
+         *
+         */
 
         /*
          * Write the rest of the sections.

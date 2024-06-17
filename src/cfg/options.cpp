@@ -485,6 +485,95 @@ options::verify () const
 }
 
 /**
+ *  Sets the option's value.
+ *
+ * \param name
+ *      The long name of the option.  We will always externally look for the
+ *      long name, for the sake of the human reader/programmer. Note that
+ *      each inisection has its own options object, so that searches look
+ *      only in that object; thus, options in different inisections can safely
+ *      have the same name.
+ *
+ * \param value
+ *      The value to be assigned.  This can be empty.  For boolean options,
+ *      "true" sets the boolean, and any other value falsifies it. Since this
+ *      is a string, when applied to numbers the modification test can fail
+ *      even if the numbers are the same (e.g. "0" vs "0.0" for float value).
+ *
+ * \return
+ *      Returns true if the option was found and it's value actually changed.
+ *      However, the option's modify flag is NOT set. This allows for reading
+ *      option values from the command line or from a configuration file without
+ *      causing options to be saved at application exit.
+ */
+
+bool
+options::set_value
+(
+    const std::string & name,
+    const std::string & value
+)
+{
+    bool result = ! name.empty();
+    if (result)
+    {
+        auto opt = find_match(name);
+        result = option_exists(opt);
+        if (result)
+        {
+            spec & ncop = const_cast<spec &>(opt->second);
+            result = value != ncop.option_value;
+            if (result)
+            {
+                if (option_is_boolean(ncop))
+                {
+                    std::string newvalue = "true";
+                    if (value != "true")
+                        newvalue = "false";
+
+                    ncop.option_value = newvalue;
+                }
+                else if (option_is_int(ncop))
+                {
+                    int minimum;
+                    int maximum;
+                    int defalt = integer_value_range(name, minimum, maximum);
+                    if (value.empty())
+                    {
+                        ncop.option_value = std::to_string(defalt);
+                    }
+                    else
+                    {
+                        int iv = util::string_to_int(value);
+                        if (iv >= minimum && iv <= maximum)
+                            ncop.option_value = value;
+                    }
+                }
+                else if (option_is_float(ncop))
+                {
+                    float minimum;
+                    float maximum;
+                    float defalt = floating_value_range(name, minimum, maximum);
+                    if (value.empty())
+                    {
+                        ncop.option_value = std::to_string(defalt);
+                    }
+                    else
+                    {
+                        float iv = float(util::string_to_double(value));
+                        if (iv >= minimum && iv <= maximum)
+                            ncop.option_value = value;
+                    }
+                }
+                else
+                    ncop.option_value = value;
+            }
+        }
+    }
+    return result;
+}
+
+/**
  *  Changes the option's value, if found.
  *
  * \param name
@@ -511,74 +600,14 @@ options::change_value
     bool fromcli
 )
 {
-    bool result = ! name.empty();
+    bool result = set_value(name, value);
     if (result)
     {
-        auto opt = find_match(name);
-        result = option_exists(opt);
-        if (result)
-        {
-            spec & ncop = const_cast<spec &>(opt->second);
-            if (value != ncop.option_value)
-            {
-                if (option_is_boolean(ncop))
-                {
-                    std::string newvalue = "true";
-                    if (value != "true")
-                        newvalue = "false";
-
-                    ncop.option_value = newvalue;
-                    ncop.option_modified = true;
-                }
-                else if (option_is_int(ncop))
-                {
-                    int minimum;
-                    int maximum;
-                    int defalt = integer_value_range(name, minimum, maximum);
-                    if (value.empty())
-                    {
-                        ncop.option_value = std::to_string(defalt);
-                        ncop.option_modified = true;
-                    }
-                    else
-                    {
-                        int iv = util::string_to_int(value);
-                        if (iv >= minimum && iv <= maximum)
-                        {
-                            ncop.option_value = value;
-                            ncop.option_modified = true;
-                        }
-                    }
-                }
-                else if (option_is_float(ncop))
-                {
-                    float minimum;
-                    float maximum;
-                    float defalt = floating_value_range(name, minimum, maximum);
-                    if (value.empty())
-                    {
-                        ncop.option_value = std::to_string(defalt);
-                        ncop.option_modified = true;
-                    }
-                    else
-                    {
-                        float iv = float(util::string_to_double(value));
-                        if (iv >= minimum && iv <= maximum)
-                        {
-                            ncop.option_value = value;
-                            ncop.option_modified = true;
-                        }
-                    }
-                }
-                else
-                {
-                    ncop.option_value = value;
-                    ncop.option_modified = true;
-                }
-            }
-            if (ncop.option_modified && fromcli)
-                ncop.option_read_from_cli = true;
-        }
+        auto opt = find_match(name);                /* always succeeds here */
+        spec & ncop = const_cast<spec &>(opt->second);
+        ncop.option_modified = true;
+        if (fromcli)
+            ncop.option_read_from_cli = true;
     }
     return result;
 }

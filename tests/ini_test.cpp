@@ -285,11 +285,18 @@ static cfg::inisection::specification s_section_spec
     }
 };
 
+/**
+ *  Provide some sample inisections. Note the inclusion of the pre-made
+ *  cfg66 and comment sections defined in the inisections.cpp file.
+ */
+
 static cfg::inisections::specification exp_file_data
 {
     "exp", "~/.config/experiment/", "exp.session",
     "This is a test INI file specification.",
     {
+        std::ref(cfg::inifile_cfg66_data),
+        std::ref(cfg::inifile_comment_data),
         s_simple_ini_spec,
         s_section_spec
     }
@@ -428,48 +435,30 @@ main (int argc, char * argv [])
 
         }
 
-#if defined USE_SIMPLE_TEST
-        cfg::inisection experiment{s_simple_ini_spec};
-        success = ! experiment.option_set().empty();
-        if (success)
-        {
-            std::cout
-                << "EXPERIMENT SETTINGS:\n\n"
-                << experiment.settings_text() << std::endl
-                ;
-
-            /*
-             * Now add experiment options to the parser.
-             */
-
-            clip.add(experiment.option_set());
-        }
-#else
         cfg::inisections ini_experiment("experiment", exp_file_data);
         std::string settings = ini_experiment.settings_text();
         std::cout
-            << "INIFILE SETTINGS:\n\n"
+            << "======== INIFILE SETTINGS ========\n"
             << settings
+            << "========   SETTINGS END   ========\n"
             ;
-#endif
         if (success)
         {
-            if (clip.help_request())
+            cfg::inisections sections("fooout", exp_file_data);
+            cfg::inifile f_out(sections, "tests/data/fooout", "rc");
+            success = f_out.write();
+            if (success)
             {
-                std::cout
-                    << "Command-line --help Text:\n\n"
-                    << clip.help_text()
-                    ;
-            }
-            else
-            {
-                cfg::inisections sections("fooout", exp_file_data);
-                cfg::inifile f_out(sections, "tests/data/fooout", "rc");
-                success = f_out.write();
+                cfg::inisections sections2("fooout", exp_file_data);
+                cfg::inifile f_in(sections2, "tests/data/fooin", "rc");
+                success = f_in.parse();
                 if (success)
                 {
-                    cfg::inifile f_in(sections, "tests/data/fooin", "rc");
-                    success = f_in.parse();
+                    cfg::inifile f_inout
+                    (
+                        sections2, "tests/data/fooinout", "rc"
+                    );
+                    success = f_inout.write();
                 }
             }
         }

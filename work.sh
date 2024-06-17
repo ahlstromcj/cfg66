@@ -8,7 +8,7 @@
 # \library        cfg66
 # \author         Chris Ahlstrom
 # \date           2024-02-06
-# \update         2024-06-01
+# \update         2024-06-17
 # \version        $Revision$
 # \license        $XPC_SUITE_GPL_LICENSE$
 #
@@ -30,7 +30,7 @@ LANG=C
 export LANG
 CYGWIN=binmode
 export CYGWIN
-export CFG66_SCRIPT_EDIT_DATE="2024-06-01"
+export CFG66_SCRIPT_EDIT_DATE="2024-06-17"
 export CFG66_LIBRARY_API_VERSION="0.2"
 export CFG66_LIBRARY_VERSION="$CFG66_LIBRARY_API_VERSION.0"
 export CFG66="cfg66"
@@ -242,7 +242,7 @@ if test $DOCLEAN = "yes" ; then
    rm -f doc/dox/*.log
    rm -f doc/latex/*.log
    echo "Build products removed from the cfg66/build directory."
-   git checkout doc/cfg66-library-guide.pdf
+   git checkout doc/cfg66-library-guide.pdf tests/data/fooout.rc
    echo "Previous version of developer guide restored."
 fi
 

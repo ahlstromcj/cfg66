@@ -55,6 +55,7 @@
 #include <map>                          /* std::map container               */
 
 #include "cpp_types.hpp"                /* enum class opt                   */
+#include "platform_macros.h"            /* PLATFORM_DEBUG etc.              */
 
 /**
  *  Versions less than C++20 cannot use initializer lists with structures that
@@ -130,22 +131,23 @@ public:
 
     /**
      *  The kinds of options supported, mostly representing various
-     *  data-types.
+     *  data-types. In the actual spec structures, these are defined
+     *  using their corresponding kind-to-string values.
      */
 
     enum class kind
     {
-        boolean,                        /* values are "true" or "false"     */
-        filename,                       /* a quoted file specification      */
-        floating,                       /* a float or double value          */
-        floatpair,                      /* two float or double values       */
-        integer,                        /* an integer value                 */
-        intpair,                        /* two integer values               */
-        list,                           /* integer value counting elements  */
-        overflow,                       /* an --option or -o option         */
-        section,                        /* only an un-named string value    */
-        string,                         /* a quoted string                  */
-        dummy                           /* used when option can't be found  */
+        boolean,                    /**< Values are "true" or "false".      */
+        filename,                   /**< A quoted file specification.       */
+        floating,                   /**< A float or double value.           */
+        floatpair,                  /**< Two float or double values.        */
+        integer,                    /**< An integer value.                  */
+        intpair,                    /**< Two integer values, e.g. "x y".    */
+        list,                       /**< Integer value counting elements.   */
+        overflow,                   /**< An --option or -o option.          */
+        section,                    /**< Only an un-named string value.     */
+        string,                     /**< A quoted string.                   */
+        dummy                       /**< Used when option can't be found.   */
     };
 
     /**
@@ -305,6 +307,11 @@ public:
     bool add (const options::option & op);
     bool add (const options & os);
     bool verify () const;
+    bool set_value
+    (
+        const std::string & name,
+        const std::string & value
+    );
     bool change_value
     (
         const std::string & name,

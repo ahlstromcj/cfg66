@@ -63,9 +63,13 @@ private:
 
     /**
      *  The set of "[xyz]" sections, with values, in the file.
+     *  This object is usually a global object, meant to apply
+     *  to the whole application. Therefore this value should not
+     *  be a copy, but a reference, otherwise changes would be
+     *  hidden.
      */
 
-    inisections m_ini_sections;
+    inisections & m_ini_sections;
 
 public:
 
