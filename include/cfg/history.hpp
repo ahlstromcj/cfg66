@@ -27,7 +27,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-01-06
- * \updates       2023-07-30
+ * \updates       2024-06-18
  * \license       GNU GPLv2 or above
  *
  *  Documented in the cpp file.
@@ -52,7 +52,7 @@ class options;
  *  TYPE must have:
  *
  *      -   Default constructor
- *      -   Copy construction
+ *      -   Copy constructor
  *      -   Principal assignment operator
  */
 
@@ -94,12 +94,14 @@ public:
     explicit history (size_t maximum, const TYPE & firstone);
     ~history () = default;
     history (const history &) = default;
+    history (history &&) = delete;
     history & operator = (const history &) = default;
+    history & operator = (history &&) = delete;
 
     bool active () const
     {
         return m_history_list.size() > 0;
-    }
+  }
 
     size_t max_size () const
     {

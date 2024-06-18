@@ -28,7 +28,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2024-06-16
+ * \updates       2024-06-18
  * \license       GNU GPLv2 or above
  *
  *  This is actually an elegant little parser, and works well as long as one
@@ -91,20 +91,6 @@ public:
     virtual bool write () override;
 
 protected:
-
-    /**
-     *  Sometimes we need to know if there are new data lines at the end of an
-     *  existing section.  One clue that there is not is that we're at the
-     *  next section marker.  This function tests for that condition.
-     *
-     * \return
-     *      Returns true if m_line[0] is the left-bracket character.
-
-    bool at_section_start () const
-    {
-        return m_line[0] == '[';
-    }
-     */
 
     void parse_section
     (

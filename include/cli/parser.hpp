@@ -161,6 +161,15 @@ public:
         return option_set().verify();
     }
 
+    bool set_value
+    (
+        const std::string & name,
+        const std::string & value
+    )
+    {
+        return option_set().change_value(name, value);
+    }
+
     bool change_value
     (
         const std::string & name,

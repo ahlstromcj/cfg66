@@ -283,7 +283,7 @@ public:
  *------------------------------------------------------------------------*/
 
 /**
- *  Provides a list of INI section names for a given INI file.
+ *  Provides a list of INI section specifications for a given INI file.
  */
 
 class inisections
@@ -414,9 +414,9 @@ public:
  *------------------------------------------------------------------------*/
 
 /**
- *  Holds a list of inisections objects. Represents all of the files, and all of
- *  the options that are held by the files.  The options are in a single list,
- *  and the INI items look them up by name.
+ *  Holds a list of inisections objects. Represents all of the files, and all
+ *  of the options that are held by the files.  The options are in a single
+ *  list, and the INI items look them up by name.
  *
  *  NOT SURE THIS CONCEPT IS USEFUL.
  */
