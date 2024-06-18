@@ -1395,7 +1395,7 @@ widen_string (const std::string & source)
     if (source.empty())
         return std::wstring();          /* trivial case of empty string     */
 
-#if defined SEQ66_PLATFORM_WINDOWS
+#if defined CFG66_PLATFORM_WINDOWS
     size_t required_length = ::MultiByteToWideChar
     (
         CP_UTF8, 0, source.c_str(), int(source.length()), 0, 0
@@ -1403,7 +1403,8 @@ widen_string (const std::string & source)
     std::wstring result(required_length, L'\0');
     ::MultiByteToWideChar
     (
-        CP_UTF8, 0, source.c_str(), int(source.length()), &result[0], int(result.length())
+        CP_UTF8, 0, source.c_str(), int(source.length()),
+        &result[0], int(result.length())
     );
     return result;
 #else

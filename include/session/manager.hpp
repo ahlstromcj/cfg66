@@ -28,7 +28,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2020-05-30
- * \updates       2024-01-20
+ * \updates       2024-06-17
  * \license       GNU GPLv2 or above
  *
  *  This class provides a process for starting, running, restarting, and
@@ -150,8 +150,8 @@ public:
     manager ();
     manager
     (
-        const cfg::options & optset,  // no filename or sectionname ?
-        const directories::entries & fileentries,
+        const cfg::options & optset,
+        directories & fileentries,
         const std::string & cfgname = "",
         const std::string & comtext = "",
         const std::string & caps = "",

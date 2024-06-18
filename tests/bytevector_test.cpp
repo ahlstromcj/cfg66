@@ -19,7 +19,7 @@
 /**
  * \file          bytevector_test.cpp
  *
- *      A test-file for the rudimentary CLI parser class and C API.
+ *      A test-file for the bytevector big-endian data class.
  *
  * \library       cfg66
  * \author        Chris Ahlstrom
@@ -102,7 +102,9 @@ basic_string_io ()
 }
 
 /*
- *  File I/O test.
+ *  File I/O test using a MIDI file. MIDI files, like network data, are
+ *  big-endian. (Intel processors are little endian, Motorola processors are
+ *  big-endian).
  */
 
 static bool

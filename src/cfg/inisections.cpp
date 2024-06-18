@@ -101,6 +101,8 @@ inisection ::
 namespace cfg
 {
 
+#if defined CFG66_USE_INIMAP
+
 /*------------------------------------------------------------------------
  * inimap
  *------------------------------------------------------------------------*/
@@ -140,6 +142,8 @@ inimap::add_option (const std::string & option_name, options::spec & op)
     }
     return result;
 }
+
+#endif  // defined CFG66_USE_INIMAP
 
 /*------------------------------------------------------------------------
  * inisection
@@ -209,6 +213,8 @@ inisection::settings_text () const
  *  of the option name and the option spec structure.
  */
 
+#if defined CFG66_USE_INIMAP
+
 bool
 inisection::add_options_to_map (inimap & mapp)
 {
@@ -221,6 +227,8 @@ inisection::add_options_to_map (inimap & mapp)
     }
     return result;
 }
+
+#endif  // defined CFG66_USE_INIMAP
 
 /**
  *  Adds the "#" comment marker to the beginning of each description
@@ -404,6 +412,8 @@ inisections::inisections
     }
 }
 
+#if defined CFG66_USE_INIMAP
+
 bool
 inisections::add_options_to_map (inimap & mapp)
 {
@@ -416,6 +426,8 @@ inisections::add_options_to_map (inimap & mapp)
     }
     return result;
 }
+
+#endif  // defined CFG66_USE_INIMAP
 
 /**
  *  In the actual file writing, we will let the enclosing file class (a
@@ -436,6 +448,8 @@ inisections::settings_text () const
 
     return result;
 }
+
+#if defined CFG66_USE_INIFILES
 
 /*------------------------------------------------------------------------
  * inifiles
@@ -463,6 +477,8 @@ inifiles::add (const inisections & file)
     bool result = ncfile.add_options_to_map(m_all_options);
     return result;
 }
+
+#endif      // defined CFG66_USE_INIFILES
 
 /*------------------------------------------------------------------------
  * Free functions

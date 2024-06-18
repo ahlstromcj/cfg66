@@ -1,5 +1,5 @@
-#if ! defined SEQ66_CFG_INIFILE_HPP
-#define SEQ66_CFG_INIFILE_HPP
+#if ! defined CFG66_CFG_INIFILE_HPP
+#define CFG66_CFG_INIFILE_HPP
 
 /*
  *  This file is part of cfg66.
@@ -121,7 +121,7 @@ protected:
 
 }           // namespace cfg
 
-#endif      // SEQ66_CFG_INIFILE_HPP
+#endif      // CFG66_CFG_INIFILE_HPP
 
 /*
  * inifile.hpp

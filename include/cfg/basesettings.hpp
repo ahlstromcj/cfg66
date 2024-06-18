@@ -22,8 +22,7 @@
 /**
  * \file          basesettings.hpp
  *
- *  This module declares/defines just some of the global (gasp!) variables
- *  in this application.
+ *  This module declares/defines basic configuration settings.
  *
  * \library       cfg66 application
  * \author        Chris Ahlstrom
@@ -103,8 +102,8 @@ private:
     /**
      *  [comments]
      *
-     *  Provides a way to embed comments in the "usr" file and not lose
-     *  them when the "usr" file is auto-saved.
+     *  Provides a way to embed comments in the configuration file and not lose
+     *  them when the file is auto-saved.
      */
 
     comments m_comments_block;

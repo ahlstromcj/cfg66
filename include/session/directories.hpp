@@ -202,6 +202,26 @@ public:
         const std::string & filebase
     ) const;
 
+    entries & file_entries ()
+    {
+        return m_file_entries;
+    }
+
+    const entries & file_entries () const
+    {
+        return m_file_entries;
+    }
+
+    filespecs & file_specs ()
+    {
+        return m_file_specs;
+    }
+
+    const filespecs & file_specs () const
+    {
+        return m_file_specs;
+    }
+
 protected:
 
     bool make_file_spec

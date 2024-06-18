@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-02-25
- * \updates       2024-06-17
+ * \updates       2024-06-18
  * \license       See above.
  *
  *  We want to provide a list of { filename, sectionname } pairs, and
@@ -54,12 +54,22 @@
 
 #include "cfg/options.hpp"              /* cfg::options class               */
 
+
+/*
+ *  Not sure we really need these concepts.
+ */
+
+#undef CFG66_USE_INIMAP
+#undef CFG66_USE_INIFILES
+
 /*
  * Do not document the namespace; it breaks Doxygen.
  */
 
 namespace cfg
 {
+
+#if defined CFG66_USE_INIMAP
 
 /*------------------------------------------------------------------------
  * inimap
@@ -112,6 +122,8 @@ public:
     bool add_option (const std::string & option_name, options::spec & op);
 
 };
+
+#endif  // defined CFG66_USE_INIMAP
 
 /*------------------------------------------------------------------------
  * inisection
@@ -221,7 +233,9 @@ public:
         return m_options.add(opts);
     }
 
+#if defined CFG66_USE_INIMAP
     bool add_options_to_map (inimap & mapp);
+#endif
 
     bool add_name (const std::string & optionname)
     {
@@ -387,9 +401,13 @@ public:
         return m_section_list;
     }
 
+#if defined CFG66_USE_INIMAP
     bool add_options_to_map (inimap & mapp);
+#endif
 
 };          // class inisections
+
+#if defined CFG66_USE_INIFILES
 
 /*------------------------------------------------------------------------
  * inifiles
@@ -470,6 +488,8 @@ public:
     }
 
 };          // class inifiles
+
+#endif      // defined CFG66_USE_INIFILES
 
 /*------------------------------------------------------------------------
  * Reusable objects for "[Cfg66]" and "[comments]"

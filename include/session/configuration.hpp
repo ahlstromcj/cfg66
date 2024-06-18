@@ -28,7 +28,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2020-05-30
- * \updates       2024-01-15
+ * \updates       2024-06-17
  * \license       GNU GPLv2 or above
  *
  *  session::configuration contains and manages the data in the 'session'
@@ -80,9 +80,10 @@ private:
 
     /**
      *  Provides the file/directory data needed by the session.
+     *  But the directories class already provides one of these!!! TODO
+     *
+     *      directories::entries m_file_entries;
      */
-
-    directories::entries m_file_entries;
 
     /**
      *  Provides basic session directory management.
@@ -106,7 +107,6 @@ private:
      *  [auto-option-save]
      *
      *  If true (the default), all modified configuration files are saved.
-     *  (Modified Ddata is always saved.)
      */
 
     bool m_auto_option_save;
@@ -116,7 +116,7 @@ public:
     configuration ();
     configuration
     (
-        const directories::entries & fileentries,
+        directories & fileentries,
         const std::string & cfgname,
         const std::string & comtext = "",
         int version = 0,
@@ -138,6 +138,16 @@ public:
     const directories & dir_manager () const
     {
         return m_dir_manager;
+    }
+
+    directories::entries & file_entries ()
+    {
+        return dir_manager().file_entries();
+    }
+
+    const directories::entries & file_entries () const
+    {
+        return dir_manager().file_entries();
     }
 
 /*

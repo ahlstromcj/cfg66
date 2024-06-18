@@ -1,5 +1,5 @@
-#if ! defined SEQ66_CFG_CONFIGFILE_HPP
-#define SEQ66_CFG_CONFIGFILE_HPP
+#if ! defined CFG66_CFG_CONFIGFILE_HPP
+#define CFG66_CFG_CONFIGFILE_HPP
 
 /*
  *  This file is part of cfg66.
@@ -28,7 +28,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2024-06-17
+ * \updates       2024-06-18
  * \license       GNU GPLv2 or above
  *
  *  This is actually an elegant little parser, and works well as long as one
@@ -501,7 +501,7 @@ extern std::string get_current_date_time ();
 
 }           // namespace cfg
 
-#endif      // SEQ66_CFG_CONFIGFILE_HPP
+#endif      // CFG66_CFG_CONFIGFILE_HPP
 
 /*
  * configfile.hpp

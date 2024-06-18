@@ -1,5 +1,5 @@
-#if ! defined SEQ66_SESSION_CLIMANAGER_HPP
-#define SEQ66_SESSION_CLIMANAGER_HPP
+#if ! defined CFG66_SESSION_CLIMANAGER_HPP
+#define CFG66_SESSION_CLIMANAGER_HPP
 
 /*
  *  This file is part of cfg66.
@@ -119,7 +119,7 @@ private:
 
 }           // namespace session
 
-#endif      // SEQ66_SESSION_CLIMANAGER_HPP
+#endif      // CFG66_SESSION_CLIMANAGER_HPP
 
 /*
  * climanager.hpp

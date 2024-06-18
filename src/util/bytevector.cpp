@@ -19,13 +19,21 @@
 /**
  * \file          bytevector.cpp
  *
- *  This module declares/defines the base class for MIDI files.
+ *  This module declares/defines the base class for handling data in
+ *  big-endian fashion.
  *
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-05-16
  * \updates       2024-05-21
  * \license       GNU GPLv2 or above
+ *
+ *  The bytevector class is meant to handle big-endian data in a byte-by-byte
+ *  manner. We could have called it "bigendianvector" or "bigbytevector.".
+ *
+ *  One usage for this class is to extract datad from MIDI files. MIDI files,
+ *  like network data, are big-endian. (Intel processors are little endian,
+ *  Motorola processors are big-endian).
  */
 
 #include <fstream>                      /* std::ifstream & std::ofstream    */

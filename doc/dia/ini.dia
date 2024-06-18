@@ -1238,7 +1238,7 @@
         <dia:real val="8.1999999999999993"/>
       </dia:attribute>
       <dia:attribute name="name">
-        <dia:string>#cfg::inifile#</dia:string>
+        <dia:string>#cfg::inisection#</dia:string>
       </dia:attribute>
       <dia:attribute name="stereotype">
         <dia:string>##</dia:string>
@@ -1525,7 +1525,7 @@
         </dia:composite>
         <dia:composite type="umloperation">
           <dia:attribute name="name">
-            <dia:string>#inifile#</dia:string>
+            <dia:string>#inisection#</dia:string>
           </dia:attribute>
           <dia:attribute name="stereotype">
             <dia:string>##</dia:string>
@@ -1574,7 +1574,7 @@
                 <dia:string>#spec#</dia:string>
               </dia:attribute>
               <dia:attribute name="type">
-                <dia:string>#inifile::specification#</dia:string>
+                <dia:string>#inisection::specification#</dia:string>
               </dia:attribute>
               <dia:attribute name="value">
                 <dia:string>##</dia:string>
@@ -2996,7 +2996,7 @@
         <dia:real val="2.1999999999999997"/>
       </dia:attribute>
       <dia:attribute name="name">
-        <dia:string>#cfg::inifile::specref#</dia:string>
+        <dia:string>#cfg::inisection::specref#</dia:string>
       </dia:attribute>
       <dia:attribute name="stereotype">
         <dia:string>##</dia:string>
@@ -3109,7 +3109,7 @@
         <dia:real val="2.1999999999999997"/>
       </dia:attribute>
       <dia:attribute name="name">
-        <dia:string>#cfg::inifile::specrefs#</dia:string>
+        <dia:string>#cfg::inisection::specrefs#</dia:string>
       </dia:attribute>
       <dia:attribute name="stereotype">
         <dia:string>##</dia:string>
@@ -3322,7 +3322,7 @@
             <dia:string>##</dia:string>
           </dia:attribute>
           <dia:attribute name="type">
-            <dia:string>#inifile::specref#</dia:string>
+            <dia:string>#inisection::specref#</dia:string>
           </dia:attribute>
         </dia:composite>
       </dia:attribute>
@@ -3344,7 +3344,7 @@
         <dia:real val="6"/>
       </dia:attribute>
       <dia:attribute name="name">
-        <dia:string>#cfg::inifile::specification#</dia:string>
+        <dia:string>#cfg::inisection::specification#</dia:string>
       </dia:attribute>
       <dia:attribute name="stereotype">
         <dia:string>##</dia:string>
@@ -3531,7 +3531,7 @@
             <dia:string>#file_sections#</dia:string>
           </dia:attribute>
           <dia:attribute name="type">
-            <dia:string>#inifile::specref#</dia:string>
+            <dia:string>#inisection::specref#</dia:string>
           </dia:attribute>
           <dia:attribute name="value">
             <dia:string>##</dia:string>
@@ -3955,7 +3955,7 @@
             <dia:string>##</dia:string>
           </dia:attribute>
           <dia:attribute name="type">
-            <dia:string>#inifile::sectionref#</dia:string>
+            <dia:string>#inisection::sectionref#</dia:string>
           </dia:attribute>
         </dia:composite>
       </dia:attribute>
@@ -3977,7 +3977,7 @@
         <dia:real val="2.1999999999999997"/>
       </dia:attribute>
       <dia:attribute name="name">
-        <dia:string>#cfg::inifile::sectionrefs#</dia:string>
+        <dia:string>#cfg::inisection::sectionrefs#</dia:string>
       </dia:attribute>
       <dia:attribute name="stereotype">
         <dia:string>##</dia:string>
@@ -4090,7 +4090,7 @@
         <dia:real val="2.1999999999999997"/>
       </dia:attribute>
       <dia:attribute name="name">
-        <dia:string>#cfg::inifile::sectionref#</dia:string>
+        <dia:string>#cfg::inisection::sectionref#</dia:string>
       </dia:attribute>
       <dia:attribute name="stereotype">
         <dia:string>##</dia:string>
@@ -4954,7 +4954,7 @@
         <dia:real val="2.8500000000000014"/>
       </dia:attribute>
       <dia:attribute name="stereotype">
-        <dia:string>#inifile::specification#</dia:string>
+        <dia:string>#inisection::specification#</dia:string>
       </dia:attribute>
       <dia:attribute name="exstate">
         <dia:string>##</dia:string>
