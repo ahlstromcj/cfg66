@@ -6,7 +6,7 @@
 # \library     cfg66
 # \author      Chris Ahlstrom
 # \date        2022-06-22
-# \updates     2024-06-14
+# \updates     2024-06-19
 # \license     $XPC_SUITE_GPL_LICENSE$
 #
 #  This file is part of the "cfg66" library. See the top-level meson.build
@@ -27,6 +27,8 @@ libcfg66_sources += files(
    'cfg/configfile.cpp',
    'cfg/history.cpp',
    'cfg/inifile.cpp',
+   'cfg/inimap.cpp',
+   'cfg/inisection.cpp',
    'cfg/inisections.cpp',
    'cfg/memento.cpp',
    'cfg/options.cpp',

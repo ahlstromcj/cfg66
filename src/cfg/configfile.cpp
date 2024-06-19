@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2024-06-17
+ * \updates       2024-06-19
  * \license       GNU GPLv2 or above
  *
  *  std::streamoff is a signed integral type (usually long long) that can
@@ -83,7 +83,7 @@ lib66::tokenization configfile::sm_file_extensions
     ".playlist",
     ".qss",
     ".rc",
-    ".sessions",
+    ".session",
     ".usr"
 };
 

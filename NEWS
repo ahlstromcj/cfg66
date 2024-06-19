@@ -1,10 +1,10 @@
 NEWS for Cfg66 0.2
 Chris Ahlstrom
-2024-04-15 to 2024-06-17
+2024-04-15 to 2024-06-19
 
 # Changelog
 
-## [0.2] - 2024-06-17
+## [0.2] - 2024-06-19
 
 ### Added
 
@@ -15,6 +15,9 @@ Chris Ahlstrom
 - Added an actual cfg::inifile class to extend cfg::configfile.
 - Beefed up the ini\_test application to write and parse a sample
   configuration file.
+- Adding diagrams to clarify the hierarchy.
+- Split the inisections module into inimap, inisection, and inisections
+  modules.
 
 ### Fixed
 

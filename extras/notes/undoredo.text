@@ -1,3 +1,7 @@
+Speculations on undo/redo
+Chris Ahlstrom
+2022-06-22 to 2024-06-19
+
 Sources:
 
         -   "Design Patterns" book
@@ -5,14 +9,17 @@ Sources:
 
 Things that can be helds as state:
 
-    -   Tracks
-        -   Track parameters
-            -   Notes and events
-            -   Triggers
-            -   Saveable settings (see sequence.hpp) including buss and
+    -   Tracks.
+        -   Track parameters.
+            -   Notes and events.
+            -   Triggers.
+            -   Saveable track settings (see sequence.hpp) including buss and
                 channel.
-        -   Notes and events
-            -   One added (recorded/painted) or deleted note
+        -   Notes and events. For a given track, we could use the entire
+            eventlist as a memento. Each track would have its own
+            history<eventlist> object. (This is what Seq66 currently
+            does.)
+            -   One added (recorded/painted) or deleted note.
             -   Set of notes/events added (delimited by pause/duration or stop).
             -   Set of notes/events deleted.
             -   Set of notes/events modified (LFO, Pattern-fix, etc.).
@@ -20,37 +27,53 @@ Things that can be helds as state:
                 -   Set of notes/events quantized.
                 -   Set of notes/events randomized.
                 -   Set of notes/events adjusted.
-        -   Triggers
-            -   Adding
-            -   Deleting
-            -   Transposing
-    -   Configuration
-        -   rc settings
-        -   usr settings
-        -   ctrl settings.
-        -   playlist settings.
-        -   mutes settings.
-        -   sets settings.
-        -   Things we might like to save:
-            -   Snap values
-            -   Zoom values
-            -   Song transpose
-            -   Song L/R markers and looping mode
-            -   Global PPQN (already saved?) and BPM
-            -   Global output bus
-            -   Global beats and beat width.
-            -   Default pattern length
-            -   Default chords 
-            -   Song record mode
-            -   Recording velocity
-            -   H:M:S vs B:B:T mode
+        -   Triggers. Each track would also have its own history<triggers>
+            object.
+            -   Adding.
+            -   Deleting.
+            -   Transposing.
+    -   Configuration.
+        -   A single inisection. All the variables in the section would
+            constitute a memento. Each inisection holds an options object,
+            which has a container of name/option pairs (plus the name of
+            the source file and source section). This would be a
+            history<cfg::options> object.
+        -   Command-line settings. These are part of the configuration
+            settings, and are marked as accessible from the command-line.
+            No separate history<> object is needed.
+        -   Configuration files.
+            -   'rc' settings file.
+            -   'usr' settings file.
+                -   Global PPQN and BPM (latter not yet included).
+                -   Global output bus.
+                -   Global beats and beat width.
+                -   Recording velocity
+            -   'ctrl' settings file.
+            -   'playlist' settings file.
+            -   'mutes' settings file.
+            -   Other files not editable in the application:
+                -   'drums' settings file.
+                -   'palette' settings file.
+                -   'qss' style-sheet file.
+                -   'session' file.
+        -   Other things we might like to save during the run of the
+            application:
+            -   Snap values.
+            -   Zoom values.
+            -   Song transpose.
+            -   Song L/R markers and looping mode.
+            -   Default pattern length.
+            -   Default chords .
+            -   Song record mode.
+            -   H:M:S vs B:B:T mode. (Put in the 'rc' or 'usr' file).
 
 Undo/Redo history:
 
-    -   Two stacks (note we have two vectors in performer).
-        -   For objects that can be undone
-        -   For objects that can be redone
-    -   Maximum number of undoes allowed (e.g. 32)
+    -   Two stacks (note we have two vectors in performer). This should
+        not be necessary using the history<> template.
+        -   For objects that can be undone.
+        -   For objects that can be redone.
+    -   Maximum number of undoes allowed (e.g. 32).
     -   After an undo, the redo stack must be cleared.
     -   When undo stack is empty, modification must turn off unless the
         number of undos exceeds the stack size.
@@ -66,8 +89,8 @@ Originator:
 
 Caretaker:
 
-    -   Responsible fo memento's safe-keeping
-    -   Never operates on, modifies, or examines the memento's contents.
+    -   Responsible for the safe-keeping of mementos.
+    -   Never operates on, modifies, or examines the memento contents.
     -   Also called the "Undo Mechanism"
 
 Memento:
@@ -75,10 +98,11 @@ Memento:
     -   Store internal state of the Originator
     -   Protects access from those outside the Originator
     -   Two interfaces
-        -   Caretaker's narrow interface to Memento. It only passes the
+        -   The Caretaker narrow interface to Memento. It only passes the
             Memento to other objects.
-        -   Originator's wide interface. The Originator can create and
+        -   The Originator wide interface. The Originator can create and
             use later the contents of the Memento. Ideally, only the
             Originator creating the Memento should get wide access.
     -   Also called the "SolverState".
 
+# vim: sw=4 ts=4 wm=8 et ft=sh

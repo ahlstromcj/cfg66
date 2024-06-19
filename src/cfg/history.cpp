@@ -34,9 +34,8 @@
  *  The things that are needed for undo/redo are:
  *
  *      -   A History List. This keeps track of the states that were modified.
- *          (What if there are multiple changes???)
  *      -   A Caretaker.  This object takes care of managing mementos. Here,
- *          we will implement a specific history class of some kind.
+ *          we implement a specific history template class.
  *      -   An Originator.  Creates a memento of its state, gives it to the
  *          Caretaker, and perhaps gets the memento back to restore a previous
  *          state.
@@ -107,10 +106,6 @@
 
 #include "cfg/history.hpp"              /* cfg::history<> template class    */
 #include "cfg/options.hpp"              /* cfg::options for testing         */
-
-/*
- * Do not attempt to Doxygenate the documentation here; it breaks Doxygen.
- */
 
 namespace cfg
 {
