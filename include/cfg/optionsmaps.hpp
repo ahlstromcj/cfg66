@@ -31,6 +31,7 @@
  * \updates       2024-06-17
  * \license       See above.
  *
+ *  NOT USED.
  */
 
 #include <memory>                       /* std::shared_ptr<> template       */
@@ -76,7 +77,7 @@ namespace cfg
  *
  */
 
-class optionmap
+class optionsmap
 {
 
 private:
