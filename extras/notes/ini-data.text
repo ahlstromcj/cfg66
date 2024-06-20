@@ -1,0 +1,70 @@
+INI Data Structure Hierachy
+Chris Ahlstrom
+2024-06-20 to 2024-06-20
+
+//  cfg::inisections
+//  {
+        cfg::inisections::specification
+        {
+            std::string file_extension;
+            std::string file_directory;
+            std::string file_basename;
+            std::string file_description;
+//          class cfg::inisection (specrefs file_sections : std::vector<inisection>)
+//          {
+                std::string section_name;
+                std::string section_description;
+                struct cfg::inisection::specification
+                {
+//                  class cfg::options
+//                  {
+                        cfg::options::container std::map<string, spec>
+                        {
+                            std::string option_name;
+                            struct cfg::options::spec
+                            {
+                                char option_code;
+                                std::string option_kind;
+                                bool option_cli_enabled;
+                                std::string option_default;
+                                std::string option_value;
+                                bool option_read_from_cli;
+                                bool option_modified;
+                                std::string option_desc;
+                                bool option_built_in;
+                            }
+                            REPEATED AS NECESSARY
+                        }
+//                  } cfg::options
+                } cfg::inisection::specification
+//          } cfg::inisection
+        } cfg::inisections::specification
+//  }
+
+static cfg::inisections::specification exp_file_data
+{
+    "exp", "~/.config/experiment/", "exp.session",
+    "This is a test INI file specification.",
+    {
+        static cfg::inisection::specification s_simple_ini_spec
+        {
+            "[experiments]",
+            {
+                "Section description just a bunch of dummies for some simple tests.\n"
+            },
+            {
+                // cfg::options::container:
+                {
+                    "boolean-value",
+                    {
+                        'b', "boolean", cfg::options::enabled, "false", "", false, false,
+                        "Boolean test option description. ", false
+                    }
+                },
+                REPEATED AS NECESSARY
+            }
+        }
+    }
+}
+
+# vim: ft=cpp

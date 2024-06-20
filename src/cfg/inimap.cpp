@@ -28,6 +28,13 @@
  * \updates       2024-06-19
  * \license       See above.
  *
+ *  We want to provide a list of { filename, sectionname } pairs, and
+ *  for each pair, a options object to contain all the options for the
+ *  .....
+ *
+ *  Then we want a parser that, unlike cli::parser, can contain multiple
+ *  cfg::options objects.
+ *
  */
 
 #include "cfg/inimap.hpp"               /* cfg::inimap class                */
@@ -39,7 +46,7 @@ namespace cfg
  * inimap
  *------------------------------------------------------------------------*/
 
-inimap::inimap () : m_option_map   ()
+inimap::inimap () : m_sections_map   ()
 {
     // no code
 }
@@ -61,16 +68,18 @@ inimap::inimap () : m_option_map   ()
  */
 
 bool
-inimap::add_option (const std::string & option_name, options::spec & op)
+inimap::add_sections (const std::string & sections_name, options::spec & op)
 {
-    bool result = ! option_name.empty();
+    bool result = ! sections_name.empty();
     if (result)
     {
-        auto p = std::make_pair(option_name, std::ref(op));
-        auto r = m_option_map.insert(p);
+#if defined TODO
+        auto p = std::make_pair(sections_name, std::ref(op));
+        auto r = m_sections_map.insert(p);
         result = r.second;
         if (! result)
-            printf("Unable to insert option %s\n", option_name.c_str());
+            printf("Unable to insert sections %s\n", sections_name.c_str());
+#endif
     }
     return result;
 }
@@ -86,12 +95,12 @@ inimap::add_option (const std::string & option_name, options::spec & op)
  */
 
 bool
-inisection::add_options_to_map (inimap & mapp)
+inisection::add_sections_to_map (inimap & mapp)
 {
     bool result = true;
-    for (auto & opt : option_set().option_pairs())
+    for (auto & opt : sections_set().option_pairs())
     {
-        result = mapp.add_option(opt.first, opt.second);
+        result = mapp.add_sections(opt.first, opt.second);
         if (! result)
             break;
     }
@@ -99,12 +108,12 @@ inisection::add_options_to_map (inimap & mapp)
 }
 
 bool
-inisections::add_options_to_map (inimap & mapp)
+inisections::add_sections_to_map (inimap & mapp)
 {
     bool result = true;
     for (auto sect : section_list())
     {
-        result = sect.add_options_to_map(mapp);
+        result = sect.add_sections_to_map(mapp);
         if (! result)
             break;
     }

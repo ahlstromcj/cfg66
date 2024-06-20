@@ -30,19 +30,16 @@
  * \date          2024-06-19
  * \updates       2024-06-19
  * \license       See above.
- *
- *  We want to provide a list of { filename, sectionname } pairs, and
- *  for each pair, a options object to contain all the options for the
  *  section.
  *
- *  Then we want a parser that, unlike cli::parser, can contain multiple
- *  cfg::options objects.
+ *      See the cpp file for details.
  */
 
 #include <functional>                   /* std::reference_wrapper<>         */
 #include <string>                       /* std::string class                */
 #include <vector>                       /* std::vector container            */
 
+#include "cfg/inisections.hpp"          /* cfg::inisections class and kids  */
 #include "cfg/options.hpp"              /* cfg::options class               */
 
 namespace cfg
@@ -65,43 +62,44 @@ class inimap
 public:
 
     /**
-     *  Holds reference_wrappers for each option.
+     *  Holds reference_wrappers for each option. Also see std::ref and
+     *  std::cref.
      */
 
-    using optionref = std::reference_wrapper<options::spec>;
-    using optionmap = std::map<std::string, optionref>;
+    using sectionsref = std::reference_wrapper<inisection>;
+    using sectionsmap = std::map<std::string, sectionsref>;
 
 private:
 
-    optionmap m_option_map;
+    sectionsmap m_sections_map;
 
 public:
 
     inimap ();
 
 #if defined CFG66_USE_INIMAP
-    static bool add_options_to_map (inimap & mapp);
-    static bool add_options_to_map (inimap & mapp);
+    static bool add_sectionss_to_map (inimap & mapp);
+    static bool add_sectionss_to_map (inimap & mapp);
 #endif
 
     int count () const
     {
-        return int(m_option_map.size());
+        return int(m_sections_map.size());
     }
 
-    optionmap & option_map ()
+    sectionsmap & sections_map ()
     {
-        return m_option_map;
+        return m_sections_map;
     }
 
-    const optionmap & option_map () const
+    const sectionsmap & sections_map () const
     {
-        return m_option_map;
+        return m_sections_map;
     }
 
 public:
 
-    bool add_option (const std::string & option_name, options::spec & op);
+    bool add_sections (const std::string & sections_name, options::spec & op);
 
 };          // class inimap
 
