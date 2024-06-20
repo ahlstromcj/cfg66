@@ -1,4 +1,4 @@
-# README for Library Cfg66 0.2 2024-05-17
+# README for Library Cfg66 0.2 2024-06-20
 
 __Cfg66__ is a configuration library based on the "cfg" directories
 in the __Seq66__ project, but that is useful in other applications.
@@ -15,17 +15,14 @@ Support sites (still in progress):
 The "cfg66" directory holds generic code for handling various tasks needed for
 the configuration and management of a full-fledged application. Most of the
 modules here are refactorings of basic modules in the Seq66 project.
-
-Also included is a "tests" directory with small applications to test some
-of the features of this library subset.
-
 Cfg66 contains the following subdirectories, each of which holds modules
 or classes in a namespace of the same name:
 
     *   cfg:    Contains items that can be used to manage a generic
                 configuration, including application names, settings basics,
                 and an INI-style configuration-file system. Added are
-                data-type indicators and help text.
+                data-type indicators and help text. Also provided are
+                history<> and memento<> templates to support undo/redo.
     *   cli:    Provides C/C++ code to handle command-line parsing without
                 needing to use, for example, getopt. While it somewhat matches
                 how getopt works, it also allows combining option sets and
@@ -38,6 +35,8 @@ or classes in a namespace of the same name:
                 subdirectories, and application-specific item names.
     *   util:   Contains file functions, message functions, string functions,
                 and other functionality common to all our "66" applications.
+    *   tests:  Small test applications are provided to test and illustrate
+                most of the classes.
 
     Note that a work.sh script is provided to simplify or clarify various
     operations such as cleaning, building, making a release, and installing
@@ -84,5 +83,7 @@ or classes in a namespace of the same name:
     *   Version 0.2:
         *   Added the bytevector big-endian handling class and added
             initial tests for it.
+        *   Finally added support for parsing and writing INI files
+            based on options lists provided in the code.
 
 // vim: sw=4 ts=4 wm=2 et ft=markdown

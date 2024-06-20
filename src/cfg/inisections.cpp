@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-06-19
+ * \updates       2024-06-20
  * \license       See above.
  *
  * Operations to support:
@@ -98,6 +98,7 @@ inisections::inisections (const std::string & ininame) :
     m_directory     (),
     m_name          (),
     m_extension     (),
+    m_config_type   (),
     m_description   ("This is a generic configuration file."),
     m_section_list  ()
 {
@@ -105,6 +106,10 @@ inisections::inisections (const std::string & ininame) :
     {
         (void) util::filename_split(ininame, m_directory, m_name);
         m_extension = util::file_extension(m_name);
+        if (m_extension[0] == '.')
+            m_config_type = m_extension.substr(1);
+        else
+            m_config_type = m_extension;
     }
 }
 
@@ -140,6 +145,7 @@ inisections::inisections
     m_directory     (spec.file_directory),
     m_name          (spec.file_basename),
     m_extension     (spec.file_extension),
+    m_config_type   (),
     m_description   (spec.file_description),
     m_section_list  ()
 {
@@ -149,6 +155,10 @@ inisections::inisections
 
         (void) util::filename_split(ininame, m_directory, m_name);
         m_extension = util::file_extension(m_name);
+        if (m_extension[0] == '.')
+            m_config_type = m_extension.substr(1);
+        else
+            m_config_type = m_extension;
     }
     for (auto sec : spec.file_sections)     /* vector of specref (wrappers) */
     {
@@ -165,6 +175,39 @@ inisections::inisections
          * TODO. Provide a way to add all named options to the globql inimap
          */
     }
+}
+
+/**
+ *  Look up an inisection in this inisections object using the section name.
+ *  Returns a reference to a an inactive inisection if not found.
+ *  These functions must not call each other, else... recursion.
+ *
+ *  And how do we prevent the caller from modifying the first one?
+ *  The caller must check with inisection::active().
+ */
+
+inisection &
+inisections::find_inisection (const std::string & sectionname)
+{
+    static inisection s_inactive_inisection;
+    for (auto & section : m_section_list)
+    {
+        if (section.name() == sectionname)
+            return section;
+    }
+    return s_inactive_inisection;
+}
+
+const inisection &
+inisections::find_inisection (const std::string & sectionname) const
+{
+    static inisection s_inactive_inisection;
+    for (const auto & section : m_section_list)
+    {
+        if (section.name() == sectionname)
+            return section;
+    }
+    return s_inactive_inisection;
 }
 
 /**

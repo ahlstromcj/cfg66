@@ -127,10 +127,16 @@ private:
 
     /**
      *  The stock file-extension to use for this INI file. Examples would
-     *  be 'session', 'rc', and 'usr'.
+     *  be '.session', '.rc', and '.usr'.
      */
 
     std::string m_extension;
+
+    /**
+     *  The type of configuration file. Usually similar to the file extension.
+     */
+
+    std::string m_config_type;
 
     /**
      *  Holds a description of the INI file.
@@ -139,8 +145,8 @@ private:
     std::string m_description;
 
     /**
-     *  Holds a vector of inisection objects in the order
-     *  they appear in the initializers.
+     *  Holds a vector of inisection objects in the order they appear in the
+     *  initializers.
      */
 
     sectionlist m_section_list;
@@ -155,6 +161,10 @@ public:
     ~inisections () = default;
 
     std::string settings_text () const;
+
+    /**
+     *  Do we want to push the object or a reference wrapper?
+     */
 
     bool add (inisection & section)
     {
@@ -176,6 +186,13 @@ public:
     {
         return m_section_list;
     }
+
+    /*
+     *  These will return a dummy (empty inisection) reference if not found.
+     */
+
+    inisection & find_inisection (const std::string & sectionname);
+    const inisection & find_inisection (const std::string & sectionname) const;
 
 };          // class inisections
 

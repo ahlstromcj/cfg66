@@ -134,7 +134,9 @@ private:
 #endif
 
     /**
-     *  The file extension of the configuration file.
+     *  Indicates the variety (format) of the configuration file.
+     *  It can be something like the file extension of the configuration
+     *  file, but without the period. Examples: "rc", "session".
      */
 
     std::string m_file_type;

@@ -9,13 +9,13 @@ Chris Ahlstrom
 ### Added
 
 - Added the util::bytevector class to work with big-endian data (e.g. MIDI
-  files.
+  files).
 - Added a test for the util::bytevector class.
 - Renamed the cfg::inifile class to "inisections" because it was misleading.
 - Added an actual cfg::inifile class to extend cfg::configfile.
 - Beefed up the ini\_test application to write and parse a sample
   configuration file.
-- Adding diagrams to clarify the hierarchy.
+- Added diagrams to clarify the hierarchy.
 - Split the inisections module into inimap, inisection, and inisections
   modules.
 

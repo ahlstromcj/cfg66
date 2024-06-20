@@ -22,17 +22,17 @@
 /**
  * \file          inifile.hpp
  *
- *  options files.
  *  This module declares an INI-handling class using configfile functions.
  *
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2024-06-18
+ * \updates       2024-06-19
  * \license       GNU GPLv2 or above
  *
- *  This is actually an elegant little parser, and works well as long as one
- *  respects its limitations.
+ *  An inifile is a configfile that overrides the parse() and write()
+ *  functions, and has a reference to its application inisections object.
+ *  This is usually a "global" object in the application.
  */
 
 #include "cfg/configfile.hpp"           /* cfg::configfile class            */

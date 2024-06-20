@@ -65,13 +65,18 @@ inisection::inisection
     const std::string & extension,
     const std::string & sectname
 ) :
-    m_extension             (extension),
+    m_config_type           (),
     m_name                  (sectname.empty() ? spec.sec_name : sectname),
     m_section_description   (spec.sec_description),
     m_option_names          (),
     m_options               (extension, sectname)   /* pairs filled below   */
 {
     options::container & opspecs = spec.sec_optionlist;
+    if (extension[0] == '.')
+        m_config_type = extension.substr(1);
+    else
+        m_config_type = extension;
+
     options::init_container(opspecs);
     for (const auto & opt : opspecs)
     {

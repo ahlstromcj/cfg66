@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-06-19
+ * \updates       2024-06-20
  * \license       See above.
  *
  *  We want to provide a list of { filename, sectionname } pairs, and
@@ -95,12 +95,14 @@ private:
 
     /**
      *  Provides the kind of source configuration file from which these
-     *  options were read. This name is merely the extension of the file, such
-     *  as "rc", "usr", etc.  If empty, there is no source file associated
-     *  with this option, which should be uncommon.
+     *  options were read. This name is usually the extension of the file,
+     *  such as ".rc", ".usr", etc., minus the period.
+     *
+     *  If empty, there is no source file associated with this option, which
+     *  should be uncommon.
      */
 
-    std::string m_extension;
+    std::string m_config_type;
 
     /**
      *  The name of the INI section. It must include the "[]" wrapping,
@@ -147,6 +149,16 @@ public:
 
     std::string settings_text () const;
     std::string description_commented () const;
+
+    bool inactive () const
+    {
+        return m_config_type == "";
+    }
+
+    bool active () const
+    {
+        return ! inactive();
+    }
 
     bool add_option (const options::option & op)    /* add one option       */
     {
