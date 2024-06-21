@@ -137,6 +137,31 @@ inisection::description_commented () const
 #endif
 }
 
+/**
+ *  This function gets the desired option's spec structure by name.
+ */
+
+const options::spec &
+inisection::find_option_spec (const std::string & name) const
+{
+    return option_set().find_spec(name);
+}
+
+/**
+ *  Note: if we move this project to C++17 the following line could be used:
+ *
+ *  const_cast<options::spec &>(std::as_const(*this).find_option_spec(name)
+ */
+
+options::spec &
+inisection::find_option_spec (const std::string & name)
+{
+    return const_cast<options::spec &>
+    (
+        static_cast<const inisection &>(*this).find_option_spec(name)
+    );
+}
+
 /*------------------------------------------------------------------------
  * Reusable objects for "[Cfg66]" and "[comments]" ???
  *------------------------------------------------------------------------*/

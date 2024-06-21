@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-06-20
+ * \updates       2024-06-21
  * \license       See above.
  *
  *  In an application, we want to access options via the triplet of
@@ -87,6 +87,43 @@ inimap::add_inisections
 #endif
     }
     return result;
+}
+
+/**
+ *  Look up an inisections in this inimap object using the configuration
+ *  type.
+ *
+ *  Returns a reference to a an inactive inisection if not found.
+ *  These functions must not call each other, else... recursion.
+ *
+ *  And how do we prevent the caller from modifying the first one?
+ *  The caller must check with inisection::active().
+ */
+
+const inisections &
+inimap::find_inisections (const std::string & cfgtype) const
+{
+    static inisections s_inactive_inisections;
+    for (const auto & sections : sections_map())
+    {
+        if (sections.second.config_type() == cfgtype)
+            return sections.second;
+    }
+    return s_inactive_inisections;
+}
+
+/**
+ *  In C++17 we can replace "static_cast<const inimap &>(*this)"
+ *  with "std::as_const(*this)".
+ */
+
+inisections &
+inimap::find_inisections (const std::string & cfgtype)
+{
+    return const_cast<inisections &>
+    (
+        static_cast<const inimap &>(*this).find_inisections(cfgtype)
+    );
 }
 
 }           // namespace cfg

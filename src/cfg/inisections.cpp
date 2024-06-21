@@ -186,18 +186,6 @@ inisections::inisections
  *  The caller must check with inisection::active().
  */
 
-inisection &
-inisections::find_inisection (const std::string & sectionname)
-{
-    static inisection s_inactive_inisection;
-    for (auto & section : m_section_list)
-    {
-        if (section.name() == sectionname)
-            return section;
-    }
-    return s_inactive_inisection;
-}
-
 const inisection &
 inisections::find_inisection (const std::string & sectionname) const
 {
@@ -208,6 +196,20 @@ inisections::find_inisection (const std::string & sectionname) const
             return section;
     }
     return s_inactive_inisection;
+}
+
+/**
+ *  In C++17 we can replace "static_cast<const inisections &>(*this)"
+ *  with "std::as_const(*this)".
+ */
+
+inisection &
+inisections::find_inisection (const std::string & sectionname)
+{
+    return const_cast<inisection &>
+    (
+        static_cast<const inisections &>(*this).find_inisection(sectionname)
+    );
 }
 
 /**

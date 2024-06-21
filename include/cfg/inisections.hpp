@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-06-20
+ * \updates       2024-06-21
  * \license       See above.
  *
  *  We want to provide a list of { filename, sectionname } pairs, and
@@ -163,6 +163,11 @@ public:
 
     std::string settings_text () const;
 
+    bool active () const
+    {
+        return m_section_list.size() > 0;
+    }
+
     /**
      *  Do we want to push the object or a reference wrapper?
      */
@@ -178,6 +183,18 @@ public:
         m_section_list.clear();
     }
 
+    const std::string & config_type () const
+    {
+        return m_config_type;
+    }
+
+    /*
+     *  These will return a dummy (empty inisection) reference if not found.
+     */
+
+    inisection & find_inisection (const std::string & sectionname);
+    const inisection & find_inisection (const std::string & sectionname) const;
+
     sectionlist & section_list ()
     {
         return m_section_list;
@@ -187,13 +204,6 @@ public:
     {
         return m_section_list;
     }
-
-    /*
-     *  These will return a dummy (empty inisection) reference if not found.
-     */
-
-    inisection & find_inisection (const std::string & sectionname);
-    const inisection & find_inisection (const std::string & sectionname) const;
 
 };          // class inisections
 

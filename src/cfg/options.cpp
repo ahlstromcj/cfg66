@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-06-16
+ * \updates       2024-06-21
  * \license       See above.
  *
  *  The cli::options class provides a way to hold the state of command-line
@@ -731,6 +731,38 @@ options::long_name (const std::string & code) const
         result = code;                  /* will be empty if code.empty()    */
 
     return result;
+}
+
+/**
+ *  Finders for callers that want the whole specification of the option,
+ *  and don't want to deal with iterators.
+ *
+ *  Note that the "opt" value found is an std::pair<>.
+ */
+
+const options::spec &
+options::find_spec (const std::string & name) const
+{
+    static spec s_inactive_spec;
+    if (! name.empty())
+    {
+        const auto opt = find_match(name);
+        if (option_exists(opt))
+            return opt->second;
+    }
+    return s_inactive_spec;
+}
+
+/**
+ *  Note: if we move this project to C++17 the following line could be used:
+ *
+ *      const_cast<spec &>(std::as_const(*this).find_spec(name));
+ */
+
+options::spec &
+options::find_spec (const std::string & name)
+{
+    return const_cast<spec &>(static_cast<const options &>(*this).find_spec(name));
 }
 
 /**

@@ -209,6 +209,13 @@ public:
         return m_options;
     }
 
+    /*
+     *  These will return a dummy (empty inisections) reference if not found.
+     */
+
+    options::spec & find_option_spec (const std::string & name);
+    const options::spec & find_option_spec (const std::string & name) const;
+
 };          // inisection
 
 /*------------------------------------------------------------------------

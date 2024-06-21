@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-06-20
+ * \updates       2024-06-21
  * \license       See above.
  *
  *  Supports variables of the following types:
@@ -289,6 +289,11 @@ public:
         return m_option_pairs;
     }
 
+    bool active () const
+    {
+        return option_pairs().size() > 0;
+    }
+
     void clear ()
     {
         option_pairs().clear();
@@ -435,6 +440,9 @@ public:
     {
         return oit != m_option_pairs.end();
     }
+
+    spec & find_spec (const std::string & name);
+    const spec & find_spec (const std::string & name) const;
 
 protected:
 

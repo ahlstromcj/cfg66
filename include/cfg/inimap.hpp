@@ -98,6 +98,13 @@ public:
         inisections::specification & op
     );
 
+    /*
+     *  These will return a dummy (empty inisections) reference if not found.
+     */
+
+    inisections & find_inisections (const std::string & cfgtype);
+    const inisections & find_inisections (const std::string & cfgtype) const;
+
 private:
 
     sections & sections_map ()
