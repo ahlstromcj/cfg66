@@ -25,12 +25,12 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-06-19
+ * \updates       2024-06-20
  * \license       See above.
  *
- *  We want to provide a list of { filename, sectionname } pairs, and
- *  for each pair, a options object to contain all the options for the
- *  .....
+ *  In an application, we want to access options via the triplet of
+ *  "configuration type / section name / option name". This triplet
+ *  corresponds to "inisections / inisection / option".
  *
  *  Then we want a parser that, unlike cli::parser, can contain multiple
  *  cfg::options objects.
@@ -68,59 +68,26 @@ inimap::inimap () : m_sections_map   ()
  */
 
 bool
-inimap::add_sections (const std::string & sections_name, options::spec & op)
+inimap::add_inisections
+(
+    const std::string & cfgtype,
+    inisections::specification & spec
+)
 {
-    bool result = ! sections_name.empty();
+    bool result = ! cfgtype.empty();
     if (result)
     {
-#if defined TODO
-        auto p = std::make_pair(sections_name, std::ref(op));
-        auto r = m_sections_map.insert(p);
+        inisections sec{cfgtype, spec};
+        auto p = std::make_pair(cfgtype, sec);      /* does it make a copy? */
+        auto r = m_sections_map.insert(p);          /* another copy         */
         result = r.second;
+#if defined PLATFORM_DEBUG
         if (! result)
-            printf("Unable to insert sections %s\n", sections_name.c_str());
+            printf("Unable to insert sections %s\n", cfgtype.c_str());
 #endif
     }
     return result;
 }
-
-#if defined CFG66_USE_INIMAP
-
-/*
- *  In the for-loop, 'opt' is an options::option object. The 'auto' keyword
- *  can obscure the code, but listen to Scott Meyers!
- *
- *  option_set() returns a cfg::options object; option_pairs() returns a tuple
- *  of the option name and the option spec structure.
- */
-
-bool
-inisection::add_sections_to_map (inimap & mapp)
-{
-    bool result = true;
-    for (auto & opt : sections_set().option_pairs())
-    {
-        result = mapp.add_sections(opt.first, opt.second);
-        if (! result)
-            break;
-    }
-    return result;
-}
-
-bool
-inisections::add_sections_to_map (inimap & mapp)
-{
-    bool result = true;
-    for (auto sect : section_list())
-    {
-        result = sect.add_sections_to_map(mapp);
-        if (! result)
-            break;
-    }
-    return result;
-}
-
-#endif  // defined CFG66_USE_INIMAP
 
 }           // namespace cfg
 
@@ -129,4 +96,3 @@ inisections::add_sections_to_map (inimap & mapp)
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-

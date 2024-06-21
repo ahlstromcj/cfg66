@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-06-19
+ * \updates       2024-06-21
  * \license       See above.
  *  section.
  *
@@ -62,44 +62,53 @@ class inimap
 public:
 
     /**
-     *  Holds reference_wrappers for each option. Also see std::ref and
-     *  std::cref.
+     *  An inimap::sections holds actual inisections objects. They are created
+     *  on the fly from static inisections::specifications definitions, so
+     *  we need to store copies.
+     *
+     *      using sectionsref = std::reference_wrapper<inisections>;
+     *
+     *  Remember that an inisections object represents all of the sections
+     *  in a single INI file.
      */
 
-    using sectionsref = std::reference_wrapper<inisection>;
-    using sectionsmap = std::map<std::string, sectionsref>;
+    using sections = std::map<std::string, inisections>;
 
 private:
 
-    sectionsmap m_sections_map;
+    sections m_sections_map;
 
 public:
 
     inimap ();
-
-#if defined CFG66_USE_INIMAP
-    static bool add_sectionss_to_map (inimap & mapp);
-    static bool add_sectionss_to_map (inimap & mapp);
-#endif
 
     int count () const
     {
         return int(m_sections_map.size());
     }
 
-    sectionsmap & sections_map ()
+    bool active () const
+    {
+        return count() > 0;
+    }
+
+    bool add_inisections
+    (
+        const std::string & cfgtype,
+        inisections::specification & op
+    );
+
+private:
+
+    sections & sections_map ()
     {
         return m_sections_map;
     }
 
-    const sectionsmap & sections_map () const
+    const sections & sections_map () const
     {
         return m_sections_map;
     }
-
-public:
-
-    bool add_sections (const std::string & sections_name, options::spec & op);
 
 };          // class inimap
 

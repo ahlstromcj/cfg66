@@ -1,10 +1,10 @@
 NEWS for Cfg66 0.2
 Chris Ahlstrom
-2024-04-15 to 2024-06-19
+2024-04-15 to 2024-06-20
 
 # Changelog
 
-## [0.2] - 2024-06-19
+## [0.2] - 2024-06-20
 
 ### Added
 
@@ -18,6 +18,8 @@ Chris Ahlstrom
 - Added diagrams to clarify the hierarchy.
 - Split the inisections module into inimap, inisection, and inisections
   modules.
+- Added factory functions to create unique pointers to inisection(s) and
+  options objects to allow them to go away once copies have been created.
 
 ### Fixed
 

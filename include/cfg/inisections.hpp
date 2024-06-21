@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-06-19
+ * \updates       2024-06-20
  * \license       See above.
  *
  *  We want to provide a list of { filename, sectionname } pairs, and
@@ -120,7 +120,8 @@ private:
 
     /**
      *  The name of the INI file as a group.  This could be a file-name,
-     *  or just a file extension such as "rc".
+     *  or just a file extension such as "rc". For now, prefer the latter,
+     *  and treat it as a "configuration type".
      */
 
     std::string m_name;
@@ -156,8 +157,8 @@ public:
     inisections () = default;
     inisections (const std::string & ininame);
     inisections (const std::string & ininame, inisections::specification & spec);
-    inisections (const inisections & inif) = default;
-    inisections & operator = (const inisections & inif) = default;
+    inisections (const inisections & ini) = default;
+    inisections & operator = (const inisections & ini) = default;
     ~inisections () = default;
 
     std::string settings_text () const;

@@ -1414,7 +1414,7 @@ approximates (float ftarget, float fsource, float precision)
 }
 
 /**
- *  Creates an options.
+ *  Creates an option.
  */
 
 options::option
@@ -1428,22 +1428,6 @@ make_option
     result.first = name;
     result.second = s;
     return result;
-}
-
-/**
- *  Creates an options "array" from a vector options specifications,
- *  tagging it with a file-name and a INI section name.
- */
-
-options
-create_options
-(
-    const options::container & optset,
-    const std::string & filename,
-    const std::string & sectionname
-)
-{
-    return options(optset, filename, sectionname);
 }
 
 }           // namespace cfg

@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-06-17
+ * \updates       2024-06-20
  * \license       See above.
  *
  *  Supports variables of the following types:
@@ -51,8 +51,8 @@
  *          be used to hold string versions of enumeration values.
  */
 
-#include <string>                       /* std::string class                */
 #include <map>                          /* std::map container               */
+#include <string>                       /* std::string class                */
 
 #include "cpp_types.hpp"                /* enum class opt                   */
 #include "platform_macros.h"            /* PLATFORM_DEBUG etc.              */
@@ -466,12 +466,6 @@ extern options::option make_option
 (
     const std::string & name,
     const options::spec & s
-);
-extern options create_options
-(
-    const options::container & optset,
-    const std::string & filename,
-    const std::string & sectionname
 );
 
 }           // namespace cfg
