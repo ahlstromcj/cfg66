@@ -81,7 +81,8 @@ private:
 
     /**
      *  The complete set of non-file or single-file configurations options
-     *  supported by this class.
+     *  supported by this class. This class can handle only one "section" of
+     *  options.
      */
 
     cfg::options m_option_set;

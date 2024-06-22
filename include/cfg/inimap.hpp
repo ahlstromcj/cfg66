@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-06-21
+ * \updates       2024-06-22
  * \license       See above.
  *  section.
  *
@@ -102,8 +102,43 @@ public:
      *  These will return a dummy (empty inisections) reference if not found.
      */
 
-    inisections & find_inisections (const std::string & cfgtype);
     const inisections & find_inisections (const std::string & cfgtype) const;
+    inisections & find_inisections (const std::string & cfgtype);
+
+    const inisection & find_inisection
+    (
+        const std::string & cfgtype,
+        const std::string & sectionname
+    ) const;
+    inisection & find_inisection
+    (
+        const std::string & cfgtype,
+        const std::string & sectionname
+    );
+
+    const options & find_options
+    (
+        const std::string & cfgtype,
+        const std::string & sectionname
+    ) const;
+    options & find_options
+    (
+        const std::string & cfgtype,
+        const std::string & sectionname
+    );
+
+    const options::spec & find_options_spec
+    (
+        const std::string & cfgtype,
+        const std::string & sectionname,
+        const std::string & optionname
+    ) const;
+    options::spec & find_options_spec
+    (
+        const std::string & cfgtype,
+        const std::string & sectionname,
+        const std::string & optionname
+    );
 
 private:
 

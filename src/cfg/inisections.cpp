@@ -178,6 +178,30 @@ inisections::inisections
 }
 
 /**
+ *  In the actual file writing, we will let the enclosing file class (a
+ *  variant on cfg::configfile) write the date first.
+ */
+
+std::string
+inisections::settings_text () const
+{
+    std::string filespec = util::filename_concatenate(m_directory, m_name);
+    std::string result = "# ";
+    result += m_app_version + "\n# INI: "; // result += s_stock_file_intro + "\n"
+    result += filespec + "\n# ";
+    result += m_description + "\n#";
+
+    for (auto sec : m_section_list)
+        result += sec.settings_text();
+
+    return result;
+}
+
+/*------------------------------------------------------------------------
+ * Finding an inisection object
+ *------------------------------------------------------------------------*/
+
+/**
  *  Look up an inisection in this inisections object using the section name.
  *  Returns a reference to a an inactive inisection if not found.
  *  These functions must not call each other, else... recursion.
@@ -212,24 +236,34 @@ inisections::find_inisection (const std::string & sectionname)
     );
 }
 
+/*------------------------------------------------------------------------
+ * Finding an options object
+ *------------------------------------------------------------------------*/
+
 /**
- *  In the actual file writing, we will let the enclosing file class (a
- *  variant on cfg::configfile) write the date first.
+ *  An options object is useful for calling its various functions
+ *  to get to a specific spec field by name. To get it, we first need
+ *  to get an inisection object.
  */
 
-std::string
-inisections::settings_text () const
+const options &
+inisections::find_options (const std::string & sectionname) const
 {
-    std::string filespec = util::filename_concatenate(m_directory, m_name);
-    std::string result = "# ";
-    result += m_app_version + "\n# INI: "; // result += s_stock_file_intro + "\n"
-    result += filespec + "\n# ";
-    result += m_description + "\n#";
+    static options s_inactive_options;
+    const inisection & section = find_inisection(sectionname);
+    if (section.active())
+        return section.option_set();
+    else
+        return s_inactive_options;
+}
 
-    for (auto sec : m_section_list)
-        result += sec.settings_text();
-
-    return result;
+options &
+inisections::find_options (const std::string & sectionname)
+{
+    return const_cast<options &>
+    (
+        static_cast<const inisections &>(*this).find_options(sectionname)
+    );
 }
 
 #if defined CFG66_USE_INIFILES

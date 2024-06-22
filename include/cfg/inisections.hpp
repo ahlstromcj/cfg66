@@ -192,8 +192,11 @@ public:
      *  These will return a dummy (empty inisection) reference if not found.
      */
 
-    inisection & find_inisection (const std::string & sectionname);
     const inisection & find_inisection (const std::string & sectionname) const;
+    inisection & find_inisection (const std::string & sectionname);
+
+    const options & find_options (const std::string & sectionname) const;
+    options & find_options (const std::string & sectionname);
 
     sectionlist & section_list ()
     {
