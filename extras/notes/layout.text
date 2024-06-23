@@ -1,3 +1,14 @@
+Configuration Layout and Summary
+Chris Ahlstrom
+2022-07-03 to 2024-06-23
+
+First, this document summarizes all of the current configuration items
+(options) from all of the Seq66 configuration files. Actually this list
+is a little out of date.
+
+Second, we list those options that might be amenable to specification on
+the command line.
+
 All:
 
     [Seq66]
@@ -406,7 +417,141 @@ Stanzas:
         a. midicontrolfile::parse_control_stanza()
         b. midicontrolfile::parse_midi_control_out()
     
+CLI-amenable options:
+
+    -h  --help
+    -V  --version
+    -v  --verbose               See rc [Cfg66] verbose
+    -I  --client-name
 
 
+    -L  --locale
+    -P  --pass-sysex
+    -s  --show-midi
+    -s  --show-keys
+        --file
+    -n  --nsm
+    -T  --no-nsm
+    -U  --jack-session
+    -c  --config
+    -H  --home                              (sets session dir)
 
+    -S  --session-tag           session     [                 ]
+    -f  --rc                    session     [                 ]             active, name *
+                                session     [midi-control-file]             active, name *
+                                session     [mute-group-file]               active, name *
+    -F  --usr                   session     [usr-file]                      active, name *
+    -X  --playlist              session     [playlist]                      active, name *
+                                session     [note-mapper]                   active, name *
+                                session     [palette-file]                  active, name *
+                                session     [style-sheet]                   active, name *
 
+                                ctrl        [midi-control-settings]         control-buss
+                                ctrl        [midi-control-settings]         midi-enabled
+                                ctrl        [midi-control-out-settings]     midi-enabled
+
+                                drums       [notemap-flags]                 map-type
+                                drums       [notemap-flags]                 gm-channel
+                                drums       [notemap-flags]                 reverse
+
+    -o option mutes=value       mutes       [mute-group-flags]              load-mute-groups
+                                mutes       [mute-group-flags]              save-mute-groups
+                                mutes       [mute-group-flags]              mute-group-selected
+                                mutes       [mute-group-flags]              toggle-active-only
+
+                                palette     [brushes]                       empty
+                                palette     [brushes]                       note
+                                palette     [brushes]                       scale
+                                palette     [brushes]                       backseq
+
+                                playlist    [playlist-options]              unmute-next-song
+                                playlist    [playlist-options]              auto-play
+                                playlist    [playlist-options]              auto-advance
+                                playlist    [playlist-options]              deep-verify
+
+    -v  --verbose               rc          [Cfg66]                         verbose
+                                rc          [Cfg66]                         sets-mode
+                                rc          [Cfg66]                         port-naming
+                                rc          [Cfg66]                         init-disabled-ports
+    -p  --priority              rc          [Cfg66]                         priority
+                                rc          [midi-control-file]             active, name *
+                                rc          [mute-group-file]               active, name *
+                                rc          [usr-file]                      active, name *
+                                rc          [playlist]                      active, name *
+                                rc          [note-mapper]                   active, name *
+                                rc          [palette-file]                  active, name *
+                                rc          [style-sheet]                   active, name *
+                                rc          [midi-meta-events]              tempo-track
+    -m  --manual-ports          rc          [manual-ports]                  virtual-ports
+    -o option virtual=o,i       rc          [manual-ports]                  output-port-count
+    -o option virtual=o,i       rc          [manual-ports]                  input-port-count
+                                rc          [midi-input-map]                active
+                                rc          [midi-clock-map]                active
+                                rc          [midi-clock-mod-ticks]          ticks
+    -d  --record-by-channel     rc          [midi-clock-mod-ticks]          record-by-channel
+    -D  --legacy-record         rc          [midi-clock-mod-ticks]          record-by-channel
+    -r  --reveal-ports          rc          [reveal-ports]                  show-system-ports
+    -R  --hide-ports            rc          [reveal-ports]                  show-system-ports
+                                rc          [metronome]                     output-buss
+                                rc          [metronome]                     output-channel
+                                rc          [interaction-method]            snap-split
+                                rc          [interaction-method]            deouble-click-edit
+    -j  --jack-transport        rc          [jack-transport]                transport-type
+    -g  --no-jack-transport     rc          [jack-transport]                transport-type
+    -J  --jack-master           rc          [jack-transport]                transport-type
+    -C  --jack-master-cond      rc          [jack-transport]                transport-type
+                                rc          [jack-transport]                song-start-mode
+    -A  --alsa                  rc          [jack-transport]                jack-midi
+    -t  --jack                  rc          [jack-transport]                jack-midi
+    -N  --no-jack-midi          rc          [jack-transport]                jack-midi
+    -W  --jack-connect          rc          [jack-transport]                jack-auto-connect
+    -w  --no-jack-connect       rc          [jack-transport]                jack-auto-connect
+                                rc          [auto-option-save]              auto-save-rc
+    -u  --user-save 
+                                rc          [recent-files]                  full-paths
+                                rc          [recent-files]                  load-most-recent
+
+                                usr         [user-interface-settings]       swap-coordinates
+    -o  --option sets=RxC       usr         [user-interface-settings]       mainwnd-rows
+    -o  --option sets=RxC       usr         [user-interface-settings]       mainwnd-columns
+                                usr         [user-interface-settings]       qlobal-seq-feature
+                                usr         [user-interface-settings]       progress-bar-thick
+                                usr         [user-interface-settings]       progress-box-elliptical
+                                usr         [user-interface-settings]       follow-progress
+    -K  --inverse               usr         [user-interface-settings]       inverse-colors
+                                usr         [user-interface-settings]       dark-theme
+    -o  --option scale=x        usr         [user-interface-settings]       window-scale
+                                usr         [user-interface-settings]       window-scale-y
+                                usr         [user-interface-settings]       enable-learn-confirmation
+    -q  --ppqn                  usr         [user-midi-ppqn]                default-ppqn
+                                usr         [user-midi-ppqn]                use-file-ppqn
+                                usr         [user-midi-ppqn]                beats-per-minute *
+                                usr         [user-midi-randomization]       jitter-divisor
+                                usr         [user-midi-randomization]       amplitude
+    -0  --smf-0                 usr         [user-midi-settings]            convert-to-smf-1
+                                usr         [user-midi-settings]            beats-per-bar
+                                usr         [user-midi-settings]            beat-width
+                                usr         [user-midi-settings]            beats-per-minute *
+    -b  --bus                   usr         [user-midi-settings]            buss-override
+    -o  --option daemonize      usr         [user-options]                  daemonize
+    -o  --option no-daemonize   usr         [user-options]                  daemonize
+    -o  --log=filename          usr         [user-options]                  log
+                                usr         [user-options]                  pdf-viewer
+                                usr         [user-options]                  browser
+                                usr         [user-ui-tweaks]                note-resume
+                                usr         [user-ui-tweaks]                fingerprint-size
+                                usr         [user-ui-tweaks]                lock-main-window
+                                usr         [user-session]                  session
+                                usr         [user-session]                  url
+                                usr         [user-session]                  visibility
+                                usr         [new-pattern-editor]            escape-pattern
+                                usr         [new-pattern-editor]            armed
+                                usr         [new-pattern-editor]            thru
+                                usr         [new-pattern-editor]            record
+                                usr         [new-pattern-editor]            tighten
+                                usr         [new-pattern-editor]            qrecord
+                                usr         [new-pattern-editor]            notemap
+                                usr         [new-pattern-editor]            record-style
+                                usr         [new-pattern-editor]            wrap-around
+
+# vim: sw=4 ts=4 wm=8 et ft=sh

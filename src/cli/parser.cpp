@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-04-30
+ * \updates       2024-06-22
  * \license       See above.
  *
  *      While this parser follows the basics of GNU getopt fairly well,
@@ -63,6 +63,7 @@ namespace cli
 
 parser::parser () :
     m_option_set            (),
+    m_alternative           (false),
     m_help_request          (false),
     m_version_request       (false),
     m_verbose_request       (false),
@@ -93,9 +94,11 @@ parser::parser
 (
     const cfg::options & optset,
     const std::string & filename,
-    const std::string & sectionname
+    const std::string & sectionname,
+    bool use_alternative_long_option
 ) :
     m_option_set            (filename, sectionname),
+    m_alternative           (use_alternative_long_option),
     m_help_request          (false),
     m_version_request       (false),
     m_verbose_request       (false),
@@ -131,27 +134,27 @@ parser::parse (int argc, char * argv [])
              * add more options.
              */
 
-            if (token == "-h" || token == "--help")
+            if (token_match(token, "help", 'h'))
             {
                 m_help_request = true;
                 continue;
             }
-            else if (token == "-v" || token == "--version")
+            else if (token_match(token, "version", 'v'))
             {
                 m_version_request = true;
                 continue;
             }
-            else if (token == "-V" || token == "--verbose")
+            else if (token_match(token, "verbose", 'V'))
             {
                 m_verbose_request = true;
                 continue;
             }
-            else if (token == "--description")
+            else if (token_match(token, "description"))
             {
                 m_description_request = true;
                 continue;
             }
-            else if (token == "-o" || token == "--option")  /* "o option"   */
+            else if (token_match(token, "option", 'o'))
             {
                 if (argv[i + 1][0] != '-')  /* needs a non-option argument  */
                 {
@@ -405,7 +408,7 @@ parser::parse_o_option
 bool
 parser::extract_value (std::string & token, std::string & value)
 {
-    std::size_t seppos = token.find_first_of(":=");
+    std::size_t seppos = token.find_first_of(":=");         /* holy Algol!  */
     bool result = seppos != std::string::npos;
     if (result)
     {
@@ -415,6 +418,46 @@ parser::extract_value (std::string & token, std::string & value)
         {
             token = tokens[0];              /* return the "name" portion    */
             value = tokens[1];              /* return the "value" portion   */
+        }
+    }
+    return result;
+}
+
+/**
+ *  Check for a match of the token to "-x", "--xyz", or, if the single-hyphen
+ *  alternative is allowed, "-xyz". It assumes that the token has already been
+ *  checked for being "--" or "-".
+ */
+
+bool
+parser::token_match
+(
+    const std::string & token,
+    const std::string & opt,
+    char code
+)
+{
+    bool result = false;
+    if (token.length() == 2)                /* check for a short option -x  */
+    {
+        if (token[0] == '-' && code > ' ')
+            result = token[1] == code;      /* theoretically allows "--"    */
+    }
+    else
+    {
+        bool singledash = token[0] == '-' && token[1] != '-';
+        if (singledash)
+        {
+            if (m_alternative)
+            {
+                std::string tokpart = token.substr(1);
+                result = tokpart == opt;
+            }
+        }
+        else
+        {
+            std::string tokpart = token.substr(2);
+            result = tokpart == opt;
         }
     }
     return result;

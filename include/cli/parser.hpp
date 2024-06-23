@@ -88,6 +88,13 @@ private:
     cfg::options m_option_set;
 
     /**
+     *  Like the "-a/--alternative" option in getopt(1), this allows long
+     *  options to start with a single '-' characters. The default is false.
+     */
+
+    bool m_alternative;
+
+    /**
      *  Useful to quickly determine that the app was run only to see the help
      *  or the version. And also shows/set some very common/universal options.
      *  The verbosity and log-file options could be included in a particiular
@@ -107,8 +114,9 @@ public:
     parser
     (
         const cfg::options & optset,
-        const std::string & filename    = "",
-        const std::string & sectionname = ""
+        const std::string & filename        = "",
+        const std::string & sectionname     = "",
+        bool use_alternative_long_option    = false
     );
     parser (const parser & other) = default;
     parser & operator = (const parser & other) = default;
@@ -268,6 +276,12 @@ public:
 
 private:
 
+    bool token_match
+    (
+        const std::string & token,
+        const std::string & opt,
+        char code = ' '
+    );
     bool extract_value (std::string & token, std::string & value);
     bool parse_o_option
     (
