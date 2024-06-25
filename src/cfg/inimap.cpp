@@ -73,7 +73,13 @@ namespace cfg
  * inimap
  *------------------------------------------------------------------------*/
 
-inimap::inimap () : m_sections_map   ()
+/**
+ *  Note that there are both const and non-const accessors for these members.
+ */
+
+inimap::inimap () :
+    m_multi_parser  (),
+    m_sections_map  ()
 {
     // no code
 }
@@ -106,10 +112,14 @@ inimap::add_inisections
     {
         inisections sec{cfgtype, spec};
         auto p = std::make_pair(cfgtype, sec);      /* does it make a copy? */
-        auto r = m_sections_map.insert(p);          /* another copy         */
+        auto r = sections_map().insert(p);          /* another copy         */
         result = r.second;
+        if (result)
+        {
+            result = multi_parser().cli_mappings_add(spec);
+        }
 #if defined PLATFORM_DEBUG
-        if (! result)
+        else
             printf("Unable to insert sections %s\n", cfgtype.c_str());
 #endif
     }

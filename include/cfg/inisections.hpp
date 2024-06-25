@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-06-21
+ * \updates       2024-06-25
  * \license       See above.
  *
  *  We want to provide a list of { filename, sectionname } pairs, and
@@ -59,11 +59,14 @@ namespace cfg
 
 /**
  *  Provides a list of INI section specifications for a given INI file.
- *  That is, each INI file will contain an inisections object.
+ *  That is, each INI file will contain an inisections object. Thus, they
+ *  are closely related.
  */
 
 class inisections
 {
+
+    friend class inifile;
 
 public:
 
@@ -188,25 +191,27 @@ public:
         return m_config_type;
     }
 
+    const sectionlist & section_list () const
+    {
+        return m_section_list;
+    }
+
     /*
-     *  These will return a dummy (empty inisection) reference if not found.
+     *  These will return a dummy (empty) references if not found.
      */
 
     const inisection & find_inisection (const std::string & sectionname) const;
-    inisection & find_inisection (const std::string & sectionname);
-
     const options & find_options (const std::string & sectionname) const;
-    options & find_options (const std::string & sectionname);
+
+private:
 
     sectionlist & section_list ()
     {
         return m_section_list;
     }
 
-    const sectionlist & section_list () const
-    {
-        return m_section_list;
-    }
+    inisection & find_inisection (const std::string & sectionname);
+    options & find_options (const std::string & sectionname);
 
 };          // class inisections
 

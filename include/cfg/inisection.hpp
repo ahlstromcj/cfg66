@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-06-20
+ * \updates       2024-06-25
  * \license       See above.
  *
  *  We want to provide a list of { filename, sectionname } pairs, and
@@ -213,8 +213,11 @@ public:
      *  These will return a dummy (empty inisections) reference if not found.
      */
 
-    options::spec & find_option_spec (const std::string & name);
     const options::spec & find_option_spec (const std::string & name) const;
+
+private:
+
+    options::spec & find_option_spec (const std::string & name);
 
 };          // inisection
 

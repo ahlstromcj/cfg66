@@ -402,7 +402,8 @@ parser::parse_o_option
  *
  * \return
  *      Returns true if a value was able to be extracted. If so, then
- *      this is a "compound" option, and not a boolean option.
+ *      this is a "compound" option, and not a boolean option, though
+ *      booleans can also be compound.
  */
 
 bool

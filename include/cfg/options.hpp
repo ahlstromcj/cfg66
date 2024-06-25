@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-06-21
+ * \updates       2024-06-25
  * \license       See above.
  *
  *  Supports variables of the following types:
@@ -77,10 +77,6 @@
  */
 
 #undef USER_CONSTRUCTOR_FOR_OPTIONS_SPEC
-
-/*
- * Do not document the namespace; it breaks Doxygen.
- */
 
 namespace cli
 {
@@ -441,7 +437,6 @@ public:
         return oit != m_option_pairs.end();
     }
 
-    spec & find_spec (const std::string & name);
     const spec & find_spec (const std::string & name) const;
 
 protected:
@@ -458,6 +453,7 @@ protected:
 
 private:
 
+    spec & find_spec (const std::string & name);
     container::const_iterator find_match (const std::string & name) const;
     std::string long_name (char code) const;
     std::string long_name (const std::string & code) const;

@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-06-22
+ * \updates       2024-06-25
  * \license       See above.
  *  section.
  *
@@ -41,6 +41,7 @@
 
 #include "cfg/inisections.hpp"          /* cfg::inisections class and kids  */
 #include "cfg/options.hpp"              /* cfg::options class               */
+#include "cli/multiparser.hpp"          /* cli::multiparser class           */
 
 namespace cfg
 {
@@ -76,6 +77,17 @@ public:
 
 private:
 
+    /**
+     *  Allows the collection of command-line options that span multiple
+     *  configuration files.
+     */
+
+    cli::multiparser m_multi_parser;
+
+    /**
+     *  A map of inisections by configuration type (e.g. "rc").
+     */
+
     sections m_sections_map;
 
 public:
@@ -90,6 +102,16 @@ public:
     bool active () const
     {
         return count() > 0;
+    }
+
+    const cli::multiparser & multi_parser () const
+    {
+        return m_multi_parser;
+    }
+
+    const sections & sections_map () const
+    {
+        return m_sections_map;
     }
 
     bool add_inisections
@@ -110,47 +132,46 @@ public:
         const std::string & cfgtype,
         const std::string & sectionname
     ) const;
-    inisection & find_inisection
-    (
-        const std::string & cfgtype,
-        const std::string & sectionname
-    );
-
     const options & find_options
     (
         const std::string & cfgtype,
         const std::string & sectionname
     ) const;
-    options & find_options
-    (
-        const std::string & cfgtype,
-        const std::string & sectionname
-    );
-
     const options::spec & find_options_spec
     (
         const std::string & cfgtype,
         const std::string & sectionname,
         const std::string & optionname
     ) const;
-    options::spec & find_options_spec
-    (
-        const std::string & cfgtype,
-        const std::string & sectionname,
-        const std::string & optionname
-    );
 
 private:
+
+    cli::multiparser & multi_parser ()
+    {
+        return m_multi_parser;
+    }
 
     sections & sections_map ()
     {
         return m_sections_map;
     }
 
-    const sections & sections_map () const
-    {
-        return m_sections_map;
-    }
+    inisection & find_inisection
+    (
+        const std::string & cfgtype,
+        const std::string & sectionname
+    );
+    options & find_options
+    (
+        const std::string & cfgtype,
+        const std::string & sectionname
+    );
+    options::spec & find_options_spec
+    (
+        const std::string & cfgtype,
+        const std::string & sectionname,
+        const std::string & optionname
+    );
 
 };          // class inimap
 

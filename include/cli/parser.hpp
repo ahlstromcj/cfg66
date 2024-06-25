@@ -1,5 +1,5 @@
-#if ! defined CFG66_CLI_CLIPARSER_HPP
-#define CFG66_CLI_CLIPARSER_HPP
+#if ! defined CFG66_CLI_PARSER_HPP
+#define CFG66_CLI_PARSER_HPP
 
 /*
  *  This file is part of cfg66.
@@ -22,7 +22,7 @@
 /**
  * \file          parser.hpp
  *
- *  Basic command-line and configuration-file option handling.
+ *  Basic command-line option handling.
  *
  * \library       cfg66
  * \author        Chris Ahlstrom
@@ -59,10 +59,6 @@
 #include <vector>                       /* std::vector container            */
 
 #include "cfg/options.hpp"              /* cfg::options class               */
-
-/*
- * Do not document the namespace; it breaks Doxygen.
- */
 
 namespace cli
 {
@@ -120,7 +116,17 @@ public:
     );
     parser (const parser & other) = default;
     parser & operator = (const parser & other) = default;
-    ~parser () = default;
+    virtual ~parser () = default;
+
+    virtual cfg::options & option_set ()
+    {
+        return m_option_set;
+    }
+
+    virtual const cfg::options & option_set () const
+    {
+        return m_option_set;
+    }
 
     bool parse (int argc, char * argv []);
     bool check_option
@@ -132,27 +138,17 @@ public:
 
     void reset ()
     {
-        m_option_set.reset();
+        option_set().reset();
     }
 
     void initialize ()
     {
-        m_option_set.initialize();
+        option_set().initialize();
     }
 
     void clear ()
     {
-        m_option_set.clear();
-    }
-
-    cfg::options & option_set ()
-    {
-        return m_option_set;
-    }
-
-    const cfg::options & option_set () const
-    {
-        return m_option_set;
+        option_set().clear();
     }
 
     bool add (const cfg::options & opt)
@@ -274,7 +270,7 @@ public:
         return m_log_file;
     }
 
-private:
+protected:
 
     bool token_match
     (
@@ -297,7 +293,7 @@ private:
 
 }           // namespace cli
 
-#endif      // CFG66_CLI_CLIPARSER_HPP
+#endif      // CFG66_CLI_PARSER_HPP
 
 /*
  * parser.hpp
