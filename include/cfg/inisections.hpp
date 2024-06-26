@@ -52,8 +52,6 @@
 #include "cfg/inisection.hpp"           /* cfg::inisection class            */
 #include "cfg/options.hpp"              /* cfg::options class               */
 
-#undef CFG66_USE_INIFILES
-
 namespace cfg
 {
 
@@ -100,11 +98,11 @@ public:
 
     struct specification
     {
-        std::string file_extension;
-        std::string file_directory;
-        std::string file_basename;
-        std::string file_description;
-        specrefs file_sections;
+        std::string file_extension;         /**< Also used as config type.  */
+        std::string file_directory;         /**< Often the home directory.  */
+        std::string file_basename;          /**< Name without path or .ext. */
+        std::string file_description;       /**< Shown at top of INI file.  */
+        specrefs file_sections;             /**< Contains "[sections]".     */
     };
 
 private:
@@ -214,91 +212,6 @@ private:
     options & find_options (const std::string & sectionname);
 
 };          // class inisections
-
-#if defined CFG66_USE_INIFILES
-
-/*------------------------------------------------------------------------
- * inifiles
- *------------------------------------------------------------------------*/
-
-/**
- *  Holds a list of inisections objects. Represents all of the files, and all
- *  of the options that are held by the files.  The options are in a single
- *  list, and the INI items look them up by name.
- *
- *  NOT SURE THIS CONCEPT IS USEFUL.
- *  See the inifile class/module instead.
- */
-
-class inifiles
-{
-
-public:
-
-    using ref = std::reference_wrapper<inisections>;
-    using refs = std::vector<inisections>;
-
-private:
-
-    /**
-     *  The name of the INI sections as a group.  This could be a file-name,
-     *  or just a file extension such as "rc".
-     */
-
-    std::string m_name;
-
-    /**
-     *  Holds a vector of references to inisections objects.
-     */
-
-    refs m_file_list;
-
-    /**
-     *  Holds std::reference_wrappers to all options, whether CLI-enabled or
-     *  not.
-     */
-
-    inimap m_all_options;
-
-public:
-
-    inifiles () = default;
-    inifiles (const std::string & name);
-    inifiles (const inifiles & inif) = default;
-    inifiles & operator = (const inifiles & inif) = default;
-    ~inifiles () = default;
-
-    bool add (const inisections & file);
-    bool add_options_to_map (inimap & mapp);
-
-    void clear ()
-    {
-        m_file_list.clear();
-    }
-
-    refs & file_list ()
-    {
-        return m_file_list;
-    }
-
-    const refs & file_list () const
-    {
-        return m_file_list;
-    }
-
-    inimap all_options ()
-    {
-        return m_all_options;
-    }
-
-    const inimap all_options () const
-    {
-        return m_all_options;
-    }
-
-};          // class inifiles
-
-#endif      // defined CFG66_USE_INIFILES
 
 /*------------------------------------------------------------------------
  * Reusable objects for "[Cfg66]" and "[comments]"

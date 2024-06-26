@@ -27,7 +27,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2023-08-02
+ * \updates       2024-06-26
  * \license       See above.
  *
  *  Provides for the handling of options specifications.  This module is
@@ -118,14 +118,54 @@ public:
     parser & operator = (const parser & other) = default;
     virtual ~parser () = default;
 
-    virtual cfg::options & option_set ()
+    const cfg::options & option_set () const
     {
         return m_option_set;
     }
 
-    virtual const cfg::options & option_set () const
+    cfg::options & option_set ()
     {
         return m_option_set;
+    }
+
+    bool set_value
+    (
+        const std::string & name,
+        const std::string & value
+    )
+    {
+        return option_set().set_value(name, value);
+    }
+
+    bool set_value
+    (
+        cfg::options & optset,
+        const std::string & name,
+        const std::string & value
+    )
+    {
+        return optset.set_value(name, value);
+    }
+
+    bool change_value
+    (
+        const std::string & name,
+        const std::string & value,
+        bool fromcli = false
+    )
+    {
+        return option_set().change_value(name, value, fromcli);
+    }
+
+    bool change_value
+    (
+        cfg::options & optset,
+        const std::string & name,
+        const std::string & value,
+        bool fromcli = false
+    )
+    {
+        return optset.change_value(name, value, fromcli);
     }
 
     bool parse (int argc, char * argv []);
@@ -164,25 +204,6 @@ public:
     bool verify () const
     {
         return option_set().verify();
-    }
-
-    bool set_value
-    (
-        const std::string & name,
-        const std::string & value
-    )
-    {
-        return option_set().change_value(name, value);
-    }
-
-    bool change_value
-    (
-        const std::string & name,
-        const std::string & value,
-        bool fromcli = false
-    )
-    {
-        return option_set().change_value(name, value, fromcli);
     }
 
     bool is_boolean (const std::string & name) const

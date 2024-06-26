@@ -27,11 +27,14 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-23
- * \updates       2024-06-24
+ * \updates       2024-06-26
  * \license       See above.
  *
+ *  This class provides a way to look up command-line options specified by
+ *  multiple INI files and INI sections.
  */
 
+#include <map>                          /* std::map<> template class        */
 #include "cfg/inisections.hpp"          /* cfg::inisections class and kids  */
 #include "cli/parser.hpp"               /* cfg::parser class                */
 
@@ -49,42 +52,44 @@ class multiparser : public parser
 public:
 
     /**
-     *  This structure represents a single command-line option, but
-     *  includes only the name and the code.
+     *  This map allows quick lookup of the long option name from a character
+     *  code.
      */
 
-    using pair = struct
-    {
-        std::string option_name;
-        char option_code;
-    };
+    using codes = std::map<char, std::string>;
 
     /**
      *  This structure represents a single option. The strings can be used
      *  to navigate through the inisections (files) and inisection objects
-     *  to find the exact option.
+     *  to find the exact option. The name of the option is not part of
+     *  this structure because it is present in the key.
      */
 
-    using trio = struct
+    using duo = struct
     {
         std::string config_type;
         std::string config_section;
-        std::string config_option;
     };
 
     /**
-     *
+     *  Allows for lookup of the duo structure from the long option name.
      */
 
-    using map = std::map<pair, trio>;
+    using names = std::map<std::string, duo>;
 
 private:
+
+    /**
+     *  The set of supported command-line option character codes.
+     */
+
+    codes m_code_mappings;
 
     /**
      *  The complete set of configurations options.
      */
 
-    map m_cli_mappings;
+    names m_cli_mappings;
 
 public:
 
@@ -93,10 +98,35 @@ public:
     multiparser & operator = (const multiparser & other) = default;
     virtual ~multiparser () = default;
 
-    virtual cfg::options & option_set () override;
-    virtual const cfg::options & option_set () const override;
-
     bool cli_mappings_add (cfg::inisections::specification & spec);
+    bool lookup_names
+    (
+        const std::string & clioptname,         /* one or more characters   */
+        std::string & cfgtype,
+        std::string & cfgsection
+    );
+
+    const names & cli_mappings () const
+    {
+        return m_cli_mappings;
+    }
+
+private:
+
+    const codes & code_mappings () const
+    {
+        return m_code_mappings;
+    }
+
+    codes & code_mappings ()
+    {
+        return m_code_mappings;
+    }
+
+    names & cli_mappings ()
+    {
+        return m_cli_mappings;
+    }
 
 };          // class multiparser
 

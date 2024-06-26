@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-24
- * \updates       2024-06-25
+ * \updates       2024-06-26
  * \license       See above.
  *
  *      The limitations of command-line options as implemented in cli::parser
@@ -44,28 +44,6 @@
 namespace cli
 {
 
-#if defined EXPOSE_THIS_SAMPLE
-
-/**
- *  We're going to create this map programmatically.
- */
-
-static multiparser::map s_sample_map
-{
-    {
-        { "d", "record-by-channel" },
-        { "rc",  "[midi-clock-mod-ticks]", "record-by-channel" },
-    },
-    {
-        { "",  "scale"  ....       },
-    }
-    {
-        { "usr", "[user-interface-settings]", "window-scale"   },
-    }
-};
-
-#endif  // defined EXPOSE_THIS_SAMPLE
-
 /**
  *  Empty options set.
  */
@@ -78,19 +56,129 @@ static cfg::options s_dummy_options;
 
 multiparser::multiparser () :
     parser          (s_dummy_options),
+    m_code_mappings (),
     m_cli_mappings  ()
 {
     // no code
 }
 
+/**
+ *  cfg::inisections::specification contains a "file_extension" field that
+ *  is essentially the "configuration type". The other field of interest
+ *  is "file_sections"; it contains is a vector of references to
+ *  inisection::specification structure.
+ */
+
 bool
 multiparser::cli_mappings_add (cfg::inisections::specification & spec)
 {
-    for (auto sec : spec.file_sections)     /* vector of specref (wrappers) */
+    std::string configtype = spec.file_extension;
+    bool result = ! configtype.empty();
+    if (result)
     {
+        /*
+         *  const class std::reference_wrapper<cfg::inisection::specification>
+         *
+         *  Requires the get() function to access the reference.
+         */
+
+        for (const auto & sec : spec.file_sections)
+        {
+            const cfg::inisection::specification & isectspec = sec.get();
+            std::string sectionname = isectspec.sec_name;
+
+            /*
+             * const std::pair<std::string, options::spec>
+             */
+
+            for (const auto & opt : isectspec.sec_optionlist)
+            {
+                bool allowcli = opt.second.option_cli_enabled;
+                if (allowcli)
+                {
+                    char optcode = opt.second.option_code;
+                    std::string optname = opt.first;
+                    if (optcode > ' ')
+                    {
+                        auto p = std::make_pair(optcode, optname);
+                        auto r = code_mappings().insert(p);
+                        if (! r.second)
+                        {
+#if defined PLATFORM_DEBUG
+                            printf("Could not insert code '%c'\n", optcode);
+#endif
+                        }
+                    }
+
+                    duo d{configtype, sectionname};
+                    auto p = std::make_pair(optname, d);
+                    auto r = cli_mappings().insert(p);
+                    if (! r.second)
+                    {
+#if defined PLATFORM_DEBUG
+                        printf
+                        (
+                            "Could not insert option '%s'\n", optname.c_str()
+                        );
+#endif
+                    }
+                }
+            }
+        }
     }
-    return false;       // TODO
+    return result;
 }
+
+/**
+ *  This function looks up the option name and delivers the configuration type
+ *  and the configuration section to the caller.
+ *
+ * \param clioptname
+ *      Provides the command-line option name to look up. It should be either
+ *      a single character or more, and should not start with "-" or "--".
+ *      That will cause this function to fail, since the name will not be
+ *      found.
+ *
+ * \param [out] cfgtype
+ *      Returns the configuration type, if found.
+ *
+ * \param [out] cfgsection
+ *      Returns the configuration section (e.g. "[manual]") if found.
+ *
+ * \return
+ *      Returns true if the output strings can be used.
+ */
+
+bool
+multiparser::lookup_names
+(
+    const std::string & clioptname,         /* one or more characters   */
+    std::string & cfgtype,
+    std::string & cfgsection
+)
+{
+    bool result = ! clioptname.empty() && clioptname[0] != '-';
+    if (result)
+    {
+        std::string truename = clioptname;
+        if (truename.length() == 1)
+        {
+            const auto nip = code_mappings().find(truename[0]);
+            if (nip != code_mappings().end())
+                truename = nip->second;
+        }
+        const auto nip = cli_mappings().find(truename);
+        result = nip != cli_mappings().end();
+        if (result)
+        {
+            auto d = nip->second;
+            cfgtype = d.config_type;
+            cfgsection = d.config_section;
+        }
+    }
+    return result;
+}
+
 
 }           // namespace cli
 

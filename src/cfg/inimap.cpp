@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-06-22
+ * \updates       2024-06-26
  * \license       See above.
  *
  *  In an application, we want to access options via the triplet of
@@ -89,15 +89,18 @@ inimap::inimap () :
  *  contains a list of inisection::specifications, and each of those contains
  *  a set of options in a cfg::options::container.
  *
- *  We loop through the inisection::specifications in the
- *  inisections::specification, and add each of them to the map.
- *
- *  If this function fails, it means a section name is not unique. All section
- *  names must be unique.
+ *  We first make an inisections object and add it to the sections map. Next,
+ *  we loop through the inisection::specifications in the
+ *  inisections::specification, and add each of them to the multiparser,
+ *  which will help in looking up command-line options in every INI file
+ *  (inisections) used by the application.
  *
  *  What about [comments] and [Cfg66] though? They are basically read-only and
  *  will never be modified, except via access from each INI file module. They
  *  don't need to be in this map.  We should skip them.
+ *
+ *  Also note that this function needs to be called for each INI file
+ *  (represented by an inisections) needed by the application.
  */
 
 bool

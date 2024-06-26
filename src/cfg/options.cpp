@@ -492,7 +492,8 @@ options::verify () const
  *      long name, for the sake of the human reader/programmer. Note that
  *      each inisection has its own options object, so that searches look
  *      only in that object; thus, options in different inisections can safely
- *      have the same name.
+ *      have the same name. Note that the name must not start with "--"; strip
+ *      it off.
  *
  * \param value
  *      The value to be assigned.  This can be empty.  For boolean options,
@@ -503,8 +504,8 @@ options::verify () const
  * \return
  *      Returns true if the option was found and it's value actually changed.
  *      However, the option's modify flag is NOT set. This allows for reading
- *      option values from the command line or from a configuration file without
- *      causing options to be saved at application exit.
+ *      option values from the command line or from a configuration file
+ *      without causing options to be saved at application exit.
  */
 
 bool
@@ -578,7 +579,8 @@ options::set_value
  *
  * \param name
  *      The long name of the option.  We will always externally look for the
- *      long name, for the sake of the human reader/programmer.
+ *      long name, for the sake of the human reader/programmer. Note that
+ *      the name must not start with "--"; strip it off.
  *
  * \param value
  *      The value to be assigned.  This can be empty.  For boolean options,

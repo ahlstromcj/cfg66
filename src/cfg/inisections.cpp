@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-06-20
+ * \updates       2024-06-25
  * \license       See above.
  *
  * Operations to support:
@@ -265,37 +265,6 @@ inisections::find_options (const std::string & sectionname)
         static_cast<const inisections &>(*this).find_options(sectionname)
     );
 }
-
-#if defined CFG66_USE_INIFILES
-
-/*------------------------------------------------------------------------
- * inifiles
- *------------------------------------------------------------------------*/
-
-inifiles::inifiles (const std::string & name) :
-    m_name          (name),
-    m_file_list     (),
-    m_all_options   ()
-{
-    // no code
-}
-
-/**
- *  Adds an inisections to the list. In addition, it adds all of the options from
- *  all the inisections into the inimap.
- */
-
-bool
-inifiles::add (const inisections & file)
-{
-    m_file_list.push_back(file);
-
-    inisections & ncfile = const_cast<inisections &>(file);
-    bool result = ncfile.add_options_to_map(m_all_options);
-    return result;
-}
-
-#endif      // defined CFG66_USE_INIFILES
 
 /*------------------------------------------------------------------------
  * Free functions

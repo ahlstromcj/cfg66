@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-06-22
+ * \updates       2024-06-26
  * \license       See above.
  *
  *      While this parser follows the basics of GNU getopt fairly well,
