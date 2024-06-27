@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-07-25
- * \updates       2024-06-20
+ * \updates       2024-06-27
  * \license       See above.
  *
  *  Rationale:
@@ -375,7 +375,8 @@ static cfg::inisections::specification expex_file_data
 static const std::string s_help_intro
 {
     "This test program illustrates/tests the handling of INI-style data in\n"
-    "the cfg66 library.\n\n"
+    "the cfg66 library. The options shown here are the built-in default\n"
+    "options.\n\n"
 };
 
 /*
@@ -387,10 +388,11 @@ main (int argc, char * argv [])
 {
     int rcode = EXIT_FAILURE;
     cfg::options optionset(s_test_options, "no-file", "[none]");
-    bool success = false;
     cli::parser clip(optionset);
-    cfg::set_client_name("ini");
-    success = clip.parse(argc, argv);      /* NO OPTIONS YET */
+    cfg::set_client_name("ini");        /* shown as "[ini]" in messages     */
+
+    bool canrun = true;
+    bool success = clip.parse(argc, argv);
     if (success)
     {
         rcode = EXIT_SUCCESS;
@@ -402,6 +404,7 @@ main (int argc, char * argv [])
 
         if (clip.help_request())
         {
+            canrun = false;
             std::cout
                 << "HELP TEXT:\n\n"
                 << s_help_intro << clip.help_text()
@@ -409,56 +412,62 @@ main (int argc, char * argv [])
         }
         if (clip.version_request())
         {
+            canrun = false;
             std::cout
                 << "VERSION TEXT: (TODO)\n\n"
                 << "Version 0.0.0" << std::endl;  /* TODO! */
         }
         if (clip.verbose_request())
         {
+            canrun = false;
             std::cout
-                << "VERBOSE operation. Let's show the option list.\n"
+                << "VERBOSE. Let's just show the option (--help) list.\n"
                 << clip.help_text()
                 ;
         }
         if (clip.description_request())
         {
+            canrun = false;
             std::cout
                 << "DESCRIPTION TEXT:\n\n"
-                << "Description:\n" << clip.description_text()
+                << clip.description_text()
                 ;
         }
-        if (clip.use_log_file())
+        if (canrun)
         {
+            if (clip.use_log_file())
+            {
+                std::cout
+                    << "Using log file '" << clip.log_file() << "'" << std::endl
+                    ;
+
+            }
+
+            cfg::inisections ini_experiment("experiment", exp_file_data);
+            std::string settings = ini_experiment.settings_text();
             std::cout
-                << "Using log file '" << clip.log_file() << "'" << std::endl
+                << "======== INIFILE SETTINGS ========\n"
+                << settings
+                << "========   SETTINGS END   ========\n"
                 ;
-
-        }
-
-        cfg::inisections ini_experiment("experiment", exp_file_data);
-        std::string settings = ini_experiment.settings_text();
-        std::cout
-            << "======== INIFILE SETTINGS ========\n"
-            << settings
-            << "========   SETTINGS END   ========\n"
-            ;
-        if (success)
-        {
-            cfg::inisections sections("fooout", exp_file_data);
-            cfg::inifile f_out(sections, "tests/data/fooout", "rc");
-            success = f_out.write();
             if (success)
             {
-                cfg::inisections sections2("fooout", exp_file_data);
-                cfg::inifile f_in(sections2, "tests/data/fooin", "rc");
-                success = f_in.parse();
+                cfg::inisections sections("fooout", exp_file_data);
+                cfg::inifile f_out(sections, "tests/data/fooout", "rc");
+                success = f_out.write();
                 if (success)
                 {
-                    cfg::inifile f_inout
-                    (
-                        sections2, "tests/data/fooinout", "rc"
-                    );
-                    success = f_inout.write();
+                    cfg::inisections sections2("fooout", exp_file_data);
+                    cfg::inifile f_in(sections2, "tests/data/fooin", "rc");
+                    success = f_in.parse();
+                    if (success)
+                    {
+                        cfg::inifile f_inout
+                        (
+                            sections2, "tests/data/fooinout", "rc"
+                        );
+                        success = f_inout.write();
+                    }
                 }
             }
         }

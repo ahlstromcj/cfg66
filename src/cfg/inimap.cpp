@@ -74,6 +74,9 @@ namespace cfg
  *------------------------------------------------------------------------*/
 
 /**
+ *  Creates the "stock" inisections object (and its "stock" inisection and
+ *  options objects.)
+ *
  *  Note that there are both const and non-const accessors for these members.
  */
 
@@ -81,7 +84,16 @@ inimap::inimap () :
     m_multi_parser  (),
     m_sections_map  ()
 {
-    // no code
+    inisections sec;
+    auto p = std::make_pair("stock", sec);      /* does it make a copy? */
+    auto r = sections_map().insert(p);          /* another copy         */
+    bool ok = r.second;
+    if (ok)
+    {
+        const options & opts = sec.find_options("stock");
+        if (opts.active())
+            (void) multi_parser().cli_mappings_add(opts.option_pairs());
+    }
 }
 
 /**

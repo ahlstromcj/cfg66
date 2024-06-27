@@ -99,7 +99,9 @@ private:
      *  such as ".rc", ".usr", etc., minus the period.
      *
      *  If empty, there is no source file associated with this option, which
-     *  should be uncommon.
+     *  should be uncommon. If equal to "stock", this inisection contains
+     *  only the internal stock options, which is a list defined in the
+     *  cfg::options module.
      */
 
     std::string m_config_type;
@@ -107,6 +109,9 @@ private:
     /**
      *  The name of the INI section. It must include the "[]" wrapping,
      *  as in "[Cfg66]" or "[directories]".
+     *
+     *  If equal to "[stock]", this inisection contains only the internal
+     *  stock options, which is a list defined in the cfg::options module.
      */
 
     std::string m_name;
@@ -136,7 +141,7 @@ private:
 
 public:
 
-    inisection () = default;
+    inisection ();                          /* sets up "stock" options      */
     inisection
     (
         inisection::specification & spec,   /* name, description, opt list  */

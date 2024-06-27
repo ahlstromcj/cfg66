@@ -42,6 +42,23 @@ namespace cfg
  *------------------------------------------------------------------------*/
 
 /**
+ *  This constructor creates an inisection for the optional stock options.
+ */
+
+inisection::inisection () :
+    m_config_type           ("stock"),
+    m_name                  ("[stock]"),
+    m_section_description   ("Internal default stock options."),
+    m_option_names          (),
+    m_options               ("stock", "[stock]")
+{
+    m_options.reset(options::stock);
+    options::container & opspecs = m_options.option_pairs();
+    for (const auto & opt : opspecs)
+        add_name(opt.first);
+}
+
+/**
  *  This constructor grabs the names of each option from the options object
  *  that is created, and adds them to the list.
  *

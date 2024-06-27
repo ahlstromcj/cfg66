@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-06-21
+ * \updates       2024-06-27
  * \license       See above.
  *
  *  The cli::options class provides a way to hold the state of command-line
@@ -34,28 +34,28 @@
  * Option kinds:
  *
  *  Note that the string option_kind is somewhat free-form.  It should
- *  be the name of a C/C++ data type:
+ *  be similar to the name of a C/C++ data type:
  *
  *      -   "boolean".
- *          "valuename = [ true | false ]
+ *          "valuename = [ true | false ]"
  *          This one is necessary if the option is to be boolean.
  *          It also enables support for the prefix "no-" as part of the
  *          name to reverse the value.  The only useful option_value
  *          strings are "true" and "false".
- *      -   "integet".
- *          "valuename = [ integer ]
+ *      -   "integer".
+ *          "valuename = [ integer ]"
  *          Use this one to indicate that an integer value
  *          (positive, negative, unsigned, short, etc.) is needed.
  *      -   "floating".
- *          "valuename = [ floating-point ]
+ *          "valuename = [ floating-point ]"
  *          Use this to indicate that a float or double value
  *          is needed.
  *      -   "string".
- *          "valuename = [ string | "string" ]
+ *          "valuename = [ one-word-string | "string" ]"
  *          Use this to indicate that the option string is
  *          indeed just a string.
  *      -   "overflow".
- *          "valuename = [ string | "string" ]
+ *          "valuename = [ one-word-string | "string" ]"
  *          This string indicates the built-in support
  *          for "o options". These are options created when running
  *          out of single-character options, and are included for
@@ -71,8 +71,8 @@
  *
  *              [xyz-file]
  *              active = [true | false ]
- *              file = "filename.zyx"           # 'xyz-file = "filename"'
- *              base-directory = "path" or ""   # optional 'xyz-dir = "directory"'
+ *              file = "filename.zyx"         # 'xyz-file = "filename"'
+ *              base-directory = "path" | ""  # optional 'xyz-dir = "directory"'
  *
  *          CLI:
  *
@@ -236,7 +236,7 @@ options::container s_default_options =
     {
         "description",
         {
-            0, "boolean", options::enabled,
+            options::code_null, "boolean", options::enabled,
             "false", "false", false, false,
             "Flags application to show more extra information.", true
         }
@@ -268,7 +268,7 @@ options::container s_default_options =
     {
         "log",
         {
-            0, "string", options::enabled,
+            options::code_null, "string", options::enabled,
             "app.log", "", false, false,
             "Specifies use of a log file." /* --option log[=file] */, true
         }
@@ -359,7 +359,7 @@ options::string_to_kind (const std::string & s)
 options::options (const std::string & file, const std::string & section) :
     m_source_file       (file),
     m_source_section    (section),
-    m_option_pairs     ()
+    m_option_pairs      ()
 {
     // No code needed
 }
@@ -379,14 +379,20 @@ options::options
 
 /**
  *  Empties the options container completely. It then (optionally) adds
- *  in stock help and version information.
+ *  in stock help and version information. This function must be called
+ *  if one wants to support the default options.
+ *
+ * \param add_stock
+ *      If true, add the default options.
  */
 
 void
-options::reset ()
+options::reset (bool add_stock)
 {
     clear();
-    (void) add(s_default_options);
+    if (add_stock)
+        (void) add(s_default_options);
+
     initialize();
 }
 
@@ -400,6 +406,17 @@ options::initialize ()
 {
     init_container(option_pairs());
 }
+
+/**
+ *  Initializes the specified container. It does the following for each
+ *  options::spec in the container:
+ *
+ *      -   Sets the value of the option to its default value.
+ *      -   Unsets the "read from CLI" flag.
+ *      -   Unsets the "modified" flag.
+ *
+ *  This is a static member function.
+ */
 
 void
 options::init_container (container & pairs)

@@ -59,14 +59,14 @@ int
 main (int argc, char * argv [])
 {
     int rcode = EXIT_FAILURE;
-    cli::parser clip(s_test_options);           // , "", "");
+    cli::parser clip(s_test_options);
     bool success = clip.parse(argc, argv);
     if (success)
     {
         bool show_results = true;
         bool findme_active = clip.check_option(argc, argv, "find-me", false);
         if (findme_active)
-            std::cout << "fine-me option found." << std::endl;
+            std::cout << "find-me option found." << std::endl;
 
         rcode = EXIT_SUCCESS;
         if (clip.help_request())

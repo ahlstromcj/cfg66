@@ -19,12 +19,12 @@
 /**
  * \file          manager_test.cpp
  *
- *      A test-file for the rudimentary CLI parser class and C API.
+ *      A test-file for the session::manager class.
  *
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-01-26
- * \updates       2023-07-31
+ * \updates       2024-06-27
  * \license       See above.
  *
  */
@@ -81,6 +81,7 @@ static bool
 simple_smoke_test ()
 {
     // session::manager appmgr;    // (argc, argv);  TODO TODO
+    std::cerr << "session::manager C++ test not yet ready" << std::endl;
     return false;
 }
 
@@ -98,9 +99,9 @@ main (int /* argc */ , char * argv [])
         success = simple_smoke_test();
         std::cout << cfg::get_build_details() << std::endl;
         if (success)
-            std::cout << "cfg::parser C++ test succeeded" << std::endl;
+            std::cout << "session::manager C++ test succeeded" << std::endl;
         else
-            std::cout << "cfg::parser C++ test failed" << std::endl;
+            std::cout << "session::manager C++ test failed" << std::endl;
     }
     return rcode;
 }

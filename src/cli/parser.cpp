@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-06-26
+ * \updates       2024-06-27
  * \license       See above.
  *
  *      While this parser follows the basics of GNU getopt fairly well,
@@ -71,7 +71,7 @@ parser::parser () :
     m_use_log_file          (false),
     m_log_file              ("app.log")
 {
-    // No code
+    reset();                /* sets up help, version, --option, log, etc.   */
 }
 
 /**

@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-06-25
+ * \updates       2024-06-27
  * \license       See above.
  *
  * Operations to support:
@@ -92,6 +92,29 @@ static std::string s_stock_file_intro
     "This file holds configuration data for Cfg66-compliant applications.\n"
     "It follows a format similar to the INI files of MS-DOS."
 };
+
+/**
+ *  Create an inisections that has only one inisection, that being one
+ *  holding only the "stock" options. See the inisection default constructor.
+ */
+
+inisections::inisections () :
+    m_app_version   ("Cfg66-based stock configuration"),
+    m_directory     (),
+    m_name          (),
+    m_extension     (),
+    m_config_type   (),
+    m_description   ("This is a stock configuration, not a file."),
+    m_section_list  ()
+{
+    inisection ini;
+    add(ini);
+}
+
+/**
+ *  Create an inisections, filling in members by splitting the
+ *  INI file name.
+ */
 
 inisections::inisections (const std::string & ininame) :
     m_app_version   ("Cfg66-based configuration file"),
@@ -160,6 +183,11 @@ inisections::inisections
         else
             m_config_type = m_extension;
     }
+
+    /*
+     * specref = std::reference_wrapper<inisection::specification>
+     */
+
     for (auto sec : spec.file_sections)     /* vector of specref (wrappers) */
     {
         /*

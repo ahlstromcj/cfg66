@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-06-25
+ * \updates       2024-06-27
  * \license       See above.
  *
  *  We want to provide a list of { filename, sectionname } pairs, and
@@ -65,6 +65,7 @@ class inisections
 {
 
     friend class inifile;
+    friend class inimap;
 
 public:
 
@@ -155,7 +156,7 @@ private:
 
 public:
 
-    inisections () = default;
+    inisections ();
     inisections (const std::string & ininame);
     inisections (const std::string & ininame, inisections::specification & spec);
     inisections (const inisections & ini) = default;

@@ -33,8 +33,8 @@
  *  Test options.  Note that, in the create_option_list() call in the main()
  *  function, we specify that help and version options are automatically
  *  added. Also note that this list is a map of cli::options::container
- *  name/spec pairs.  Note that the following options are built-in and always
- *  accessible:
+ *  name/spec pairs.  Note that the following options are built-in, but
+ *  have to be enabled:
  *
  *      -   --help, -h
  *      -   --version, -v

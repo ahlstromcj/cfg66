@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-06-25
+ * \updates       2024-06-27
  * \license       See above.
  *
  *  Supports variables of the following types:
@@ -106,6 +106,7 @@ public:
 
     static const bool disabled{false};
     static const bool enabled{true};
+    static const bool stock{true};   /* used in reset() function */
 
     /**
      *  More searchable versions of specific booleans and a null option
@@ -262,7 +263,7 @@ public:
     static kind string_to_kind (const std::string & s);
     static void init_container (container & pairs); /* used in inisection   */
 
-    void reset ();
+    void reset (bool add_stock = false);
     void initialize ();
 
     const std::string & source_file () const

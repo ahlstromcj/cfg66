@@ -88,40 +88,54 @@ multiparser::cli_mappings_add (cfg::inisections::specification & spec)
             std::string sectionname = isectspec.sec_name;
 
             /*
-             * const std::pair<std::string, options::spec>
+             * sec_optionlist is a cfg::options::container, i.e. a
+             * map of option::spec structures keyed by their name:
+             *
+             *      const std::pair<std::string, options::spec>
              */
 
-            for (const auto & opt : isectspec.sec_optionlist)
-            {
-                bool allowcli = opt.second.option_cli_enabled;
-                if (allowcli)
-                {
-                    char optcode = opt.second.option_code;
-                    std::string optname = opt.first;
-                    if (optcode > ' ')
-                    {
-                        auto p = std::make_pair(optcode, optname);
-                        auto r = code_mappings().insert(p);
-                        if (! r.second)
-                        {
-#if defined PLATFORM_DEBUG
-                            printf("Could not insert code '%c'\n", optcode);
-#endif
-                        }
-                    }
+            result = cli_mappings_add(isectspec.sec_optionlist);
+        }
+    }
+    return result;
+}
 
-                    duo d{configtype, sectionname};
-                    auto p = std::make_pair(optname, d);
-                    auto r = cli_mappings().insert(p);
+bool
+multiparser::cli_mappings_add (const cfg::options::container & opts)
+{
+    bool result = opts.size() > 0;
+    if (result)
+    {
+        for (const auto & opt : opts)
+        {
+            bool allowcli = opt.second.option_cli_enabled;
+            if (allowcli)
+            {
+                char optcode = opt.second.option_code;
+                std::string optname = opt.first;
+                if (optcode > ' ')
+                {
+                    auto p = std::make_pair(optcode, optname);
+                    auto r = code_mappings().insert(p);
                     if (! r.second)
                     {
 #if defined PLATFORM_DEBUG
-                        printf
-                        (
-                            "Could not insert option '%s'\n", optname.c_str()
-                        );
+                        printf("Could not insert code '%c'\n", optcode);
 #endif
                     }
+                }
+
+                duo d{"stock", "[stock]"};
+                auto p = std::make_pair(optname, d);
+                auto r = cli_mappings().insert(p);
+                if (! r.second)
+                {
+#if defined PLATFORM_DEBUG
+                    printf
+                    (
+                        "Could not insert option '%s'\n", optname.c_str()
+                    );
+#endif
                 }
             }
         }

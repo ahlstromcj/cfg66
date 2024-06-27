@@ -99,6 +99,7 @@ public:
     virtual ~multiparser () = default;
 
     bool cli_mappings_add (cfg::inisections::specification & spec);
+    bool cli_mappings_add (const cfg::options::container & opts);
     bool lookup_names
     (
         const std::string & clioptname,         /* one or more characters   */

@@ -27,27 +27,27 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-06-26
+ * \updates       2024-06-27
  * \license       See above.
  *
  *  Provides for the handling of options specifications.  This module is
  *  appropriate for simple option sets and the command-line.  For a more
- *  advanced parser, see the cfg::parser class.
+ *  advanced parser, see the cli::multiparser class.
  *
  * Direct support:
  *
- *  -h, --help
- *  -v, --version
- *  -V, --verbose
- *  -o, --option log=file.log
+ *      -h, --help
+ *      -v, --version
+ *      -V, --verbose
+ *      -o, --option log=file.log
  *
  * Appinfo support:
  *
  *  We still need to figure out the best way to concatenate option lists.
  *
- *  -H, --home dir                      Calls set_home_cfg_directory(dir)
- *  -c, --config file                   Calls set_home_cfg_file(file)
- *  -l, --client-name ???
+ *      -H, --home dir                  Calls set_home_cfg_directory(dir)
+ *      -c, --config file               Calls set_home_cfg_file(file)
+ *      -l, --client-name ???
  *
  *  The --config option is, by default, the session file in the default
  *  --home directory.
@@ -178,7 +178,7 @@ public:
 
     void reset ()
     {
-        option_set().reset();
+        option_set().reset(cfg::options::stock);
     }
 
     void initialize ()
