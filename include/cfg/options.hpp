@@ -106,7 +106,7 @@ public:
 
     static const bool disabled{false};
     static const bool enabled{true};
-    static const bool stock{true};   /* used in reset() function */
+    static const bool stock{true};      /* used in reset() & debug_text()   */
 
     /**
      *  More searchable versions of specific booleans and a null option

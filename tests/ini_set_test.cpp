@@ -61,25 +61,28 @@ main (int argc, char * argv [])
 {
     int rcode = EXIT_FAILURE;
     cfg::inimanager configuration_set;      /* note! adds "stock" options,      */
-    const cli::multiparser & clip = configuration_set.multi_parser();
     cfg::set_client_name("iniset");
 
-    bool success = clip.parse(argc, argv);
-    if (clip.show_information_only())
+    bool success = configuration_set.parse_cli(argc, argv);
+    if (success)
     {
-        rcode = EXIT_SUCCESS;
-    }
-    else
-    {
-        if (success)
+        const cli::multiparser & clip = configuration_set.multi_parser();
+        if (clip.show_information_only())
         {
             rcode = EXIT_SUCCESS;
         }
-
-        if (success)
-            std::cout << "cfg::inimanager C++ test succeeded" << std::endl;
         else
-            std::cerr << "cfg::inimanager C++ test failed" << std::endl;
+        {
+            if (success)
+            {
+                rcode = EXIT_SUCCESS;
+            }
+
+            if (success)
+                std::cout << "cfg::inimanager C++ test passed" << std::endl;
+            else
+                std::cerr << "cfg::inimanager C++ test failed" << std::endl;
+        }
     }
     return rcode;
 }

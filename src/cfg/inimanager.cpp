@@ -92,7 +92,7 @@ inimanager::inimanager () :
     {
         const options & opts = sec.find_options("stock");
         if (opts.active())
-            (void) multi_parser().cli_mappings_add(opts.option_pairs());
+            (void) nc_multi_parser().cli_mappings_add(opts.option_pairs());
     }
 }
 
@@ -131,7 +131,7 @@ inimanager::add_inisections
         result = r.second;
         if (result)
         {
-            result = multi_parser().cli_mappings_add(spec);
+            result = nc_multi_parser().cli_mappings_add(spec);
         }
 #if defined PLATFORM_DEBUG
         else

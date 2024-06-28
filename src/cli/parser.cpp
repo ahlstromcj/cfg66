@@ -49,6 +49,7 @@
 #include "c_macros.h"                   /* not_nullptr()                    */
 #include "cfg/appinfo.hpp"              /* cfg::appinfo structure           */
 #include "cli/parser.hpp"               /* cli::parser class                */
+#include "util/msgfunctions.hpp"        /* util::set_verbose() etc.         */
 #include "util/strfunctions.hpp"        /* util::tokenize()                 */
 
 /*
@@ -113,6 +114,10 @@ parser::parser
 
 /**
  *  A straightforward command-line parser, for the most part.
+ *
+ *  One issue is the use of token_match() to set some flags. We really
+ *  need for parse() to, at the end, to call options::boolean_value(),
+ *  etc. See the "#if 0" code below.
  */
 
 bool
@@ -132,7 +137,8 @@ parser::parse (int argc, char * argv [])
 
             /*
              * The options parsed here are always present.  The application can
-             * add more options.
+             * add more options. It would be better to use the items in the
+             * default/stock options container!!!
              */
 
             if (token_match(token, "help", 'h'))
@@ -147,7 +153,12 @@ parser::parse (int argc, char * argv [])
             }
             else if (token_match(token, "verbose", 'V'))
             {
+                /*
+                 * A verbose flag is also present in session::configuration!!
+                 */
+
                 m_verbose_request = true;
+                util::set_verbose(true);            /* msgfunctions module  */
                 continue;
             }
             else if (token_match(token, "description"))
@@ -155,6 +166,32 @@ parser::parse (int argc, char * argv [])
                 m_description_request = true;
                 continue;
             }
+            else if (token_match(token, "investigate", 'i'))
+            {
+                util::set_investigate(true);        /* msgfunctions module  */
+                continue;
+            }
+            else if (token_match(token, "log"))
+            {
+                /*
+                 * A log flag is also present in session::configuration!!
+                 * Also handle it below in parse_value().
+                 *
+                 *  continue;
+                 */
+            }
+            else if (token_match(token, "inspect", 'I'))
+            {
+                /*
+                 * Do nothing
+                 */
+            }
+
+            /*
+             *  inspect
+             *  log
+             */
+
             else if (token_match(token, "option", 'o'))
             {
                 if (argv[i + 1][0] != '-')  /* needs a non-option argument  */
@@ -186,6 +223,19 @@ parser::parse (int argc, char * argv [])
 
             result = parse_value(argc, argv, i, token);
         }
+    }
+    if (result)
+    {
+        m_help_request = option_set().boolean_value("help");
+        m_version_request = option_set().boolean_value("version");
+        m_verbose_request = option_set().boolean_value("verbose");
+        util::set_verbose(m_verbose_request);      /* msgfunctions module   */
+        m_description_request = option_set().boolean_value("description");
+
+        bool investigate = option_set().boolean_value("investigate");
+        util::set_investigate(investigate);        /* msgfunctions module   */
+
+        // m_log_file
     }
     return result;
 }

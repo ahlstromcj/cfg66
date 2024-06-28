@@ -252,9 +252,9 @@ public:
         return option_set().help_text();
     }
 
-    std::string debug_text () const
+    std::string debug_text (bool showbuiltins = false) const
     {
-        return option_set().debug_text();
+        return option_set().debug_text(showbuiltins);
     }
 
     std::string description_text () const

@@ -80,7 +80,8 @@ main (int argc, char * argv [])
                     << s_help_intro << "\n"
                     << "Other things to try: \n"
                     << "   Use --find-me as the first argument.\n"
-                    << "   Use --find-me --dead-code to verify both are detected.\n"
+                    << "   Use --find-me --dead-code to verify both "
+                       "are detected.\n"
                     << std::endl;
             }
             if (clip.description_request())
@@ -141,8 +142,8 @@ main (int argc, char * argv [])
                 {
                     std::cout
                         << "Verify that setting(s) were effective. "
-                           "Changed options are 'dirty'.\n\n"
-                        << clip.debug_text()
+                           "Changed options are 'modified'.\n\n"
+                        << clip.debug_text(cfg::options::stock)
                         << std::endl
                         ;
                 }

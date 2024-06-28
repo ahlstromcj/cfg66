@@ -24,16 +24,16 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-06-27
+ * \updates       2024-06-28
  * \license       See above.
  *
  *  The cli::options class provides a way to hold the state of command-line
- *  options.  Also see the cfg::options class, which adds a file name and a
+ *  options. Also see the cfg::options class, which adds a file name and a
  *  section name and will hopefully add memento support for undo/redo.
  *
  * Option kinds:
  *
- *  Note that the string option_kind is somewhat free-form.  It should
+ *  Note that the string option_kind is somewhat free-form. It should
  *  be similar to the name of a C/C++ data type:
  *
  *      -   "boolean".
@@ -269,7 +269,7 @@ options::container s_default_options =
         "log",
         {
             options::code_null, "string", options::enabled,
-            "app.log", "", false, false,
+            "", "", false, false,
             "Specifies use of a log file." /* --option log[=file] */, true
         }
     },

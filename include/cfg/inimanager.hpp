@@ -109,6 +109,11 @@ public:
         return m_multi_parser;
     }
 
+    bool parse_cli (int argc, char * argv [])
+    {
+        return nc_multi_parser().parse(argc, argv);
+    }
+
     const sections & sections_map () const
     {
         return m_sections_map;
@@ -146,7 +151,13 @@ public:
 
 private:
 
-    cli::multiparser & multi_parser ()
+    /*
+     *  When called by an app, this non-const version is chosen as the
+     *  closest match to the call. For now we prepend a wart to the
+     *  name of the internal version.
+     */
+
+    cli::multiparser & nc_multi_parser ()
     {
         return m_multi_parser;
     }
