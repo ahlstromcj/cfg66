@@ -19,12 +19,12 @@
 /**
  * \file          ini_test.cpp
  *
- *      A test-file for the rudimentary CLI parser class and C API.
+ *      A test-file for the INI-related tests, except for inimanager.
  *
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-07-25
- * \updates       2024-06-27
+ * \updates       2024-06-28
  * \license       See above.
  *
  *  Rationale:
@@ -113,15 +113,6 @@
  *     -X   --playlist = base-name of a 'playlist' file
  *
  */
-
-#include "ctrl_spec.hpp"
-#include "drums_spec.hpp"
-#include "mutes_spec.hpp"
-#include "palette_spec.hpp"
-#include "playlist_spec.hpp"
-#include "rc_spec.hpp"
-#include "session_spec.hpp"
-#include "usr_spec.hpp"
 
 /*------------------------------------------------------------------------
  * Minimal option list

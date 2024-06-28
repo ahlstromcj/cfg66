@@ -20,7 +20,7 @@
  */
 
 /**
- * \file          inimap.hpp
+ * \file          inimanager.hpp
  *
  *      Provides a way to hold all options from multiple INI-style files and
  *      multiple INI file sections.
@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-06-25
+ * \updates       2024-06-28
  * \license       See above.
  *  section.
  *
@@ -47,7 +47,7 @@ namespace cfg
 {
 
 /*------------------------------------------------------------------------
- * inimap
+ * inimanager
  *------------------------------------------------------------------------*/
 
 /**
@@ -57,13 +57,13 @@ namespace cfg
  *  Meant for unique-option names, spanning many inifiles and inisections.
  */
 
-class inimap
+class inimanager
 {
 
 public:
 
     /**
-     *  An inimap::sections holds actual inisections objects. They are created
+     *  An inimanager::sections holds actual inisections objects. They are created
      *  on the fly from static inisections::specifications definitions, so
      *  we need to store copies.
      *
@@ -92,7 +92,7 @@ private:
 
 public:
 
-    inimap ();
+    inimanager ();
 
     int count () const
     {
@@ -173,14 +173,14 @@ private:
         const std::string & optionname
     );
 
-};          // class inimap
+};          // class inimanager
 
 }           // namespace cfg
 
 #endif      // CFG66_CFG_INIMAP_HPP
 
 /*
-* inimap.hpp
+* inimanager.hpp
 *
 * vim: sw=4 ts=4 wm=4 et ft=cpp
 */

@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2018-11-24
- * \updates       2024-04-30
+ * \updates       2024-06-28
  * \license       GNU GPLv2 or above
  *
  *    Provides some useful functions for displaying information about the
@@ -38,7 +38,7 @@
 #include <string>
 
 #include "cpp_types.hpp"                /* string, vector, lib66::msglevel  */
-#include "util/msgfunctions.hpp"        /* eun clas msglevel                */
+#include "util/msgfunctions.hpp"        /* enum clas msglevel               */
 
 /*
  * This is the main namespace of Cfg66.  Do not attempt to
@@ -255,6 +255,7 @@ extern void set_app_build_os (const std::string & abuild_os);
 extern void set_app_build_issue (const std::string & abuild_issue);
 extern void set_api_engine (const std::string & aengine);
 extern void set_app_name (const std::string & aname);
+extern void set_app_version (const std::string & version);
 extern void set_app_type (const std::string & atype);
 extern void set_app_cli (bool iscli);
 extern void set_app_headless (bool isheadless);

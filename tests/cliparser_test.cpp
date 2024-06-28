@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2023-08-02
+ * \updates       2024-06-28
  * \license       See above.
  *
  */
@@ -32,6 +32,7 @@
 #include <cstdlib>                      /* EXIT_SUCCESS, EXIT_FAILURE       */
 #include <iostream>                     /* std::cout                        */
 
+#include "cfg/appinfo.hpp"              /* cfg::appinfo                     */
 #include "cli/parser.hpp"               /* cli::parser, etc.                */
 #include "test_spec.hpp"                /* s_test_options container         */
 
@@ -61,33 +62,35 @@ main (int argc, char * argv [])
     int rcode = EXIT_FAILURE;
     cli::parser clip(s_test_options);
     bool success = clip.parse(argc, argv);
+    cfg::set_app_version("0.2.0");
     if (success)
     {
         bool show_results = true;
         bool findme_active = clip.check_option(argc, argv, "find-me", false);
         if (findme_active)
-            std::cout << "find-me option found." << std::endl;
+            std::cout << "--find-me option found." << std::endl;
 
         rcode = EXIT_SUCCESS;
-        if (clip.help_request())
+        if (clip.show_information_only())
         {
-            std::cout << s_help_intro << clip.help_text();
-            std::cout
-                << "Other things to try: \n"
-                << "   Use --find-me as the first argument.\n"
-                << "   Use --find-me --dead-code to verify both are detected.\n"
-                << std::endl;
             show_results = false;
-        }
-        if (clip.description_request())
-        {
-            std::cout << s_desc_intro << clip.help_text();
-            show_results = false;
-        }
-        if (clip.version_request())
-        {
-            std::cout << "Version 0.0.0" << std::endl;  /* TODO! */
-            show_results = false;
+            if (clip.help_request())
+            {
+                std::cout
+                    << s_help_intro << "\n"
+                    << "Other things to try: \n"
+                    << "   Use --find-me as the first argument.\n"
+                    << "   Use --find-me --dead-code to verify both are detected.\n"
+                    << std::endl;
+            }
+            if (clip.description_request())
+            {
+                std::cout << s_desc_intro << std::endl;
+            }
+            if (clip.version_request())
+            {
+                // Anything?
+            }
         }
         if (clip.verbose_request())
         {
@@ -102,54 +105,63 @@ main (int argc, char * argv [])
                 << "Using log file '" << clip.log_file() << "'" << std::endl
                 ;
         }
-        if (argc > 1 && show_results)
+        if (show_results)
         {
-            std::string arg1 = argv[1];
-            if (findme_active)
+            if (argc > 1)
             {
-                std::cout << "Looking for '--find-me'... ";
-                bool found = clip.check_option(argc, argv, "--find-me", false);
-                if (found)
+                if (findme_active)
                 {
-                    std::cout << "found." << std::endl;
-                    std::cout << "Looking for 'dead-code'" << std::endl;
-                    found = clip.check_option(argc, argv, "dead-code");
+                    std::cout << "Looking for '--find-me'... ";
+                    bool found = clip.check_option
+                    (
+                        argc, argv, "--find-me", false
+                    );
                     if (found)
                     {
                         std::cout << "found." << std::endl;
-                        std::cout << "find-me tests succeeded." << std::endl ;
+                        std::cout << "Looking for 'dead-code'" << std::endl;
+                        found = clip.check_option(argc, argv, "dead-code");
+                        if (found)
+                        {
+                            std::cout
+                                << "found." << std::endl
+                                << "find-me tests succeeded." << std::endl
+                                ;
+                        }
+                        else
+                        {
+                            std::cerr
+                                << "not found." << std::endl
+                                << "find-me tests failed." << std::endl
+                                ;
+                        }
                     }
-                    else
-                    {
-                        std::cout << "not found." << std::endl;
-                        std::cerr << "find-me tests failed." << std::endl;
-                    }
+                }
+                else
+                {
+                    std::cout
+                        << "Verify that setting(s) were effective. "
+                           "Changed options are 'dirty'.\n\n"
+                        << clip.debug_text()
+                        << std::endl
+                        ;
                 }
             }
             else
             {
-                std::cout
-                    << "Verify that setting(s) were effective. "
-                       "Changed options are 'dirty'.\n\n"
-                    << clip.debug_text()
-                    << std::endl
-                    ;
-            }
-        }
-        else
-        {
-            success = clip.change_value("alertable", "true");
-            if (success)
-                success = clip.change_value("username", "C. Ahlstrom");
-
-            if (success)
-                success = clip.change_value("loop-count", "28");
-
-            if (success)
-            {
-                success = ! clip.change_value("", "");
+                success = clip.change_value("alertable", "true");
                 if (success)
-                    success = ! clip.change_value("dummy", "true");
+                    success = clip.change_value("username", "C. Ahlstrom");
+
+                if (success)
+                    success = clip.change_value("loop-count", "28");
+
+                if (success)
+                {
+                    success = ! clip.change_value("", "");
+                    if (success)
+                        success = ! clip.change_value("dummy", "true");
+                }
             }
         }
     }

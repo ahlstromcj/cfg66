@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-06-27
+ * \updates       2024-06-28
  * \license       See above.
  *
  *      While this parser follows the basics of GNU getopt fairly well,
@@ -43,10 +43,11 @@
  *          no other additional code.
  */
 
-#include <iomanip>                      /* std::setw()                      */
+#include <iostream>                     /* std::cout                        */
 #include <sstream>                      /* std::ostringstream               */
 
 #include "c_macros.h"                   /* not_nullptr()                    */
+#include "cfg/appinfo.hpp"              /* cfg::appinfo structure           */
 #include "cli/parser.hpp"               /* cli::parser class                */
 #include "util/strfunctions.hpp"        /* util::tokenize()                 */
 
@@ -69,7 +70,7 @@ parser::parser () :
     m_verbose_request       (false),
     m_description_request   (false),
     m_use_log_file          (false),
-    m_log_file              ("app.log")
+    m_log_file              ()
 {
     reset();                /* sets up help, version, --option, log, etc.   */
 }
@@ -104,7 +105,7 @@ parser::parser
     m_verbose_request       (false),
     m_description_request   (false),
     m_use_log_file          (false),
-    m_log_file              ("app.log")
+    m_log_file              ()
 {
     reset();                /* sets up help, version, --option, log, etc.   */
     (void) add(optset);
@@ -460,6 +461,40 @@ parser::token_match
             std::string tokpart = token.substr(2);
             result = tokpart == opt;
         }
+    }
+    return result;
+}
+
+/**
+ *  Provides default handling for informational options.
+ *
+ * \return
+ *     Returns true if information-only was requested.
+ */
+
+bool
+parser::show_information_only () const
+{
+    bool result = false;
+    if (help_request())
+    {
+        std::cout << help_text();
+        result = true;
+    }
+    if (description_request())
+    {
+        std::cout << description_text();
+        result = true;
+    }
+    if (version_request())
+    {
+        const std::string & ver = cfg::get_app_version();
+        if (! ver.empty())
+            std::cout << "Version " << cfg::get_app_version() << std::endl;
+        else
+            std::cout << cfg::get_app_version_text() << std::endl;
+
+        result = true;
     }
     return result;
 }

@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-06-27
+ * \updates       2024-06-28
  * \license       See above.
  *
  *  We want to provide a list of { filename, sectionname } pairs, and
@@ -65,7 +65,7 @@ class inisections
 {
 
     friend class inifile;
-    friend class inimap;
+    friend class inimanager;
 
 public:
 

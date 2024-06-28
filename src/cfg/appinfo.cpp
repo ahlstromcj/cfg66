@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2017-03-12
- * \updates       2024-04-30
+ * \updates       2024-06-28
  * \license       GNU GPLv2 or above
  *
  *  The first part of this file defines a couple of global structure
@@ -225,6 +225,16 @@ void
 set_app_name (const std::string & aname)
 {
     s_app_info._app_name = aname;
+}
+
+/**
+ *  Sets the current version of the application.
+ */
+
+void
+set_app_version (const std::string & version)
+{
+    s_app_info._app_version = version;
 }
 
 /**

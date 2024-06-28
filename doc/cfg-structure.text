@@ -1,6 +1,6 @@
 High-level structure of the cfg66 library
 Chris Ahlstrom
-2024-01-19 to 2024-04-30
+2024-01-19 to 2024-06-28
 
 enum class cfg::appkind
 
@@ -47,7 +47,7 @@ class cfg::history<TYPE>
     bool add (const TYPE & s); const TYPE & undo (); const TYPE & redo ();
 }
 
-class cfg::inimap
+class cfg::inimanager
 {
     using optionref = std::reference_wrapper<options::spec>;
     using optionmap = std::map<std::string, optionref>;
@@ -84,7 +84,7 @@ class cfg::inifile
     sectionlist m_section_list;
     bool add (inisection & section);
     const sectionlist & sections () const;
-    bool add_options_to_map (inimap & mapp);
+    bool add_options_to_map (inimanager & mapp);
 }
 
 class cfg::inifiles
@@ -93,9 +93,9 @@ class cfg::inifiles
     using refs = std::vector<inifile>;
     std::string m_name;
     refs m_file_list;
-    inimap m_all_options;
+    inimanager m_all_options;
     bool add (const inifile & file);
-    bool add_options_to_map (inimap & mapp);
+    bool add_options_to_map (inimanager & mapp);
 }
 
 class cfg::memento<TYPE>
@@ -131,7 +131,7 @@ class cfg::options
 
 class cfg::optionmap
 {
-    // not yet in use, but present in cfg::inimap
+    // not yet in use, but present in cfg::inimanager
 }
 
 class cfg::palette
@@ -272,10 +272,10 @@ Internal cfg66 relationships:
     class cfg::memento<TYPE>
         containment TYPE
 
-    class cfg::inimap
+    class cfg::inimanager
         alias optionref = std::reference_wrapper<options::spec>
         alias optionmap = std::map<std::string, optionref>
-        containment cfg::inimap::optionmap
+        containment cfg::inimanager::optionmap
         dependency cfg::options::spec
 
     class cfg::inisection
@@ -298,14 +298,14 @@ Internal cfg66 relationships:
         containment sectionlist
         dependency cfg::inisection
         dependency cfg::inifile::sectionlist
-        dependency cfg::inimap
+        dependency cfg::inimanager
 
-    class cfg::inifiles
+    class cfg::inisections
 
         alias ref = std::reference_wrapper<inifile>
         alias refs = std::vector<inifile>
         containment refs
-        containment inimap
+        containment inimanager
 
     class session::manager
 

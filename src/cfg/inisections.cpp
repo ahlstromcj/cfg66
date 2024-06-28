@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-06-27
+ * \updates       2024-06-28
  * \license       See above.
  *
  * Operations to support:
@@ -200,7 +200,7 @@ inisections::inisections
         add(ini);
 
         /*
-         * TODO. Provide a way to add all named options to the globql inimap
+         * TODO. Provide a way to add all named options to the globql inimanager
          */
     }
 }

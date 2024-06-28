@@ -1,10 +1,10 @@
 NEWS for Cfg66 0.2
 Chris Ahlstrom
-2024-04-15 to 2024-06-20
+2024-04-15 to 2024-06-28
 
 # Changelog
 
-## [0.2] - 2024-06-20
+## [0.2] - 2024-06-28
 
 ### Added
 
@@ -16,10 +16,11 @@ Chris Ahlstrom
 - Beefed up the ini\_test application to write and parse a sample
   configuration file.
 - Added diagrams to clarify the hierarchy.
-- Split the inisections module into inimap, inisection, and inisections
+- Split the inisections module into inimanager, inisection, and inisections
   modules.
-- Added factory functions to create unique pointers to inisection(s) and
-  options objects to allow them to go away once copies have been created.
+- Tightened up the interactions between command-line parsing and INI
+  configuration files. Support command-line options over multiple
+  INI files.
 
 ### Fixed
 

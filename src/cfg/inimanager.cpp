@@ -17,7 +17,7 @@
  */
 
 /**
- * \file          inimap.cpp
+ * \file          inimanager.cpp
  *
  *    Provides a way to more comprehensively automate the reading and
  *    writing of INI-style files.
@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-06-26
+ * \updates       2024-06-28
  * \license       See above.
  *
  *  In an application, we want to access options via the triplet of
@@ -41,7 +41,7 @@
  *
  *  We consolidate the first two steps into a call to:
  *
- *      inimap::find_options(cfgtype, sectionname)
+ *      inimanager::find_options(cfgtype, sectionname)
  *
  *  Here is a use case where we get the complete specification of an
  *  option:
@@ -55,7 +55,7 @@
  *
  *  We consolidate the first two steps into a call to:
  *
- *      inimap::find_options_spec(cfgtype, sectionname, optionname)
+ *      inimanager::find_options_spec(cfgtype, sectionname, optionname)
  *
  * TODO:
  *
@@ -64,13 +64,13 @@
  *
  */
 
-#include "cfg/inimap.hpp"               /* cfg::inimap class                */
+#include "cfg/inimanager.hpp"           /* cfg::inimanager class            */
 
 namespace cfg
 {
 
 /*------------------------------------------------------------------------
- * inimap
+ * inimanager
  *------------------------------------------------------------------------*/
 
 /**
@@ -80,7 +80,7 @@ namespace cfg
  *  Note that there are both const and non-const accessors for these members.
  */
 
-inimap::inimap () :
+inimanager::inimanager () :
     m_multi_parser  (),
     m_sections_map  ()
 {
@@ -116,7 +116,7 @@ inimap::inimap () :
  */
 
 bool
-inimap::add_inisections
+inimanager::add_inisections
 (
     const std::string & cfgtype,
     inisections::specification & spec
@@ -146,7 +146,7 @@ inimap::add_inisections
  *------------------------------------------------------------------------*/
 
 /**
- *  Look up an inisections in this inimap object using the configuration
+ *  Look up an inisections in this inimanager object using the configuration
  *  type.
  *
  *  Returns a reference to a an inactive inisection if not found.
@@ -157,7 +157,7 @@ inimap::add_inisections
  */
 
 const inisections &
-inimap::find_inisections (const std::string & cfgtype) const
+inimanager::find_inisections (const std::string & cfgtype) const
 {
     static inisections s_inactive_inisections;
     for (const auto & sections : sections_map())
@@ -173,16 +173,16 @@ inimap::find_inisections (const std::string & cfgtype) const
  *  "Effective C++", 3rd edition, in section "Avoiding Duplication in
  *  const and Non-const Member Functions.", pp. 23-26.
  *
- *  In C++17 we can replace "static_cast<const inimap &>(*this)"
+ *  In C++17 we can replace "static_cast<const inimanager &>(*this)"
  *  with "std::as_const(*this)".
  */
 
 inisections &
-inimap::find_inisections (const std::string & cfgtype)
+inimanager::find_inisections (const std::string & cfgtype)
 {
     return const_cast<inisections &>
     (
-        static_cast<const inimap &>(*this).find_inisections(cfgtype)
+        static_cast<const inimanager &>(*this).find_inisections(cfgtype)
     );
 }
 
@@ -191,7 +191,7 @@ inimap::find_inisections (const std::string & cfgtype)
  *------------------------------------------------------------------------*/
 
 const inisection &
-inimap::find_inisection
+inimanager::find_inisection
 (
     const std::string & cfgtype,
     const std::string & sectionname
@@ -206,7 +206,7 @@ inimap::find_inisection
 }
 
 inisection &
-inimap::find_inisection
+inimanager::find_inisection
 (
     const std::string & cfgtype,
     const std::string & sectionname
@@ -214,7 +214,7 @@ inimap::find_inisection
 {
     return const_cast<inisection &>
     (
-        static_cast<const inimap &>(*this).find_inisection
+        static_cast<const inimanager &>(*this).find_inisection
         (
             cfgtype, sectionname
         )
@@ -226,7 +226,7 @@ inimap::find_inisection
  *------------------------------------------------------------------------*/
 
 const options &
-inimap::find_options
+inimanager::find_options
 (
     const std::string & cfgtype,
     const std::string & sectionname
@@ -241,7 +241,7 @@ inimap::find_options
 }
 
 options &
-inimap::find_options
+inimanager::find_options
 (
     const std::string & cfgtype,
     const std::string & sectionname
@@ -249,7 +249,7 @@ inimap::find_options
 {
     return const_cast<options &>
     (
-        static_cast<const inimap &>(*this).find_options(cfgtype, sectionname)
+        static_cast<const inimanager &>(*this).find_options(cfgtype, sectionname)
     );
 }
 
@@ -258,7 +258,7 @@ inimap::find_options
  *------------------------------------------------------------------------*/
 
 const options::spec &
-inimap::find_options_spec
+inimanager::find_options_spec
 (
     const std::string & cfgtype,
     const std::string & sectionname,
@@ -274,7 +274,7 @@ inimap::find_options_spec
 }
 
 options::spec &
-inimap::find_options_spec
+inimanager::find_options_spec
 (
     const std::string & cfgtype,
     const std::string & sectionname,
@@ -283,7 +283,7 @@ inimap::find_options_spec
 {
     return const_cast<options::spec &>
     (
-        static_cast<const inimap &>(*this).find_options_spec
+        static_cast<const inimanager &>(*this).find_options_spec
         (
             cfgtype, sectionname, optionname
         )
@@ -293,7 +293,7 @@ inimap::find_options_spec
 }           // namespace cfg
 
 /*
- * inimap.cpp
+ * inimanager.cpp
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */

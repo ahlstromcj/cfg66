@@ -27,7 +27,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-06-27
+ * \updates       2024-06-28
  * \license       See above.
  *
  *  Provides for the handling of options specifications.  This module is
@@ -175,6 +175,7 @@ public:
         const std::string & token,
         bool must_exist = true
     ) const;
+    bool show_information_only () const;
 
     void reset ()
     {
