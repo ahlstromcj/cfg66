@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-06-28
+ * \updates       2024-06-29
  * \license       See above.
  *
  *  The cli::options class provides a way to hold the state of command-line
@@ -252,7 +252,7 @@ options::container s_default_options =
     {
         "inspect",
         {
-            'I', "boolean", options::enabled,
+            options::code_null, "boolean", options::enabled,
             "false", "false", false, false,
             "This is a trouble-shooting option.", true
         }
@@ -260,7 +260,7 @@ options::container s_default_options =
     {
         "investigate",
         {
-            'i', "boolean", options::enabled,
+            options::code_null, "boolean", options::enabled,
             "false", "false", false, false,
             "This is another trouble-shooting option.", true
         }
@@ -357,6 +357,9 @@ options::string_to_kind (const std::string & s)
  *------------------------------------------------------------------------*/
 
 options::options (const std::string & file, const std::string & section) :
+    m_code_list         (),
+    m_has_error         (false),
+    m_error_msg         (),
     m_source_file       (file),
     m_source_section    (section),
     m_option_pairs      ()
@@ -370,6 +373,9 @@ options::options
     const std::string & file,
     const std::string & section
 ) :
+    m_code_list         (),
+    m_has_error         (false),
+    m_error_msg         (),
     m_source_file       (file),
     m_source_section    (section),
     m_option_pairs      (specs)
@@ -386,14 +392,16 @@ options::options
  *      If true, add the default options.
  */
 
-void
+bool
 options::reset (bool add_stock)
 {
+    bool result = true;         // MORE TODO
     clear();
     if (add_stock)
-        (void) add(s_default_options);
+        result = add(s_default_options);
 
-    initialize();
+    initialize();               // MORE TODO
+    return result;
 }
 
 /**
@@ -460,8 +468,13 @@ options::add (const options & optlist)
         {
             bool ok = add(sp);
             if (! ok)
+            {
                 result = false;
+                break;
+            }
         }
+        if (result)
+            result = verify();
     }
     return result;
 }
@@ -477,27 +490,28 @@ bool
 options::verify () const
 {
     bool result = true;
-    std::string codelist;
     for (const auto & op : option_pairs())
     {
         char c = char(op.second.option_code);
         if (c > 0)
         {
-            std::string::size_type pos = codelist.find_first_of(c);
+            std::string::size_type pos = m_code_list.find_first_of(c);
             if (pos == std::string::npos)
             {
-                codelist += c;
+                m_code_list += c;
             }
             else
             {
-#if defined PLATFORM_DEBUG
-                printf("Option code '%c' already added\n", c);
-#endif
+                m_has_error = true;
+                m_error_msg = "Option code '%c' already added";
                 result = false;
                 break;
             }
         }
     }
+#if defined PLATFORM_DEBUG
+    printf("Code list = '%s'\n", m_code_list);
+#endif
     return result;
 }
 

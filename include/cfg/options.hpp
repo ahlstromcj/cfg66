@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-06-27
+ * \updates       2024-06-29
  * \license       See above.
  *
  *  Supports variables of the following types:
@@ -223,6 +223,19 @@ public:
 private:
 
     /**
+     *  Holds a list of the option codes.
+     */
+
+    mutable std::string m_code_list;
+
+    /**
+     *  Error messaging.
+     */
+
+    mutable bool m_has_error;
+    mutable std::string m_error_msg;
+
+    /**
      *  Provides the source configuration file from which these options were
      *  read. This name is merely the extension of the file, such as "rc",
      *  "usr", etc.  If empty, there is no source file associated with this
@@ -263,7 +276,7 @@ public:
     static kind string_to_kind (const std::string & s);
     static void init_container (container & pairs); /* used in inisection   */
 
-    void reset (bool add_stock = false);
+    bool reset (bool add_stock = false);
     void initialize ();
 
     const std::string & source_file () const
@@ -304,6 +317,16 @@ public:
     bool empty () const
     {
         return option_pairs().empty();
+    }
+
+    bool has_error () const
+    {
+        return m_has_error;
+    }
+
+    const std::string & error_msg () const
+    {
+        return m_error_msg;
     }
 
     bool add (const options::option & op);

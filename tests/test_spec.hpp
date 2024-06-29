@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-08-02
- * \updates       2023-08-03
+ * \updates       2024-06-29
  * \license       See above.
  *
  */
@@ -96,7 +96,7 @@ static cfg::options::container s_test_options
             {
                 'f', "boolean", cfg::options::enabled,
                 "false", "false", false, false,
-                "If specified, detect fast- code.",
+                "If specified, detect fast code :-D.",
                 false
             }
         },

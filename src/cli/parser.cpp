@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-06-28
+ * \updates       2024-06-29
  * \license       See above.
  *
  *      While this parser follows the basics of GNU getopt fairly well,
@@ -65,10 +65,13 @@ namespace cli
 
 parser::parser () :
     m_option_set            (),
+    m_has_error             (false),
+    m_error_msg             (),
     m_alternative           (false),
     m_help_request          (false),
     m_version_request       (false),
     m_verbose_request       (false),
+    m_inspect_request       (false),
     m_investigate_request   (false),
     m_description_request   (false),
     m_use_log_file          (false),
@@ -91,6 +94,9 @@ parser::parser () :
  *      Implement an std::initializer_list for options directly.
  *      This would be done in the more advanced cfg/parser module
  *      (NOT YET WRITTEN).
+ *
+ *      Also, we need to check for duplicate option codes and warn the
+ *      user!
  */
 
 parser::parser
@@ -101,17 +107,27 @@ parser::parser
     bool use_alternative_long_option
 ) :
     m_option_set            (filename, sectionname),
+    m_has_error             (false),
+    m_error_msg             (),
     m_alternative           (use_alternative_long_option),
     m_help_request          (false),
     m_version_request       (false),
     m_verbose_request       (false),
+    m_inspect_request       (false),
     m_investigate_request   (false),
     m_description_request   (false),
     m_use_log_file          (false),
     m_log_file              ()
 {
-    reset();                /* sets up help, version, --option, log, etc.   */
-    (void) add(optset);
+    if (reset())                /* sets up help, version, --option, log, etc.   */
+    {
+        bool ok = add(optset);
+        if (! ok)
+        {
+            m_has_error = m_option_set.has_error();
+            m_error_msg = m_option_set.error_msg();
+        }
+    }
 }
 
 /**
@@ -174,13 +190,11 @@ parser::parse (int argc, char * argv [])
         m_description_request = option_set().boolean_value("description");
         m_help_request = option_set().boolean_value("help");
         m_version_request = option_set().boolean_value("version");
-
+        m_inspect_request = option_set().boolean_value("inspect");
         m_verbose_request = option_set().boolean_value("verbose");
         util::set_verbose(m_verbose_request);           /* see msgfunctions */
-
         m_investigate_request = option_set().boolean_value("investigate");
         util::set_investigate(m_investigate_request);   /* see msgfunctions */
-
         m_log_file = option_set().value("log");
         m_use_log_file = ! m_log_file.empty();
     }

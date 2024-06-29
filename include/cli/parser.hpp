@@ -84,6 +84,13 @@ private:
     cfg::options m_option_set;
 
     /**
+     *  Error messaging.
+     */
+
+    bool m_has_error;
+    std::string m_error_msg;
+
+    /**
      *  Like the "-a/--alternative" option in getopt(1), this allows long
      *  options to start with a single '-' characters. The default is false.
      */
@@ -106,6 +113,7 @@ private:
 
     bool m_version_request;
     bool m_verbose_request;
+    bool m_inspect_request;
     bool m_investigate_request;
     bool m_description_request;
 
@@ -193,9 +201,9 @@ public:
     ) const;
     bool show_information_only () const;
 
-    void reset ()
+    bool reset ()
     {
-        option_set().reset(cfg::options::stock);
+        return option_set().reset(cfg::options::stock);
     }
 
     void initialize ()
@@ -296,6 +304,11 @@ public:
     bool verbose_request () const
     {
         return verbose();
+    }
+
+    bool inspect_request () const
+    {
+        return m_inspect_request;
     }
 
     bool investigate_request () const

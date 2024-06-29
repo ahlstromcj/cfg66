@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-06-28
+ * \updates       2024-06-29
  * \license       See above.
  *
  */
@@ -34,6 +34,7 @@
 
 #include "cfg/appinfo.hpp"              /* cfg::appinfo                     */
 #include "cli/parser.hpp"               /* cli::parser, etc.                */
+#include "util/filefunctions.hpp"       /* util::file_write_string()        */
 #include "test_spec.hpp"                /* s_test_options container         */
 
 /*
@@ -60,7 +61,7 @@ int
 main (int argc, char * argv [])
 {
     int rcode = EXIT_FAILURE;
-    cli::parser clip(s_test_options);
+    cli::parser clip(s_test_options);               /* see test_spec.hpp    */
     bool success = clip.parse(argc, argv);
     cfg::set_app_version("0.2.0");
     if (success)
@@ -96,17 +97,37 @@ main (int argc, char * argv [])
         if (clip.verbose_request())
         {
             std::cout
-                << "Verbose operation. Let's show the option list.\n"
+                << "Verbose operation. Let's also show the option list.\n"
                 << clip.help_text()
                 ;
         }
-        if (clip.use_log_file())
+        if (clip.inspect_request())
         {
+            std::cerr << "--inspect unsupported in this program." << std::endl;
+            success = false;
+        }
+        if (clip.investigate_request())
+        {
+            std::cerr
+                << "--investigate unsupported in this program."
+                << std::endl
+                ;
+            success = false;
+        }
+        if (success && clip.use_log_file())
+        {
+            std::string msg
+            {
+"This file is the result of writing to this log file from the application\n"
+"'cliparser_test'. This is a test log file, written to directly...\n"
+"no usage of xpc::reroute_stdio() from the Xpc66 library.\n"
+            };
             std::cout
                 << "Using log file '" << clip.log_file() << "'" << std::endl
                 ;
+            success = util::file_write_string(clip.log_file(), msg);
         }
-        if (show_results)
+        if (success && show_results)
         {
             if (argc > 1)
             {
@@ -140,12 +161,20 @@ main (int argc, char * argv [])
                 }
                 else
                 {
+                    std::string dbgtxt = clip.debug_text(cfg::options::stock);
                     std::cout
                         << "Verify that setting(s) were effective. "
-                           "Changed options are 'modified'.\n\n"
-                        << clip.debug_text(cfg::options::stock)
-                        << std::endl
-                        ;
+                           "Changed options are 'modified'.\n"
+                    ;
+                    if (clip.use_log_file())
+                    {
+                        success = util::file_write_string
+                        (
+                            clip.log_file(), dbgtxt
+                        );
+                    }
+                    else
+                        std::cout << dbgtxt << std::endl;
                 }
             }
             else
@@ -170,14 +199,15 @@ main (int argc, char * argv [])
     {
         std::cout << "cli::parser C++ test succeeded." << std::endl;
         if (! clip.help_request())
-            std::cout << "Use --help to see the options." << std::endl;
+            std::cout << "Use --help to see all the options." << std::endl;
     }
     else
     {
-        std::cout
-            << "cli::parser C++ test failed!\n"
-            << "Use --help to see the options." << std::endl
-            ;
+        std::cout << "cli::parser C++ test failed!" << std::endl;
+        if (clip.inspect_request() || clip.investigate_request())
+            std::cout << "Deliberately!" << std::endl;
+        else
+            std::cout << "Use --help to see the options." << std::endl;
     }
     return rcode;
 }

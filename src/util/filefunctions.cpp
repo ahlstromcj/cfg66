@@ -840,6 +840,7 @@ current_date_time ()
 
 /**
  *  Appends a string to file. If it does not exist, it is appended to.
+ *  Very similar to file_append_log()!
  */
 
 bool
@@ -1025,11 +1026,12 @@ file_copy
 /**
  *  Appends a character buffer to a file in the configuration directory.
  *  Useful for dumping error information, such as under PortMidi in Windows.
+ *  Very similar to file_write_string()!
  *
  * \param filename
  *      Provides the full path to the file plus the file-name and
  *      file-extension.  One way to create such a path is using the
- *      rcsettings::config_filespec() function.
+ *      xxx::config_filespec() function.
  *
  * \param data
  *      Provides the string data to write, already formatted and ready to go.
