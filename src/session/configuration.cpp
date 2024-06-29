@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2020-03-22
- * \updates       2024-06-17
+ * \updates       2024-06-29
  * \license       GNU GPLv2 or above
  *
  *  What is a session configuration? It is a setup of the following
@@ -115,8 +115,8 @@ configuration::configuration () :
         0
     ),
     m_dir_manager       (),                 /* default rc & log directories */
-    m_verbose           (false),
-    m_use_log_file      (false)
+    m_use_log_file      (false),
+    m_log_file          ()
 {
     // set_configuration_defaults();
 }
@@ -135,8 +135,8 @@ configuration::configuration
 ) :
     cfg::basesettings   (cfgname, "INI", "session", comtext, version),
     m_dir_manager       (fileentries),
-    m_verbose           (false),
-    m_use_log_file      (uselogfile)
+    m_use_log_file      (uselogfile),
+    m_log_file          ()
 {
     // set_configuration_defaults();
 }

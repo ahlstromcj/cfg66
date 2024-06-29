@@ -53,12 +53,13 @@ namespace util
 const int c_async_safe_utoa_size = 24;
 
 /*
- * Global functions.
+ * Global functions. There is also a verbose setting in cli::parser.
  */
 
 extern void set_verbose (bool flag);
-extern void set_investigate (bool flag);
 extern bool verbose ();
+
+extern void set_investigate (bool flag);
 extern bool investigate ();
 
 /*

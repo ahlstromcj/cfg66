@@ -28,7 +28,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2020-05-30
- * \updates       2024-06-17
+ * \updates       2024-06-29
  * \license       GNU GPLv2 or above
  *
  *  session::configuration contains and manages the data in the 'session'
@@ -57,7 +57,6 @@ namespace session
  *  file:
  *
  *      -   The [cfg66] section except for the following handled here:
- *          -   "verbose"
  *          -   "use-log-file"
  *      -   The [comments] section.
  *      -   The [auto-option-save] section
@@ -92,16 +91,13 @@ private:
     directories m_dir_manager;
 
     /**
-     *  If true, more information is emitted (to the console).
-     */
-
-    bool m_verbose;
-
-    /**
-     *  If true, reroute console outpu the a log file.
+     *  If true, reroute console output to a log file. Note that
+     *  the log file can also be set via cli::parser, which should take
+     *  precedence.
      */
 
     bool m_use_log_file;
+    std::string m_log_file;
 
     /**
      *  [auto-option-save]
@@ -150,21 +146,14 @@ public:
         return dir_manager().file_entries();
     }
 
-/*
-    const std::string & home_directory () const
-    {
-        return m_dirmanager.xxxxxxxx();
-    }
-*/
-
-    bool verbose () const
-    {
-        return m_verbose;
-    }
-
     bool use_log_file () const
     {
         return m_use_log_file;
+    }
+
+    const std::string log_file () const
+    {
+        return m_log_file;
     }
 
     bool auto_option_save () const
@@ -174,14 +163,14 @@ public:
 
 protected:
 
-    void verbose (bool flag)
-    {
-        m_verbose = flag;
-    }
-
     void use_log_file (bool flag)
     {
         m_use_log_file = flag;
+    }
+
+    void log_file (const std::string & filename)
+    {
+        m_log_file = filename;
     }
 
     void auto_option_save (bool flag)

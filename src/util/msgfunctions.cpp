@@ -70,8 +70,8 @@ namespace util
 {
 
 /**
- *  Functions to remove dependencies on the "cfg" modules. Could eventually
- *  replace rcsettings::verbose() and investigate().
+ *  Functions to allow independence from cli::parser. The parser will
+ *  also set these options.
  */
 
 static bool s_is_verbose = false;

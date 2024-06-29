@@ -1071,13 +1071,17 @@ options::description (const std::string & name) const
     std::string result;
     auto opt = find_match(name);
     if (option_exists(opt))
+    {
+        result = opt->first;
+        result += ": ";
         result = opt->second.option_desc;
-
+    }
     return result;
 }
 
 /**
- *  Returns all of the help lines.
+ *  Returns all of the help lines, in essence. Compare to the description()
+ *  overload above.
  */
 
 std::string
@@ -1087,11 +1091,13 @@ options::description () const
     for (const auto & op : option_pairs())
     {
         std::string h = op.second.option_desc;
-        if (! h.empty())
-        {
-            result += h;
-            result += "\n";
-        }
+        if (h.empty())
+            h = "No description!";
+
+        result += op.first;
+        result += ": ";
+        result += h;
+        result += "\n";
     }
     result += "\n";
     return result;

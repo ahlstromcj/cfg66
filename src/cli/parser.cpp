@@ -69,6 +69,7 @@ parser::parser () :
     m_help_request          (false),
     m_version_request       (false),
     m_verbose_request       (false),
+    m_investigate_request   (false),
     m_description_request   (false),
     m_use_log_file          (false),
     m_log_file              ()
@@ -104,6 +105,7 @@ parser::parser
     m_help_request          (false),
     m_version_request       (false),
     m_verbose_request       (false),
+    m_investigate_request   (false),
     m_description_request   (false),
     m_use_log_file          (false),
     m_log_file              ()
@@ -135,64 +137,7 @@ parser::parse (int argc, char * argv [])
             if (token == "-")               /* ill-formed token, bug out    */
                 break;
 
-            /*
-             * The options parsed here are always present.  The application can
-             * add more options. It would be better to use the items in the
-             * default/stock options container!!!
-             */
-
-            if (token_match(token, "help", 'h'))
-            {
-                m_help_request = true;
-                continue;
-            }
-            else if (token_match(token, "version", 'v'))
-            {
-                m_version_request = true;
-                continue;
-            }
-            else if (token_match(token, "verbose", 'V'))
-            {
-                /*
-                 * A verbose flag is also present in session::configuration!!
-                 */
-
-                m_verbose_request = true;
-                util::set_verbose(true);            /* msgfunctions module  */
-                continue;
-            }
-            else if (token_match(token, "description"))
-            {
-                m_description_request = true;
-                continue;
-            }
-            else if (token_match(token, "investigate", 'i'))
-            {
-                util::set_investigate(true);        /* msgfunctions module  */
-                continue;
-            }
-            else if (token_match(token, "log"))
-            {
-                /*
-                 * A log flag is also present in session::configuration!!
-                 * Also handle it below in parse_value().
-                 *
-                 *  continue;
-                 */
-            }
-            else if (token_match(token, "inspect", 'I'))
-            {
-                /*
-                 * Do nothing
-                 */
-            }
-
-            /*
-             *  inspect
-             *  log
-             */
-
-            else if (token_match(token, "option", 'o'))
+            if (token_match(token, "option", 'o'))
             {
                 if (argv[i + 1][0] != '-')  /* needs a non-option argument  */
                 {
@@ -226,16 +171,18 @@ parser::parse (int argc, char * argv [])
     }
     if (result)
     {
+        m_description_request = option_set().boolean_value("description");
         m_help_request = option_set().boolean_value("help");
         m_version_request = option_set().boolean_value("version");
+
         m_verbose_request = option_set().boolean_value("verbose");
-        util::set_verbose(m_verbose_request);      /* msgfunctions module   */
-        m_description_request = option_set().boolean_value("description");
+        util::set_verbose(m_verbose_request);           /* see msgfunctions */
 
-        bool investigate = option_set().boolean_value("investigate");
-        util::set_investigate(investigate);        /* msgfunctions module   */
+        m_investigate_request = option_set().boolean_value("investigate");
+        util::set_investigate(m_investigate_request);   /* see msgfunctions */
 
-        // m_log_file
+        m_log_file = option_set().value("log");
+        m_use_log_file = ! m_log_file.empty();
     }
     return result;
 }

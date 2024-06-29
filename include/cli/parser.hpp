@@ -27,7 +27,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-06-28
+ * \updates       2024-06-29
  * \license       See above.
  *
  *  Provides for the handling of options specifications.  This module is
@@ -98,9 +98,25 @@ private:
      */
 
     bool m_help_request;
+
+    /**
+     *  This also manages the verbose setting in msgfunctions. See
+     *  util::set_verbose() and util::verbose.
+     */
+
     bool m_version_request;
     bool m_verbose_request;
+    bool m_investigate_request;
     bool m_description_request;
+
+    /**
+     *  The settings for a log file can also be made via
+     *  session::configuration. But the parser should take precedence.
+     *  Note that it is the responsiblity of the application to
+     *  actually implement the log file. See the xpc::reroute_stdio()
+     *  function in the Xpc66 library project.
+     */
+
     bool m_use_log_file;
     std::string m_log_file;
 
@@ -272,9 +288,19 @@ public:
         return m_version_request;
     }
 
-    bool verbose_request () const
+    bool verbose () const
     {
         return m_verbose_request;
+    }
+
+    bool verbose_request () const
+    {
+        return verbose();
+    }
+
+    bool investigate_request () const
+    {
+        return m_investigate_request;
     }
 
     bool description_request () const
