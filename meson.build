@@ -6,7 +6,7 @@
 # \library     cfg66
 # \author      Chris Ahlstrom
 # \date        2022-06-22
-# \updates     2024-05-17
+# \updates     2024-06-30
 # \license     $XPC_SUITE_GPL_LICENSE$
 #
 #  This file is part of the "cfg66" library. It was part of the libs66
@@ -50,7 +50,7 @@ project('cfg66',
 cfg66_pkg_description = 'Refactors base Seq66 configuration/utility modules.'
 cfg66_pkg_version = meson.project_version()
 cfg66_api_version = '0.2'
-cfg66_info_date = '2024-05-17'
+cfg66_info_date = '2024-06-30'
 cfg66_info_build_type = get_option('buildtype')
 cfg66_info_build_root = meson.project_build_root()
 cfg66_info_lib_type = get_option('default_library')
@@ -60,9 +60,14 @@ cfg66_project_base = 'cfg66-@0@'.format(cfg66_api_version)
 cfg66_pkgconfig_name = 'libcfg66'
 cfg66_subproj = meson.is_subproject()
 
+# -fno-inline-functions does not work.
+
 if cfg66_debug
    if not cfg66_subproj
-      add_project_arguments('-DDEBUG', language : 'cpp')
+      add_project_arguments(
+         [ '-DDEBUG', '-fno-inline-functions' ],
+         language : 'cpp'
+         )
    endif
 endif
 

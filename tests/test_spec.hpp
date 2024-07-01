@@ -138,7 +138,14 @@ static cfg::options::container s_test_options
         {
             "flux",
             {
-                'f', "floating", cfg::options::enabled,
+                /*
+                 * If we specify 'f' here, it is a duplicate and
+                 * causes an error.
+                 *
+                 * 'f', "floating", cfg::options::enabled,
+                 */
+
+                cfg::options::code_null, "floating", cfg::options::enabled,
                 "0.0<=0.1<=50.0", "22.3", false, false,
                 "Specifies the magnetic flux.",
                 false

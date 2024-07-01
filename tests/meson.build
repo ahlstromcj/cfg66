@@ -6,7 +6,7 @@
 # \library     cfg66
 # \author      Chris Ahlstrom
 # \date        2022-06-22
-# \updates     2024-06-27
+# \updates     2024-06-30
 # \license     $XPC_SUITE_GPL_LICENSE$
 #
 #  This file is part of the "cfg66" library. See the top-level meson.build
@@ -26,10 +26,13 @@ cliparser_test_c_exe = executable(
    dependencies : [ libcfg66_dep ]
    )
 
+# -fno-inline-functions does not work; does not even show up in make.log.
+
 cliparser_test_exe = executable(
    'cliparser_test',
    sources : [ 'cliparser_test.cpp' ],
-   dependencies : [ libcfg66_dep ]
+   dependencies : [ libcfg66_dep ],
+   cpp_args : [ '-DDEBUG', '-fno-inline-functions' ]
    )
 
 history_test_exe = executable(

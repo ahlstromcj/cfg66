@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-06-29
+ * \updates       2024-07-01
  * \license       See above.
  *
  *  Supports variables of the following types:
@@ -223,7 +223,8 @@ public:
 private:
 
     /**
-     *  Holds a list of the option codes.
+     *  Holds a list of the option codes. This can be useful for detecting
+     *  errors and showing what codes are already taken.
      */
 
     mutable std::string m_code_list;
@@ -261,7 +262,7 @@ private:
 
 public:
 
-    options (const std::string & file = "", const std::string & section = "");
+    options ();
     options
     (
         const container & specs,
@@ -269,14 +270,16 @@ public:
         const std::string & section = ""
     );
     options (const options & other) = default;
+    options (options && other) = default;
     options & operator = (const options & other) = default;
+    options & operator = (options && other) = default;
     ~options () = default;
 
     static std::string kind_to_string (kind k);
     static kind string_to_kind (const std::string & s);
     static void init_container (container & pairs); /* used in inisection   */
 
-    bool reset (bool add_stock = false);
+    void reset ();
     void initialize ();
 
     const std::string & source_file () const
@@ -299,13 +302,9 @@ public:
         return m_option_pairs;
     }
 
-    bool active () const
-    {
-        return option_pairs().size() > 0;
-    }
-
     void clear ()
     {
+        m_code_list.clear();
         option_pairs().clear();
     }
 
@@ -319,6 +318,11 @@ public:
         return option_pairs().empty();
     }
 
+    bool active () const
+    {
+        return ! empty();
+    }
+
     bool has_error () const
     {
         return m_has_error;
@@ -330,7 +334,15 @@ public:
     }
 
     bool add (const options::option & op);
-    bool add (const options & os);
+
+    /*
+     * This yields infinite recursion, call the constructor endlessly.
+     *
+     * bool add (const options & os);
+     */
+
+    bool add (const container & specs);
+
     bool verify () const;
     bool set_value
     (

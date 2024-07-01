@@ -27,7 +27,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-06-29
+ * \updates       2024-07-01
  * \license       See above.
  *
  *  Provides for the handling of options specifications.  This module is
@@ -142,6 +142,16 @@ public:
     parser & operator = (const parser & other) = default;
     virtual ~parser () = default;
 
+    bool has_error () const
+    {
+        return m_has_error;
+    }
+
+    const std::string & error_msg () const
+    {
+        return m_error_msg;
+    }
+
     const cfg::options & option_set () const
     {
         return m_option_set;
@@ -150,6 +160,11 @@ public:
     cfg::options & option_set ()
     {
         return m_option_set;
+    }
+
+    void reset ()
+    {
+        option_set().reset();
     }
 
     bool set_value
@@ -201,11 +216,6 @@ public:
     ) const;
     bool show_information_only () const;
 
-    bool reset ()
-    {
-        return option_set().reset(cfg::options::stock);
-    }
-
     void initialize ()
     {
         option_set().initialize();
@@ -216,10 +226,19 @@ public:
         option_set().clear();
     }
 
+    /*
+     *  Warning. adding a cfg::options reference directoly causes a
+     *  temporary to be created, and it leads to recursion.
+     */
+
     bool add (const cfg::options & opt)
     {
-        return option_set().add(opt);
+        return option_set().add(opt.option_pairs());
     }
+
+    /*
+     *  Remember that an "option" is a std::pair<std::string, spec>.
+     */
 
     bool add (const cfg::options::option & s)
     {

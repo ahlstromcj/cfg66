@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-06-25
+ * \updates       2024-07-01
  * \license       See above.
  *
  *  We want to provide a list of { filename, sectionname } pairs, and
@@ -128,7 +128,7 @@ private:
     /**
      *  Provide a list of option names supported by this INI section.
      *  It must match the names of the actual options, though can be in a
-     *  different order. TODO: write a function to do it???
+     *  different order.
      */
 
     names m_option_names;
@@ -165,14 +165,23 @@ public:
         return ! inactive();
     }
 
-    bool add_option (const options::option & op)    /* add one option       */
-    {
-        return m_options.add(op);
-    }
+    /*
+     *  Warning. adding a cfg::options reference directoly causes a
+     *  temporary to be created, and it leads to recursion.
+     */
 
     bool add_options (const options & opts)         /* add many options     */
     {
-        return m_options.add(opts);
+        return m_options.add(opts.option_pairs());
+    }
+
+    /*
+     *  Remember that an "option" is a std::pair<std::string, spec>.
+     */
+
+    bool add_option (const options::option & op)    /* add one option       */
+    {
+        return m_options.add(op);
     }
 
     bool add_name (const std::string & optionname)

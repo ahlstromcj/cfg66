@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-06-29
+ * \updates       2024-07-01
  * \license       See above.
  *
  *      While this parser follows the basics of GNU getopt fairly well,
@@ -77,7 +77,7 @@ parser::parser () :
     m_use_log_file          (false),
     m_log_file              ()
 {
-    reset();                /* sets up help, version, --option, log, etc.   */
+//  reset();                /* sets up help, version, --option, log, etc.   */
 }
 
 /**
@@ -102,11 +102,11 @@ parser::parser () :
 parser::parser
 (
     const cfg::options & optset,
-    const std::string & filename,
-    const std::string & sectionname,
+    const std::string & /* filename */,
+    const std::string & /* sectionname */,
     bool use_alternative_long_option
 ) :
-    m_option_set            (filename, sectionname),
+    m_option_set            (optset),   // TODO , filename, sectionname),
     m_has_error             (false),
     m_error_msg             (),
     m_alternative           (use_alternative_long_option),
@@ -119,14 +119,11 @@ parser::parser
     m_use_log_file          (false),
     m_log_file              ()
 {
-    if (reset())                /* sets up help, version, --option, log, etc.   */
+    bool ok = add(optset);
+    if (! ok)
     {
-        bool ok = add(optset);
-        if (! ok)
-        {
-            m_has_error = m_option_set.has_error();
-            m_error_msg = m_option_set.error_msg();
-        }
+        m_has_error = m_option_set.has_error();
+        m_error_msg = m_option_set.error_msg();
     }
 }
 
@@ -136,12 +133,15 @@ parser::parser
  *  One issue is the use of token_match() to set some flags. We really
  *  need for parse() to, at the end, to call options::boolean_value(),
  *  etc. See the "#if 0" code below.
+ *
+ *  Note that this function will fail if something in the parser constructor
+ *  failed.
  */
 
 bool
 parser::parse (int argc, char * argv [])
 {
-    bool result = not_nullptr(argv);
+    bool result = not_nullptr(argv) && ! has_error();
     if (result && argc > 1)
     {
         for (int i = 1; i < argc; ++i)      /* token 0 might be app name    */

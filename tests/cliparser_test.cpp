@@ -63,7 +63,6 @@ main (int argc, char * argv [])
     int rcode = EXIT_FAILURE;
     cli::parser clip(s_test_options);               /* see test_spec.hpp    */
     bool success = clip.parse(argc, argv);
-    cfg::set_app_version("0.2.0");
     if (success)
     {
         bool show_results = true;
@@ -71,6 +70,7 @@ main (int argc, char * argv [])
         if (findme_active)
             std::cout << "--find-me option found." << std::endl;
 
+        cfg::set_app_version("0.2.0");
         rcode = EXIT_SUCCESS;
         if (clip.show_information_only())
         {
@@ -194,20 +194,25 @@ main (int argc, char * argv [])
                 }
             }
         }
-    }
-    if (success)
-    {
-        std::cout << "cli::parser C++ test succeeded." << std::endl;
-        if (! clip.help_request())
-            std::cout << "Use --help to see all the options." << std::endl;
+        if (success)
+        {
+            std::cout << "cli::parser C++ test succeeded." << std::endl;
+            if (! clip.help_request())
+                std::cout << "Use --help to see all the options." << std::endl;
+        }
+        else
+        {
+            std::cout << "cli::parser C++ test failed!" << std::endl;
+            if (clip.inspect_request() || clip.investigate_request())
+                std::cout << "Deliberately!" << std::endl;
+            else
+                std::cout << "Use --help to see the options." << std::endl;
+        }
     }
     else
     {
-        std::cout << "cli::parser C++ test failed!" << std::endl;
-        if (clip.inspect_request() || clip.investigate_request())
-            std::cout << "Deliberately!" << std::endl;
-        else
-            std::cout << "Use --help to see the options." << std::endl;
+        const std::string & errmsg = clip.error_msg();
+        std::cerr << "Setup or parsing error: " << errmsg << std::endl;
     }
     return rcode;
 }

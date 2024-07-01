@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-06-20
+ * \updates       2024-07-01
  * \license       See above.
  *
  *  See the inisections class and modules for details.
@@ -50,9 +50,15 @@ inisection::inisection () :
     m_name                  ("[stock]"),
     m_section_description   ("Internal default stock options."),
     m_option_names          (),
-    m_options               ("stock", "[stock]")
+    m_options               ()  // "stock", "[stock]")
 {
+    /*
+     * Iffy
+     *
+
     m_options.reset(options::stock);
+     *
+     */
     options::container & opspecs = m_options.option_pairs();
     for (const auto & opt : opspecs)
         add_name(opt.first);
@@ -86,14 +92,15 @@ inisection::inisection
     m_name                  (sectname.empty() ? spec.sec_name : sectname),
     m_section_description   (spec.sec_description),
     m_option_names          (),
-    m_options               (extension, sectname)   /* pairs filled below   */
+    m_options               (spec.sec_optionlist, extension, sectname)
 {
-    options::container & opspecs = spec.sec_optionlist;
     if (extension[0] == '.')
         m_config_type = extension.substr(1);
     else
         m_config_type = extension;
 
+#if defined WE_NEED_THIS_CODE
+    options::container & opspecs = spec.sec_optionlist;
     options::init_container(opspecs);
     for (const auto & opt : opspecs)
     {
@@ -101,6 +108,7 @@ inisection::inisection
         if (m_options.add(p))
             add_name(opt.first);
     }
+#endif
 }
 
 std::string
@@ -180,7 +188,7 @@ inisection::find_option_spec (const std::string & name)
 }
 
 /*------------------------------------------------------------------------
- * Reusable objects for "[Cfg66]" and "[comments]" ???
+ * Reusable objects for "[Cfg66]" and "[comments]"
  *------------------------------------------------------------------------*/
 
 /**
@@ -194,7 +202,7 @@ inisection::specification inifile_cfg66_data
     "[Cfg66]",
     {
 "This file holds the main configuration data for Cfg66-compliant applications.\n"
-"It follows a format similar to the old INI files of MS-DOS.\n"
+"It follows a format similar to the INI files of MS-DOS.\n"
 "'config-type' can be used to make sure the right kind of file is in use.\n"
 "'version' helps the application to detect older configuration files.\n"
 "See the 'session' specification for the common 'quiet' and 'verbose' options.\n"

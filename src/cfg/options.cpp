@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-06-29
+ * \updates       2024-07-01
  * \license       See above.
  *
  *  The cli::options class provides a way to hold the state of command-line
@@ -237,7 +237,7 @@ options::container s_default_options =
         "description",
         {
             options::code_null, "boolean", options::enabled,
-            "false", "false", false, false,
+            "false", "", false, false,
             "Flags application to show more extra information.", true
         }
     },
@@ -245,7 +245,7 @@ options::container s_default_options =
         "help",
         {
             'h', "boolean", options::enabled,
-            "false", "false", false, false,
+            "false", "", false, false,
             "Show this help text.", true
         }
     },
@@ -253,7 +253,7 @@ options::container s_default_options =
         "inspect",
         {
             options::code_null, "boolean", options::enabled,
-            "false", "false", false, false,
+            "false", "", false, false,
             "This is a trouble-shooting option.", true
         }
     },
@@ -261,7 +261,7 @@ options::container s_default_options =
         "investigate",
         {
             options::code_null, "boolean", options::enabled,
-            "false", "false", false, false,
+            "false", "", false, false,
             "This is another trouble-shooting option.", true
         }
     },
@@ -277,7 +277,7 @@ options::container s_default_options =
         "option",
         {
             'o', "overflow", options::enabled,
-            "false", "false", false, false,
+            "false", "", false, false,
             "Handles 'overflow' options (no character code).", true
         }
     },
@@ -285,7 +285,7 @@ options::container s_default_options =
         "verbose",
         {
             'V', "boolean", options::enabled,
-            "false", "false", false, false,
+            "false", "", false, false,
             "Show extra information.", true
         }
     },
@@ -293,7 +293,7 @@ options::container s_default_options =
         "version",
         {
             'v', "boolean", options::enabled,
-            "false", "false", false, false,
+            "false", "", false, false,
             "Show version information.", true
         }
     }
@@ -356,15 +356,16 @@ options::string_to_kind (const std::string & s)
  * options
  *------------------------------------------------------------------------*/
 
-options::options (const std::string & file, const std::string & section) :
+options::options () :
     m_code_list         (),
     m_has_error         (false),
     m_error_msg         (),
-    m_source_file       (file),
-    m_source_section    (section),
+    m_source_file       (),
+    m_source_section    (),
     m_option_pairs      ()
 {
-    // No code needed
+    if (add(s_default_options))         /* add the default/stock options    */
+        initialize();
 }
 
 options::options
@@ -380,7 +381,8 @@ options::options
     m_source_section    (section),
     m_option_pairs      (specs)
 {
-    // No code needed
+    if (add(s_default_options))         /* add the default/stock options    */
+        initialize();
 }
 
 /**
@@ -392,21 +394,17 @@ options::options
  *      If true, add the default options.
  */
 
-bool
-options::reset (bool add_stock)
+void
+options::reset ()
 {
-    bool result = true;         // MORE TODO
-    clear();
-    if (add_stock)
-        result = add(s_default_options);
-
-    initialize();               // MORE TODO
-    return result;
+    m_has_error = false;
+    m_error_msg.clear();
+    initialize();
 }
 
 /**
  *  Keeps the current set of options, but clears the dirtiness and resets
- *  the default values.
+ *  the default values of the options.
  */
 
 void
@@ -439,6 +437,7 @@ options::init_container (container & pairs)
 
 /**
  *  Duplicate option names will be rejected (i.e. not be inserted).
+ *  Remember that an "option" is a std::pair<std::string, spec>.
  */
 
 bool
@@ -459,12 +458,12 @@ options::add (const option & op)
  */
 
 bool
-options::add (const options & optlist)
+options::add (const container & optlist)
 {
     bool result = ! optlist.empty();
     if (result)
     {
-        for (const auto & sp : optlist.option_pairs())
+        for (const auto & sp : optlist)
         {
             bool ok = add(sp);
             if (! ok)
@@ -483,7 +482,7 @@ options::add (const options & optlist)
  *  Check the list for duplicates.  Currently checks only for duplicate
  *  single-letter option codes, not for full option names.
  *
- *  In C++17, we can use "for (const auto & [ key, value ] : optio_specs())".
+ *  In C++17, we could use "for (const auto & [ key, value ] : option_specs())".
  */
 
 bool
@@ -503,14 +502,21 @@ options::verify () const
             else
             {
                 m_has_error = true;
-                m_error_msg = "Option code '%c' already added";
+                m_error_msg = "Option code '";
+                m_error_msg += c;
+                m_error_msg += "' already added";
                 result = false;
-                break;
+
+                /*
+                 * Let's just keep going.
+                 *
+                 * break;
+                 */
             }
         }
     }
 #if defined PLATFORM_DEBUG
-    printf("Code list = '%s'\n", m_code_list);
+    printf("Code list = '%s'\n", m_code_list.c_str());
 #endif
     return result;
 }
