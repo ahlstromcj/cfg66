@@ -48,7 +48,7 @@ namespace cli
  *  Empty options set.
  */
 
-static cfg::options s_dummy_options;
+static cfg::options::container s_dummy_options;
 
 /**
  *  Constructors. The first creates an empty options container.

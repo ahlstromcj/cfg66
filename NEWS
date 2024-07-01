@@ -1,36 +1,46 @@
 NEWS for Cfg66 0.2
 Chris Ahlstrom
-2024-04-15 to 2024-06-28
+2024-04-15 to 2024-07-01
 
 # Changelog
 
-## [0.2] - 2024-06-28
+## [0.2] - 2024-07-01
 
 ### Added
 
-- Added the util::bytevector class to work with big-endian data (e.g. MIDI
-  files).
+- Added the util::bytevector class to work with big-endian data (e.g.
+  MIDI files).
 - Added a test for the util::bytevector class.
-- Renamed the cfg::inifile class to "inisections" because it was misleading.
+- Renamed the cfg::inifile class to "inisections" because it was
+  misleading.
 - Added an actual cfg::inifile class to extend cfg::configfile.
 - Beefed up the ini\_test application to write and parse a sample
   configuration file.
 - Added diagrams to clarify the hierarchy.
-- Split the inisections module into inimanager, inisection, and inisections
-  modules.
+- Split the inisections module into inimanager, inisection, and
+  inisections modules. The inimanager handles multiple INI files with
+  multiple INI sections.
+- Added a "multi-parser" to cover multiple INI-style files for an
+  application.
 - Tightened up the interactions between command-line parsing and INI
   configuration files. Support command-line options over multiple
   INI files.
+- Improved the range checking for integer/float options.
+- Added display/access for parsing error messages.
 
 ### Fixed
 
 - Fixes related to util::bytevector.
 - Many fixes found while implementing the inifile class.
+- Fixed major bugs in handling basic command-line parsing and options.
+- Refactored the creation of the parser.
 
 ### Changed
 
+- Changed the new inimap class name to inimanager.
+- Added "no-inline-functions" to meson.build; does not work, though.
 - No changes unrelated to util::bytevector, except for updating the
-  relevant meson.build files..
+  relevant meson.build files.
 
 ### Removed
 
@@ -52,8 +62,8 @@ Chris Ahlstrom
 
 - The HAVE macros were updated.
 - Updated the cfg66.wrap file.
-- Added --install and --uninstall options to work.sh. The latter is not
-  completely effective at removing all installed files, however.
+- Added --install and --uninstall options to work.sh. The latter is
+  not completely effective at removing all installed files, however.
 - Renamed the .pc file to libcfg66.pc.
 
 ### Removed

@@ -101,12 +101,12 @@ parser::parser () :
 
 parser::parser
 (
-    const cfg::options & optset,
-    const std::string & /* filename */,
-    const std::string & /* sectionname */,
+    const cfg::options::container & specs,
+    const std::string & filename,
+    const std::string & sectionname,
     bool use_alternative_long_option
 ) :
-    m_option_set            (optset),   // TODO , filename, sectionname),
+    m_option_set            (specs, filename, sectionname),
     m_has_error             (false),
     m_error_msg             (),
     m_alternative           (use_alternative_long_option),
@@ -119,12 +119,7 @@ parser::parser
     m_use_log_file          (false),
     m_log_file              ()
 {
-    bool ok = add(optset);
-    if (! ok)
-    {
-        m_has_error = m_option_set.has_error();
-        m_error_msg = m_option_set.error_msg();
-    }
+    // no code needed
 }
 
 /**
@@ -362,6 +357,25 @@ parser::parse_value
 
             }
             result = change_value(name, value, true);
+        }
+        if (! result)
+        {
+            m_has_error = true;
+            if (option_set().has_error())   /* use the options' error msg   */
+            {
+                m_error_msg = option_set().error_msg();
+            }
+            else                            /* avoid replacing existing msg */
+            {
+                m_error_msg = "Option '";
+                m_error_msg += name;
+                if (! value.empty())
+                {
+                    m_error_msg += "=";
+                    m_error_msg += value;
+                }
+                m_error_msg += "' not found";
+            }
         }
     }
     return result;

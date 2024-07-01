@@ -302,6 +302,11 @@ public:
         return m_option_pairs;
     }
 
+    const std::string & code_list () const
+    {
+        return m_code_list;
+    }
+
     void clear ()
     {
         m_code_list.clear();
@@ -375,16 +380,6 @@ public:
     bool boolean_value (const std::string & name) const;
     int integer_value (const std::string & name) const;
     float floating_value (const std::string & name) const;
-    int integer_value_range
-    (
-        const std::string & name,
-        int & minimum, int & maximum
-    ) const;
-    float floating_value_range
-    (
-        const std::string & name,
-        float & minimum, float & maximum
-    ) const;
 
 public:
 
@@ -462,6 +457,16 @@ public:
 
     std::string help_line (const spec & op) const;
     bool option_exists (const std::string & name) const;
+    int integer_value_range
+    (
+        const std::string & name,
+        int & minimum, int & maximum
+    ) const;
+    float floating_value_range
+    (
+        const std::string & name,
+        float & minimum, float & maximum
+    ) const;
 
     bool option_exists (const spec & s) const
     {
@@ -493,6 +498,13 @@ private:
     container::const_iterator find_match (const std::string & name) const;
     std::string long_name (char code) const;
     std::string long_name (const std::string & code) const;
+    bool check_range
+    (
+        const std::string & name,
+        float value,
+        float minimum,
+        float maximum
+    ) const;
 
 };          // class options
 

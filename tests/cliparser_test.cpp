@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-06-29
+ * \updates       2024-07-01
  * \license       See above.
  *
  */
@@ -65,6 +65,8 @@ main (int argc, char * argv [])
     bool success = clip.parse(argc, argv);
     if (success)
     {
+        std::cout << "Option codes: " << clip.code_list() << std::endl;
+
         bool show_results = true;
         bool findme_active = clip.check_option(argc, argv, "find-me", false);
         if (findme_active)

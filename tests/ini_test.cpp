@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-07-25
- * \updates       2024-06-28
+ * \updates       2024-07-01
  * \license       See above.
  *
  *  Rationale:
@@ -379,7 +379,7 @@ main (int argc, char * argv [])
 {
     int rcode = EXIT_FAILURE;
     cfg::options optionset(s_test_options, "no-file", "[none]");
-    cli::parser clip(optionset);
+    cli::parser clip(optionset.option_pairs());
     cfg::set_client_name("ini");        /* shown as "[ini]" in messages     */
 
     bool canrun = true;

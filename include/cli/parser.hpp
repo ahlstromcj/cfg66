@@ -133,7 +133,7 @@ public:
     parser ();
     parser
     (
-        const cfg::options & optset,
+        const cfg::options::container & optset,
         const std::string & filename        = "",
         const std::string & sectionname     = "",
         bool use_alternative_long_option    = false
@@ -160,6 +160,11 @@ public:
     cfg::options & option_set ()
     {
         return m_option_set;
+    }
+
+    const std::string & code_list () const
+    {
+        return m_option_set.code_list();
     }
 
     void reset ()

@@ -148,6 +148,7 @@
  *          as a coordinate "(x,y)", a size "wxh", etc. App-specific.
  */
 
+#include <algorithm>                    /* std::sort()                      */
 #include <cmath>                        /* std::fabs(), std::fabsf()        */
 #include <iomanip>                      /* std::setw()                      */
 #include <limits>                       /* std::numeric_limits<>            */
@@ -219,12 +220,11 @@ options::spec::spec
  *  The following string keeps track of the characters used so far.  An 'x'
  *  means the character is used.  A ':' means it is used and requires an
  *  argument. An 'a' indicates we could repurpose the key with minimal impact.
- *  An asterisk '*' indicates the option is reserved for overflow options (-o,
- *  --option); those options have no character-code.
+ *  --option are "overflow" options; those options have no character-code.
  *
 \verbatim
         0123456789#@AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz
-                                   x       x     *            xx
+                                   x                          xx
 \endverbatim
  *
  *   Name, Code, Kind, Enabled, Default, Value, FromCli, Dirty,
@@ -276,7 +276,7 @@ options::container s_default_options =
     {
         "option",
         {
-            'o', "overflow", options::enabled,
+            options::code_null, "overflow", options::enabled,
             "false", "", false, false,
             "Handles 'overflow' options (no character code).", true
         }
@@ -515,9 +515,45 @@ options::verify () const
             }
         }
     }
-#if defined PLATFORM_DEBUG
-    printf("Code list = '%s'\n", m_code_list.c_str());
-#endif
+    if (result)
+        std::sort(m_code_list.begin(), m_code_list.end());
+
+    return result;
+}
+
+/**
+ *  Checks an integer or float against a range, and sets an error messag e
+ *  if necessary.
+ */
+
+bool
+options::check_range
+(
+    const std::string & name,
+    float value, float minimum, float maximum
+) const
+{
+    bool result = value >= minimum && value <= maximum;
+    if (! result)
+    {
+        bool adding = m_has_error;
+        std::string msg = "Option '";
+        msg += name;
+        msg += "=";
+        msg += std::to_string(value);
+        msg += "' outside of range ";
+        msg += std::to_string(minimum);
+        msg += " to ";
+        msg += std::to_string(minimum);
+        m_has_error = true;
+        if (adding)
+        {
+            m_error_msg += "; ";
+            m_error_msg += msg;
+        }
+        else
+            m_error_msg = msg;
+    }
     return result;
 }
 
@@ -583,7 +619,11 @@ options::set_value
                     else
                     {
                         int iv = util::string_to_int(value);
-                        if (iv >= minimum && iv <= maximum)
+                        result = check_range
+                        (
+                            name, float(iv), float(minimum), float(maximum)
+                        );
+                        if (result)
                             ncop.option_value = value;
                     }
                 }
@@ -599,7 +639,8 @@ options::set_value
                     else
                     {
                         float iv = float(util::string_to_double(value));
-                        if (iv >= minimum && iv <= maximum)
+                        result = check_range(name, iv, minimum, maximum);
+                        if (result)
                             ncop.option_value = value;
                     }
                 }

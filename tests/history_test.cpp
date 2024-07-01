@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-07-28
- * \updates       2023-08-03
+ * \updates       2024-07-01
  * \license       See above.
  *
  *  This program is an extension of sorts for the options_test program. Here
@@ -97,7 +97,7 @@ main (int argc, char * argv [])
 {
     int rcode = EXIT_FAILURE;
     cfg::options optionset(s_test_options);
-    cli::parser clip(optionset, "", "");
+    cli::parser clip(optionset.option_pairs());
     bool success = clip.parse(argc, argv);
     if (success)
     {

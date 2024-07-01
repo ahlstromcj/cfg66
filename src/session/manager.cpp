@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2020-03-22
- * \updates       2024-06-17
+ * \updates       2024-07-01
  * \license       GNU GPLv2 or above
  *
  *  Note that this module is part of the libcfg66 library, not the libsessions
@@ -135,7 +135,7 @@ manager::manager
     (
         fileentries, cfgname, comtext, version, uselogfile
     ),
-    m_parse_mgr             (optset),
+    m_parse_mgr             (optset.option_pairs()),
     m_capabilities          (caps),
     m_manager_name          (),         // TODO
     m_manager_path          (),         // TODO
