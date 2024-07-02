@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-01
+ * \updates       2024-07-02
  * \license       See above.
  *
  *  The cli::options class provides a way to hold the state of command-line
@@ -65,7 +65,8 @@
  *
  * Special cases:
  *
- *      "filename": The string parameter is a file-name.
+ *      "filename": The string parameter is a file-name string plus an
+ *      active flag..
  *
  *          Configuration file:
  *
@@ -227,6 +228,12 @@ options::spec::spec
                                    x                          xx
 \endverbatim
  *
+ *  Note that we do not use common codes like 'i' (input) and 'o' (output).
+ *  However, 'h' (help), 'V' (verbose), and 'v' (version) are commonly
+ *  used for those options.
+ *
+ * Fields:
+ *
  *   Name, Code, Kind, Enabled, Default, Value, FromCli, Dirty,
  *   Description
  */
@@ -316,6 +323,7 @@ options::kind_to_string (kind k)
     case kind::floating:  result = "floating";    break;
     case kind::floatpair: result = "floatpair";   break;
     case kind::list:      result = "list";        break;
+    case kind::recents:   result = "recents";     break;
     case kind::overflow:  result = "overflow";    break;
     case kind::section:   result = "section";     break;
     case kind::string:    result = "string";      break;
@@ -340,6 +348,8 @@ options::string_to_kind (const std::string & s)
         result = kind::floatpair;
     else if (s == "list")
         result = kind::list;
+    else if (s == "recents")
+        result = kind::recents;
     else if (s == "overflow")
         result = kind::overflow;
     else if (s == "section")

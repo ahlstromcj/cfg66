@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-01
+ * \updates       2024-07-02
  * \license       See above.
  *
  *      While this parser follows the basics of GNU getopt fairly well,
@@ -77,7 +77,7 @@ parser::parser () :
     m_use_log_file          (false),
     m_log_file              ()
 {
-//  reset();                /* sets up help, version, --option, log, etc.   */
+    // no code needed
 }
 
 /**
@@ -148,14 +148,14 @@ parser::parse (int argc, char * argv [])
             if (token == "-")               /* ill-formed token, bug out    */
                 break;
 
-            if (token_match(token, "option", 'o'))
+            if (token_match(token, "option"))
             {
                 if (argv[i + 1][0] != '-')  /* needs a non-option argument  */
                 {
                     std::string name;
                     std::string value;
-                    /* bool compound = */ (void) extract_value(name, value);
-                    bool good = parse_o_option(/*compound, */ name, value);
+                    (void) extract_value(name, value);
+                    bool good = parse_o_option(name, value);
                     if (good)
                     {
                         if (name == "log")
@@ -454,6 +454,23 @@ parser::extract_value (std::string & token, std::string & value)
  *  Check for a match of the token to "-x", "--xyz", or, if the single-hyphen
  *  alternative is allowed, "-xyz". It assumes that the token has already been
  *  checked for being "--" or "-".
+ *
+ * \param token
+ *      The option token. A valid token starts with at least one hyphen.
+ *      Otherwise, it is likely to be a value. In the case, we cannot
+ *      flag a match.
+ *
+ * \param opt
+ *      This is the option long-name that the token should match.
+ *
+ * \param code
+ *      This is the single-character code of the option that should
+ *      match. The default is the null character (0), which means there
+ *      is no option code.
+ *
+ * \return
+ *      Returns true if the token is an option (starts with "-" or "--")
+ *      and matchs the desired \a opt.
  */
 
 bool
@@ -464,27 +481,30 @@ parser::token_match
     char code
 )
 {
-    bool result = false;
-    if (token.length() == 2)                /* check for a short option -x  */
+    bool result = ! token.empty() && token[0] == '-';
+    if (result)
     {
-        if (token[0] == '-' && code > ' ')
-            result = token[1] == code;      /* theoretically allows "--"    */
-    }
-    else
-    {
-        bool singledash = token[0] == '-' && token[1] != '-';
-        if (singledash)
+        if (token.length() == 2)            /* check for a short option -x  */
         {
-            if (m_alternative)
-            {
-                std::string tokpart = token.substr(1);
-                result = tokpart == opt;
-            }
+            if (code > ' ')                 /* theoretically allows "--"    */
+                result = token[1] == code;
         }
         else
         {
-            std::string tokpart = token.substr(2);
-            result = tokpart == opt;
+            bool singledash = token[1] != '-';
+            if (singledash)
+            {
+                if (m_alternative)
+                {
+                    std::string tokpart = token.substr(1);
+                    result = tokpart == opt;
+                }
+            }
+            else
+            {
+                std::string tokpart = token.substr(2);
+                result = tokpart == opt;
+            }
         }
     }
     return result;

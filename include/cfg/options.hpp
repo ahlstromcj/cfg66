@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-01
+ * \updates       2024-07-02
  * \license       See above.
  *
  *  Supports variables of the following types:
@@ -141,6 +141,7 @@ public:
         integer,                    /**< An integer value.                  */
         intpair,                    /**< Two integer values, e.g. "x y".    */
         list,                       /**< Integer value counting elements.   */
+        recents,                    /**< A count, name options, and list.   */
         overflow,                   /**< An --option or -o option.          */
         section,                    /**< Only an un-named string value.     */
         string,                     /**< A quoted string.                   */
@@ -390,14 +391,9 @@ public:
         return s.option_kind == "boolean";
     }
 
-    /**
-     *  Tricky code. A list starts with an integer count value, so it is
-     *  included here.  (The caller must produce the list somehow.)
-     */
-
     bool option_is_int (const spec & s) const
     {
-        return s.option_kind == "integer" || s.option_kind == "list";
+        return s.option_kind == "integer";
     }
 
     bool option_is_int_pair (const spec & s) const
@@ -443,6 +439,11 @@ public:
     bool option_is_list (const spec & s) const
     {
         return s.option_kind == "list";
+    }
+
+    bool option_is_recents (const spec & s) const
+    {
+        return s.option_kind == "recents";
     }
 
     /**

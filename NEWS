@@ -1,10 +1,10 @@
 NEWS for Cfg66 0.2
 Chris Ahlstrom
-2024-04-15 to 2024-07-01
+2024-04-15 to 2024-07-02
 
 # Changelog
 
-## [0.2] - 2024-07-01
+## [0.2] - 2024-07-02
 
 ### Added
 
@@ -27,6 +27,7 @@ Chris Ahlstrom
   INI files.
 - Improved the range checking for integer/float options.
 - Added display/access for parsing error messages.
+- Added "recents" as a kind of option.
 
 ### Fixed
 

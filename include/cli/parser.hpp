@@ -27,7 +27,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-01
+ * \updates       2024-07-02
  * \license       See above.
  *
  *  Provides for the handling of options specifications.  This module is
@@ -361,12 +361,13 @@ protected:
     (
         const std::string & token,
         const std::string & opt,
-        char code = ' '
+        char code = 0
     );
     bool extract_value (std::string & token, std::string & value);
     bool parse_o_option
     (
-        const std::string & name,  const std::string & value
+        const std::string & name,
+        const std::string & value
     );
     bool parse_value
     (
