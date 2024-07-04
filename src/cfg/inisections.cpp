@@ -99,12 +99,12 @@ static std::string s_stock_file_intro
  */
 
 inisections::inisections () :
-    m_app_version   ("Cfg66-based stock configuration"),
+    m_app_version   ("Cfg66 stock configuration"),
     m_directory     (),
-    m_name          (),
-    m_extension     (),
+    m_name          ("[stock]"),
+    m_extension     ("stock"),
     m_config_type   (),
-    m_description   ("This is a stock configuration, not a file."),
+    m_description   ("A stock configuration, not a file."),
     m_section_list  ()
 {
     inisection ini;
@@ -117,12 +117,12 @@ inisections::inisections () :
  */
 
 inisections::inisections (const std::string & ininame) :
-    m_app_version   ("Cfg66-based configuration file"),
+    m_app_version   ("Cfg66 configuration file"),
     m_directory     (),
     m_name          (),
     m_extension     (),
     m_config_type   (),
-    m_description   ("This is a generic configuration file."),
+    m_description   ("A generic configuration file."),
     m_section_list  ()
 {
     if (! ininame.empty())

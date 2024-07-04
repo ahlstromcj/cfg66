@@ -27,7 +27,8 @@ Chris Ahlstrom
   INI files.
 - Improved the range checking for integer/float options.
 - Added display/access for parsing error messages.
-- Added "recents" as a kind of option.
+- Added "recents" as a kind of option, and added a class called
+  recent (taken from Seq66) to handle them.
 
 ### Fixed
 

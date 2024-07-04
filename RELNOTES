@@ -1,4 +1,4 @@
-Release Notes for Cfg66 v. 0.2 2024-07-01
+Release Notes for Cfg66 v. 0.2 2024-07-02
 
 - Cleanup, minor improvements, etc. as noted in the NEWS file.
 - Added a bytevector class to handle big-endian data in a vector,
@@ -8,6 +8,7 @@ Release Notes for Cfg66 v. 0.2 2024-07-01
 - Added an INI file "manager" class.
 - Refactored and fixed command-line parsing and options handling
   somewhat.
+- Added initial "recent files" handling.
 
 See NEWS for many more details, and the ChangeLog.
 

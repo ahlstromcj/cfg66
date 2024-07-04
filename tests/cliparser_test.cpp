@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-01
+ * \updates       2024-07-02
  * \license       See above.
  *
  */
@@ -36,6 +36,10 @@
 #include "cli/parser.hpp"               /* cli::parser, etc.                */
 #include "util/filefunctions.hpp"       /* util::file_write_string()        */
 #include "test_spec.hpp"                /* s_test_options container         */
+
+#if ! defined USE_STD_COUT_CERR
+#include "util/msgfunctions.hpp"        /* util::error_message()            */
+#endif
 
 /*
  * Explanation text.
@@ -61,16 +65,28 @@ int
 main (int argc, char * argv [])
 {
     int rcode = EXIT_FAILURE;
+    cfg::set_client_name("cli");                    /* for error_message()  */
     cli::parser clip(s_test_options);               /* see test_spec.hpp    */
     bool success = clip.parse(argc, argv);
     if (success)
     {
-        std::cout << "Option codes: " << clip.code_list() << std::endl;
+        std::string msg = "Option codes: ";
+        msg += clip.code_list();
+#if defined USE_STD_COUT_CERR
+        std::cout << msg << std::endl;
+#else
+        util::status_message(msg);                  /* (info needs verbose) */
+#endif
 
         bool show_results = true;
         bool findme_active = clip.check_option(argc, argv, "find-me", false);
+#if defined USE_STD_COUT_CERR
         if (findme_active)
             std::cout << "--find-me option found." << std::endl;
+#else
+        if (findme_active)
+            util::status_message("--find-me option found.");
+#endif
 
         cfg::set_app_version("0.2.0");
         rcode = EXIT_SUCCESS;
@@ -105,15 +121,23 @@ main (int argc, char * argv [])
         }
         if (clip.inspect_request())
         {
-            std::cerr << "--inspect unsupported in this program." << std::endl;
+#if defined USE_STD_COUT_CERR
+            std::cerr << "--inspect unsupported in this program" << std::endl;
+#else
+            util::error_message("--inspect unsupported in this program");
+#endif
             success = false;
         }
         if (clip.investigate_request())
         {
+#if defined USE_STD_COUT_CERR
             std::cerr
-                << "--investigate unsupported in this program."
+                << "--investigate unsupported in this program"
                 << std::endl
                 ;
+#else
+            util::error_message("--investigate unsupported in this program");
+#endif
             success = false;
         }
         if (success && clip.use_log_file())
@@ -198,23 +222,42 @@ main (int argc, char * argv [])
         }
         if (success)
         {
-            std::cout << "cli::parser C++ test succeeded." << std::endl;
+#if defined USE_STD_COUT_CERR
+            std::cout << "cli::parser C++ test succeeded" << std::endl;
             if (! clip.help_request())
                 std::cout << "Use --help to see all the options." << std::endl;
+#else
+            util::status_message("cli::parser C++ test succeeded");
+            if (! clip.help_request())
+                util::status_message("Use --help to see all the options.");
+#endif
         }
         else
         {
+#if defined USE_STD_COUT_CERR
             std::cout << "cli::parser C++ test failed!" << std::endl;
             if (clip.inspect_request() || clip.investigate_request())
                 std::cout << "Deliberately!" << std::endl;
             else
                 std::cout << "Use --help to see the options." << std::endl;
+#else
+            util::error_message("cli::parser C++ test failed");
+            if (clip.inspect_request() || clip.investigate_request())
+                util::status_message("Deliberately!");
+            else
+                util::status_message("Use --help to see the options.");
+#endif
         }
     }
     else
     {
-        const std::string & errmsg = clip.error_msg();
-        std::cerr << "Setup or parsing error: " << errmsg << std::endl;
+        std::string errmsg = "Setup or parsing error: ";
+        errmsg += clip.error_msg();
+#if defined USE_STD_COUT_CERR
+        std::cerr << errmsg << std::endl;
+#else
+        util::error_message(errmsg);
+#endif
     }
     return rcode;
 }

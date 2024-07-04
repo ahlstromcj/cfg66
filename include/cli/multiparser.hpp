@@ -27,7 +27,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-23
- * \updates       2024-06-26
+ * \updates       2024-07-04
  * \license       See above.
  *
  *  This class provides a way to look up command-line options specified by
@@ -35,8 +35,15 @@
  */
 
 #include <map>                          /* std::map<> template class        */
-#include "cfg/inisections.hpp"          /* cfg::inisections class and kids  */
+
+#include "cfg/inisections.hpp"          /* cfg::inisections and options     */
 #include "cli/parser.hpp"               /* cfg::parser class                */
+
+namespace cfg
+{
+    class inimanager;
+    class inisections;
+}
 
 namespace cli
 {
@@ -48,6 +55,8 @@ namespace cli
 
 class multiparser : public parser
 {
+
+    friend class inimanager;
 
 public:
 
@@ -80,6 +89,14 @@ public:
 private:
 
     /**
+     *  The manager and care-taker of all options, including those
+     *  supported by the command line. This reference definition
+     *  implicitly deletes the assignment operators.
+     */
+
+    cfg::inimanager & m_ini_manager;
+
+    /**
      *  The set of supported command-line option character codes.
      */
 
@@ -93,13 +110,21 @@ private:
 
 public:
 
-    multiparser ();
+    multiparser () = delete;
+    multiparser (cfg::inimanager & mgr);
     multiparser (const multiparser & other) = default;
-    multiparser & operator = (const multiparser & other) = default;
+    multiparser (multiparser && other) = default;
+    multiparser & operator = (const multiparser & other) = delete;
+    multiparser & operator = (multiparser && other) = delete;
     virtual ~multiparser () = default;
 
     bool cli_mappings_add (cfg::inisections::specification & spec);
-    bool cli_mappings_add (const cfg::options::container & opts);
+    bool cli_mappings_add
+    (
+        const cfg::options::container & opts,
+        const std::string & configtype,
+        const std::string & configsection
+    );
     bool lookup_names
     (
         const std::string & clioptname,         /* one or more characters   */
@@ -110,6 +135,11 @@ public:
     const names & cli_mappings () const
     {
         return m_cli_mappings;
+    }
+
+    const cfg::inimanager & ini_manager () const
+    {
+        return m_ini_manager;
     }
 
 private:
@@ -127,6 +157,11 @@ private:
     names & cli_mappings ()
     {
         return m_cli_mappings;
+    }
+
+    cfg::inimanager & ini_manager ()
+    {
+        return m_ini_manager;
     }
 
 };          // class multiparser

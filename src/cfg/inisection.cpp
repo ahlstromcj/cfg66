@@ -55,10 +55,10 @@ inisection::inisection () :
     /*
      * Iffy
      *
-
-    m_options.reset(options::stock);
+     * m_options.reset(options::stock);
      *
      */
+
     options::container & opspecs = m_options.option_pairs();
     for (const auto & opt : opspecs)
         add_name(opt.first);

@@ -488,6 +488,8 @@ parser::token_match
         {
             if (code > ' ')                 /* theoretically allows "--"    */
                 result = token[1] == code;
+            else
+                result = false;
         }
         else
         {

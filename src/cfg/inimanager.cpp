@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-06-28
+ * \updates       2024-07-04
  * \license       See above.
  *
  *  In an application, we want to access options via the triplet of
@@ -81,7 +81,7 @@ namespace cfg
  */
 
 inimanager::inimanager () :
-    m_multi_parser  (),
+    m_multi_parser  (*this),
     m_sections_map  ()
 {
     inisections sec;
@@ -92,7 +92,12 @@ inimanager::inimanager () :
     {
         const options & opts = sec.find_options("stock");
         if (opts.active())
-            (void) nc_multi_parser().cli_mappings_add(opts.option_pairs());
+        {
+            (void) multi_parser().cli_mappings_add
+            (
+                opts.option_pairs(), "stock", "[stock]"
+            );
+        }
     }
 }
 
@@ -131,7 +136,7 @@ inimanager::add_inisections
         result = r.second;
         if (result)
         {
-            result = nc_multi_parser().cli_mappings_add(spec);
+            result = multi_parser().cli_mappings_add(spec);
         }
 #if defined PLATFORM_DEBUG
         else

@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-07-25
- * \updates       2024-07-01
+ * \updates       2024-07-03
  * \license       See above.
  *
  *  Rationale:
@@ -378,7 +378,13 @@ int
 main (int argc, char * argv [])
 {
     int rcode = EXIT_FAILURE;
-    cfg::options optionset(s_test_options, "no-file", "[none]");
+    /*
+     * Add the stock options. Krufty.
+     *
+     * cfg::options optionset(s_test_options, "no-file", "[none]");
+     */
+
+    cfg::options optionset(s_test_options, "stock", "[stock]");
     cli::parser clip(optionset.option_pairs());
     cfg::set_client_name("ini");        /* shown as "[ini]" in messages     */
 
@@ -390,7 +396,8 @@ main (int argc, char * argv [])
 
         /*
          *  The application can substitute its own code for the common
-         *  options, which are always present.
+         *  options, which are always present. Could also have called the
+         *  newer function clip.show_information_only().
          */
 
         if (clip.help_request())

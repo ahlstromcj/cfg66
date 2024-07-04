@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-02
+ * \updates       2024-07-03
  * \license       See above.
  *
  *  The cli::options class provides a way to hold the state of command-line
@@ -159,10 +159,6 @@
 #include "cfg/options.hpp"              /* cfg::options class               */
 #include "util/strfunctions.hpp"        /* util::string_to_int() etc.       */
 
-/*
- * Do not document the namespace; it breaks Doxygen.
- */
-
 namespace cfg
 {
 
@@ -210,159 +206,6 @@ options::spec::spec
 #endif // defined USER_CONSTRUCTOR_FOR_OPTIONS_SPEC
 
 /*------------------------------------------------------------------------
- * Default list of options
- *------------------------------------------------------------------------*/
-
-/*
- *  Internal and commonly useful options.  The following option codes are
- *  unavailable to other application code if the user allows the addition
- *  of these items.
- *
- *  The following string keeps track of the characters used so far.  An 'x'
- *  means the character is used.  A ':' means it is used and requires an
- *  argument. An 'a' indicates we could repurpose the key with minimal impact.
- *  --option are "overflow" options; those options have no character-code.
- *
-\verbatim
-        0123456789#@AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz
-                                   x                          xx
-\endverbatim
- *
- *  Note that we do not use common codes like 'i' (input) and 'o' (output).
- *  However, 'h' (help), 'V' (verbose), and 'v' (version) are commonly
- *  used for those options.
- *
- * Fields:
- *
- *   Name, Code, Kind, Enabled, Default, Value, FromCli, Dirty,
- *   Description
- */
-
-options::container s_default_options =
-{
-    {
-        "description",
-        {
-            options::code_null, "boolean", options::enabled,
-            "false", "", false, false,
-            "Flags application to show more extra information.", true
-        }
-    },
-    {
-        "help",
-        {
-            'h', "boolean", options::enabled,
-            "false", "", false, false,
-            "Show this help text.", true
-        }
-    },
-    {
-        "inspect",
-        {
-            options::code_null, "boolean", options::enabled,
-            "false", "", false, false,
-            "This is a trouble-shooting option.", true
-        }
-    },
-    {
-        "investigate",
-        {
-            options::code_null, "boolean", options::enabled,
-            "false", "", false, false,
-            "This is another trouble-shooting option.", true
-        }
-    },
-    {
-        "log",
-        {
-            options::code_null, "string", options::enabled,
-            "", "", false, false,
-            "Specifies use of a log file." /* --option log[=file] */, true
-        }
-    },
-    {
-        "option",
-        {
-            options::code_null, "overflow", options::enabled,
-            "false", "", false, false,
-            "Handles 'overflow' options (no character code).", true
-        }
-    },
-    {
-        "verbose",
-        {
-            'V', "boolean", options::enabled,
-            "false", "", false, false,
-            "Show extra information.", true
-        }
-    },
-    {
-        "version",
-        {
-            'v', "boolean", options::enabled,
-            "false", "", false, false,
-            "Show version information.", true
-        }
-    }
-};
-
-/*------------------------------------------------------------------------
- * static options functions
- *------------------------------------------------------------------------*/
-
-std::string
-options::kind_to_string (kind k)
-{
-    std::string result;
-    switch (k)
-    {
-    case kind::boolean:   result = "boolean";     break;
-    case kind::filename:  result = "filename";    break;
-    case kind::integer:   result = "integer";     break;
-    case kind::intpair:   result = "intpair";     break;
-    case kind::floating:  result = "floating";    break;
-    case kind::floatpair: result = "floatpair";   break;
-    case kind::list:      result = "list";        break;
-    case kind::recents:   result = "recents";     break;
-    case kind::overflow:  result = "overflow";    break;
-    case kind::section:   result = "section";     break;
-    case kind::string:    result = "string";      break;
-    case kind::dummy:     result = "dummy";       break;
-    }
-    return result;
-}
-
-options::kind
-options::string_to_kind (const std::string & s)
-{
-    options::kind result = kind::boolean;
-    if (s == "filename")
-        result = kind::filename;
-    else if (s == "integer")
-        result = kind::integer;
-    else if (s == "intpair")
-        result = kind::intpair;
-    else if (s == "floating")
-        result = kind::floating;
-    else if (s == "floatpair")
-        result = kind::floatpair;
-    else if (s == "list")
-        result = kind::list;
-    else if (s == "recents")
-        result = kind::recents;
-    else if (s == "overflow")
-        result = kind::overflow;
-    else if (s == "section")
-        result = kind::section;
-    else if (s == "string")
-        result = kind::string;
-    else if (s == "dummy")              /* used for non-existent options    */
-        result = kind::dummy;
-
-    return result;
-}
-
-/*------------------------------------------------------------------------
  * options
  *------------------------------------------------------------------------*/
 
@@ -374,7 +217,7 @@ options::options () :
     m_source_section    (),
     m_option_pairs      ()
 {
-    if (add(s_default_options))         /* add the default/stock options    */
+    if (add(stock_options()))         /* add the default/stock options    */
         initialize();
 }
 
@@ -391,7 +234,12 @@ options::options
     m_source_section    (section),
     m_option_pairs      (specs)
 {
-    if (add(s_default_options))         /* add the default/stock options    */
+    if (file == "stock" && section == "[stock]")
+    {
+        if (add(stock_options()))     /* add the default/stock options    */
+            initialize();
+    }
+    else
         initialize();
 }
 
@@ -550,11 +398,11 @@ options::check_range
         std::string msg = "Option '";
         msg += name;
         msg += "=";
-        msg += std::to_string(value);
+        msg += util::double_to_string(value);
         msg += "' outside of range ";
-        msg += std::to_string(minimum);
+        msg += util::double_to_string(minimum);
         msg += " to ";
-        msg += std::to_string(minimum);
+        msg += util::double_to_string(maximum);
         m_has_error = true;
         if (adding)
         {
@@ -878,6 +726,18 @@ options::container::const_iterator
 options::find_match (const std::string & name) const
 {
     std::string longname = long_name(name);
+
+#if defined PLATFORM_DEBUG
+    if (option_pairs().empty())
+    {
+        printf
+        (
+            "No options in the option container (context: '%s')\n",
+            name.c_str()
+        );
+    }
+#endif
+
     return longname.empty() ?
         option_pairs().end() : option_pairs().find(longname) ;
 }
@@ -1455,8 +1315,172 @@ options::floating_value (const std::string & name) const
 }
 
 /*------------------------------------------------------------------------
+ * static options functions
+ *------------------------------------------------------------------------*/
+
+std::string
+options::kind_to_string (kind k)
+{
+    std::string result;
+    switch (k)
+    {
+    case kind::boolean:   result = "boolean";     break;
+    case kind::filename:  result = "filename";    break;
+    case kind::integer:   result = "integer";     break;
+    case kind::intpair:   result = "intpair";     break;
+    case kind::floating:  result = "floating";    break;
+    case kind::floatpair: result = "floatpair";   break;
+    case kind::list:      result = "list";        break;
+    case kind::recents:   result = "recents";     break;
+    case kind::overflow:  result = "overflow";    break;
+    case kind::section:   result = "section";     break;
+    case kind::string:    result = "string";      break;
+    case kind::dummy:     result = "dummy";       break;
+    }
+    return result;
+}
+
+options::kind
+options::string_to_kind (const std::string & s)
+{
+    options::kind result = kind::boolean;
+    if (s == "filename")
+        result = kind::filename;
+    else if (s == "integer")
+        result = kind::integer;
+    else if (s == "intpair")
+        result = kind::intpair;
+    else if (s == "floating")
+        result = kind::floating;
+    else if (s == "floatpair")
+        result = kind::floatpair;
+    else if (s == "list")
+        result = kind::list;
+    else if (s == "recents")
+        result = kind::recents;
+    else if (s == "overflow")
+        result = kind::overflow;
+    else if (s == "section")
+        result = kind::section;
+    else if (s == "string")
+        result = kind::string;
+    else if (s == "dummy")              /* used for non-existent options    */
+        result = kind::dummy;
+
+    return result;
+}
+
+/*------------------------------------------------------------------------
  * Free functions
  *------------------------------------------------------------------------*/
+
+/*------------------------------------------------------------------------
+ * Default list of options
+ *------------------------------------------------------------------------*/
+
+/*
+ *  Internal and commonly useful options.  The following option codes are
+ *  unavailable to other application code if the user allows the addition
+ *  of these items.
+ *
+ *  The following string keeps track of the characters used so far.  An 'x'
+ *  means the character is used.  A ':' means it is used and requires an
+ *  argument. An 'a' indicates we could repurpose the key with minimal impact.
+ *  --option are "overflow" options; those options have no character-code.
+ *
+\verbatim
+        0123456789#@AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz
+                                   x                          xx
+\endverbatim
+ *
+ *  Note that we do not use common codes like 'i' (input) and 'o' (output).
+ *  However, 'h' (help), 'V' (verbose), and 'v' (version) are commonly
+ *  used for those options.
+ *
+ *  Only two options here could be considered "permanent" (i.e. saved to
+ *  a file):
+ *
+ *      -   "log"
+ *      -   "option"
+ *
+ * Fields:
+ *
+ *   Name, Code, Kind, Enabled, Default, Value, FromCli, Dirty,
+ *   Description
+ */
+
+options::container &
+stock_options ()
+{
+    static options::container s_default_options =
+    {
+        {
+            "description",
+            {
+                options::code_null, "boolean", options::enabled,
+                "false", "", false, false,
+                "Flags application to show descriptive information.", true
+            }
+        },
+        {
+            "help",
+            {
+                'h', "boolean", options::enabled,
+                "false", "", false, false,
+                "Show this help text.", true
+            }
+        },
+        {
+            "inspect",
+            {
+                options::code_null, "boolean", options::enabled,
+                "false", "", false, false,
+                "This is a trouble-shooting option.", true
+            }
+        },
+        {
+            "investigate",
+            {
+                options::code_null, "boolean", options::enabled,
+                "false", "", false, false,
+                "This is another trouble-shooting option.", true
+            }
+        },
+        {
+            "log",
+            {
+                options::code_null, "string", options::enabled,
+                "", "", false, false,
+                "Specifies use of a log file." /* --option log[=file] */, true
+            }
+        },
+        {
+            "option",
+            {
+                options::code_null, "overflow", options::enabled,
+                "false", "", false, false,
+                "Handles 'overflow' options (no character code).", true
+            }
+        },
+        {
+            "verbose",
+            {
+                'V', "boolean", options::enabled,
+                "false", "", false, false,
+                "Show extra information.", true
+            }
+        },
+        {
+            "version",
+            {
+                'v', "boolean", options::enabled,
+                "false", "", false, false,
+                "Show version information.", true
+            }
+        }
+    };
+    return s_default_options;
+}
 
 /**
  *  Solves the problem of comparing floating-point values.  For example,

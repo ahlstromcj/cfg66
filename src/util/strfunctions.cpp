@@ -805,6 +805,22 @@ string_to_double (const std::string & s, double defalt, int rounding)
     return result;
 }
 
+/**
+ *  Converts a floating point value to a string. The function std::to_string()
+ *  always puts six digits after the decimal point, which is not neat.
+ *
+ * \param value
+ *      The floating point value to convert to a string
+ *
+ * \param precision
+ *      If not zero, then the number of digits emitted is given by this
+ *      number. If 0 (or less than 0), then the "%g" format specifier is
+ *      used.
+ *
+ * \return
+ *      Returns the value as a string.
+ */
+
 std::string
 double_to_string (double value, int precision)
 {

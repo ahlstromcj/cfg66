@@ -40,6 +40,7 @@
 
 #include "c_macros.h"                   /* not_nullptr()                    */
 #include "cli/multiparser.hpp"          /* cli::multiparser class           */
+#include "cfg/inimanager.hpp"           /* cfg::inimanager & inisections    */
 
 namespace cli
 {
@@ -51,11 +52,13 @@ namespace cli
 static cfg::options::container s_dummy_options;
 
 /**
- *  Constructors. The first creates an empty options container.
+ *  Constructors. The first creates an empty options container, but hooks
+ *  in the cfg::inimanager that ultimately rules all options.
  */
 
-multiparser::multiparser () :
+multiparser::multiparser (cfg::inimanager & mgr) :
     parser          (s_dummy_options),
+    m_ini_manager   (mgr),
     m_code_mappings (),
     m_cli_mappings  ()
 {
@@ -94,14 +97,26 @@ multiparser::cli_mappings_add (cfg::inisections::specification & spec)
              *      const std::pair<std::string, options::spec>
              */
 
-            result = cli_mappings_add(isectspec.sec_optionlist);
+            result = cli_mappings_add
+            (
+                isectspec.sec_optionlist, configtype, sectionname
+            );
         }
     }
     return result;
 }
 
+/**
+ *  In ini_set_test, this is the one called.
+ */
+
 bool
-multiparser::cli_mappings_add (const cfg::options::container & opts)
+multiparser::cli_mappings_add
+(
+    const cfg::options::container & opts,
+    const std::string & configtype,
+    const std::string & configsection
+)
 {
     bool result = opts.size() > 0;
     if (result)
@@ -125,7 +140,7 @@ multiparser::cli_mappings_add (const cfg::options::container & opts)
                     }
                 }
 
-                duo d{"stock", "[stock]"};
+                duo d{configtype, configsection};
                 auto p = std::make_pair(optname, d);
                 auto r = cli_mappings().insert(p);
                 if (! r.second)

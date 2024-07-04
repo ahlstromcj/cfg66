@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-02
+ * \updates       2024-07-03
  * \license       See above.
  *
  *  Supports variables of the following types:
@@ -513,6 +513,7 @@ private:
  * Free functions
  *------------------------------------------------------------------------*/
 
+extern options::container & stock_options ();
 extern bool almost_equal (float ftarget, float fsource, int ulp = 7);
 extern bool approximates (float ftarget, float fsource, float precision = 0.0);
 extern options::option make_option

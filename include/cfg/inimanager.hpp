@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-06-28
+ * \updates       2024-07-04
  * \license       See above.
  *  section.
  *
@@ -104,6 +104,17 @@ public:
         return count() > 0;
     }
 
+    /*
+     *  When called by an app, this non-const version is chosen as the
+     *  closest match to the call. For now we prepend a wart to the
+     *  name of the internal version.
+     */
+
+    cli::multiparser & multi_parser ()
+    {
+        return m_multi_parser;
+    }
+
     const cli::multiparser & multi_parser () const
     {
         return m_multi_parser;
@@ -111,7 +122,7 @@ public:
 
     bool parse_cli (int argc, char * argv [])
     {
-        return nc_multi_parser().parse(argc, argv);
+        return multi_parser().parse(argc, argv);
     }
 
     const sections & sections_map () const
@@ -150,17 +161,6 @@ public:
     ) const;
 
 private:
-
-    /*
-     *  When called by an app, this non-const version is chosen as the
-     *  closest match to the call. For now we prepend a wart to the
-     *  name of the internal version.
-     */
-
-    cli::multiparser & nc_multi_parser ()
-    {
-        return m_multi_parser;
-    }
 
     sections & sections_map ()
     {
