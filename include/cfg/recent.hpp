@@ -27,7 +27,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-03-29
- * \updates       2024-07-02
+ * \updates       2024-07-04
  * \license       GNU GPLv2 or above
  *
  */
@@ -81,7 +81,7 @@ public:
     recent (const recent & source) = default;
     recent (recent && source) = default;
     recent & operator = (const recent & source);
-    recent & operator = (recent && source) = default;
+    recent & operator = (recent && source) = delete;
     ~recent ();
 
     void clear ()
