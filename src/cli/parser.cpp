@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-02
+ * \updates       2024-07-04
  * \license       See above.
  *
  *      While this parser follows the basics of GNU getopt fairly well,
@@ -122,6 +122,11 @@ parser::parser
     // no code needed
 }
 
+parser::~parser ()
+{
+    // no code
+}
+
 /**
  *  A straightforward command-line parser, for the most part.
  *
@@ -160,9 +165,9 @@ parser::parse (int argc, char * argv [])
                     {
                         if (name == "log")
                         {
-                            m_use_log_file = true;
+                            use_log_file(true);
                             if (! name.empty())
-                                m_log_file = name;
+                                log_file(name);
                         }
                         continue;
                     }
@@ -182,16 +187,16 @@ parser::parse (int argc, char * argv [])
     }
     if (result)
     {
-        m_description_request = option_set().boolean_value("description");
-        m_help_request = option_set().boolean_value("help");
-        m_version_request = option_set().boolean_value("version");
-        m_inspect_request = option_set().boolean_value("inspect");
-        m_verbose_request = option_set().boolean_value("verbose");
-        util::set_verbose(m_verbose_request);           /* see msgfunctions */
-        m_investigate_request = option_set().boolean_value("investigate");
-        util::set_investigate(m_investigate_request);   /* see msgfunctions */
-        m_log_file = option_set().value("log");
-        m_use_log_file = ! m_log_file.empty();
+        description_request(option_set().boolean_value("description"));
+        help_request(option_set().boolean_value("help"));
+        version_request(option_set().boolean_value("version"));
+        inspect_request(option_set().boolean_value("inspect"));
+        verbose_request(option_set().boolean_value("verbose"));
+        util::set_verbose(verbose_request());           /* see msgfunctions */
+        investigate_request(option_set().boolean_value("investigate"));
+        util::set_investigate(investigate_request());   /* see msgfunctions */
+        log_file(option_set().value("log"));
+        use_log_file(! log_file().empty());
     }
     return result;
 }
@@ -257,7 +262,7 @@ parser::check_option
             if (arg == cltarget)
             {
                 if (must_exist)
-                    result = m_option_set.option_exists(stripped);
+                    result = option_set().option_exists(stripped);
                 else
                     result = true;
 

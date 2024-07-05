@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-24
- * \updates       2024-06-26
+ * \updates       2024-07-05
  * \license       See above.
  *
  *      The limitations of command-line options as implemented in cli::parser
@@ -41,6 +41,7 @@
 #include "c_macros.h"                   /* not_nullptr()                    */
 #include "cli/multiparser.hpp"          /* cli::multiparser class           */
 #include "cfg/inimanager.hpp"           /* cfg::inimanager & inisections    */
+#include "util/msgfunctions.hpp"        /* util::set_verbose() etc.         */
 
 namespace cli
 {
@@ -57,10 +58,16 @@ static cfg::options::container s_dummy_options;
  */
 
 multiparser::multiparser (cfg::inimanager & mgr) :
-    parser          (s_dummy_options),
-    m_ini_manager   (mgr),
-    m_code_mappings (),
-    m_cli_mappings  ()
+    parser              (s_dummy_options),
+    m_ini_manager       (mgr),
+    m_current_options   (nullptr),
+    m_code_mappings     (),
+    m_cli_mappings      ()
+{
+    // no code
+}
+
+multiparser::~multiparser ()
 {
     // no code
 }
@@ -159,6 +166,157 @@ multiparser::cli_mappings_add
 }
 
 /**
+ *
+ */
+
+const cfg::options &
+multiparser::option_set () const
+{
+    if (not_nullptr(m_current_options))
+        return *m_current_options;
+    else
+        return parser::option_set();
+}
+
+cfg::options &
+multiparser::option_set ()
+{
+    return const_cast<cfg::options &>
+    (
+        static_cast<const multiparser &>(*this).option_set()
+    );
+}
+
+/**
+ *  Override the base-class functions to use the inimanager parent to
+ *  find the right option set to use and to access it.
+ */
+
+const cfg::options &
+multiparser::find_option_set
+(
+    const std::string & configtype,
+    const std::string & sectionname
+) const
+{
+    static cfg::options s_empty_options;
+    const cfg::inisection & ini = m_ini_manager.find_inisection
+    (
+        configtype, sectionname
+    );
+    if (ini.active())
+    {
+        const cfg::options & opts = ini.option_set();
+        return opts;
+    }
+    return s_empty_options;
+}
+
+cfg::options &
+multiparser::find_option_set
+(
+    const std::string & configtype,
+    const std::string & sectionname
+)
+{
+    return const_cast<cfg::options &>
+    (
+        static_cast<const multiparser &>(*this).find_option_set
+        (
+            configtype, sectionname
+        )
+    );
+}
+
+/**
+ *  Provides an override to look up the desired option set.
+ *
+ *  -#  If the token is a code (e.g. "-i"), then the corresponding long
+ *      option name is looked up.
+ *
+ *  After that, essentially reimplements parser::parse(); will refine in the
+ *  near future.
+ */
+
+bool
+multiparser::parse (int argc, char * argv [])
+{
+    bool result = not_nullptr(argv) && ! has_error();
+    if (result && argc > 1)
+    {
+        for (int i = 1; i < argc; ++i)      /* token 0 might be app name    */
+        {
+            std::string token = argv[i];
+            if (token == "--")              /* GNU end-of-options marker    */
+                break;
+
+            if (token == "-")               /* ill-formed token, bug out    */
+                break;
+
+            if (token[0] != '-')            /* probably a value, so skip    */
+                continue;
+
+            /*
+             *  1.  Look up the long name if needed.
+             */
+
+            std::string longname;
+            if (token.length() == 2)
+            {
+                char code = token[1];
+                auto it = code_mappings().find(code);
+                if (it != code_mappings().end())
+                    longname = it->second;
+            }
+            else if (token.length() > 2)
+            {
+                longname = token.substr(2);
+            }
+            if (token.empty())
+            {
+                util::error_message("option lookup failed", token);
+                break;
+            }
+
+            /*
+             *  2.  Look up the long name's configuration type and section.
+             */
+
+            std::string configtype;
+            std::string configsection;
+            auto dit = cli_mappings().find(longname);
+            if (dit != cli_mappings().end())
+            {
+                configtype = dit->second.config_type;
+                configsection = dit->second.config_section;
+
+                /*
+                 *  3.  Get the option-set from the INI section.
+                 */
+
+                m_current_options = & find_option_set(configtype, configsection);
+                if (m_current_options->active())
+                    result = parse_value(argc, argv, i, token);
+            }
+        }
+    }
+    if (result)
+    {
+        description_request(option_set().boolean_value("description"));
+        help_request(option_set().boolean_value("help"));
+        version_request(option_set().boolean_value("version"));
+        inspect_request(option_set().boolean_value("inspect"));
+        verbose_request(option_set().boolean_value("verbose"));
+        util::set_verbose(verbose_request());           /* see msgfunctions */
+        investigate_request(option_set().boolean_value("investigate"));
+        util::set_investigate(investigate_request());   /* see msgfunctions */
+        log_file(option_set().value("log"));
+        use_log_file(! log_file().empty());
+    }
+    return result;
+}
+
+/**
  *  This function looks up the option name and delivers the configuration type
  *  and the configuration section to the caller.
  *
@@ -207,7 +365,6 @@ multiparser::lookup_names
     }
     return result;
 }
-
 
 }           // namespace cli
 

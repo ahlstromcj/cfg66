@@ -27,7 +27,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-02
+ * \updates       2024-07-04
  * \license       See above.
  *
  *  Provides for the handling of options specifications.  This module is
@@ -140,7 +140,19 @@ public:
     );
     parser (const parser & other) = default;
     parser & operator = (const parser & other) = default;
-    virtual ~parser () = default;
+    virtual ~parser ();
+
+    virtual bool parse (int argc, char * argv []);
+
+    virtual const cfg::options & option_set () const
+    {
+        return m_option_set;
+    }
+
+    virtual cfg::options & option_set ()
+    {
+        return m_option_set;
+    }
 
     bool has_error () const
     {
@@ -152,19 +164,9 @@ public:
         return m_error_msg;
     }
 
-    const cfg::options & option_set () const
-    {
-        return m_option_set;
-    }
-
-    cfg::options & option_set ()
-    {
-        return m_option_set;
-    }
-
     const std::string & code_list () const
     {
-        return m_option_set.code_list();
+        return option_set().code_list();
     }
 
     void reset ()
@@ -212,7 +214,6 @@ public:
         return optset.change_value(name, value, fromcli);
     }
 
-    bool parse (int argc, char * argv []);
     bool check_option
     (
         int argc, char * argv [],
@@ -356,6 +357,46 @@ public:
     }
 
 protected:
+
+    void help_request (bool flag)
+    {
+        m_help_request = flag;
+    }
+
+    void version_request (bool flag)
+    {
+        m_version_request = flag;
+    }
+
+    void verbose_request (bool flag)
+    {
+        m_verbose_request = flag;
+    }
+
+    void inspect_request (bool flag)
+    {
+        m_inspect_request = flag;
+    }
+
+    void investigate_request (bool flag)
+    {
+        m_investigate_request = flag;
+    }
+
+    void description_request (bool flag)
+    {
+        m_description_request = flag;
+    }
+
+    void use_log_file (bool flag)
+    {
+        m_use_log_file = flag;
+    }
+
+    void log_file (const std::string & fname)
+    {
+        m_log_file = fname;
+    }
 
     bool token_match
     (

@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-27
- * \updates       2024-07-04
+ * \updates       2024-07-05
  * \license       See above.
  *
  *  See the ini_test module for information. This module goes beyond that
@@ -44,8 +44,9 @@
 #include "util/msgfunctions.hpp"        /* util::error_message()            */
 #endif
 
-#if 0
 #include "ctrl_spec.hpp"
+
+#if 0
 #include "drums_spec.hpp"
 #include "mutes_spec.hpp"
 #include "palette_spec.hpp"
@@ -82,8 +83,6 @@
  *  to associate the option name with a configuration type (i.e a
  *  file extension) and a configuration section.
  *
- *  ERROR: It's always "stock"... WE MUST ADD parameters to modify that.
- *
  *  TODO: Since the multiparser inherits an empty cfg::options object,
  *        we need to override the cli::parser::parse() function to
  *        to the lookup sequence using the inimanager. Get the long
@@ -110,34 +109,41 @@ main (int argc, char * argv [])
 {
     int rcode = EXIT_FAILURE;
     cfg::inimanager configuration_set;
-    cli::multiparser & clip = configuration_set.multi_parser();
     cfg::set_client_name("iniset");
 
-    bool success = clip.parse(argc, argv);
+    bool success = configuration_set.add_inisections
+    (
+        "ctrl", cfg::ctrl_data                          /* ctrl_spec.hpp    */
+    );
     if (success)
     {
-        if (clip.show_information_only())
+        cli::multiparser & clip = configuration_set.multi_parser();
+        success = clip.parse(argc, argv);
+        if (success)
         {
-            rcode = EXIT_SUCCESS;
-        }
-        else
-        {
-            if (success)
+            if (clip.show_information_only())
             {
                 rcode = EXIT_SUCCESS;
             }
+            else
+            {
+                if (success)
+                {
+                    rcode = EXIT_SUCCESS;
+                }
 
 #if defined USE_STD_COUT_CERR
-            if (success)
-                std::cout << "cfg::inimanager C++ test passed" << std::endl;
-            else
-                std::cerr << "cfg::inimanager C++ test failed" << std::endl;
+                if (success)
+                    std::cout << "cfg::inimanager C++ test passed" << std::endl;
+                else
+                    std::cerr << "cfg::inimanager C++ test failed" << std::endl;
 #else
-            if (success)
-                util::status_message("cfg::inimanager C++ test passed");
-            else
-                util::error_message("cfg::inimanager C++ test failed");
+                if (success)
+                    util::status_message("cfg::inimanager C++ test passed");
+                else
+                    util::error_message("cfg::inimanager C++ test failed");
 #endif
+            }
         }
     }
     return rcode;

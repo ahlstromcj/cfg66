@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-07-01
+ * \updates       2024-07-04
  * \license       See above.
  *
  *  We want to provide a list of { filename, sectionname } pairs, and
@@ -157,7 +157,7 @@ public:
 
     bool inactive () const
     {
-        return m_config_type == "";
+        return m_options.empty();           /* m_config_type == ""          */
     }
 
     bool active () const

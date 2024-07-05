@@ -97,6 +97,14 @@ private:
     cfg::inimanager & m_ini_manager;
 
     /**
+     *  The currently active options. If null. then a dummy empty one is
+     *  used so that access functions fail. This set is accessed by the
+     *  virtual function option_set().
+     */
+
+    mutable cfg::options * m_current_options;
+
+    /**
      *  The set of supported command-line option character codes.
      */
 
@@ -116,7 +124,22 @@ public:
     multiparser (multiparser && other) = default;
     multiparser & operator = (const multiparser & other) = delete;
     multiparser & operator = (multiparser && other) = delete;
-    virtual ~multiparser () = default;
+    virtual ~multiparser ();
+
+    virtual const cfg::options & option_set () const override;
+    virtual cfg::options & option_set () override;
+    virtual bool parse (int argc, char * argv []) override;
+
+    const cfg::options & find_option_set
+    (
+        const std::string & configtype,
+        const std::string & sectionname
+    ) const;
+    cfg::options & find_option_set
+    (
+        const std::string & configtype,
+        const std::string & sectionname
+    );
 
     bool cli_mappings_add (cfg::inisections::specification & spec);
     bool cli_mappings_add

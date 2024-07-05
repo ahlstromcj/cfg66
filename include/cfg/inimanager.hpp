@@ -59,6 +59,7 @@ namespace cfg
 
 class inimanager
 {
+    friend class cli::multiparser;
 
 public:
 
