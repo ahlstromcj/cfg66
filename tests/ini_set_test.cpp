@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-27
- * \updates       2024-07-05
+ * \updates       2024-07-06
  * \license       See above.
  *
  *  See the ini_test module for information. This module goes beyond that
@@ -44,9 +44,10 @@
 #include "util/msgfunctions.hpp"        /* util::error_message()            */
 #endif
 
-#include "ctrl_spec.hpp"
+#include "small_spec.hpp"               /* small for easier debugging       */
 
 #if 0
+#include "ctrl_spec.hpp"
 #include "drums_spec.hpp"
 #include "mutes_spec.hpp"
 #include "palette_spec.hpp"
@@ -113,7 +114,7 @@ main (int argc, char * argv [])
 
     bool success = configuration_set.add_inisections
     (
-        "ctrl", cfg::ctrl_data                          /* ctrl_spec.hpp    */
+        "small", cfg::small_data                          /* small_spec.hpp    */
     );
     if (success)
     {

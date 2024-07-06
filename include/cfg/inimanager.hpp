@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-07-04
+ * \updates       2024-07-06
  * \license       See above.
  *  section.
  *
@@ -94,6 +94,8 @@ private:
 public:
 
     inimanager ();
+
+    std::string help_text () const;
 
     int count () const
     {

@@ -402,10 +402,10 @@ const std::string ctrl_intro =
 
 inisections::specification ctrl_data
 {
-    "ctrl",         /* the file extension for any 'ctrl file.               */
-    "",             /* use value from appinfo's get_home_cfg_directory()    */
-    "",             /* use value derived from appinfo's get_home_cfg_file() */
-    ctrl_intro,
+    "ctrl",         /* file extension, applies for any 'ctrl file           */
+    "~/",           /* directory: use appinfo's get_home_cfg_directory()    */
+    "",             /* basename: use appinfo's get_home_cfg_file()          */
+    ctrl_intro,     /* description                                          */
     {
         std::ref(inifile_cfg66_data),       // std::ref(ctrl_cfg66_data)
         std::ref(ctrl_comments),

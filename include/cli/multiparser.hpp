@@ -27,7 +27,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-23
- * \updates       2024-07-04
+ * \updates       2024-07-06
  * \license       See above.
  *
  *  This class provides a way to look up command-line options specified by
@@ -129,6 +129,7 @@ public:
     virtual const cfg::options & option_set () const override;
     virtual cfg::options & option_set () override;
     virtual bool parse (int argc, char * argv []) override;
+    virtual std::string help_text () const override;
 
     const cfg::options & find_option_set
     (

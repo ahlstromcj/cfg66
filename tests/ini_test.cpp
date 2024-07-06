@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-07-25
- * \updates       2024-07-03
+ * \updates       2024-07-06
  * \license       See above.
  *
  *  Rationale:
@@ -379,14 +379,13 @@ main (int argc, char * argv [])
 {
     int rcode = EXIT_FAILURE;
     /*
-     * Add the stock options. Krufty.
-     *
+     * Add the stock options.
      * cfg::options optionset(s_test_options, "no-file", "[none]");
      */
 
-    cfg::options optionset(s_test_options, "stock", "[stock]");
+    cfg::options optionset(s_test_options);     /* makes stock options      */
     cli::parser clip(optionset.option_pairs());
-    cfg::set_client_name("ini");        /* shown as "[ini]" in messages     */
+    cfg::set_client_name("ini");                /* shown as [ini] in msgs   */
 
     bool canrun = true;
     bool success = clip.parse(argc, argv);

@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-07-01
+ * \updates       2024-07-06
  * \license       See above.
  *
  *  See the inisections class and modules for details.
@@ -46,20 +46,20 @@ namespace cfg
  */
 
 inisection::inisection () :
-    m_config_type           ("stock"),
-    m_name                  ("[stock]"),
+    m_config_type           (),
+    m_name                  (),
     m_section_description   ("Internal default stock options."),
     m_option_names          (),
-    m_options               ()  // "stock", "[stock]")
+    m_option_set            ()
 {
     /*
      * Iffy
      *
-     * m_options.reset(options::stock);
+     * m_option_set.reset(options::stock);
      *
      */
 
-    options::container & opspecs = m_options.option_pairs();
+    options::container & opspecs = option_set().option_pairs();
     for (const auto & opt : opspecs)
         add_name(opt.first);
 }
@@ -92,7 +92,7 @@ inisection::inisection
     m_name                  (sectname.empty() ? spec.sec_name : sectname),
     m_section_description   (spec.sec_description),
     m_option_names          (),
-    m_options               (spec.sec_optionlist, extension, sectname)
+    m_option_set            (spec.sec_optionlist, extension, sectname)
 {
     if (extension[0] == '.')
         m_config_type = extension.substr(1);
@@ -105,11 +105,15 @@ inisection::inisection
     for (const auto & opt : opspecs)
     {
         options::option p = std::make_pair(opt.first, opt.second);
-        if (m_options.add(p))
+        if (option_set().add(p))
             add_name(opt.first);
     }
 #endif
 }
+
+/**
+ *  Could also create an options::settings_text() and use that here.
+ */
 
 std::string
 inisection::settings_text () const
@@ -124,6 +128,17 @@ inisection::settings_text () const
         result += option_set().setting_line(s);
         result += "\n";
     }
+    return result;
+}
+
+std::string
+inisection::help_text () const
+{
+    std::string result = name();
+    result += "\n";
+    result += section_description();
+    result += "\n";
+    result += option_set().help_text();
     return result;
 }
 
@@ -201,11 +216,10 @@ inisection::specification inifile_cfg66_data
 {
     "[Cfg66]",
     {
-"This file holds the main configuration data for Cfg66-compliant applications.\n"
-"It follows a format similar to the INI files of MS-DOS.\n"
-"'config-type' can be used to make sure the right kind of file is in use.\n"
-"'version' helps the application to detect older configuration files.\n"
-"See the 'session' specification for the common 'quiet' and 'verbose' options.\n"
+"The main configuration data for Cfg66-compliant applications, similar\n"
+"to an MS-DOS INI file.\n"
+"'config-type' indicates the kind of file and file extension.\n"
+"'version' allows detection of older configuration files.\n"
     },
     {
         {

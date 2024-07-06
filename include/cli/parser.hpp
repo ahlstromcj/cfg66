@@ -296,7 +296,7 @@ public:
         return option_set().default_value(name);
     }
 
-    std::string help_text () const
+    virtual std::string help_text () const
     {
         return option_set().help_text();
     }

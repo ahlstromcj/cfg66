@@ -164,10 +164,11 @@ public:
     ~inisections () = default;
 
     std::string settings_text () const;
+    std::string help_text () const;
 
     bool active () const
     {
-        return m_section_list.size() > 0;
+        return section_list().size() > 0;
     }
 
     /**
@@ -176,13 +177,13 @@ public:
 
     bool add (inisection & section)
     {
-        m_section_list.push_back(section);
+        section_list().push_back(section);
         return true;
     }
 
     void clear ()
     {
-        m_section_list.clear();
+        section_list().clear();
     }
 
     const std::string & config_type () const

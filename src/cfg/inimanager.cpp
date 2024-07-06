@@ -85,17 +85,17 @@ inimanager::inimanager () :
     m_sections_map  ()
 {
     inisections sec;
-    auto p = std::make_pair("stock", sec);      /* does it make a copy? */
+    auto p = std::make_pair("", sec);           /* does it make a copy? */
     auto r = sections_map().insert(p);          /* another copy         */
     bool ok = r.second;
     if (ok)
     {
-        const options & opts = sec.find_options("stock");
+        const options & opts = sec.find_options("");
         if (opts.active())
         {
             (void) multi_parser().cli_mappings_add
             (
-                opts.option_pairs(), "stock", "[stock]"
+                opts.option_pairs(), "", ""
             );
         }
     }
@@ -293,6 +293,17 @@ inimanager::find_options_spec
             cfgtype, sectionname, optionname
         )
     );
+}
+
+std::string
+inimanager::help_text () const
+{
+    std::string result;
+    for (const auto & sections : sections_map())
+    {
+        result += sections.second.help_text();
+    }
+    return result;
 }
 
 }           // namespace cfg

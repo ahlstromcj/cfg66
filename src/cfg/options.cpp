@@ -234,7 +234,11 @@ options::options
     m_source_section    (section),
     m_option_pairs      (specs)
 {
-    if (file == "stock" && section == "[stock]")
+    /*
+     * if (file == "stock" && section == "[stock]")
+     */
+
+    if (file.empty() && section.empty())
     {
         if (add(stock_options()))     /* add the default/stock options    */
             initialize();
@@ -833,6 +837,9 @@ options::help_line (const std::string & name) const
 
 /**
  *  Returns all of the help lines.
+ *
+ *  We might need a cli_help_text() function that emits only
+ *  cli-enabled options.
  */
 
 std::string

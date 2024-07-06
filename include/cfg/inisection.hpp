@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-07-04
+ * \updates       2024-07-06
  * \license       See above.
  *
  *  We want to provide a list of { filename, sectionname } pairs, and
@@ -99,7 +99,7 @@ private:
      *  such as ".rc", ".usr", etc., minus the period.
      *
      *  If empty, there is no source file associated with this option, which
-     *  should be uncommon. If equal to "stock", this inisection contains
+     *  should be uncommon. If equal to "" (empty), this inisection contains
      *  only the internal stock options, which is a list defined in the
      *  cfg::options module.
      */
@@ -110,7 +110,7 @@ private:
      *  The name of the INI section. It must include the "[]" wrapping,
      *  as in "[Cfg66]" or "[directories]".
      *
-     *  If equal to "[stock]", this inisection contains only the internal
+     *  If equal to "" (empty), this inisection contains only the internal
      *  stock options, which is a list defined in the cfg::options module.
      */
 
@@ -137,7 +137,7 @@ private:
      *  Access to the options themselves.
      */
 
-    options m_options;
+    options m_option_set;
 
 public:
 
@@ -154,10 +154,11 @@ public:
 
     std::string settings_text () const;
     std::string description_commented () const;
+    std::string help_text () const;
 
     bool inactive () const
     {
-        return m_options.empty();           /* m_config_type == ""          */
+        return m_option_set.empty();        /* m_config_type == ""          */
     }
 
     bool active () const
@@ -172,7 +173,7 @@ public:
 
     bool add_options (const options & opts)         /* add many options     */
     {
-        return m_options.add(opts.option_pairs());
+        return m_option_set.add(opts.option_pairs());
     }
 
     /*
@@ -181,7 +182,7 @@ public:
 
     bool add_option (const options::option & op)    /* add one option       */
     {
-        return m_options.add(op);
+        return m_option_set.add(op);
     }
 
     bool add_name (const std::string & optionname)
@@ -215,12 +216,12 @@ public:
 
     options & option_set ()
     {
-        return m_options;
+        return m_option_set;
     }
 
     const options & option_set () const
     {
-        return m_options;
+        return m_option_set;
     }
 
     /*

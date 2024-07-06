@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-06-28
+ * \updates       2024-07-05
  * \license       See above.
  *
  * Operations to support:
@@ -101,8 +101,8 @@ static std::string s_stock_file_intro
 inisections::inisections () :
     m_app_version   ("Cfg66 stock configuration"),
     m_directory     (),
-    m_name          ("[stock]"),
-    m_extension     ("stock"),
+    m_name          (),
+    m_extension     (),
     m_config_type   (),
     m_description   ("A stock configuration, not a file."),
     m_section_list  ()
@@ -176,8 +176,14 @@ inisections::inisections
     {
         /* WHAT ABOUT the dir/base.ext info in the spec parameter!??? */
 
-        (void) util::filename_split(ininame, m_directory, m_name);
-        m_extension = util::file_extension(m_name);
+        if (m_extension.empty())
+        {
+            if (! ininame.empty())
+            {
+                (void) util::filename_split(ininame, m_directory, m_name);
+                m_extension = util::file_extension(m_name);
+            }
+        }
         if (m_extension[0] == '.')
             m_config_type = m_extension.substr(1);
         else
@@ -188,7 +194,7 @@ inisections::inisections
      * specref = std::reference_wrapper<inisection::specification>
      */
 
-    for (auto sec : spec.file_sections)     /* vector of specref (wrappers) */
+    for (auto & sec : spec.file_sections)   /* vector of specref (wrappers) */
     {
         /*
          * Create a new inisection. Using the stored std::ref() object and
@@ -219,8 +225,18 @@ inisections::settings_text () const
     result += filespec + "\n# ";
     result += m_description + "\n#";
 
-    for (auto sec : m_section_list)
+    for (auto & sec : section_list())
         result += sec.settings_text();
+
+    return result;
+}
+
+std::string
+inisections::help_text () const
+{
+    std::string result;
+    for (auto & sec : section_list())
+        result += sec.help_text();
 
     return result;
 }
@@ -242,7 +258,7 @@ const inisection &
 inisections::find_inisection (const std::string & sectionname) const
 {
     static inisection s_inactive_inisection;
-    for (const auto & section : m_section_list)
+    for (const auto & section : section_list())
     {
         if (section.name() == sectionname)
             return section;
