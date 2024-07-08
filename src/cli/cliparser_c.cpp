@@ -182,12 +182,14 @@ debug_text (void)
     return s_debug_text.c_str();
 }
 
-bool help_request (void)
+bool
+help_request (void)
 {
     return parser().help_request();
 }
 
-bool version_request (void)
+bool
+version_request (void)
 {
     return parser().version_request();
 }

@@ -154,6 +154,7 @@ public:
 
     std::string settings_text () const;
     std::string description_commented () const;
+    std::string cli_help_text () const;
     std::string help_text () const;
 
     bool inactive () const

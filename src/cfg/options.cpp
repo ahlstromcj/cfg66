@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-03
+ * \updates       2024-07-08
  * \license       See above.
  *
  *  The cli::options class provides a way to hold the state of command-line
@@ -836,26 +836,54 @@ options::help_line (const std::string & name) const
 }
 
 /**
+ *  We need a help_text() function that emits only cli-enabled options.
+ *  Here it is.
+ */
+
+std::string
+options::cli_help_text () const
+{
+    std::string result;
+    if (option_pairs().size() > 0)
+    {
+        for (const auto & op : option_pairs())
+        {
+            if (op.second.option_cli_enabled)
+            {
+                std::string h = help_line(op);
+                if (! h.empty())
+                {
+                    result += h;
+                    result += "\n";
+                }
+            }
+        }
+        result += "\n";
+    }
+    return result;
+}
+
+/**
  *  Returns all of the help lines.
- *
- *  We might need a cli_help_text() function that emits only
- *  cli-enabled options.
  */
 
 std::string
 options::help_text () const
 {
     std::string result;
-    for (const auto & op : option_pairs())
+    if (option_pairs().size() > 0)
     {
-        std::string h = help_line(op);
-        if (! h.empty())
+        for (const auto & op : option_pairs())
         {
-            result += h;
-            result += "\n";
+            std::string h = help_line(op);
+            if (! h.empty())
+            {
+                result += h;
+                result += "\n";
+            }
         }
+        result += "\n";
     }
-    result += "\n";
     return result;
 }
 
@@ -1424,7 +1452,7 @@ stock_options ()
         {
             "description",
             {
-                options::code_null, "boolean", options::enabled,
+                options::code_null, "boolean", options::disabled,
                 "false", "", false, false,
                 "Flags application to show descriptive information.", true
             }

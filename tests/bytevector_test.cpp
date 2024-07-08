@@ -45,6 +45,7 @@ static cfg::appinfo s_application_info
     cfg::appkind::cli,                  // "cli"
     "bytevector_test",                  // _app_name (mandatory!)
     "0.0",                              // _app_version
+    "[Byte66]",                         // _main_cfg_section_name
     "",                                 // _home_cfg_directory
     "bvectest.bogus",                   // _home_cfg_file
     "bvectest",                         // _client_name (fake session wart)

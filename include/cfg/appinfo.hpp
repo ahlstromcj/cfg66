@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2018-11-24
- * \updates       2024-06-28
+ * \updates       2024-07-08
  * \license       GNU GPLv2 or above
  *
  *    Provides some useful functions for displaying information about the
@@ -39,11 +39,6 @@
 
 #include "cpp_types.hpp"                /* string, vector, lib66::msglevel  */
 #include "util/msgfunctions.hpp"        /* enum clas msglevel               */
-
-/*
- * This is the main namespace of Cfg66.  Do not attempt to
- * Doxygenate the documentation here; it breaks Doxygen.
- */
 
 namespace cfg
 {
@@ -63,7 +58,7 @@ enum class appkind
 };
 
 /**
- *  Useful for encapsulating the most basic or common sesttings.
+ *  Useful for encapsulating the most basic or common settings.
  */
 
 struct appinfo
@@ -92,6 +87,14 @@ public:
      */
 
     std::string _app_version;
+
+    /**
+     *  Holds the name of the main section in an INI file. It
+     *  defaults to "[Cfg66]". Contains no options that set anything,
+     *  nor are the options saved.
+     */
+
+    std::string _main_cfg_section_name;
 
     /**
      *  The caller normally sets this to an empty string to indicate
@@ -208,12 +211,13 @@ public:
 
 public:
 
-    appinfo () = default;
+    appinfo ();
     appinfo
     (
-        appkind appkind,
+        appkind apptype,
         const std::string & appname,
         const std::string & appversion,
+        const std::string & maincfgname,
         const std::string & homecfgdirectory,
         const std::string & homecfgfile,
         const std::string & clientname,
@@ -221,13 +225,13 @@ public:
         const std::string & arg0,
         const std::string & packagename,
         const std::string & sessiontag,
-        const std::string & appiconname     = "",
-        const std::string & appversiontext  = "",
-        const std::string & apiengine       = "",
-        const std::string & apiversion      = "",
-        const std::string & guiversion      = "",
-        const std::string & clientnameshort = "",
-        const std::string & clientnametag   = ""
+        const std::string & appiconname,
+        const std::string & appversiontext,
+        const std::string & apiengine,
+        const std::string & apiversion,
+        const std::string & guiversion,
+        const std::string & clientnameshort,
+        const std::string & clientnametag
     );
     appinfo (const appinfo &) = default;
     appinfo (appinfo &&) = default;
@@ -240,15 +244,16 @@ private:
 
 };
 
-/*------------------------------------------------------------------------
+/*--------------------------------------------------------------------------
  * Global (free) functions.  Setters.
- *------------------------------------------------------------------------*/
+ *--------------------------------------------------------------------------*/
 
 extern bool initialize_appinfo          /* copy to static appinfo           */
 (
     const appinfo & source, const std::string & arg0
 );
 extern void set_home_cfg_directory (const std::string & v);
+extern void set_main_cfg_section_name (const std::string & v);
 extern void set_home_cfg_file (const std::string & v);
 extern void set_gui_version (const std::string & v);
 extern void set_app_build_os (const std::string & abuild_os);
@@ -264,12 +269,13 @@ extern void set_client_name (const std::string & cname);
 extern void set_package_name (const std::string & pname);
 extern void set_session_tag (const std::string & pname);
 
-/*------------------------------------------------------------------------
+/*--------------------------------------------------------------------------
  * Global (free) functions.  Getters.
- *------------------------------------------------------------------------*/
+ *--------------------------------------------------------------------------*/
 
 extern const std::string & get_home ();
 extern std::string get_home_cfg_directory ();
+extern std::string get_main_cfg_section_name ();
 extern std::string get_home_cfg_file ();
 extern std::string get_home_cfg_filespec ();
 extern const std::string & get_app_name ();

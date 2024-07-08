@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-05
+ * \updates       2024-07-08
  * \license       See above.
  *
  * Operations to support:
@@ -227,6 +227,16 @@ inisections::settings_text () const
 
     for (auto & sec : section_list())
         result += sec.settings_text();
+
+    return result;
+}
+
+std::string
+inisections::cli_help_text () const
+{
+    std::string result;
+    for (auto & sec : section_list())
+        result += sec.cli_help_text();
 
     return result;
 }

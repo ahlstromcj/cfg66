@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-06-28
+ * \updates       2024-07-08
  * \license       See above.
  *
  *  We want to provide a list of { filename, sectionname } pairs, and
@@ -164,6 +164,7 @@ public:
     ~inisections () = default;
 
     std::string settings_text () const;
+    std::string cli_help_text () const;
     std::string help_text () const;
 
     bool active () const

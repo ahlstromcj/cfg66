@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2017-03-12
- * \updates       2024-06-28
+ * \updates       2024-07-08
  * \license       GNU GPLv2 or above
  *
  *  The first part of this file defines a couple of global structure
@@ -52,10 +52,6 @@
 #define STDERR_FILENO   2
 
 #endif
-
-/*
- *  Do not document a namespace; it breaks Doxygen.
- */
 
 namespace cfg
 {
@@ -120,14 +116,42 @@ static std::string s_app_build_issue = "UNIX";          /* FIXME    */
 static appinfo s_app_info;
 
 /**
+ *  Default constructor.
+ */
+
+appinfo::appinfo () :
+    _app_kind               (appkind::indeterminate),
+    _app_name               ("app"),
+    _app_version            ("0"),
+    _main_cfg_section_name  ("[Cfg66]"),
+    _home_cfg_directory     (),
+    _home_cfg_file          (),
+    _client_name            ("app"),
+    _app_tag                (),
+    _arg_0                  (),
+    _package_name           ("NOPACKAGE"),
+    _session_tag            (),
+    _app_icon_name          (),
+    _app_version_text       ("app v. 0"),
+    _api_engine             (),
+    _api_version            (),
+    _gui_version            (),
+    _client_name_short      ("app"),
+    _client_name_tag        ()
+{
+    // no other code
+}
+
+/**
  *  Initializer list constructor.
  */
 
 appinfo::appinfo
 (
-    appkind appkind,
+    appkind apptype,
     const std::string & appname,
     const std::string & appversion,
+    const std::string & maincfgname,
     const std::string & homecfgdirectory,
     const std::string & homecfgfile,
     const std::string & clientname,
@@ -143,23 +167,24 @@ appinfo::appinfo
     const std::string & clientnameshort,
     const std::string & clientnametag
 ) :
-    _app_kind           (appkind),
-    _app_name           (appname),
-    _app_version        (appversion),
-    _home_cfg_directory (homecfgdirectory), // can be empty
-    _home_cfg_file      (homecfgfile),      // can be empty
-    _client_name        (clientname),
-    _app_tag            (apptag),
-    _arg_0              (arg0),
-    _package_name       (packagename),
-    _session_tag        (sessiontag),
-    _app_icon_name      (appiconname),      // sometimes empty
-    _app_version_text   (appversiontext),   // often reconstructed
-    _api_engine         (apiengine),        // often empty
-    _api_version        (apiversion),       // often empty
-    _gui_version        (guiversion),       // usually filled in later
-    _client_name_short  (clientnameshort),  // usually constructed
-    _client_name_tag    (clientnametag)     // usually constructed
+    _app_kind               (apptype),
+    _app_name               (appname),
+    _app_version            (appversion),
+    _main_cfg_section_name  (maincfgname),
+    _home_cfg_directory     (homecfgdirectory), // can be empty
+    _home_cfg_file          (homecfgfile),      // can be empty
+    _client_name            (clientname),
+    _app_tag                (apptag),
+    _arg_0                  (arg0),
+    _package_name           (packagename),
+    _session_tag            (sessiontag),
+    _app_icon_name          (appiconname),      // sometimes empty
+    _app_version_text       (appversiontext),   // often reconstructed
+    _api_engine             (apiengine),        // often empty
+    _api_version            (apiversion),       // often empty
+    _gui_version            (guiversion),       // usually filled in later
+    _client_name_short      (clientnameshort),  // usually constructed
+    _client_name_tag        (clientnametag)     // usually constructed
 {
     // no other code
 }
@@ -203,6 +228,12 @@ void
 set_home_cfg_directory (const std::string & v)
 {
     s_app_info._home_cfg_directory = v;
+}
+
+void
+set_main_cfg_section_name (const std::string & v)
+{
+    s_app_info._main_cfg_section_name = v;
 }
 
 void
@@ -399,6 +430,12 @@ get_home_cfg_directory ()
         result = s_app_info._home_cfg_directory;
 
     return result;
+}
+
+std::string
+get_main_cfg_section_name ()
+{
+    return s_app_info._main_cfg_section_name;
 }
 
 std::string

@@ -296,13 +296,22 @@ inimanager::find_options_spec
 }
 
 std::string
+inimanager::cli_help_text () const
+{
+    std::string result;
+    for (const auto & sections : sections_map())
+        result += sections.second.cli_help_text();
+
+    return result;
+}
+
+std::string
 inimanager::help_text () const
 {
     std::string result;
     for (const auto & sections : sections_map())
-    {
         result += sections.second.help_text();
-    }
+
     return result;
 }
 

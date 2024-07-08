@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-24
- * \updates       2024-07-06
+ * \updates       2024-07-08
  * \license       See above.
  *
  *      The limitations of command-line options as implemented in cli::parser
@@ -71,6 +71,20 @@ multiparser::~multiparser ()
 {
     // no code
 }
+
+/**
+ *  This override forwards the request to the inimanager (parent).
+ */
+
+std::string
+multiparser::cli_help_text () const
+{
+    return ini_manager().cli_help_text();
+}
+
+/**
+ *  This override forwards the request to the inimanager (parent).
+ */
 
 std::string
 multiparser::help_text () const

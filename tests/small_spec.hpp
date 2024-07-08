@@ -55,7 +55,7 @@ inisection::specification small_misc_data
 {
     "[misc]",
     {
-"Miscellaneous options.\n"
+"Miscellaneous options."
     },
     {
         {
@@ -83,7 +83,7 @@ inisection::specification small_interaction_data
 {
     "[interaction-method]",
     {
-"Sets mouse usage for drawing/editing patterns.\n"
+"Sets mouse usage for drawing/editing patterns."
     },
     {
         {
@@ -116,7 +116,7 @@ inisections::specification small_data
     "small",        /* the file extension for any 'small' file.             */
     "tests/data",   /* use value from appinfo's get_home_cfg_directory()    */
     "tests/data",   /* use value derived from appinfo's get_home_cfg_file() */
-    "This 'small' file defines some basic features.\n"
+    "This 'small' file defines some basic features."
     ,
     {
         std::ref(inifile_cfg66_data),       // std::ref(small_cfg66_data)

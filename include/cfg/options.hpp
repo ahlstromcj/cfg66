@@ -368,6 +368,7 @@ public:
     void unmodify_all ();
     std::string help_line (const std::string & name) const;
     std::string help_line (const option & opt) const;
+    std::string cli_help_text () const;
     std::string help_text () const;
     std::string setting_line (const std::string & name) const;
     std::string setting_line (const option & op) const;

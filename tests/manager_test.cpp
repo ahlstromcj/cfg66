@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-01-26
- * \updates       2024-06-27
+ * \updates       2024-07-08
  * \license       See above.
  *
  */
@@ -44,6 +44,7 @@ static cfg::appinfo s_application_info
     cfg::appkind::cli,                  // "cli"
     "manager_test",                     // _app_name (mandatory!)
     "0.0",                              // _app_version
+    "[Mgr66]",                          // _main_cfg_section_name
     "",                                 // _home_cfg_directory
     "mgrtest.bogus",                    // _home_cfg_file
     "mgrtest.123",                      // _client_name (fake session wart)

@@ -25,21 +25,22 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-07-06
+ * \updates       2024-07-08
  * \license       See above.
  *
  *  See the inisections class and modules for details.
  */
 
+#include "cfg/appinfo.hpp"              /* cfg::appinfo data structure      */
 #include "cfg/inisection.hpp"           /* cfg::inisection classes          */
 #include "util/strfunctions.hpp"        /* util::word_wrap()                */
 
 namespace cfg
 {
 
-/*------------------------------------------------------------------------
+/*--------------------------------------------------------------------------
  * inisection
- *------------------------------------------------------------------------*/
+ *--------------------------------------------------------------------------*/
 
 /**
  *  This constructor creates an inisection for the optional stock options.
@@ -127,6 +128,26 @@ inisection::settings_text () const
     {
         result += option_set().setting_line(s);
         result += "\n";
+    }
+    return result;
+}
+
+std::string
+inisection::cli_help_text () const
+{
+    std::string result;
+    if (get_main_cfg_section_name() != name())
+    {
+        result = name();
+        if (! name().empty())
+            result += " ";
+
+        if (! section_description().empty())
+        {
+            result += section_description();
+            result += "\n\n";
+        }
+        result += option_set().cli_help_text();
     }
     return result;
 }

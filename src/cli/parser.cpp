@@ -530,7 +530,12 @@ parser::show_information_only () const
     bool result = false;
     if (help_request())
     {
-        std::cout << help_text();
+        /*
+         * cli_help_text() is help_text() without items that make no sense
+         * to change via the command-line.
+         */
+
+        std::cout << cli_help_text();
         result = true;
     }
     if (description_request())

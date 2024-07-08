@@ -27,7 +27,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-04
+ * \updates       2024-07-08
  * \license       See above.
  *
  *  Provides for the handling of options specifications.  This module is
@@ -152,6 +152,16 @@ public:
     virtual cfg::options & option_set ()
     {
         return m_option_set;
+    }
+
+    virtual std::string cli_help_text () const
+    {
+        return option_set().cli_help_text();
+    }
+
+    virtual std::string help_text () const
+    {
+        return option_set().help_text();
     }
 
     bool has_error () const
@@ -294,11 +304,6 @@ public:
     std::string default_value (const std::string & name) const
     {
         return option_set().default_value(name);
-    }
-
-    virtual std::string help_text () const
-    {
-        return option_set().help_text();
     }
 
     std::string debug_text (bool showbuiltins = false) const
