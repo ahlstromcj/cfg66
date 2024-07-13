@@ -22,13 +22,13 @@
 /**
  * \file          inisection.hpp
  *
- *      Provides a way to hold all options from multiple INI-style files and
- *      multiple INI file sections.
+ *      Provides a way to hold all options from a single INI-style file
+ *      section.
  *
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-07-06
+ * \updates       2024-07-11
  * \license       See above.
  *
  *  We want to provide a list of { filename, sectionname } pairs, and
@@ -39,10 +39,6 @@
  *  cfg::options objects.
  *
  *  First, the long option list is created. Then, we iterated ....
- *
- *  Classes supported:
- *
- *      -   inisection
  */
 
 #include <functional>                   /* std::reference_wrapper<>         */
@@ -167,14 +163,9 @@ public:
         return ! inactive();
     }
 
-    /*
-     *  Warning. adding a cfg::options reference directoly causes a
-     *  temporary to be created, and it leads to recursion.
-     */
-
-    bool add_options (const options & opts)         /* add many options     */
+    bool add_options (const options::container & specs)
     {
-        return m_option_set.add(opts.option_pairs());
+        return m_option_set.add(specs);
     }
 
     /*
@@ -193,6 +184,11 @@ public:
             m_option_names.push_back(optionname);
 
         return result;
+    }
+
+    const std::string & config_type () const
+    {
+        return m_config_type;
     }
 
     const std::string & name () const

@@ -243,7 +243,7 @@ public:
     }
 
     /*
-     *  Warning. adding a cfg::options reference directoly causes a
+     *  Warning. adding a cfg::options reference directly causes a
      *  temporary to be created, and it leads to recursion.
      */
 

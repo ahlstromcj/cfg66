@@ -138,7 +138,7 @@ inisection::specification rc_meta_data
         {
             "tempo-track",
             {
-                options::code_null, "integer", options::disabled,
+                options::code_null, "integer", options::enabled,
                 "0", "0", false, false,
                 "Specifies an alternate track to hold tempo events.", false
             }

@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-08
+ * \updates       2024-07-11
  * \license       See above.
  *
  *  The cli::options class provides a way to hold the state of command-line
@@ -158,6 +158,10 @@
 #include "c_macros.h"                   /* not_nullptr()                    */
 #include "cfg/options.hpp"              /* cfg::options class               */
 #include "util/strfunctions.hpp"        /* util::string_to_int() etc.       */
+
+#if defined USE_COLOR_CLI_HELP_TEXT
+#include "cfg/appinfo.hpp"              /* cfg::level_color()               */
+#endif
 
 namespace cfg
 {
@@ -824,6 +828,78 @@ options::help_line (const option & opt) const
     return result;
 }
 
+#if defined USE_COLOR_CLI_HELP_TEXT
+
+/**
+ *  The same as help_line(), but adds color to the options themselves.
+ *  The result should look similar to a man page.
+ *
+ *  level_color(0) as defined in appinfo is the normal foreground/text terminal
+ *  color.
+ *
+ *  level_color(2) as defined in appinfo is "yellow".
+ *
+ *  level_color(4) as defined in appinfo is "blue".
+ */
+
+std::string
+options::color_help_line (const option & opt) const
+{
+    std::string result;
+    if (opt.second.option_cli_enabled)
+    {
+        const spec & op = opt.second;
+        std::ostringstream ost;
+        char code = op.option_code;
+        std::string name = opt.first;
+        int count = 18;
+        if (code == 0)
+        {
+            code = ' ';
+            count = 22;
+        }
+        else
+        {
+            ost
+                << " " << level_color(4) << "-" << code
+                << level_color(0) << ","
+                ;
+        }
+
+        if (op.option_kind != "boolean")    /* i.e. it is not a flag option */
+        {
+            if (op.option_kind == "overflow")
+                name += " x[=]v";
+            else
+                name += "=v";
+        }
+        ost
+            << " " << level_color(4) << "--"
+            << std::setw(count) << std::left << name
+            << level_color(0)
+            ;
+
+        std::string desc = op.option_desc;
+        if (code != 'h' && code != 'v')
+        {
+            desc += " [";
+            desc += level_color(2);
+            desc += op.option_default;
+            desc += level_color(0);
+            desc += "]";
+        }
+        desc = util::hanging_word_wrap
+        (
+            desc, options::hanging_width, options::terminal_width
+        );
+        ost << std::left << desc;
+        result = ost.str();
+    }
+    return result;
+}
+
+#endif  // defined USE_COLOR_CLI_HELP_TEXT
+
 std::string
 options::help_line (const std::string & name) const
 {
@@ -844,21 +920,30 @@ std::string
 options::cli_help_text () const
 {
     std::string result;
-    if (option_pairs().size() > 0)
+    if (! option_pairs().empty())
     {
+        bool finish = false;                    /* at least 1 cli-enabled?  */
         for (const auto & op : option_pairs())
         {
             if (op.second.option_cli_enabled)
             {
+#if defined USE_COLOR_CLI_HELP_TEXT
+                bool showcolor = is_a_tty();
+                std::string h = showcolor ?
+                    color_help_line(op) : help_line(op) ;
+#else
                 std::string h = help_line(op);
+#endif
                 if (! h.empty())
                 {
                     result += h;
                     result += "\n";
+                    finish = true;
                 }
             }
         }
-        result += "\n";
+        if (finish)
+            result += "\n";
     }
     return result;
 }

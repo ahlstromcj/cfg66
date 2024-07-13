@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2017-03-12
- * \updates       2024-07-08
+ * \updates       2024-07-11
  * \license       GNU GPLv2 or above
  *
  *  The first part of this file defines a couple of global structure
@@ -543,6 +543,12 @@ get_app_icon_name ()
 }
 
 bool
+is_a_tty ()
+{
+    return is_a_tty(STDOUT_FILENO);
+}
+
+bool
 is_a_tty (int fd)
 {
 #if defined PLATFORM_WINDOWS
@@ -561,6 +567,28 @@ is_a_tty (int fd)
     return rc == 1;                             /* fd refers to a terminal  */
 #endif
 }
+
+/**
+ *  Gets the desired terminal color escape sequence. This is kind of a
+ *  simple color palette.
+ */
+
+const char *
+level_color (int index)
+{
+    static const char * const s_level_colors [] =
+    {
+        "\033[0m",          /* goes back to normal console color    */
+        "\033[1;32m",       /* info message green                   */
+        "\033[1;33m",       /* warning message is yellow            */
+        "\033[1;31m",       /* error message is red                 */
+        "\033[1;34m",       /* status message is blue               */
+        "\033[1;36m",       /* session message is cyan              */
+        "\033[1;30m"        /* debug message is black               */
+    };
+    return s_level_colors[index];
+}
+
 
 /**
  * Text color codes ('*' indicates the color is used below):
@@ -584,16 +612,6 @@ get_client_tag (lib66::msglevel el)
     }
     else
     {
-        static const char * s_level_colors [] =
-        {
-            "\033[0m",          /* goes back to normal console color    */
-            "\033[1;32m",       /* info message green                   */
-            "\033[1;33m",       /* warning message is yellow            */
-            "\033[1;31m",       /* error message is red                 */
-            "\033[1;34m",       /* status message is blue               */
-            "\033[1;36m",       /* session message is cyan              */
-            "\033[1;30m"        /* debug message is black               */
-        };
         std::string result = "[";
         int index = static_cast<int>(el);
         bool iserror = el == lib66::msglevel::error ||
@@ -602,11 +620,11 @@ get_client_tag (lib66::msglevel el)
 
         bool showcolor = is_a_tty(iserror ? STDERR_FILENO : STDOUT_FILENO);
         if (showcolor)
-            result += s_level_colors[index];
+            result += level_color(index);
 
         result += s_app_info._client_name_short;
         if (showcolor)
-            result += s_level_colors[0];
+            result += level_color(0);
 
         result += "]";
         return result;

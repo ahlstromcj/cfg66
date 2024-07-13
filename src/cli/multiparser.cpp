@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-24
- * \updates       2024-07-08
+ * \updates       2024-07-11
  * \license       See above.
  *
  *      The limitations of command-line options as implemented in cli::parser
@@ -115,7 +115,7 @@ multiparser::cli_mappings_add (cfg::inisections::specification & spec)
         for (const auto & sec : spec.file_sections)
         {
             const cfg::inisection::specification & isectspec = sec.get();
-            std::string sectionname = isectspec.sec_name;
+            std::string configsection = isectspec.sec_name;
 
             /*
              * sec_optionlist is a cfg::options::container, i.e. a
@@ -126,7 +126,7 @@ multiparser::cli_mappings_add (cfg::inisections::specification & spec)
 
             result = cli_mappings_add
             (
-                isectspec.sec_optionlist, configtype, sectionname
+                isectspec.sec_optionlist, configtype, configsection
             );
         }
     }
@@ -134,6 +134,22 @@ multiparser::cli_mappings_add (cfg::inisections::specification & spec)
 }
 
 /**
+ *  Adds a container of options to the desired type:[section] pair.
+ *
+ * \param opts
+ *      Provides the list of options.
+ *
+ * \param configtype
+ *      Provides the type of configuration file, e.g. "rc". If empty,
+ *      there's no file involved, which is the case with stock options
+ *      and any additions to them. The default is an empty string.
+ *
+ * \param configsection
+ *      Provides the name of the INI "section" in force, such as "[audio]".
+ *      If empty and \a configtype is empty, then this is the stock options
+ *      section. (A better name might be "global" options.) The default is
+ *      an empty string.
+ *
  *  In ini_set_test, this is the one called.
  */
 
@@ -159,25 +175,54 @@ multiparser::cli_mappings_add
                 {
                     auto p = std::make_pair(optcode, optname);
                     auto r = code_mappings().insert(p);
-                    if (! r.second)
+                    if (r.second)
                     {
-#if defined PLATFORM_DEBUG
-                        printf("Could not insert code '%c'\n", optcode);
+#if defined PLATFORM_DEBUG_TMI
+                        printf
+                        (
+                            "Inserted pair <'%c','%s'>\n",
+                            optcode, optname.c_str()
+                        );
 #endif
+                    }
+                    else
+                    {
+                        char tmp[64];
+                        snprintf
+                        (
+                            tmp, sizeof tmp,
+                            "Couldn't insert pair <'%c','%s'>\n",
+                            optcode, optname.c_str()
+                        );
+                        util::warn_message(tmp);
                     }
                 }
 
                 duo d{configtype, configsection};
                 auto p = std::make_pair(optname, d);
                 auto r = cli_mappings().insert(p);
-                if (! r.second)
+                if (r.second)
                 {
-#if defined PLATFORM_DEBUG
+#if defined PLATFORM_DEBUG_TMI
                     printf
                     (
-                        "Could not insert option '%s'\n", optname.c_str()
+                        "Inserted option <'%s',('%s',%s)>\n",
+                        optname.c_str(), configtype.c_str(),
+                        configsection.c_str()
                     );
 #endif
+                }
+                else
+                {
+                    char tmp[64];
+                    snprintf
+                    (
+                        tmp, sizeof tmp,
+                        "Couldn't insert <%s,(%s,%s)>",
+                        optname.c_str(), configtype.c_str(),
+                        configsection.c_str()
+                    );
+                    util::warn_message(tmp, "Change option to a unique name");
                 }
             }
         }
@@ -209,20 +254,21 @@ multiparser::option_set ()
 
 /**
  *  Override the base-class functions to use the inimanager parent to
- *  find the right option set to use and to access it.
+ *  find the right option set to use and to access it. If both parameters
+ *  are empty, this is the stock/global options.
  */
 
 const cfg::options &
 multiparser::find_option_set
 (
     const std::string & configtype,
-    const std::string & sectionname
+    const std::string & configsection
 ) const
 {
     static cfg::options s_empty_options;
     const cfg::inisection & ini = m_ini_manager.find_inisection
     (
-        configtype, sectionname
+        configtype, configsection
     );
     if (ini.active())
     {
@@ -236,14 +282,14 @@ cfg::options &
 multiparser::find_option_set
 (
     const std::string & configtype,
-    const std::string & sectionname
+    const std::string & configsection
 )
 {
     return const_cast<cfg::options &>
     (
         static_cast<const multiparser &>(*this).find_option_set
         (
-            configtype, sectionname
+            configtype, configsection
         )
     );
 }

@@ -1,6 +1,6 @@
 NEWS for Cfg66 0.2
 Chris Ahlstrom
-2024-04-15 to 2024-07-02
+2024-04-15 to 2024-07-11
 
 # Changelog
 
@@ -41,6 +41,7 @@ Chris Ahlstrom
 
 - Changed the new inimap class name to inimanager.
 - Added "no-inline-functions" to meson.build; does not work, though.
+- Upgraded the --help output, including color highlighting.
 - No changes unrelated to util::bytevector, except for updating the
   relevant meson.build files.
 

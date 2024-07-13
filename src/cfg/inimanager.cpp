@@ -75,9 +75,11 @@ namespace cfg
 
 /**
  *  Creates the "stock" inisections object (and its "stock" inisection and
- *  options objects.)
+ *  options objects.
  *
- *  Note that there are both const and non-const accessors for these members.
+ *  -   inisections()
+ *      -   inisection()
+ *          -   options() : add(stock_options()) and initialize()
  */
 
 inimanager::inimanager () :
@@ -85,19 +87,49 @@ inimanager::inimanager () :
     m_sections_map  ()
 {
     inisections sec;
-    auto p = std::make_pair("", sec);           /* does it make a copy? */
-    auto r = sections_map().insert(p);          /* another copy         */
+    auto p = std::make_pair("", sec);               /* does it make a copy? */
+    auto r = sections_map().insert(p);              /* another copy         */
     bool ok = r.second;
     if (ok)
     {
-        const options & opts = sec.find_options("");
+        const options & opts = sec.find_options();  /* find stock options   */
         if (opts.active())
         {
-            (void) multi_parser().cli_mappings_add
-            (
-                opts.option_pairs(), "", ""
-            );
+            (void) multi_parser().cli_mappings_add(opts.option_pairs());
         }
+    }
+}
+
+/**
+ *  Provides for the addition of other stock/global options before
+ *  (later) adding addition inisections.
+ */
+
+inimanager::inimanager (const options::container & additional) :
+    m_multi_parser  (*this),
+    m_sections_map  ()
+{
+    inisections sec;
+    bool ok = sec.add_options(additional);
+    if (! ok)
+    {
+        printf("FAILED to add options\n");          // UPGRADE LATER
+    }
+
+    auto p = std::make_pair("", sec);               /* does it make a copy? */
+    auto r = sections_map().insert(p);              /* another copy         */
+    ok = r.second;
+    if (ok)
+    {
+        const options & opts = sec.find_options();  /* find stock options   */
+        if (opts.active())
+        {
+            (void) multi_parser().cli_mappings_add(opts.option_pairs());
+        }
+    }
+    else
+    {
+        printf("FAILED to add inisection\n");       // UPGRADE LATER
     }
 }
 

@@ -132,22 +132,65 @@ inisection::settings_text () const
     return result;
 }
 
+/**
+ *  If this is not the main configuration section, "[Cfg66]" or whatever the
+ *  application changed it to at startup, the section configuration type,
+ *  section name, the section description, then the help text for all
+ *  options in the set.
+ *
+ *  rc:[audio]
+ */
+
 std::string
 inisection::cli_help_text () const
 {
     std::string result;
     if (get_main_cfg_section_name() != name())
     {
-        result = name();
-        if (! name().empty())
-            result += " ";
-
-        if (! section_description().empty())
+        bool havenames = false;
+        std::string enabledoptshelp = option_set().cli_help_text();
+        if (! enabledoptshelp.empty())
         {
-            result += section_description();
-            result += "\n\n";
+#if defined USE_COLOR_CLI_HELP_TEXT
+            result += level_color(3);                   /* see appinfo module   */
+#endif
+            if (! config_type().empty())
+            {
+                result += config_type();
+                result += ":";
+                havenames = true;
+            }
+            if (! name().empty())
+            {
+                result += name();
+#if defined SHOW_WHOLE_DESCRIPTION
+                result += "\n";
+#endif
+                havenames = true;
+            }
+#if defined USE_COLOR_CLI_HELP_TEXT
+                result += level_color(0);
+#endif
+            if (! section_description().empty())
+            {
+#if defined SHOW_WHOLE_DESCRIPTION          // way too much for --help
+                std::string formatted = util::hanging_word_wrap
+                (
+                    section_description(), 0, options::terminal_width
+                );
+                result += formatted;
+                result += "\n\n";
+#else
+                std::string line = util::first_sentence(section_description());
+                if (havenames)
+                    result += " ";
+
+                result += line;
+                result += "\n\n";
+#endif
+            }
+            result += enabledoptshelp;      // option_set().cli_help_text()
         }
-        result += option_set().cli_help_text();
     }
     return result;
 }

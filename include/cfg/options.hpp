@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-03
+ * \updates       2024-07-11
  * \license       See above.
  *
  *  Supports variables of the following types:
@@ -77,6 +77,12 @@
  */
 
 #undef USER_CONSTRUCTOR_FOR_OPTIONS_SPEC
+
+/**
+ *  Experimental. Improve the --help output on screen.
+ */
+
+#define USE_COLOR_CLI_HELP_TEXT
 
 namespace cli
 {
@@ -368,6 +374,9 @@ public:
     void unmodify_all ();
     std::string help_line (const std::string & name) const;
     std::string help_line (const option & opt) const;
+#if defined USE_COLOR_CLI_HELP_TEXT
+    std::string color_help_line (const option & opt) const;
+#endif
     std::string cli_help_text () const;
     std::string help_text () const;
     std::string setting_line (const std::string & name) const;

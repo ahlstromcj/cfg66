@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2018-11-24
- * \updates       2024-07-08
+ * \updates       2024-07-11
  * \license       GNU GPLv2 or above
  *
  *    Provides some useful functions for displaying information about the
@@ -292,11 +292,13 @@ extern const std::string & get_api_subdirectory ();
 extern const std::string & get_app_version ();
 extern const std::string & get_app_version_text ();
 extern const std::string & get_gui_version ();
+extern const char * level_color (int index);
 extern std::string get_client_tag (lib66::msglevel el = lib66::msglevel::none);
 extern std::string get_session_tag (const std::string & refinement = "");
 extern std::string get_build_details ();
 extern bool get_app_cli ();
 extern bool get_app_headless ();
+extern bool is_a_tty ();
 extern bool is_a_tty (int fd);
 
 }           // namespace cfg

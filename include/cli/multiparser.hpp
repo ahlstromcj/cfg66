@@ -27,7 +27,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-23
- * \updates       2024-07-08
+ * \updates       2024-07-11
  * \license       See above.
  *
  *  This class provides a way to look up command-line options specified by
@@ -134,21 +134,21 @@ public:
 
     const cfg::options & find_option_set
     (
-        const std::string & configtype,
-        const std::string & sectionname
+        const std::string & configtype  = "",
+        const std::string & sectionname = ""
     ) const;
     cfg::options & find_option_set
     (
-        const std::string & configtype,
-        const std::string & sectionname
+        const std::string & configtype  = "",
+        const std::string & sectionname = ""
     );
 
     bool cli_mappings_add (cfg::inisections::specification & spec);
     bool cli_mappings_add
     (
         const cfg::options::container & opts,
-        const std::string & configtype,
-        const std::string & configsection
+        const std::string & configtype      = "",
+        const std::string & configsection   = ""
     );
     bool lookup_names
     (
