@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-07-14
+ * \updates       2024-07-15
  * \license       See above.
  *
  *  We want to provide a list of { filename, sectionname } pairs, and
@@ -205,7 +205,10 @@ public:
     (
         const std::string & sectionname = global    /* default is stock options */
     ) const;
-    const options & find_options (const std::string & sectionname = "") const;
+    const options & find_options
+    (
+        const std::string & sectionname = global
+    ) const;
 
     const options::spec & find_option_spec (const std::string & name) const;
     bool add_options

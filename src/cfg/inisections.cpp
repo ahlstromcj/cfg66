@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-14
+ * \updates       2024-07-15
  * \license       See above.
  *
  * Operations to support:
@@ -320,37 +320,6 @@ inisections::find_options (const std::string & sectionname)
     );
 }
 
-/*------------------------------------------------------------------------
- * Finding an options::spec by brute-force lookup
- *------------------------------------------------------------------------*/
-
-/**
- *  Finds an options specification by iteration through the contained
- *  inisection objects. This is a brute force lookup.
- */
-
-const options::spec &
-inisections::find_option_spec (const std::string & name) const
-{
-    static options::spec s_inactive_spec;
-    for (const auto & section : section_list())
-    {
-        const options::spec & opt = section.find_option_spec(name);
-        if (! opt.option_desc.empty())          // TODO? (opt.active())
-            return opt;
-    }
-    return s_inactive_spec;
-}
-
-options::spec &
-inisections::find_option_spec (const std::string & name)
-{
-    return const_cast<options::spec &>
-    (
-        static_cast<const inisections &>(*this).find_option_spec(name)
-    );
-}
-
 /**
  *  Provides a way to add options to a section.
  *
@@ -382,20 +351,51 @@ inisections::add_options
 }
 
 /*------------------------------------------------------------------------
+ * Finding an options::spec by brute-force lookup
+ *------------------------------------------------------------------------*/
+
+/**
+ *  Finds an options specification by iteration through the contained
+ *  inisection objects. This is a brute force lookup.
+ */
+
+const options::spec &
+inisections::find_option_spec (const std::string & name) const
+{
+    static options::spec s_inactive_spec;
+    for (const auto & section : section_list())
+    {
+        const options::spec & opt = section.find_option_spec(name);
+        if (! opt.option_desc.empty())          // TODO? (opt.active())
+            return opt;
+    }
+    return s_inactive_spec;
+}
+
+options::spec &
+inisections::find_option_spec (const std::string & name)
+{
+    return const_cast<options::spec &>
+    (
+        static_cast<const inisections &>(*this).find_option_spec(name)
+    );
+}
+
+/*------------------------------------------------------------------------
  * Free functions
  *------------------------------------------------------------------------*/
 
 const inisection &
 get_inifile_cfg66_section ()
 {
-    static inisection s_ini_section(inifile_cfg66_data, "");
+    static inisection s_ini_section(inifile_cfg66_data, global);
     return s_ini_section;
 }
 
 const inisection &
 get_inifile_comment_section ()
 {
-    static inisection s_ini_section(inifile_comment_data, "");
+    static inisection s_ini_section(inifile_comment_data, global);
     return s_ini_section;
 }
 

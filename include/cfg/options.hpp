@@ -78,6 +78,12 @@
 
 #undef USER_CONSTRUCTOR_FOR_OPTIONS_SPEC
 
+/**
+ *  Experimental. Improve the --help output on screen.
+ */
+
+#define USE_COLOR_CLI_HELP_TEXT
+
 namespace cli
 {
     class parser;

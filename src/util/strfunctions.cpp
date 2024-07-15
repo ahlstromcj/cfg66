@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-24
- * \updates       2024-06-01
+ * \updates       2024-07-15
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -1549,7 +1549,9 @@ hanging_word_wrap
             if (! room)
             {
                 result += "\n";
-                result += padding;
+                if (leftmargin > 0)
+                    result += padding;
+
                 linelen = leftmargin;
 
                 /*
@@ -1561,6 +1563,53 @@ hanging_word_wrap
             linelen += w.length();
         }
     }
+    return result;
+}
+
+/**
+ *  Extract the first sentence (of a long description). If there is no ender
+ *  character, then the whold string is used. If longer than the limit, then
+ *  that amount is used, with "..." appended.
+ *
+ * \param source
+ *      The source string, which might be a short string, a sentence, or a
+ *      whole paragraph.
+ *
+ * \param limit
+ *      The maximum number of characters to extract from the source.
+ *      Defaults to 72.
+ *
+ * \param ender
+ *      The character that ends the sentence. Defaults to a period.
+ */
+
+std::string
+first_sentence
+(
+    const std::string & source,
+    size_t limit, char ender
+)
+{
+    std::string result;
+    auto pos = source.find(ender);
+    bool addellipse = false;
+    if (pos != std::string::npos)
+    {
+        if (pos >= limit)
+        {
+            pos = limit - 3;
+            addellipse = true;
+        }
+    }
+    else
+    {
+        pos = limit;
+        addellipse = source.length() > pos;
+    }
+    result = source.substr(0, pos);
+    if (addellipse)
+        result += "...";
+
     return result;
 }
 

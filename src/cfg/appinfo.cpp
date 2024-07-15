@@ -549,6 +549,12 @@ get_app_icon_name ()
  */
 
 bool
+is_a_tty ()
+{
+    return is_a_tty(STDOUT_FILENO);
+}
+
+bool
 is_a_tty (int fd)
 {
     if (fd < 0)

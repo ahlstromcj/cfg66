@@ -134,13 +134,13 @@ public:
 
     const cfg::options & find_option_set
     (
-        const std::string & configtype,
-        const std::string & sectionname
+        const std::string & configtype  = "",
+        const std::string & sectionname = ""
     ) const;
     cfg::options & find_option_set
     (
-        const std::string & configtype,
-        const std::string & sectionname
+        const std::string & configtype  = "",
+        const std::string & sectionname = ""
     );
 
     bool cli_mappings_add (cfg::inisections::specification & spec);

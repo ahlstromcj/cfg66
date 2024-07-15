@@ -46,6 +46,7 @@ Chris Ahlstrom
   that for each affected line.
 - Changed the new inimap class name to inimanager.
 - Added "no-inline-functions" to meson.build; does not work, though.
+- Upgraded the --help output, including color highlighting.
 - No changes unrelated to util::bytevector, except for updating the
   relevant meson.build files.
 

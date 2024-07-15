@@ -160,6 +160,10 @@
 #include "cfg/options.hpp"              /* cfg::options class               */
 #include "util/strfunctions.hpp"        /* util::string_to_int() etc.       */
 
+#if defined USE_COLOR_CLI_HELP_TEXT
+#include "cfg/appinfo.hpp"              /* cfg::level_color()               */
+#endif
+
 namespace cfg
 {
 

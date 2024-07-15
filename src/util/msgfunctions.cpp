@@ -120,7 +120,7 @@ write_msg (int fd, const char * msg, size_t count)
 
 /**
  *  Meant for use in signal handlers.  For the colors, hardwired here, see
- *  s_level_colors in the cfg66_features.cpp modules. The "cfg66" tag is
+ *  s_level_colors in the appinfo.cpp module. The "cfg66" tag is
  *  black (no error) or red (error).  The text is black.  The character count
  *  is programmer supplied (see the comments).
  *

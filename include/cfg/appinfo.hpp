@@ -309,4 +309,3 @@ extern bool is_a_tty (int fd = (-1));
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-
