@@ -27,7 +27,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-08-06
- * \updates       2024-06-14
+ * \updates       2024-07-15
  * \license       See above.
  *
  */
@@ -80,7 +80,7 @@ inisection::specification mutes_flags_data
         {
             "load-mute-groups",
             {
-                options::code_null, "string", options::disabled,
+                options::code_null, options::kind::string, options::disabled,
                 "midi", "", false, false,
                 "From where to load store mute-groups.", false
             }
@@ -88,7 +88,7 @@ inisection::specification mutes_flags_data
         {
             "save-mute-groups",
             {
-                options::code_null, "string", options::disabled,
+                options::code_null, options::kind::string, options::disabled,
                 "midi", "", false, false,
                 "Where to store mute-groups.", false
             }
@@ -96,7 +96,7 @@ inisection::specification mutes_flags_data
         {
             "strip-empty",
             {
-                options::code_null, "boolean", options::disabled,
+                options::code_null, options::kind::boolean, options::disabled,
                 "true", "", false, false,
                 "Do not store all-zero mute-groups.", false
             }
@@ -104,7 +104,7 @@ inisection::specification mutes_flags_data
         {
             "mute-group-rows",
             {
-                options::code_null, "integer", options::disabled,
+                options::code_null, options::kind::integer, options::disabled,
                 "4<=4<=4", "", false, false,
                 "The rows of the mute-group set.", false
             }
@@ -112,7 +112,7 @@ inisection::specification mutes_flags_data
         {
             "mute-group-count",
             {
-                options::code_null, "integer", options::disabled,
+                options::code_null, options::kind::integer, options::disabled,
                 "32<=32<=32", "", false, false,
                 "The count of the mute-group set, sanity check.", false
             }
@@ -120,7 +120,7 @@ inisection::specification mutes_flags_data
         {
             "mute-group-selected",      /* "none" for -1?                   */
             {
-                options::code_null, "integer", options::disabled,
+                options::code_null, options::kind::integer, options::disabled,
                 "-1", "", false, false,
                 "The mute-group to apply at startup, if any.", false
             }
@@ -128,7 +128,7 @@ inisection::specification mutes_flags_data
         {
             "groups-format",
             {
-                options::code_null, "string", options::disabled,
+                options::code_null, options::kind::string, options::disabled,
                 "binary", "", false, false,
                 "The format of the mute-group statuses.", false
             }
@@ -136,7 +136,7 @@ inisection::specification mutes_flags_data
         {
             "toggle-active-only",
             {
-                options::code_null, "boolean", options::disabled,
+                options::code_null, options::kind::boolean, options::disabled,
                 "false", "", false, false,
                 "Toggle only the active patterns.", false
             }
@@ -156,7 +156,7 @@ inisection::specification mutes_groups_data
         {
             "count",
             {
-                options::code_null, "list", options::disabled,
+                options::code_null, options::kind::list, options::disabled,
                 "false", "", false, false,
                 "The number of mute-groups.", false
             }

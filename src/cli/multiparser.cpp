@@ -360,8 +360,8 @@ bool
 multiparser::lookup_names
 (
     const std::string & clioptname,         /* one or more characters   */
-    std::string & cfgtype,
-    std::string & cfgsection
+    std::string & configtype,
+    std::string & configsection
 )
 {
     bool result = ! clioptname.empty() && clioptname[0] != '-';
@@ -379,8 +379,8 @@ multiparser::lookup_names
         if (result)
         {
             auto d = nip->second;
-            cfgtype = d.config_type;
-            cfgsection = d.config_section;
+            configtype = d.config_type;
+            configsection = d.config_section;
         }
     }
     return result;

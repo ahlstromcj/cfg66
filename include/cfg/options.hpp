@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-03
+ * \updates       2024-07-15
  * \license       See above.
  *
  *  Supports variables of the following types:
@@ -87,6 +87,18 @@ namespace cfg
 {
 
 /**
+ *  Strings to represent the default configuration type and section name,
+ *  which indicate to use the stock default option set.
+ *
+ *  The loopup string indicated to ignore the configuration type and
+ *  section name and use a brute-force lookup. Simpler calls, but slower
+ *  access to an option.,
+ */
+
+static std::string global{""};
+static std::string lookup{"?"};
+
+/**
  *  Accessor function class.
  */
 
@@ -128,8 +140,7 @@ public:
 
     /**
      *  The kinds of options supported, mostly representing various
-     *  data-types. In the actual spec structures, these are defined
-     *  using their corresponding kind-to-string values.
+     *  data-types.
      */
 
     enum class kind
@@ -177,7 +188,7 @@ public:
 #endif
 
         char option_code;           /**< Optional single-character name.    */
-        std::string option_kind;    /**< Is it boolean, integer, string...? */
+        kind option_kind;           /**< Is it boolean, integer, string...? */
         bool option_cli_enabled;    /**< Normally true; false disables.     */
         std::string option_default; /**< Either a value or "true"/"false"   */
         std::string option_value;   /**< The actual value as parsed.        */
@@ -329,6 +340,11 @@ public:
         return ! empty();
     }
 
+    bool active (const spec & s)
+    {
+        return s.option_kind != kind::dummy;
+    }
+
     bool has_error () const
     {
         return m_has_error;
@@ -339,7 +355,7 @@ public:
         return m_error_msg;
     }
 
-    bool add (const options::option & op);
+    bool add (const option & op);
 
     /*
      * This yields infinite recursion, call the constructor endlessly.
@@ -368,6 +384,7 @@ public:
     void unmodify_all ();
     std::string help_line (const std::string & name) const;
     std::string help_line (const option & opt) const;
+    std::string color_help_line (const option & opt) const;
     std::string cli_help_text () const;
     std::string help_text () const;
     std::string setting_line (const std::string & name) const;
@@ -377,11 +394,20 @@ public:
     std::string description (const std::string & name) const;
     std::string description () const;
     std::string long_description (const option & op) const;
-    std::string value (const std::string & name) const;
     std::string default_value (const std::string & name) const;
+
+    /*
+     *  Value setters and getters.
+     */
+
+    std::string value (const std::string & name) const;
+    void value (const std::string & name, const std::string & value);
     bool boolean_value (const std::string & name) const;
+    void boolean_value (const std::string & name, bool value);
     int integer_value (const std::string & name) const;
+    void integer_value (const std::string & name, int value);
     float floating_value (const std::string & name) const;
+    void floating_value (const std::string & name, float value);
 
 public:
 
@@ -389,62 +415,63 @@ public:
 
     bool option_is_boolean (const spec & s) const
     {
-        return s.option_kind == "boolean";
+        return s.option_kind == kind::boolean;
     }
 
     bool option_is_int (const spec & s) const
     {
-        return s.option_kind == "integer";
+        return s.option_kind == kind::integer;
     }
 
     bool option_is_int_pair (const spec & s) const
     {
-        return s.option_kind == "intpair";
+        return s.option_kind == kind::intpair;
     }
 
     bool option_is_float (const spec & s) const
     {
-        return s.option_kind == "floating";
+        return s.option_kind == kind::floating;
     }
 
     bool option_is_float_pair (const spec & s) const
     {
-        return s.option_kind == "floatpair";
+        return s.option_kind == kind::floatpair;
     }
 
     bool option_is_number (const spec & s) const
     {
-        return s.option_kind == "integer" || s.option_kind == "floating";
+        return s.option_kind == kind::integer ||
+            s.option_kind == kind::floating;
     }
 
     bool option_is_string (const spec & s) const
     {
-        return s.option_kind == "string";
+        return s.option_kind == kind::string;
     }
 
     bool option_is_quotable (const spec & s) const
     {
-        return s.option_kind == "string" || s.option_kind == "filename";
+        return s.option_kind == kind::string || s.option_kind == kind::filename;
     }
 
     bool option_is_overflow (const spec & s) const
     {
-        return s.option_kind == "overflow";
+        return s.option_kind == kind::overflow;
     }
 
     bool option_is_filename (const spec & s) const
     {
-        return s.option_kind == "filename";
+        return s.option_kind == kind::filename;
     }
 
     bool option_is_list (const spec & s) const
     {
-        return s.option_kind == "list";
+        return s.option_kind == kind::list;
     }
 
     bool option_is_recents (const spec & s) const
     {
-        return s.option_kind == "recents";
+        return s.option_kind == kind::recents;
     }
 
     /**
@@ -454,7 +481,39 @@ public:
 
     bool option_is_section (const spec & s) const
     {
-        return s.option_kind == "section";
+        return s.option_kind == kind::section;
+    }
+
+    bool option_is_dummy (const spec & s) const
+    {
+        return s.option_kind == kind::dummy;
+    }
+
+    bool option_exists (const spec & s) const
+    {
+        return s.option_kind != kind::dummy;
+    }
+
+    bool option_exists (container::const_iterator oit) const
+    {
+        return oit != m_option_pairs.end();
+    }
+
+    /**
+     *  Indicates an option is built in.  Sometimes we don't want to
+     *  see them, particularly in debug output.
+     */
+
+    bool
+    is_option_built (const option & opt) const
+    {
+        return opt.second.option_built_in;
+    }
+
+    bool
+    is_option_built (const spec & s) const
+    {
+        return s.option_built_in;
     }
 
     std::string help_line (const spec & op) const;
@@ -469,16 +528,6 @@ public:
         const std::string & name,
         float & minimum, float & maximum
     ) const;
-
-    bool option_exists (const spec & s) const
-    {
-        return s.option_kind != "dummy";
-    }
-
-    bool option_exists (container::const_iterator oit) const
-    {
-        return oit != m_option_pairs.end();
-    }
 
     const spec & find_spec (const std::string & name) const;
 
@@ -514,9 +563,9 @@ private:
  * Free functions
  *------------------------------------------------------------------------*/
 
-extern options::container & stock_options ();
 extern bool almost_equal (float ftarget, float fsource, int ulp = 7);
 extern bool approximates (float ftarget, float fsource, float precision = 0.0);
+extern options::container & stock_options ();
 extern options::option make_option
 (
     const std::string & name,

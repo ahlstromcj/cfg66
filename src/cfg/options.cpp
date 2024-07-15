@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-08
+ * \updates       2024-07-15
  * \license       See above.
  *
  *  The cli::options class provides a way to hold the state of command-line
@@ -33,8 +33,8 @@
  *
  * Option kinds:
  *
- *  Note that the string option_kind is somewhat free-form. It should
- *  be similar to the name of a C/C++ data type:
+ *  Note that the string version of option_kind is somewhat free-form.
+ *  It should be similar to the name of a C/C++ data type:
  *
  *      -   "boolean".
  *          "valuename = [ true | false ]"
@@ -156,6 +156,7 @@
 #include <sstream>                      /* std::ostringstream               */
 
 #include "c_macros.h"                   /* not_nullptr()                    */
+#include "cfg/appinfo.hpp"              /* cfg::level_color()               */
 #include "cfg/options.hpp"              /* cfg::options class               */
 #include "util/strfunctions.hpp"        /* util::string_to_int() etc.       */
 
@@ -170,7 +171,7 @@ namespace cfg
 
 options::spec::spec () :
     option_code         (0),
-    option_kind         ("dummy"),
+    option_kind         (options::kind::dummy),
     option_cli_enabled  (false),
     option_default      (),
     option_value        (),
@@ -187,12 +188,12 @@ options::spec::spec () :
 
 options::spec::spec
 (
-    char code, const char * kind,
+    char code, options::kind k,
     bool enabled, const char * defalt, const char * value,
     bool modified, const char * desc
 ) :
     option_code         (code),
-    option_kind         (kind),
+    option_kind         (k),
     option_cli_enabled  (enabled),
     option_default      (defalt),
     option_value        (value),
@@ -351,6 +352,7 @@ bool
 options::verify () const
 {
     bool result = true;
+    m_code_list.clear();
     for (const auto & op : option_pairs())
     {
         char c = char(op.second.option_code);
@@ -770,7 +772,7 @@ options::option_is_boolean (const std::string & name) const
     bool result = false;
     auto opt = find_match(name);
     if (option_exists(opt))
-        result = opt->second.option_kind == "boolean";
+        result = opt->second.option_kind == kind::boolean;
 
     return result;
 }
@@ -800,9 +802,9 @@ options::help_line (const option & opt) const
         else
             ost << " -" << code << ",";
 
-        if (op.option_kind != "boolean")    /* i.e. it is not a flag option */
+        if (op.option_kind != kind::boolean)    /* i.e. not a flag option   */
         {
-            if (op.option_kind == "overflow")
+            if (op.option_kind == kind::overflow)
                 name += " x[=]v";
             else
                 name += "=v";
@@ -814,6 +816,74 @@ options::help_line (const option & opt) const
             desc += " [" + op.option_default + "]";
 
 
+        desc = util::hanging_word_wrap
+        (
+            desc, options::hanging_width, options::terminal_width
+        );
+        ost << std::left << desc;
+        result = ost.str();
+    }
+    return result;
+}
+
+/**
+ *  The same as help_line(), but adds color to the options themselves.
+ *  The result should look similar to a man page.
+ *
+ *  level_color(0) as defined in appinfo is the normal foreground/text terminal
+ *  color.
+ *
+ *  level_color(2) as defined in appinfo is "yellow".
+ *
+ *  level_color(4) as defined in appinfo is "blue".
+ */
+
+std::string
+options::color_help_line (const option & opt) const
+{
+    std::string result;
+    if (opt.second.option_cli_enabled)
+    {
+        const spec & op = opt.second;
+        std::ostringstream ost;
+        char code = op.option_code;
+        std::string name = opt.first;
+        int count = 18;
+        if (code == 0)
+        {
+            code = ' ';
+            count = 22;
+        }
+        else
+        {
+            ost
+                << " " << level_color(4) << "-" << code
+                << level_color(0) << ","
+                ;
+        }
+
+        if (op.option_kind != kind::boolean)    /* i.e. not a flag option   */
+        {
+            if (op.option_kind == kind::overflow)
+                name += " x[=]v";
+            else
+                name += "=v";
+        }
+        ost
+            << " " << level_color(4) << "--"
+            << std::setw(count) << std::left << name
+            << level_color(0)
+            ;
+
+        std::string desc = op.option_desc;
+        if (code != 'h' && code != 'v')
+        {
+            desc += " [";
+            desc += level_color(2);
+            desc += op.option_default;
+            desc += level_color(0);
+            desc += "]";
+        }
         desc = util::hanging_word_wrap
         (
             desc, options::hanging_width, options::terminal_width
@@ -844,21 +914,27 @@ std::string
 options::cli_help_text () const
 {
     std::string result;
-    if (option_pairs().size() > 0)
+    if (! option_pairs().empty())
     {
+        bool finish = false;                    /* at least 1 cli-enabled?  */
         for (const auto & op : option_pairs())
         {
             if (op.second.option_cli_enabled)
             {
-                std::string h = help_line(op);
+                bool showcolor = is_a_tty();
+                std::string h = showcolor ?
+                    color_help_line(op) : help_line(op) ;
+
                 if (! h.empty())
                 {
                     result += h;
                     result += "\n";
+                    finish = true;
                 }
             }
         }
-        result += "\n";
+        if (finish)
+            result += "\n";
     }
     return result;
 }
@@ -1079,7 +1155,7 @@ options::long_description (const option & opt) const
     std::string result;
     const spec & op = opt.second;
     std::string value = "\"" + op.option_value + "\"";
-    std::string kindstr = op.option_kind;           /* kind_to_string()?    */
+    std::string kindstr = kind_to_string(op.option_kind);
     std::ostringstream ost;
     ost
         << std::setw(16) << std::left << opt.first
@@ -1101,6 +1177,22 @@ options::long_description (const option & opt) const
     result = ost.str();
     if (! op.option_cli_enabled)
         result += " non-CLI";
+
+    return result;
+}
+
+/**
+ *  Similar to value(), but returns the default value if the long name is
+ *  found.
+ */
+
+std::string
+options::default_value (const std::string & name) const
+{
+    std::string result;
+    auto opt = find_match(name);
+    if (option_exists(opt))
+        result = opt->second.option_default;
 
     return result;
 }
@@ -1130,31 +1222,24 @@ options::value (const std::string & name) const
 }
 
 /**
- *  Similar to value(), but returns the default value if the long name is
- *  found.
+ *  Note that this function can change any kind of value, since the
+ *  values of all type are stored as strings.
+ *
+ *  This function is not used when setting values from the command line.
+ *  It is for the app itself to use.
  */
 
-std::string
-options::default_value (const std::string & name) const
+void
+options::value (const std::string & name, const std::string & value)
 {
-    std::string result;
-    auto opt = find_match(name);
-    if (option_exists(opt))
-        result = opt->second.option_default;
-
-    return result;
+    bool ok = change_value(name, value);
+    if (! ok)
+    {
+#if defined PLATFORM_DEBUG
+        printf("Could not change option '%s'\n", name.c_str());
+#endif
+    }
 }
-
-/**
- *  Indicates an option is built in.  Sometimes we don't want to
- *  see them, particularly in debug output.
-
-bool
-options::built_in_option (const option & opt) const
-{
-    return opt.second.option_built_in;
-}
- */
 
 /**
  *  Looks up the value string, assuming this option is boolean, and
@@ -1167,6 +1252,19 @@ options::boolean_value (const std::string & name) const
     return value(name) == "true";
 }
 
+void
+options::boolean_value (const std::string & name, bool value)
+{
+    std::string bvalue = value ? "true" : "false" ;
+    bool ok = change_value(name, bvalue);
+    if (! ok)
+    {
+#if defined PLATFORM_DEBUG
+        printf("Could not change option '%s'\n", name.c_str());
+#endif
+    }
+}
+
 /**
  *  Looks up the value string, assuming this option is integer, and
  *  return its option-value string as converted to an integer.
@@ -1176,6 +1274,43 @@ int
 options::integer_value (const std::string & name) const
 {
     return util::string_to_int(value(name));
+}
+
+void
+options::integer_value (const std::string & name, int value)
+{
+    std::string ivalue = util::int_to_string(value);
+    bool ok = change_value(name, ivalue);
+    if (! ok)
+    {
+#if defined PLATFORM_DEBUG
+        printf("Could not change option '%s'\n", name.c_str());
+#endif
+    }
+}
+
+/**
+ *  Looks up the value string, assuming this option is floating, and
+ *  return its option-value string as converted to a float.
+ */
+
+float
+options::floating_value (const std::string & name) const
+{
+    return util::string_to_float(value(name));
+}
+
+void
+options::floating_value (const std::string & name, float value)
+{
+    std::string dvalue = util::double_to_string(value);
+    bool ok = change_value(name, dvalue);
+    if (! ok)
+    {
+#if defined PLATFORM_DEBUG
+        printf("Could not change option '%s'\n", name.c_str());
+#endif
+    }
 }
 
 /**
@@ -1338,17 +1473,6 @@ options::floating_value_range
     return result;
 }
 
-/**
- *  Looks up the name and returns the option value under the assumption that
- *  the option is floating.
- */
-
-float
-options::floating_value (const std::string & name) const
-{
-    return util::string_to_float(value(name));
-}
-
 /*------------------------------------------------------------------------
  * static options functions
  *------------------------------------------------------------------------*/
@@ -1452,7 +1576,7 @@ stock_options ()
         {
             "description",
             {
-                options::code_null, "boolean", options::disabled,
+                options::code_null, options::kind::boolean, options::disabled,
                 "false", "", false, false,
                 "Flags application to show descriptive information.", true
             }
@@ -1460,7 +1584,7 @@ stock_options ()
         {
             "help",
             {
-                'h', "boolean", options::enabled,
+                'h', options::kind::boolean, options::enabled,
                 "false", "", false, false,
                 "Show this help text.", true
             }
@@ -1468,7 +1592,7 @@ stock_options ()
         {
             "inspect",
             {
-                options::code_null, "boolean", options::enabled,
+                options::code_null, options::kind::boolean, options::enabled,
                 "false", "", false, false,
                 "This is a trouble-shooting option.", true
             }
@@ -1476,7 +1600,7 @@ stock_options ()
         {
             "investigate",
             {
-                options::code_null, "boolean", options::enabled,
+                options::code_null, options::kind::boolean, options::enabled,
                 "false", "", false, false,
                 "This is another trouble-shooting option.", true
             }
@@ -1484,7 +1608,7 @@ stock_options ()
         {
             "log",
             {
-                options::code_null, "string", options::enabled,
+                options::code_null, options::kind::filename, options::enabled,
                 "", "", false, false,
                 "Specifies use of a log file." /* --option log[=file] */, true
             }
@@ -1492,7 +1616,7 @@ stock_options ()
         {
             "option",
             {
-                options::code_null, "overflow", options::enabled,
+                options::code_null, options::kind::overflow, options::enabled,
                 "false", "", false, false,
                 "Handles 'overflow' options (no character code).", true
             }
@@ -1500,7 +1624,7 @@ stock_options ()
         {
             "verbose",
             {
-                'V', "boolean", options::enabled,
+                'V', options::kind::boolean, options::enabled,
                 "false", "", false, false,
                 "Show extra information.", true
             }
@@ -1508,7 +1632,7 @@ stock_options ()
         {
             "version",
             {
-                'v', "boolean", options::enabled,
+                'v', options::kind::boolean, options::enabled,
                 "false", "", false, false,
                 "Show version information.", true
             }

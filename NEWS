@@ -1,10 +1,10 @@
 NEWS for Cfg66 0.2
 Chris Ahlstrom
-2024-04-15 to 2024-07-02
+2024-04-15 to 2024-07-15
 
 # Changelog
 
-## [0.2] - 2024-07-02
+## [0.2] - 2024-07-15
 
 ### Added
 
@@ -39,6 +39,11 @@ Chris Ahlstrom
 
 ### Changed
 
+- Changed the type of options\_kind from std::string to cfg::options::kind.
+  This change required all cfg::options::spec initializers to be modified.
+  Vim users can use this command on each affected line:
+  :.s/"\(.*\)"/options::kind::\1/   and then use the & command to repeat
+  that for each affected line.
 - Changed the new inimap class name to inimanager.
 - Added "no-inline-functions" to meson.build; does not work, though.
 - No changes unrelated to util::bytevector, except for updating the

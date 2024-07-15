@@ -27,7 +27,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-08-04
- * \updates       2024-06-14
+ * \updates       2024-07-15
  * \license       See above.
  *
  *
@@ -103,7 +103,7 @@ inisection::specification usr_interface_data
         {
             "enable-learn-confirmation",
             {
-                options::code_null, "boolean", options::disabled,
+                options::code_null, options::kind::boolean, options::disabled,
                 "true", "", false, false,
                 "Show the message box for a successful learn.", false
             }
@@ -111,7 +111,7 @@ inisection::specification usr_interface_data
         {
             "global-seq-feature",
             {
-                options::code_null, "boolean", options::disabled,
+                options::code_null, options::kind::boolean, options::disabled,
                 "false", "", false, false,
                 "Store the pattern features in the global SeqSpec.", false
             }
@@ -119,7 +119,7 @@ inisection::specification usr_interface_data
         {
             "mainwnd-rows",
             {
-                options::code_null, "integer", options::disabled,
+                options::code_null, options::kind::integer, options::disabled,
                 "4", "", false, false,
                 "Number of rows in a set; use --set-size to change.", false
             }
@@ -127,7 +127,7 @@ inisection::specification usr_interface_data
         {
             "mainwnd-columns",
             {
-                options::code_null, "integer", options::disabled,
+                options::code_null, options::kind::integer, options::disabled,
                 "8", "", false, false,
                 "Number of columns in a set; use --set-size to change.", false
             }
@@ -135,7 +135,7 @@ inisection::specification usr_interface_data
         {
             "mainwnd-spacing",
             {
-                options::code_null, "integer", options::disabled,
+                options::code_null, options::kind::integer, options::disabled,
                 "2", "", false, false,
                 "Number of pixels between pattern buttons.", false
             }
@@ -143,7 +143,7 @@ inisection::specification usr_interface_data
         {
             "window-scale",
             {
-                options::code_null, "floating", options::disabled,
+                options::code_null, options::kind::floating, options::disabled,
                 "1.0", "", false, false,
                 "X-axis scaling of the main window; change with --scale.",
                 false
@@ -152,7 +152,7 @@ inisection::specification usr_interface_data
         {
             "window-scale-y",
             {
-                options::code_null, "floating", options::disabled,
+                options::code_null, options::kind::floating, options::disabled,
                 "1.0", "", false, false,
                 "Y-axis scaling of the main window; change with --scale.",
                 false
@@ -161,7 +161,7 @@ inisection::specification usr_interface_data
         {
             "default-zoom",
             {
-                options::code_null, "integer", options::disabled,
+                options::code_null, options::kind::integer, options::disabled,
                 "2", "", false, false,
                 "The default starting horizontal zoom.", false
             }
@@ -169,7 +169,7 @@ inisection::specification usr_interface_data
         {
             "scale",
             {
-   /* TODO */   options::code_null, "floatpair", options::enabled,
+   /* TODO */   options::code_null, options::kind::floatpair, options::enabled,
                 "1.0x1.0", "", false, false,
                 "The X,Y scaling of the application window size.", false
             }
@@ -177,7 +177,7 @@ inisection::specification usr_interface_data
         {
             "window-redraw-rate",
             {
-                options::code_null, "integer", options::disabled,
+                options::code_null, options::kind::integer, options::disabled,
 #if defined PLATFORM_WINDOWS
                 "25", "", false, false,
 #else
@@ -189,7 +189,7 @@ inisection::specification usr_interface_data
         {
             "inverse-colors",
             {
-                'K', "boolean", options::enabled,
+                'K', options::kind::boolean, options::enabled,
                 "false", "false", false, false,
                 "Invert the colors of the panes and piano rolls.", false
             }
@@ -197,7 +197,7 @@ inisection::specification usr_interface_data
         {
             "dark-theme",
             {
-   /* TODO */   options::code_null, "boolean", options::enabled,
+   /* TODO */   options::code_null, options::kind::boolean, options::enabled,
                 "false", "false", false, false,
                 "Compensate for a dark desktop theme.", false
             }
@@ -205,7 +205,7 @@ inisection::specification usr_interface_data
         {
             "progress-bar-thick",
             {
-                options::code_null, "boolean", options::disabled,
+                options::code_null, options::kind::boolean, options::disabled,
                 "false", "false", false, false,
                 "Enhance the progress bar and the slot font.", false
             }
@@ -213,7 +213,7 @@ inisection::specification usr_interface_data
         {
             "swap-coordinates",
             {
-                options::code_null, "boolean", options::disabled,
+                options::code_null, options::kind::boolean, options::disabled,
                 "false", "false", false, false,
                 "Make pattern number vary fastest by columns.", false
             }
@@ -234,7 +234,7 @@ inisection::specification usr_ppqn_data
         {
             "ppqn",                     /* replaces"default-ppqn"           */
             {
-                'q', "integer", options::disabled,
+                'q', options::kind::integer, options::disabled,
                 "192", "", false, false,
                 "Set the default PPQN.", false
             }
@@ -242,7 +242,7 @@ inisection::specification usr_ppqn_data
         {
             "use-file-ppqn",
             {
-                options::code_null, "boolean", options::disabled,
+                options::code_null, options::kind::boolean, options::disabled,
                 "true", "", false, false,
                 "Use the PPQN stored in the MIDI file.", false
             }
@@ -279,7 +279,7 @@ inisection::specification usr_midi_data
         {
             "convert-to-smf-1",
             {
-                options::code_null, "boolean", options::disabled,
+                options::code_null, options::kind::boolean, options::disabled,
                 "true", "", false, false,
                 "Convert SMF 0 files to SMF 1.", false
             }
@@ -287,7 +287,7 @@ inisection::specification usr_midi_data
         {
             "beats-per-bar",
             {
-                options::code_null, "integer", options::disabled,
+                options::code_null, options::kind::integer, options::disabled,
                 "4", "", false, false,
                 "Set the default beats/bar.", false
             }
@@ -295,7 +295,7 @@ inisection::specification usr_midi_data
         {
             "beat-width",
             {
-                options::code_null, "integer", options::disabled,
+                options::code_null, options::kind::integer, options::disabled,
                 "4", "", false, false,
                 "Set the default beat length.", false
             }
@@ -303,7 +303,7 @@ inisection::specification usr_midi_data
         {
             "beats-per-minute",
             {
-                options::code_null, "floating", options::disabled,
+                options::code_null, options::kind::floating, options::disabled,
                 "120.0", "", false, false,
                 "Set the default beats/minute.", false
             }
@@ -311,7 +311,7 @@ inisection::specification usr_midi_data
         {
             "bpm-precision",
             {
-                options::code_null, "integer", options::disabled,
+                options::code_null, options::kind::integer, options::disabled,
                 "0<=0<=2", "", false, false,
                 "Set precision of beats/minute display and changes.", false
             }
@@ -319,7 +319,7 @@ inisection::specification usr_midi_data
         {
             "bpm-step-increment",
             {
-                options::code_null, "floating", options::disabled,
+                options::code_null, options::kind::floating, options::disabled,
                 "1.0", "", false, false,
                 "Set small increment of beats/minute.", false
             }
@@ -327,7 +327,7 @@ inisection::specification usr_midi_data
         {
             "bpm-page-increment",
             {
-                options::code_null, "floating", options::disabled,
+                options::code_null, options::kind::floating, options::disabled,
                 "10.0", "", false, false,
                 "Set large increment of beats/minute.", false
             }
@@ -335,7 +335,7 @@ inisection::specification usr_midi_data
         {
             "bpm-minimum",
             {
-                options::code_null, "floating", options::disabled,
+                options::code_null, options::kind::floating, options::disabled,
                 "2.0", "", false, false,
                 "Set minimum value of beats/minute.", false
             }
@@ -343,7 +343,7 @@ inisection::specification usr_midi_data
         {
             "bpm-maximum",
             {
-                options::code_null, "floating", options::disabled,
+                options::code_null, options::kind::floating, options::disabled,
                 "600.0", "", false, false,
                 "Set maximum value of beats/minute.", false
             }
@@ -351,7 +351,7 @@ inisection::specification usr_midi_data
         {
             "buss-override",            /* IDEA replace -1 by "none"|"n/a"  */
             {
-                options::code_null, "integer", options::disabled,
+                options::code_null, options::kind::integer, options::disabled,
                 "-1", "", false, false,
                 "Modify each pattern to use the same bus/port.", false
             }
@@ -359,7 +359,7 @@ inisection::specification usr_midi_data
         {
             "velocity-override",        /* IDEA replace -1 by "none"|"n/a"  */
             {
-                options::code_null, "integer", options::disabled,
+                options::code_null, options::kind::integer, options::disabled,
                 "-1", "", false, false,
                 "Force notes to have a given velocity.", false
             }
@@ -383,7 +383,7 @@ inisection::specification usr_options_data
         {
             "daemonize",
             {
-                options::code_null, "boolean", options::disabled,
+                options::code_null, options::kind::boolean, options::disabled,
                 "false", "", false, false,
                 "Use the PPQN stored in the MIDI file.", false
             }
@@ -391,7 +391,7 @@ inisection::specification usr_options_data
         {
             "pdf-viewer",               /* need to make OS-sprecific        */
             {
-                options::code_null, "filename", options::disabled,
+                options::code_null, options::kind::filename, options::disabled,
 #if defined PLATFORM_WINDOWS
                 "evince.exe", "", false, false,
 #else
@@ -403,7 +403,7 @@ inisection::specification usr_options_data
         {
             "browser",                  /* need to make OS-sprecific        */
             {
-                options::code_null, "filename", options::disabled,
+                options::code_null, options::kind::filename, options::disabled,
 #if defined PLATFORM_WINDOWS
                 "edge.exe", "", false, false,
 #else
@@ -457,7 +457,7 @@ inisection::specification usr_tweaks_data
         {
             "key-height",
             {
-                options::code_null, "integer", options::disabled,
+                options::code_null, options::kind::integer, options::disabled,
                 "10", "", false, false,
                 "Sets the initial height of piano keys and grid (pixels).",
                 false
@@ -466,7 +466,7 @@ inisection::specification usr_tweaks_data
         {
             "key-view",
             {
-                options::code_null, "string", options::disabled,
+                options::code_null, options::kind::string, options::disabled,
                 "octave-letters", "", false, false,
                 "Sets the initial representation of the piano keys.",
                 false
@@ -475,7 +475,7 @@ inisection::specification usr_tweaks_data
         {
             "note-resume",
             {
-                options::code_null, "boolean", options::disabled,
+                options::code_null, options::kind::boolean, options::disabled,
                 "false", "", false, false,
                 "Enables the 'resume note on' feature.", false
             }
@@ -483,7 +483,7 @@ inisection::specification usr_tweaks_data
         {
             "style-sheet-active",
             {
-                options::code_null, "boolean", options::disabled,
+                options::code_null, options::kind::boolean, options::disabled,
                 "false", "", false, false,
                 "Enables usage of a Qt style-sheet.", false
             }
@@ -491,7 +491,7 @@ inisection::specification usr_tweaks_data
         {
             "style-sheet",
             {
-                options::code_null, "filename", options::disabled,
+                options::code_null, options::kind::filename, options::disabled,
                 "flat-rounded.qss", "", false, false,
                 "Enables usage of a Qt style-sheet.", false
             }
@@ -499,7 +499,7 @@ inisection::specification usr_tweaks_data
         {
             "fingerprint-size",
             {
-  /* TODO */    options::code_null, "integer", options::enabled,
+  /* TODO */    options::code_null, options::kind::integer, options::enabled,
                 "32", "", false, false,
                 "Set the number of events shown in grid slot (0=all).",
                 false
@@ -508,7 +508,7 @@ inisection::specification usr_tweaks_data
         {
             "progress-box-width",
             {
-                options::code_null, "floating", options::disabled,
+                options::code_null, options::kind::floating, options::disabled,
                 "0.8", "", false, false,
                 "Width fraction of the grid slot progress box.", false
             }
@@ -516,7 +516,7 @@ inisection::specification usr_tweaks_data
         {
             "progress-box-height",
             {
-                options::code_null, "floating", options::disabled,
+                options::code_null, options::kind::floating, options::disabled,
                 "0.3", "", false, false,
                 "Height fraction of the grid slot progress box.", false
             }
@@ -524,7 +524,7 @@ inisection::specification usr_tweaks_data
         {
             "progress-box-shown",
             {
-                options::code_null, "boolean", options::disabled,
+                options::code_null, options::kind::boolean, options::disabled,
                 "true", "", false, false,
                 "Show the progress box in grid slots.", false
             }
@@ -532,7 +532,7 @@ inisection::specification usr_tweaks_data
         {
             "progress-note-min",
             {
-                options::code_null, "integer", options::disabled,
+                options::code_null, options::kind::integer, options::disabled,
                 "0", "", false, false,
                 "Vertical note minimum scaling in the progress box.", false
             }
@@ -540,7 +540,7 @@ inisection::specification usr_tweaks_data
         {
             "progress-note-min",
             {
-                options::code_null, "integer", options::disabled,
+                options::code_null, options::kind::integer, options::disabled,
                 "127", "", false, false,
                 "Vertical note maximum scaling in the progress box.", false
             }
@@ -548,7 +548,7 @@ inisection::specification usr_tweaks_data
         {
             "lock-main-window",
             {
-                options::code_null, "boolean", options::disabled,
+                options::code_null, options::kind::boolean, options::disabled,
                 "false", "", false, false,
                 "Prevent resizing of the main window.", false
             }
@@ -570,7 +570,7 @@ inisection::specification usr_session_data
         {
             "session",
             {
-                options::code_null, "string", options::disabled,
+                options::code_null, options::kind::string, options::disabled,
                 "non", "", false, false,
                 "Specify the putative session manager.", false
             }
@@ -578,7 +578,7 @@ inisection::specification usr_session_data
         {
             "url",
             {
-                options::code_null, "string", options::disabled,
+                options::code_null, options::kind::string, options::disabled,
                 "", "", false, false,
                 "Specify the URL for the session manager.", false
             }
@@ -586,7 +586,7 @@ inisection::specification usr_session_data
         {
             "visibility",
             {
-                options::code_null, "boolean", options::disabled,
+                options::code_null, options::kind::boolean, options::disabled,
                 "true", "", false, false,
                 "Holds the current state of window at startup.", false
             }
@@ -609,7 +609,7 @@ inisection::specification usr_pattern_data
         {
             "armed",
             {
-                options::code_null, "boolean", options::disabled,
+                options::code_null, options::kind::boolean, options::disabled,
                 "false", "", false, false,
                 "Startup state of patterns in pattern editor.", false
             }
@@ -617,7 +617,7 @@ inisection::specification usr_pattern_data
         {
             "thru`",
             {
-                options::code_null, "boolean", options::disabled,
+                options::code_null, options::kind::boolean, options::disabled,
                 "false", "", false, false,
                 "Enable MIDI Thru in pattern editor.", false
             }
@@ -625,7 +625,7 @@ inisection::specification usr_pattern_data
         {
             "record`",
             {
-                options::code_null, "boolean", options::disabled,
+                options::code_null, options::kind::boolean, options::disabled,
                 "false", "", false, false,
                 "Enable Record in pattern editor.", false
             }
@@ -633,7 +633,7 @@ inisection::specification usr_pattern_data
         {
             "qrecord`",
             {
-                options::code_null, "boolean", options::disabled,
+                options::code_null, options::kind::boolean, options::disabled,
                 "false", "", false, false,
                 "Enable Quantized Record in pattern editor.", false
             }
@@ -641,7 +641,7 @@ inisection::specification usr_pattern_data
         {
             "record-style",
             {
-                options::code_null, "string", options::disabled,
+                options::code_null, options::kind::string, options::disabled,
                 "non", "", false, false,
                 "Specify the recording style in pattern editor.", false
             }
@@ -649,7 +649,7 @@ inisection::specification usr_pattern_data
         {
             "wrap-around`",
             {
-                options::code_null, "boolean", options::disabled,
+                options::code_null, options::kind::boolean, options::disabled,
                 "false", "", false, false,
                 "Enable wrap-around recording in pattern editor.", false
             }
@@ -689,8 +689,8 @@ inisections::specification usr_data
 #endif      // CFG66_CFG_USR_SPEC_HPP
 
 /*
-* usr_spec.hpp
-*
-* vim: sw=4 ts=4 wm=4 et ft=cpp
-*/
+ * usr_spec.hpp
+ *
+ * vim: sw=4 ts=4 wm=4 et ft=cpp
+ */
 

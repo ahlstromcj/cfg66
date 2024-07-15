@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-07-08
+ * \updates       2024-07-15
  * \license       See above.
  *
  *  See the inisections class and modules for details.
@@ -246,7 +246,7 @@ inisection::specification inifile_cfg66_data
         {
             "config-type",
             {
-                options::code_null, "string", options::disabled,
+                options::code_null, options::kind::string, options::disabled,
                 "session", "", false, false,
                 "The type of configuration file.", false
             }
@@ -254,7 +254,7 @@ inisection::specification inifile_cfg66_data
         {
             "version",
             {
-                options::code_null, "integer", options::disabled,
+                options::code_null, options::kind::integer, options::disabled,
                 "0", "", false, false,
                 "Configuration file version.", false
             }
@@ -273,7 +273,7 @@ inisection::specification inifile_comment_data
         {
             "comment",
             {
-                options::code_null, "section", options::disabled,
+                options::code_null, options::kind::section, options::disabled,
                 "Add your comment block here.", "",
                 false, false, "Configuration file user comments.", false
             }

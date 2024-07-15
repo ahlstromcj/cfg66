@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-01-15
+ * \updates       2024-07-15
  * \license       See above.
  *
  */
@@ -77,11 +77,14 @@ create_option_list (const options_spec * opts, int optcount)
         for (int i = 0; i < optcount; ++i)
         {
             const options_spec * opts_ptr = &opts[i];
+            cfg::options::kind okind =
+                static_cast<cfg::options::kind>(opts_ptr->option_kind);
+
 #if defined USER_CONSTRUCTOR_FOR_OPTIONS_SPEC
             cfg::options::spec os
             (
                 opts_ptr->option_name, opts_ptr->option_code,
-                opts_ptr->option_kind, opts_ptr->option_cli_enabled,
+                okind, opts_ptr->option_cli_enabled,
                 opts_ptr->option_default, opts_ptr->option_value,
                 opts_ptr->option_modified, opts_ptr->option_desc
             );
@@ -93,7 +96,7 @@ create_option_list (const options_spec * opts, int optcount)
             cfg::options::spec os;
             std::string name = opts_ptr->option_name;
             os.option_code = opts_ptr->option_code;
-            os.option_kind = opts_ptr->option_kind;
+            os.option_kind = okind;
             os.option_cli_enabled = opts_ptr->option_cli_enabled;
             os.option_default = opts_ptr->option_default;
             os.option_value = opts_ptr->option_value;

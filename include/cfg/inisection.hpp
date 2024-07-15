@@ -22,13 +22,13 @@
 /**
  * \file          inisection.hpp
  *
- *      Provides a way to hold all options from multiple INI-style files and
- *      multiple INI file sections.
+ *      Provides a way to hold all options from a single INI-style file
+ *      section.
  *
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-07-06
+ * \updates       2024-07-14
  * \license       See above.
  *
  *  We want to provide a list of { filename, sectionname } pairs, and
@@ -39,10 +39,6 @@
  *  cfg::options objects.
  *
  *  First, the long option list is created. Then, we iterated ....
- *
- *  Classes supported:
- *
- *      -   inisection
  */
 
 #include <functional>                   /* std::reference_wrapper<>         */
@@ -65,6 +61,9 @@ namespace cfg
 
 class inisection
 {
+
+    friend class inimanager;
+    friend class inisections;
 
 public:
 
@@ -99,9 +98,9 @@ private:
      *  such as ".rc", ".usr", etc., minus the period.
      *
      *  If empty, there is no source file associated with this option, which
-     *  should be uncommon. If equal to "" (empty), this inisection contains
-     *  only the internal stock options, which is a list defined in the
-     *  cfg::options module.
+     *  should be uncommon. If equal to "" (empty, value cfg::global), this
+     *  inisection contains only the internal stock options, which is a list
+     *  defined in the cfg::options module.
      */
 
     std::string m_config_type;
@@ -110,8 +109,9 @@ private:
      *  The name of the INI section. It must include the "[]" wrapping,
      *  as in "[Cfg66]" or "[directories]".
      *
-     *  If equal to "" (empty), this inisection contains only the internal
-     *  stock options, which is a list defined in the cfg::options module.
+     *  If equal to "" (empty, value cfg::global), this inisection contains
+     *  only the internal stock options, which is a list defined in the
+     *  cfg::options module.
      */
 
     std::string m_name;
@@ -159,7 +159,7 @@ public:
 
     bool inactive () const
     {
-        return m_option_set.empty();        /* m_config_type == ""          */
+        return m_option_set.empty();
     }
 
     bool active () const
@@ -167,14 +167,9 @@ public:
         return ! inactive();
     }
 
-    /*
-     *  Warning. adding a cfg::options reference directoly causes a
-     *  temporary to be created, and it leads to recursion.
-     */
-
-    bool add_options (const options & opts)         /* add many options     */
+    bool add_options (const options::container & specs)
     {
-        return m_option_set.add(opts.option_pairs());
+        return m_option_set.add(specs);
     }
 
     /*
@@ -193,6 +188,11 @@ public:
             m_option_names.push_back(optionname);
 
         return result;
+    }
+
+    const std::string & config_type () const
+    {
+        return m_config_type;
     }
 
     const std::string & name () const
@@ -224,6 +224,8 @@ public:
     {
         return m_option_set;
     }
+
+protected:
 
     /*
      *  These will return a dummy (empty inisections) reference if not found.

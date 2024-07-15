@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-07-25
- * \updates       2024-07-06
+ * \updates       2024-07-15
  * \license       See above.
  *
  *  Rationale:
@@ -128,7 +128,7 @@ static cfg::options::container s_test_options
     {
         "test",
         {
-            'a', "boolean", cfg::options::enabled,
+            'a', cfg::options::kind::boolean, cfg::options::enabled,
             "false", "false", false, false,
             "If specified, testing!", false
         }
@@ -178,7 +178,7 @@ static cfg::inisection::specification s_simple_ini_spec
         {
             "boolean-value",
             {
-                'b', "boolean", cfg::options::enabled,
+                'b', cfg::options::kind::boolean, cfg::options::enabled,
                 "false", "", false, false,
                 "Boolean test option. Booleans must have either the value "
                     "'true' or 'false'. (We made this description long "
@@ -190,7 +190,7 @@ static cfg::inisection::specification s_simple_ini_spec
         {
             "filename-value",
             {
-                'f', "filename", cfg::options::enabled,
+                'f', cfg::options::kind::filename, cfg::options::enabled,
                 "~/.config/seq66v2/seq66v2.session", "", false, false,
                 "This is a filename test option with a bogus dummy value. "
                     "The circumflex represent the user's HOME + configuration "
@@ -201,7 +201,7 @@ static cfg::inisection::specification s_simple_ini_spec
         {
             "floating-value",
             {
-                'd', "floating", cfg::options::enabled,
+                'd', cfg::options::kind::floating, cfg::options::enabled,
                 "0.0", "3.141592653", false, false,
                 "Floating-point (or double) test option.", false
             }
@@ -209,7 +209,7 @@ static cfg::inisection::specification s_simple_ini_spec
         {
             "integer-value",
             {
-                'i', "integer", cfg::options::enabled,
+                'i', cfg::options::kind::integer, cfg::options::enabled,
                 "0", "549", false, false,
                 "Integer test option.", false
             }
@@ -217,7 +217,7 @@ static cfg::inisection::specification s_simple_ini_spec
         {
             "count",
             {
-                'L', "list", cfg::options::enabled,
+                'L', cfg::options::kind::list, cfg::options::enabled,
                 "0", "", false, false,
                 "A list must have the name 'count'; caller provides the list.",
                 false
@@ -227,7 +227,7 @@ static cfg::inisection::specification s_simple_ini_spec
             "overflow-option",      /* key is different from option name    */
             {
                 cfg::options::code_null,
-                "overflow", cfg::options::enabled,
+                cfg::options::kind::overflow, cfg::options::enabled,
                 "null", "This is a bogus overflow option ", false, false,
                 "This is an 'overflow' option; still figuring how to process "
                     "and display these options. "
@@ -241,7 +241,7 @@ static cfg::inisection::specification s_simple_ini_spec
             "string-value",
             {
                 cfg::options::code_null,
-                "string", cfg::options::enabled,
+                cfg::options::kind::string, cfg::options::enabled,
                 "I am a string.", "", false, false,
                 "String test option. Here, there is no single-character "
                 "representation for this option.", false
@@ -262,7 +262,7 @@ static cfg::inisection::specification s_section_spec
             "value",
             {
                 cfg::options::code_null,
-                "section", cfg::options::disabled,      /* non-CLI option   */
+                cfg::options::kind::section, cfg::options::disabled, /* non-CLI op */
                 "This is actually a multi-line '[section]' value.\n"
                 "This is the second line of the [section] value.\n"
                 "Normally, this is the ONLY value in an [section] option."
@@ -307,7 +307,7 @@ static cfg::inisection::specification s_expex_ini_spec
         {
             "ex-value",
             {
-                'x', "integer", cfg::options::enabled,
+                'x', cfg::options::kind::integer, cfg::options::enabled,
                 "0", "", false, false,
                 "Extended integer test option.", false
             }
@@ -315,7 +315,7 @@ static cfg::inisection::specification s_expex_ini_spec
         {
             "test-value",
             {
-                't', "integer", cfg::options::enabled,
+                't', cfg::options::kind::integer, cfg::options::enabled,
                 "999", "", false, false,
                 "Another extended integer test option.", false
             }
@@ -333,7 +333,8 @@ static cfg::inisection::specification s_dummy_ini_spec
         {
             "ex-dummy",
             {
-                cfg::options::code_null, "integer", cfg::options::enabled,
+                cfg::options::code_null, cfg::options::kind::integer,
+                cfg::options::enabled,
                 "0", "", false, false,
                 "Extended integer test option.", false
             }
@@ -341,7 +342,8 @@ static cfg::inisection::specification s_dummy_ini_spec
         {
             "test-dummy",
             {
-                cfg::options::code_null, "integer", cfg::options::enabled,
+                cfg::options::code_null, cfg::options::kind::integer,
+                cfg::options::enabled,
                 "999", "", false, false,
                 "Another extended integer test option.", false
             }

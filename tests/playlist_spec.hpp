@@ -27,7 +27,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-08-05
- * \updates       2024-06-14
+ * \updates       2024-07-15
  * \license       See above.
  *
  */
@@ -57,7 +57,7 @@ inisection::specification playlist_options_data
         {
             "unmute-new-song",
             {
-                options::code_null, "boolean", options::disabled,
+                options::code_null, options::kind::boolean, options::disabled,
                 "false", "", false, false,
                 "When the next song is selected, unmute its patterns.", false
             }
@@ -65,7 +65,7 @@ inisection::specification playlist_options_data
         {
             "auto-play",            /* BACKPORT to Seq66 playlistfile.cpp */
             {
-                options::code_null, "boolean", options::disabled,
+                options::code_null, options::kind::boolean, options::disabled,
                 "false", "", false, false,
                 "When the next song is selected, start is playing.", false
             }
@@ -73,7 +73,7 @@ inisection::specification playlist_options_data
         {
             "auto-advance",         /* BACKPORT to Seq66 playlistfile.cpp */
             {
-                options::code_null, "boolean", options::disabled,
+                options::code_null, options::kind::boolean, options::disabled,
                 "false", "", false, false,
                 "When the current song ends, load the next song.", false
             }
@@ -81,7 +81,7 @@ inisection::specification playlist_options_data
         {
             "deep-verify",
             {
-                options::code_null, "boolean", options::disabled,
+                options::code_null, options::kind::boolean, options::disabled,
                 "false", "", false, false,
                 "When loading the play-list, verify each song opens.",
                 false
@@ -108,7 +108,7 @@ inisection::specification playlist_list_data
         {
             "number",
             {
-                options::code_null, "integer", options::disabled,
+                options::code_null, options::kind::integer, options::disabled,
                 "0<=0<=127", "", false, false,
                 "Defines the number (and MIDI control value) for this list.",
                 false
@@ -117,7 +117,7 @@ inisection::specification playlist_list_data
         {
             "name",
             {
-                options::code_null, "string", options::disabled,
+                options::code_null, options::kind::string, options::disabled,
                 "", "", false, false,
                 "Defines the display name for the play-list.",
                 false
@@ -126,7 +126,7 @@ inisection::specification playlist_list_data
         {
             "directory",
             {
-                options::code_null, "string", options::disabled,
+                options::code_null, options::kind::string, options::disabled,
                 "", "", false, false,
                 "Provides an option base directory for the play-list tunes.",
                 false
@@ -135,7 +135,7 @@ inisection::specification playlist_list_data
         {
             "count",
             {
-                options::code_null, "list", options::disabled,
+                options::code_null, options::kind::list, options::disabled,
                 "0", "", false, false,
                 "The number of files in the play-list.", false
             }

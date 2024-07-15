@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2023-07-24
+ * \updates       2024-07-15
  * \license       See above.
  *
  *  To do: add a help-line for each option.
@@ -48,19 +48,19 @@ static options_spec s_test_options [] =
      *   Name          Code  Kind     Enabled   Default     Value      Dirty
      */
     {
-        "alertable",    'a', "boolean", true,   "false",    "false",   false,
+        "alertable",    'a', opt_boolean, true,   "false",    "false",   false,
         "If specified, the application is alertable."
     },
     {
-        "canned-code",  'c', "boolean", true,   "true",     "true",    false,
+        "canned-code",  'c', opt_boolean, true,   "true",     "true",    false,
         "If specified, the application employs canned code."
     },
     {
-        "username",     'u', "string",  true,   "Joe Cool", "",        false,
+        "username",     'u', opt_string,  true,   "Joe Cool", "",        false,
         "Specifies the user name (for permissions)."
     },
     {
-        "loop-count",   'k', "integer", true,   "30",       "0",       false,
+        "loop-count",   'k', opt_integer, true,   "30",       "0",       false,
         "Specifies the number of loops to make."
     }
 };

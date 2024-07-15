@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-08-02
- * \updates       2024-06-29
+ * \updates       2024-07-15
  * \license       See above.
  *
  */
@@ -58,7 +58,7 @@ static cfg::options::container s_test_options
         {
             "alertable",
             {
-                'a', "boolean", cfg::options::enabled,
+                'a', cfg::options::kind::boolean, cfg::options::enabled,
                 "false", "false", false, false,
                 "If specified, the application is alertable.",
                 false
@@ -67,7 +67,7 @@ static cfg::options::container s_test_options
         {
             "canned-code",
             {
-                'c', "boolean", cfg::options::enabled,
+                'c', cfg::options::kind::boolean, cfg::options::enabled,
                 "true", "true", false, false,
                 "If specified, the application employs canned code.",
                 false
@@ -76,7 +76,7 @@ static cfg::options::container s_test_options
         {
             "dead-code",
             {
-                'd', "boolean", cfg::options::enabled,
+                'd', cfg::options::kind::boolean, cfg::options::enabled,
                 "false", "false", false, false,
                 "If specified, detect dead code.",
                 false
@@ -85,7 +85,7 @@ static cfg::options::container s_test_options
         {
             "ethernet",
             {
-                'e', "boolean", cfg::options::enabled,
+                'e', cfg::options::kind::boolean, cfg::options::enabled,
                 "false", "false", false, false,
                 "If specified, use the ethernet adapter.",
                 false
@@ -94,7 +94,7 @@ static cfg::options::container s_test_options
         {
             "fast-code",
             {
-                'f', "boolean", cfg::options::enabled,
+                'f', cfg::options::kind::boolean, cfg::options::enabled,
                 "false", "false", false, false,
                 "If specified, detect fast code :-D.",
                 false
@@ -103,7 +103,7 @@ static cfg::options::container s_test_options
         {
             "find-me",
             {
-                'F', "boolean", cfg::options::enabled,
+                'F', cfg::options::kind::boolean, cfg::options::enabled,
                 "false", "false", false, false,
                 "If specified, detect 'find-me' on the CLI.",
                 false
@@ -112,7 +112,7 @@ static cfg::options::container s_test_options
         {
             "disabled",
             {
-                'D', "boolean", cfg::options::disabled,
+                'D', cfg::options::kind::boolean, cfg::options::disabled,
                 "false", "false", false, false,
                 "If specified, disable the code.",
                 false
@@ -121,7 +121,7 @@ static cfg::options::container s_test_options
         {
             "username",
             {
-                'u', "string", cfg::options::enabled,
+                'u', cfg::options::kind::string, cfg::options::enabled,
                 "Joe Cool", "", false, false,
                 "Specifies the user name (for permissions).",
                 false
@@ -130,7 +130,8 @@ static cfg::options::container s_test_options
         {
             "loop-count",
             {
-                cfg::options::code_null,  "integer", cfg::options::enabled,
+                cfg::options::code_null, cfg::options::kind::integer,
+                cfg::options::enabled,
                 "0<=0<=99", "30", false, false,
                 "Specifies the number of loops to make.", false
             }
@@ -145,7 +146,8 @@ static cfg::options::container s_test_options
                  * 'f', "floating", cfg::options::enabled,
                  */
 
-                cfg::options::code_null, "floating", cfg::options::enabled,
+                cfg::options::code_null, cfg::options::kind::floating,
+                cfg::options::enabled,
                 "0.0<=0.1<=50.0", "22.3", false, false,
                 "Specifies the magnetic flux.",
                 false

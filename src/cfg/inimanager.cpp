@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-07-04
+ * \updates       2024-07-14
  * \license       See above.
  *
  *  In an application, we want to access options via the triplet of
@@ -75,9 +75,11 @@ namespace cfg
 
 /**
  *  Creates the "stock" inisections object (and its "stock" inisection and
- *  options objects.)
+ *  options objects.
  *
- *  Note that there are both const and non-const accessors for these members.
+ *  -   inisections()
+ *      -   inisection()
+ *          -   options() : add(stock_options()) and initialize()
  */
 
 inimanager::inimanager () :
@@ -85,19 +87,49 @@ inimanager::inimanager () :
     m_sections_map  ()
 {
     inisections sec;
-    auto p = std::make_pair("", sec);           /* does it make a copy? */
-    auto r = sections_map().insert(p);          /* another copy         */
+    auto p = std::make_pair("", sec);               /* does it make a copy? */
+    auto r = sections_map().insert(p);              /* another copy         */
     bool ok = r.second;
     if (ok)
     {
-        const options & opts = sec.find_options("");
+        const options & opts = sec.find_options();  /* find stock options   */
         if (opts.active())
         {
-            (void) multi_parser().cli_mappings_add
-            (
-                opts.option_pairs(), "", ""
-            );
+            (void) multi_parser().cli_mappings_add(opts.option_pairs());
         }
+    }
+}
+
+/**
+ *  Provides for the addition of other stock/global options before
+ *  (later) adding addition inisections.
+ */
+
+inimanager::inimanager (const options::container & additional) :
+    m_multi_parser  (*this),
+    m_sections_map  ()
+{
+    inisections sec;
+    bool ok = sec.add_options(additional);
+    if (! ok)
+    {
+        printf("FAILED to add options\n");          // UPGRADE LATER
+    }
+
+    auto p = std::make_pair("", sec);               /* does it make a copy? */
+    auto r = sections_map().insert(p);              /* another copy         */
+    ok = r.second;
+    if (ok)
+    {
+        const options & opts = sec.find_options();  /* find stock options   */
+        if (opts.active())
+        {
+            (void) multi_parser().cli_mappings_add(opts.option_pairs());
+        }
+    }
+    else
+    {
+        printf("FAILED to add inisection\n");       // UPGRADE LATER
     }
 }
 
@@ -265,9 +297,9 @@ inimanager::find_options
 const options::spec &
 inimanager::find_options_spec
 (
+    const std::string & optionname,
     const std::string & cfgtype,
-    const std::string & sectionname,
-    const std::string & optionname
+    const std::string & sectionname
 ) const
 {
     static options::spec s_inactive_spec;
@@ -281,9 +313,9 @@ inimanager::find_options_spec
 options::spec &
 inimanager::find_options_spec
 (
+    const std::string & optionname,
     const std::string & cfgtype,
-    const std::string & sectionname,
-    const std::string & optionname
+    const std::string & sectionname
 )
 {
     return const_cast<options::spec &>
@@ -313,6 +345,55 @@ inimanager::help_text () const
         result += sections.second.help_text();
 
     return result;
+}
+
+/*------------------------------------------------------------------------
+ * Options accessors
+ *------------------------------------------------------------------------*/
+
+bool
+inimanager::boolean_value
+(
+    const std::string & name,
+    const std::string & cfgtype,
+    const std::string & sectionname
+) const
+{
+    const options & opts = find_options (cfgtype, sectionname);
+    if (opts.active())
+        return opts.boolean_value(name);
+    else
+        return false;
+}
+
+int
+inimanager::integer_value
+(
+    const std::string & name,
+    const std::string & cfgtype,
+    const std::string & sectionname
+) const
+{
+    const options & opts = find_options (cfgtype, sectionname);
+    if (opts.active())
+        return opts.integer_value(name);
+    else
+        return (-1);        /* or INT_MAX? */
+}
+
+float
+inimanager::floating_value
+(
+    const std::string & name,
+    const std::string & cfgtype,
+    const std::string & sectionname
+) const
+{
+    const options & opts = find_options (cfgtype, sectionname);
+    if (opts.active())
+        return opts.floating_value(name);
+    else
+        return (-1.0);      /* or FLOAT_MAX? */
 }
 
 }           // namespace cfg

@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-27
- * \updates       2024-07-06
+ * \updates       2024-07-15
  * \license       See above.
  *
  *  See the ini_test module for information. This module goes beyond that
@@ -44,7 +44,10 @@
 #include "util/msgfunctions.hpp"        /* util::error_message()            */
 #endif
 
+#include "rc_spec.hpp"                  /* chunk of data for an 'rc' file   */
 #include "small_spec.hpp"               /* small for easier debugging       */
+
+#undef  USE_ALT_TEST                    /* define for quick experiments     */
 
 #if 0
 #include "ctrl_spec.hpp"
@@ -52,10 +55,49 @@
 #include "mutes_spec.hpp"
 #include "palette_spec.hpp"
 #include "playlist_spec.hpp"
-#include "rc_spec.hpp"
 #include "session_spec.hpp"
 #include "usr_spec.hpp"
 #endif
+
+/*
+ *  Contains additions to the stock options. These are options that
+ *  are always present, and not associated with an INI file and INI section.
+ *
+ *  These options represent stuff we want to do with this test application.
+ */
+
+static cfg::options::container s_test_options
+{
+    /*
+     * option_code, option_kind, option_cli_enabled,
+     * option_default, option_value, option_read_from_cli, option_modified,
+     * option_desc, option_built_in
+     */
+    {
+        "read",
+        {
+            'r', cfg::options::kind::filename, cfg::options::enabled,
+            "", "", false, false,
+            "Read options from an 'xx' file.", false
+        }
+    },
+    {
+        "test",
+        {
+            't', cfg::options::kind::boolean, cfg::options::enabled,
+            "false", "", false, false,
+            "If specified, testing!", false
+        }
+    },
+    {
+        "write",
+        {
+            'w', cfg::options::kind::filename, cfg::options::enabled,
+            "", "", false, false,
+            "Write options to an 'xx' file.", false
+        }
+    }
+};
 
 /*
  * Process:
@@ -109,13 +151,20 @@ int
 main (int argc, char * argv [])
 {
     int rcode = EXIT_FAILURE;
-    cfg::inimanager configuration_set;
+    cfg::inimanager configuration_set(s_test_options);
     cfg::set_client_name("iniset");
 
     bool success = configuration_set.add_inisections
     (
         "small", cfg::small_data                          /* small_spec.hpp    */
     );
+    if (success)
+        success = configuration_set.add_inisections("rc", cfg::rc_data);
+#if defined USE_ALT_TEST
+    std::string clihelp = configuration_set.cli_help_text();
+    std::cout << clihelp << std::endl;
+    return EXIT_SUCCESS;
+#else
     if (success)
     {
         cli::multiparser & clip = configuration_set.multi_parser();
@@ -147,6 +196,7 @@ main (int argc, char * argv [])
             }
         }
     }
+#endif
     return rcode;
 }
 

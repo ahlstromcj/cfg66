@@ -27,7 +27,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-08-06
- * \updates       2024-06-14
+ * \updates       2024-07-15
  * \license       See above.
  *
  */
@@ -64,7 +64,7 @@ inisection::specification drums_flag_data
         {
             "map-type",
             {
-                options::code_null, "string", options::disabled,
+                options::code_null, options::kind::string, options::disabled,
                 "multi", "", false, false,
                 "The items to be mapped.", false
             }
@@ -72,7 +72,7 @@ inisection::specification drums_flag_data
         {
             "gm-channel",
             {
-                options::code_null, "integer", options::disabled,
+                options::code_null, options::kind::integer, options::disabled,
                 "1<=1<=16", "", false, false,
                 "The channel to be applied.", false
             }
@@ -80,7 +80,7 @@ inisection::specification drums_flag_data
         {
             "reverse",
             {
-                options::code_null, "boolean", options::disabled,
+                options::code_null, options::kind::boolean, options::disabled,
                 "false", "", false, false,
                 "Reverse the mappings.", false
             }
@@ -92,13 +92,13 @@ inisection::specification drums_section_data
 {
     "[Drum %d]",
     {
-        ""
+        "Drum spec..."
     },
     {
         {
             "dev-name",
             {
-                options::code_null, "string", options::disabled,
+                options::code_null, options::kind::string, options::disabled,
                 "", "", false, false,
                 "The name of the drum note for the non-GM device.", false
             }
@@ -106,7 +106,7 @@ inisection::specification drums_section_data
         {
             "gm-name",
             {
-                options::code_null, "string", options::disabled,
+                options::code_null, options::kind::string, options::disabled,
                 "", "", false, false,
                 "The General MIDI name of the drum note.", false
             }
@@ -114,7 +114,7 @@ inisection::specification drums_section_data
         {
             "dev-note",
             {
-                options::code_null, "integer", options::disabled,
+                options::code_null, options::kind::integer, options::disabled,
                 "0<=0<=127", "", false, false,
                 "The note number in the non-GM device.", false
             }
@@ -122,7 +122,7 @@ inisection::specification drums_section_data
         {
             "gm-note",
             {
-                options::code_null, "integer", options::disabled,
+                options::code_null, options::kind::integer, options::disabled,
                 "0<=0<=127", "", false, false,
                 "The General MIDI note number.", false
             }

@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-08
+ * \updates       2024-07-14
  * \license       See above.
  *
  * Operations to support:
@@ -318,6 +318,67 @@ inisections::find_options (const std::string & sectionname)
     (
         static_cast<const inisections &>(*this).find_options(sectionname)
     );
+}
+
+/*------------------------------------------------------------------------
+ * Finding an options::spec by brute-force lookup
+ *------------------------------------------------------------------------*/
+
+/**
+ *  Finds an options specification by iteration through the contained
+ *  inisection objects. This is a brute force lookup.
+ */
+
+const options::spec &
+inisections::find_option_spec (const std::string & name) const
+{
+    static options::spec s_inactive_spec;
+    for (const auto & section : section_list())
+    {
+        const options::spec & opt = section.find_option_spec(name);
+        if (! opt.option_desc.empty())          // TODO? (opt.active())
+            return opt;
+    }
+    return s_inactive_spec;
+}
+
+options::spec &
+inisections::find_option_spec (const std::string & name)
+{
+    return const_cast<options::spec &>
+    (
+        static_cast<const inisections &>(*this).find_option_spec(name)
+    );
+}
+
+/**
+ *  Provides a way to add options to a section.
+ *
+ * \param specs
+ *      Provides the options to be added.
+ *
+ * \param sectionname
+ *      The optional section name, such as "[ports]". If empty (the default),
+ *      then the options are added to the stock/global options which have
+ *      no INI file or section.
+ *
+ * \return
+ *      Returns true if the additions succeeded.
+ */
+
+bool
+inisections::add_options
+(
+    const options::container & specs,
+    const std::string & sectionname
+)
+{
+    options & opts = find_options(sectionname);
+    bool result = opts.active();
+    if (result)
+        result = opts.add(specs);
+
+    return result;
 }
 
 /*------------------------------------------------------------------------

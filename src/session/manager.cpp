@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2020-03-22
- * \updates       2024-07-01
+ * \updates       2024-07-15
  * \license       GNU GPLv2 or above
  *
  *  Note that this module is part of the libcfg66 library, not the libsessions
@@ -88,7 +88,7 @@ static cfg::options::container s_option_client_name // or a single option?
     {
         "client-name",
         {
-            'l', "string", true, "", "", false, false,
+            'l', cfg::options::kind::string, true, "", "", false, false,
             "Overrides the normal client-name (short app name).", false
         }
     }

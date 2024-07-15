@@ -27,7 +27,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-01-15
+ * \updates       2024-07-15
  * \license       See above.
  *
  */
@@ -38,6 +38,27 @@
 #include "c_macros.h"                   /* EXTERN_C_DEC and EXTERN_C_END    */
 
 EXTERN_C_DEC                            /* the whole module is extern "C"   */
+
+/**
+ *  This enumeration aligns with the C++ enum class cfg::options::kind.
+ */
+
+typedef enum
+{
+    opt_boolean,
+    opt_filename,
+    opt_floating,
+    opt_floatpair,
+    opt_integer,
+    opt_intpair,
+    opt_list,
+    opt_recents,
+    opt_overflow,
+    opt_section,
+    opt_string,
+    opt_dummy
+
+} opt_kind;
 
 /**
  *  This C structure almost exactly matches the cfg::options::spec class's
@@ -51,7 +72,7 @@ typedef struct
 {
     const char * option_name;           /**< The key, long option name.     */
     unsigned char option_code;          /**< The single-character name.     */
-    const char * option_kind;           /**< "boolean", other type string.  */
+    opt_kind option_kind;               /**< boolean, etc.                  */
     bool option_cli_enabled;            /**< Normally true; false disables. */
     const char * option_default;        /**< Either a string or true/false  */
     const char * option_value;          /**< The actual value as parsed.    */

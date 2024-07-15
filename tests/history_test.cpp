@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-07-28
- * \updates       2024-07-01
+ * \updates       2024-07-15
  * \license       See above.
  *
  *  This program is an extension of sorts for the options_test program. Here
@@ -54,7 +54,7 @@ static cfg::options::container s_test_options
         {
             "alertable",
             {
-                'a', "boolean", cfg::options::enabled,
+                'a', cfg::options::kind::boolean, cfg::options::enabled,
                 "false", "false", false, false,
                 "If specified, the application is alertable.", false
             }
@@ -62,7 +62,7 @@ static cfg::options::container s_test_options
         {
             "loop-count",
             {
-                0,  "integer", cfg::options::enabled,
+                0,  cfg::options::kind::integer, cfg::options::enabled,
                 "30", "0-0-99", false, false,
                 "Specifies the number of loops to make.", false
             }
@@ -70,7 +70,7 @@ static cfg::options::container s_test_options
         {
             "flux",
             {
-                'f', "floating", cfg::options::enabled,
+                'f', cfg::options::kind::floating, cfg::options::enabled,
                 "22.3", "0.0", false, false,
                 "Specifies the number of loops to make.", false
             }

@@ -27,7 +27,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-23
- * \updates       2024-07-08
+ * \updates       2024-07-15
  * \license       See above.
  *
  *  This class provides a way to look up command-line options specified by
@@ -147,14 +147,14 @@ public:
     bool cli_mappings_add
     (
         const cfg::options::container & opts,
-        const std::string & configtype,
-        const std::string & configsection
+        const std::string & configtype      = cfg::global,
+        const std::string & configsection   = cfg::global
     );
     bool lookup_names
     (
         const std::string & clioptname,         /* one or more characters   */
-        std::string & cfgtype,
-        std::string & cfgsection
+        std::string & configtype,
+        std::string & configsection
     );
 
     const names & cli_mappings () const

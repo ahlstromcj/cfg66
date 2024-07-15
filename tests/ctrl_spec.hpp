@@ -27,7 +27,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-08-05
- * \updates       2024-06-14
+ * \updates       2024-07-15
  * \license       See above.
  *
  *
@@ -68,7 +68,7 @@ inisection::specification ctrl_control_data
         {
             "drop-empty-controls",          /* OBSOLETE */
             {
-                options::code_null, "boolean", options::disabled,
+                options::code_null, options::kind::boolean, options::disabled,
                 "false", "", false, false,
                 "Drops empty controls from the control list (obsolete).", false
             }
@@ -83,7 +83,7 @@ inisection::specification ctrl_control_data
 
             "control-buss",
             {
-                options::code_null, "string", options::disabled,
+                options::code_null, options::kind::string, options::disabled,
                 "0xff", "", false, false,
                 "The number or name of a MIDI control port.", false
             }
@@ -91,7 +91,7 @@ inisection::specification ctrl_control_data
         {
             "control-enabled",          /* replaces "midi-enabled"          */
             {
-                options::code_null, "boolean", options::disabled,
+                options::code_null, options::kind::boolean, options::disabled,
                 "false", "", false, false,
                 "Enables the specified MIDI control port.", false
             }
@@ -99,7 +99,7 @@ inisection::specification ctrl_control_data
         {
             "keyboard-layout",
             {
-                options::code_null, "string", options::disabled,
+                options::code_null, options::kind::string, options::disabled,
                 "qwerty", "", false, false,
                 "The keyboard layout, qwerty, quertz, or azerty.", false
             }
@@ -160,7 +160,7 @@ inisection::specification ctrl_loop_data
         {
             "count",                    /* slight difference from original  */
             {
-                options::code_null, "list", options::disabled,
+                options::code_null, options::kind::list, options::disabled,
                 "0", "", false, false,
                 "Holds a list of controls for patterns/loops.", false
             }
@@ -178,7 +178,7 @@ inisection::specification ctrl_mutes_data
         {
             "count",                    /* slight difference from original  */
             {
-                options::code_null, "list", options::disabled,
+                options::code_null, options::kind::list, options::disabled,
                 "0", "", false, false,
                 "Holds a list of controls for mute-groups.", false
             }
@@ -196,7 +196,7 @@ inisection::specification ctrl_automation_data
         {
             "count",                    /* slight difference from original  */
             {
-                options::code_null, "list", options::disabled,
+                options::code_null, options::kind::list, options::disabled,
                 "0", "", false, false,
                 "Holds a list of controls for automation.", false
             }
@@ -223,7 +223,7 @@ inisection::specification ctrl_control_out_data
 
             "display-buss",             /* replaces "output-buss"           */
             {
-                options::code_null, "string", options::disabled,
+                options::code_null, options::kind::string, options::disabled,
                 "0xff", "", false, false,
                 "The number or name of a MIDI display port.", false
             }
@@ -231,7 +231,7 @@ inisection::specification ctrl_control_out_data
         {
             "display-enabled",          /* replaces "midi-enabled"          */
             {
-                options::code_null, "boolean", options::disabled,
+                options::code_null, options::kind::boolean, options::disabled,
                 "false", "", false, false,
                 "Enables the specified MIDI control port.", false
             }
@@ -271,7 +271,7 @@ inisection::specification ctrl_display_data
         {
             "count",                    /* slight difference from original  */
             {
-                options::code_null, "list", options::disabled,
+                options::code_null, options::kind::list, options::disabled,
                 "0", "", false, false,
                 "Holds a list of MIDI display events for patterns/loop status.",
                 false
@@ -302,7 +302,7 @@ inisection::specification ctrl_display_mutes_data
         {
             "count",                    /* slight difference from original  */
             {
-                options::code_null, "list", options::disabled,
+                options::code_null, options::kind::list, options::disabled,
                 "0", "", false, false,
                 "Holds a list of MIDI display events for mute-group status.",
                 false
@@ -323,7 +323,7 @@ inisection::specification ctrl_display_automation_data
         {
             "count",                    /* slight difference from original  */
             {
-                options::code_null, "list", options::disabled,
+                options::code_null, options::kind::list, options::disabled,
                 "0", "", false, false,
                 "Holds a list of MIDI display events for automation status.",
                 false
@@ -344,7 +344,7 @@ inisection::specification ctrl_macro_data
         {
             "footer",
             {
-                options::code_null, "string", options::disabled,
+                options::code_null, options::kind::string, options::disabled,
                 "", "", false, false,
                 "Defines a command that informs a device to change status.",
                 false
@@ -353,7 +353,7 @@ inisection::specification ctrl_macro_data
         {
             "header",
             {
-                options::code_null, "string", options::disabled,
+                options::code_null, options::kind::string, options::disabled,
                 "", "", false, false,
                 "Defines a command that terminates a status command.",
                 false
@@ -362,7 +362,7 @@ inisection::specification ctrl_macro_data
         {
             "reset",
             {
-                options::code_null, "string", options::disabled,
+                options::code_null, options::kind::string, options::disabled,
                 "", "", false, false,
                 "Defines a command that resets a device to normal status.",
                 false
@@ -371,7 +371,7 @@ inisection::specification ctrl_macro_data
         {
             "startup",
             {
-                options::code_null, "string", options::disabled,
+                options::code_null, options::kind::string, options::disabled,
                 "", "", false, false,
                 "Defines a command to send at application startup.",
                 false
@@ -380,7 +380,7 @@ inisection::specification ctrl_macro_data
         {
             "shutdown",
             {
-                options::code_null, "string", options::disabled,
+                options::code_null, options::kind::string, options::disabled,
                 "", "", false, false,
                 "Defines a command to send at application shutdown.",
                 false

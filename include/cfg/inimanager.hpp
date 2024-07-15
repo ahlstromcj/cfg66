@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-07-08
+ * \updates       2024-07-14
  * \license       See above.
  *  section.
  *
@@ -94,6 +94,7 @@ private:
 public:
 
     inimanager ();
+    inimanager (const options::container & additional);
 
     std::string cli_help_text () const;
     std::string help_text () const;
@@ -149,19 +150,38 @@ public:
 
     const inisection & find_inisection
     (
-        const std::string & cfgtype,
-        const std::string & sectionname
+        const std::string & cfgtype     =   global,
+        const std::string & sectionname =   global
     ) const;
     const options & find_options
     (
-        const std::string & cfgtype,
-        const std::string & sectionname
+        const std::string & cfgtype     =   global,
+        const std::string & sectionname =   global
     ) const;
     const options::spec & find_options_spec
     (
-        const std::string & cfgtype,
-        const std::string & sectionname,
-        const std::string & optionname
+        const std::string & optionname,
+        const std::string & cfgtype     =   global,
+        const std::string & sectionname =   global
+    ) const;
+
+    bool boolean_value
+    (
+        const std::string & name,
+        const std::string & cfgtype     =   global,
+        const std::string & sectionname =   global
+    ) const;
+    int integer_value
+    (
+        const std::string & name,
+        const std::string & cfgtype     =   global,
+        const std::string & sectionname =   global
+    ) const;
+    float floating_value
+    (
+        const std::string & name,
+        const std::string & cfgtype     =   global,
+        const std::string & sectionname =   global
     ) const;
 
 private:
@@ -173,19 +193,19 @@ private:
 
     inisection & find_inisection
     (
-        const std::string & cfgtype,
-        const std::string & sectionname
+        const std::string & cfgtype     =   global,
+        const std::string & sectionname =   global
     );
     options & find_options
     (
-        const std::string & cfgtype,
-        const std::string & sectionname
+        const std::string & cfgtype     =   global,
+        const std::string & sectionname =   global
     );
     options::spec & find_options_spec
     (
-        const std::string & cfgtype,
-        const std::string & sectionname,
-        const std::string & optionname
+        const std::string & optionname,
+        const std::string & cfgtype     =   global,
+        const std::string & sectionname =   global
     );
 
 };          // class inimanager

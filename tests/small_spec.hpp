@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-07-06
- * \updates       2024-07-06
+ * \updates       2024-07-15
  * \license       See above.
  *
  */
@@ -61,7 +61,7 @@ inisection::specification small_misc_data
         {
             "sets-mode",
             {
-                options::code_null, "string", options::enabled,
+                options::code_null, options::kind::string, options::enabled,
                 "normal", "normal", false, false,
                 "Mode for handling arming/muting during play-set changes.",
                 false
@@ -70,7 +70,7 @@ inisection::specification small_misc_data
         {
             "port-naming",
             {
-                options::code_null, "string", options::enabled,
+                options::code_null, options::kind::string, options::enabled,
                 "short", "short", false, false,
                 "Port amount-of-label showing.", false
             }
@@ -89,7 +89,7 @@ inisection::specification small_interaction_data
         {
             "snap-split",
             {
-                options::code_null, "boolean", options::enabled,
+                options::code_null, options::kind::boolean, options::enabled,
                 "false", "false", false, false,
                 "If true, split trigger at snap point.", false
             }
@@ -97,7 +97,7 @@ inisection::specification small_interaction_data
         {
             "double-click-edit",
             {
-                options::code_null, "boolean", options::disabled,
+                options::code_null, options::kind::boolean, options::disabled,
                 "false", "false", false, false,
                 "If true, allow double-click edit.", false
             }

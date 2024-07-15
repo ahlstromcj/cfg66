@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2017-03-12
- * \updates       2024-07-08
+ * \updates       2024-07-15
  * \license       GNU GPLv2 or above
  *
  *  The first part of this file defines a couple of global structure
@@ -542,9 +542,18 @@ get_app_icon_name ()
     return s_app_info._app_icon_name;
 }
 
+/**
+ *  Checks if the file-descriptor matches a TTY descriptor. The
+ *  value -1 is used for STDOUT_FILENO so that most callers don't
+ *  need to know it.
+ */
+
 bool
 is_a_tty (int fd)
 {
+    if (fd < 0)
+        fd = STDOUT_FILENO;
+
 #if defined PLATFORM_WINDOWS
     int fileno;
     switch (fd)
@@ -560,6 +569,31 @@ is_a_tty (int fd)
     int rc = isatty(fd);
     return rc == 1;                             /* fd refers to a terminal  */
 #endif
+}
+
+/**
+ *  Returns the terminal escape sequence to generate colored text.
+ *  There's no consistent association with the main terminal color
+ *  codes (e.g. 0 to 7).
+ */
+
+const std::string &
+level_color (int index)
+{
+    static const std::string s_level_colors [] =
+    {
+        "\033[0m",          /* 0: goes back to normal console color */
+        "\033[1;32m",       /* 1: info message green                */
+        "\033[1;33m",       /* 2: warning message is yellow         */
+        "\033[1;31m",       /* 3: error message is red              */
+        "\033[1;34m",       /* 4: status message is blue            */
+        "\033[1;36m",       /* 5: session message is cyan           */
+        "\033[1;30m"        /* 6: debug message is black            */
+    };
+    if (index < 0 || index > 6)
+        index = 0;
+
+    return s_level_colors[index];
 }
 
 /**
@@ -584,16 +618,6 @@ get_client_tag (lib66::msglevel el)
     }
     else
     {
-        static const char * s_level_colors [] =
-        {
-            "\033[0m",          /* goes back to normal console color    */
-            "\033[1;32m",       /* info message green                   */
-            "\033[1;33m",       /* warning message is yellow            */
-            "\033[1;31m",       /* error message is red                 */
-            "\033[1;34m",       /* status message is blue               */
-            "\033[1;36m",       /* session message is cyan              */
-            "\033[1;30m"        /* debug message is black               */
-        };
         std::string result = "[";
         int index = static_cast<int>(el);
         bool iserror = el == lib66::msglevel::error ||
@@ -602,11 +626,11 @@ get_client_tag (lib66::msglevel el)
 
         bool showcolor = is_a_tty(iserror ? STDERR_FILENO : STDOUT_FILENO);
         if (showcolor)
-            result += s_level_colors[index];
+            result += level_color(index);
 
         result += s_app_info._client_name_short;
         if (showcolor)
-            result += s_level_colors[0];
+            result += level_color(0);
 
         result += "]";
         return result;

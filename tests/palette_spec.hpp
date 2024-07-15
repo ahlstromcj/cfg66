@@ -27,7 +27,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-08-06
- * \updates       2024-06-14
+ * \updates       2024-07-15
  * \license       See above.
  *
  */
@@ -62,7 +62,7 @@ inisection::specification palette_pattern_data
         {
             "count",
             {
-                options::code_null, "list", options::disabled,
+                options::code_null, options::kind::list, options::disabled,
                 "0", "", false, false,
                 "The number of entries in the palette.", false
             }
@@ -83,7 +83,7 @@ inisection::specification palette_ui_data
         {
             "count",
             {
-                options::code_null, "list", options::disabled,
+                options::code_null, options::kind::list, options::disabled,
                 "0", "", false, false,
                 "The number of entries in the UI palette.", false
             }
@@ -114,7 +114,7 @@ inisection::specification palette_brush_data
         {
             "empty",
             {
-                options::code_null, "string", options::disabled,
+                options::code_null, options::kind::string, options::disabled,
                 "solid", "", false, false,
                 "Defines the brush for empty (white) regions.",
                 false
@@ -123,7 +123,7 @@ inisection::specification palette_brush_data
         {
             "notey",
             {
-                options::code_null, "string", options::disabled,
+                options::code_null, options::kind::string, options::disabled,
                 "lineargradient", "", false, false,
                 "Defines the brush for notes, triggers, and progress boxes.",
                 false
@@ -132,7 +132,7 @@ inisection::specification palette_brush_data
         {
             "scale",
             {
-                options::code_null, "string", options::disabled,
+                options::code_null, options::kind::string, options::disabled,
                 "dense3", "", false, false,
                 "Defines the brush for the scale bars.",
                 false
@@ -141,7 +141,7 @@ inisection::specification palette_brush_data
         {
             "backseq",
             {
-                options::code_null, "string", options::disabled,
+                options::code_null, options::kind::string, options::disabled,
                 "dense2", "", false, false,
                 "Defines the brush for the background pattern.",
                 false

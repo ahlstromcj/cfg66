@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-07-22
- * \updates       2024-06-14
+ * \updates       2024-07-15
  * \license       See above.
  *
  *  This is the first of a set of test/demo header files to set up a large
@@ -121,7 +121,7 @@ inisection::specification session_cfg66_data
         {
             "config-type",
             {
-                options::code_null, "string", options::disabled,
+                options::code_null, options::kind::string, options::disabled,
                 "session", "session", false, false,
                 "Session configuration file.", false
             }
@@ -129,7 +129,7 @@ inisection::specification session_cfg66_data
         {
             "version",
             {
-                options::code_null, "integer", options::disabled,
+                options::code_null, options::kind::integer, options::disabled,
                 "0", "0", false, false,
                 "Configuration file version.", false
             }
@@ -137,7 +137,7 @@ inisection::specification session_cfg66_data
         {
             "quiet",
             {
-                options::code_null, "boolean", options::enabled,
+                options::code_null, options::kind::boolean, options::enabled,
                 "false", "false", false, false,
                 "Disable startup error prompts.", false
             }
@@ -145,7 +145,7 @@ inisection::specification session_cfg66_data
         {
             "verbose",
             {
-                options::code_null, "boolean", options::enabled,
+                options::code_null, options::kind::boolean, options::enabled,
                 "false", "false", false, false,
                 "Show informational messages.", false
             }
@@ -202,7 +202,7 @@ inisection::specification session_config_file_data
         {
             "active",
             {
-                options::code_null, "boolean", options::enabled,
+                options::code_null, options::kind::boolean, options::enabled,
                 "false", "false", false, false,
                 "Usage of configuration file; otherwise a default is used.",
                 false
@@ -211,7 +211,7 @@ inisection::specification session_config_file_data
         {
             "home",                     /* provides the 'session' directory */
             {
-                'H', "filename", options::enabled,
+                'H', options::kind::filename, options::enabled,
                 "", "", false, false,
                 "The main configuration/data area for the session.", false
             }
@@ -219,7 +219,7 @@ inisection::specification session_config_file_data
         {
             "config",                   /* provides the 'session' file-name */
             {
-                'c', "filename", options::enabled,
+                'c', options::kind::filename, options::enabled,
                 "", "", false, false,
                 "The actual main configuration file for the session.", false
             }
@@ -227,7 +227,7 @@ inisection::specification session_config_file_data
         {
             "data",                     /* 'D' replaces "legacy-record"     */
             {
-                'D', "filename", options::enabled,
+                'D', options::kind::filename, options::enabled,
                 "", "", false, false,
                 "Overrides the default data directory.", false
             }
@@ -255,7 +255,7 @@ inisection::specification session_rc_file_data
         {
             "active",
             {
-                options::code_null, "boolean", options::disabled,
+                options::code_null, options::kind::boolean, options::disabled,
                 "false", "false", false, false,
                 "Usage of the specified file.", false
             }
@@ -263,7 +263,7 @@ inisection::specification session_rc_file_data
         {
             "directory",
             {
-                options::code_null, "filename", options::disabled,
+                options::code_null, options::kind::filename, options::disabled,
                 "", "", false, false,
                 "The directory where this file is stored.", false
             }
@@ -271,7 +271,7 @@ inisection::specification session_rc_file_data
         {
             "rc",                       /* instead of the generic "name"    */
             {
-                'f', "filename", options::enabled,
+                'f', options::kind::filename, options::enabled,
                 "seq66v2.rc", "seq66v2.rc", false, false,
                 "The base file-name of the ports/settings file.", false
             }
@@ -279,7 +279,7 @@ inisection::specification session_rc_file_data
         {
             "rc-save",
             {
-                options::code_null, "boolean", options::disabled,
+                options::code_null, options::kind::boolean, options::disabled,
                 "false", "false", false, false,
                 "Saving of the 'rc' file at exit.", false
             }
@@ -299,7 +299,7 @@ inisection::specification session_usr_file_data
         {
             "active",
             {
-                options::code_null, "boolean", options::disabled,
+                options::code_null, options::kind::boolean, options::disabled,
                 "false", "false", false, false,
                 "Usage of the specified file.", false
             }
@@ -307,7 +307,7 @@ inisection::specification session_usr_file_data
         {
             "directory",
             {
-                options::code_null, "filename", options::disabled,
+                options::code_null, options::kind::filename, options::disabled,
                 "", "", false, false,
                 "The directory where this file is stored.", false
             }
@@ -315,7 +315,7 @@ inisection::specification session_usr_file_data
         {
             "usr",                      /* instead of the generic "name"    */
             {
-                'F', "filename", options::enabled,
+                'F', options::kind::filename, options::enabled,
                 "seq66v2.usr", "seq66v2.usr", false, false,
                 "The base file-name of the user file.", false
             }
@@ -323,7 +323,7 @@ inisection::specification session_usr_file_data
         {
             "usr-save",
             {
-                'u', "boolean", options::enabled,
+                'u', options::kind::boolean, options::enabled,
                 "false", "false", false, false,
                 "Saving of the 'usr' file at exit.", false
             }
@@ -346,7 +346,7 @@ inisection::specification session_palette_file_data
         {
             "active",
             {
-                options::code_null, "boolean", options::disabled,
+                options::code_null, options::kind::boolean, options::disabled,
                 "false", "false", false, false,
                 "Usage of the specified file.", false
             }
@@ -354,7 +354,7 @@ inisection::specification session_palette_file_data
         {
             "directory",
             {
-                options::code_null, "filename", options::disabled,
+                options::code_null, options::kind::filename, options::disabled,
                 "", "", false, false,
                 "The directory where this file is stored.", false
             }
@@ -362,7 +362,7 @@ inisection::specification session_palette_file_data
         {
             "name",
             {
-                options::code_null, "filename", options::disabled,
+                options::code_null, options::kind::filename, options::disabled,
                 "seq66v2.palette", "seq66v2.palette", false, false,
                 "The base file-name of the palette file.", false
             }
@@ -381,7 +381,7 @@ inisection::specification session_ctrl_file_data
         {
             "active",
             {
-                options::code_null, "boolean", options::disabled,
+                options::code_null, options::kind::boolean, options::disabled,
                 "false", "false", false, false,
                 "Usage of the specified file.", false
             }
@@ -389,7 +389,7 @@ inisection::specification session_ctrl_file_data
         {
             "directory",
             {
-                options::code_null, "filename", options::disabled,
+                options::code_null, options::kind::filename, options::disabled,
                 "", "", false, false,
                 "The directory where this file is stored.", false
             }
@@ -397,7 +397,7 @@ inisection::specification session_ctrl_file_data
         {
             "name",
             {
-                options::code_null, "filename", options::disabled,
+                options::code_null, options::kind::filename, options::disabled,
                 "seq66v2.ctrl", "seq66v2.ctrl", false, false,
                 "The base file-name of the 'ctrl' file.", false
             }
@@ -416,7 +416,7 @@ inisection::specification session_mutes_file_data
         {
             "active",
             {
-                options::code_null, "boolean", options::enabled,
+                options::code_null, options::kind::boolean, options::enabled,
                 "false", "false", false, false,
                 "Usage of the specified file.", false
             }
@@ -424,7 +424,7 @@ inisection::specification session_mutes_file_data
         {
             "directory",
             {
-                options::code_null, "filename", options::enabled,
+                options::code_null, options::kind::filename, options::enabled,
                 "", "", false, false,
                 "The directory where this file is stored.", false
             }
@@ -432,7 +432,7 @@ inisection::specification session_mutes_file_data
         {
             "name",
             {
-                options::code_null, "filename", options::enabled,
+                options::code_null, options::kind::filename, options::enabled,
                 "seq66v2.mutes", "seq66v2.mutes", false, false,
                 "The base file-name of the 'mutes' file.", false
             }
@@ -450,7 +450,7 @@ inisection::specification session_drums_file_data
         {
             "active",
             {
-                options::code_null, "boolean", options::disabled,
+                options::code_null, options::kind::boolean, options::disabled,
                 "false", "false", false, false,
                 "Usage of the specified file.", false
             }
@@ -458,7 +458,7 @@ inisection::specification session_drums_file_data
         {
             "directory",
             {
-                options::code_null, "filename", options::disabled,
+                options::code_null, options::kind::filename, options::disabled,
                 "", "", false, false,
                 "The directory where this file is stored.", false
             }
@@ -466,7 +466,7 @@ inisection::specification session_drums_file_data
         {
             "name",
             {
-                options::code_null, "filename", options::disabled,
+                options::code_null, options::kind::filename, options::disabled,
                 "seq66v2.drums", "seq66v2.drums", false, false,
                 "The base file-name of the 'drums' file.", false
             }
@@ -484,7 +484,7 @@ inisection::specification session_playlist_file_data
         {
             "active",
             {
-                options::code_null, "boolean", options::enabled,
+                options::code_null, options::kind::boolean, options::enabled,
                 "false", "false", false, false,
                 "Usage of the specified file.", false
             }
@@ -492,7 +492,7 @@ inisection::specification session_playlist_file_data
         {
             "directory",
             {
-                options::code_null, "filename", options::enabled,
+                options::code_null, options::kind::filename, options::enabled,
                 "", "", false, false,
                 "The directory where this file is stored.", false
             }
@@ -500,7 +500,7 @@ inisection::specification session_playlist_file_data
         {
             "playlist",                 /* instead of the generic "name".   */
             {
-                'X', "filename", options::enabled,
+                'X', options::kind::filename, options::enabled,
                 "seq66v2.playlist", "seq66v2.playlist", false, false,
                 "The base file-name of the 'playlist' file.", false
             }
