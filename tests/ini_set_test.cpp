@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-27
- * \updates       2024-07-15
+ * \updates       2024-07-16
  * \license       See above.
  *
  *  See the ini_test module for information. This module goes beyond that
@@ -38,6 +38,7 @@
 #include <iostream>                     /* std::cout                        */
 
 #include "cfg/appinfo.hpp"              /* cfg::appinfo functions           */
+#include "cfg/inifile.hpp"              /* cfg::inifile class, etc.         */
 #include "cfg/inimanager.hpp"           /* cfg::inimanager class, etc.      */
 
 #if ! defined USE_STD_COUT_CERR
@@ -73,6 +74,14 @@ static cfg::options::container s_test_options
      * option_default, option_value, option_read_from_cli, option_modified,
      * option_desc, option_built_in
      */
+    {
+        "list",
+        {
+            'l', cfg::options::kind::boolean, cfg::options::enabled,
+            "false", "", false, false,
+            "List all options and their values.", false
+        }
+    },
     {
         "read",
         {
@@ -138,7 +147,7 @@ static cfg::options::container s_test_options
  *  There are two equivalent ways to do the command-line parsing, the
  *  indirect and the direct.
  *
- *      bool success = configuration_set.parse_cli(argc, argv);
+ *      bool success = cfg_set.parse_cli(argc, argv);
  *      bool success = clip.parse(argc, argv);
  *
  *  To use the second form, "clip" must be non-const, as parsing will
@@ -151,23 +160,23 @@ int
 main (int argc, char * argv [])
 {
     int rcode = EXIT_FAILURE;
-    cfg::inimanager configuration_set(s_test_options);
+    cfg::inimanager cfg_set(s_test_options);    /* add the test options     */
     cfg::set_client_name("iniset");
 
-    bool success = configuration_set.add_inisections
+    bool success = cfg_set.add_inisections
     (
-        "small", cfg::small_data                          /* small_spec.hpp    */
+        "small", cfg::small_data                /* see small_spec.hpp       */
     );
     if (success)
-        success = configuration_set.add_inisections("rc", cfg::rc_data);
+        success = cfg_set.add_inisections("rc", cfg::rc_data);
 #if defined USE_ALT_TEST
-    std::string clihelp = configuration_set.cli_help_text();
+    std::string clihelp = cfg_set.cli_help_text();
     std::cout << clihelp << std::endl;
     return EXIT_SUCCESS;
 #else
     if (success)
     {
-        cli::multiparser & clip = configuration_set.multi_parser();
+        cli::multiparser & clip = cfg_set.multi_parser();
         success = clip.parse(argc, argv);
         if (success)
         {
@@ -179,6 +188,81 @@ main (int argc, char * argv [])
             {
                 if (success)
                 {
+                    if (cfg_set.boolean_value("list"))
+                    {
+                        /*
+                         * Can do this in C++20:
+                         *
+                         * const cfg::options & opts =
+                         *      std::as_const(cfg_set).find_options();
+                         */
+
+                        const cfg::inimanager & ccfg = cfg_set;
+                        const cfg::options & opts = ccfg.find_options();
+                        std::cout
+                            << "--list selected, showing values:"
+                            << std::endl
+                            ;
+                        std::string dbgtxt = opts.debug_text
+                        (
+                            cfg::options::stock
+                        );
+                        std::cout << dbgtxt << std::endl;
+                    }
+                    else if (cfg_set.boolean_value("test"))
+                    {
+                        std::cout
+                            << "--test selected, more to come"
+                            << std::endl
+                            ;
+                    }
+                    else if (! cfg_set.value("read").empty())
+                    {
+                        std::string fname = cfg_set.value("read");
+                        std::cout
+                            << "--read selected, more to come.\n"
+                            << "The file-name is '" << fname << "'"
+                            << std::endl
+                            ;
+                    }
+                    else if (! cfg_set.value("write").empty())
+                    {
+
+                        /*
+                         * Compare to the writing done in ini_test.cpp.
+                         */
+
+                        std::string fname;
+                        const cfg::inimanager & ccfg = cfg_set;
+                        const cfg::inisections & rcs =
+                            ccfg.find_inisections("rc");
+
+                        if (rcs.active())
+                        {
+                            fname = cfg_set.value("write");
+                            std::cout
+                                << "--write: file-name '" << fname << "'"
+                                << std::endl
+                                ;
+
+                            cfg::inifile f_out(rcs, fname, "rc");
+                            success = f_out.write();
+                            if (! success)
+                                util::error_message("Write failed", fname);
+                        }
+                        else
+                        {
+                            /*
+                             * Note that util::error_message() could also
+                             * be used.  In fact, let's use it.
+                             *
+                             * std::cerr << "No options to write" << std::endl;
+                             */
+
+                            util::error_message("No options to write", fname);
+                            success = false;
+                        }
+                    }
                     rcode = EXIT_SUCCESS;
                 }
 

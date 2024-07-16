@@ -1,0 +1,24 @@
+TODOs for the cfg66 library
+Chris Ahlstrom
+2023-07-16 to 2023-07-16
+
+This file lists only the high-priority features and fixtures we need
+to do for Cfg66.
+
+ini_test_cpp:
+
+    -   Too many extra spaces after writing the "[Cfg66]" section to
+        the "rc" file. This is due to an section of "rc" with
+        name, description, and source_section that are empty.
+        Why does this section occur?
+    -   When writing the file, make sure the config-type is "rc" for the
+        test.
+    -   Make an additional way to add comment characters to the description,
+        without removing the newlines or justifying.
+    -   Add a [last-used-dir] value based on reading/writing.
+    -   Add to the [recent-files] based on reading/writing.
+    -   Add some fake ports to [midi-input], [midi-input-map],
+        [midi-clock], and [midi-clock-map].
+
+# vim: sw=4 ts=4 wm=8 et ft=sh
+

@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-24
- * \updates       2024-07-11
+ * \updates       2024-07-16
  * \license       See above.
  *
  *      The limitations of command-line options as implemented in cli::parser
@@ -327,7 +327,7 @@ multiparser::parse (int argc, char * argv [])
              */
 
             std::string longname;
-            if (token.length() == 2)
+            if (token.length() == 2)        /* format of a code: "-x"       */
             {
                 char code = token[1];
                 auto it = code_mappings().find(code);
@@ -340,7 +340,8 @@ multiparser::parse (int argc, char * argv [])
             }
             if (token.empty())
             {
-                util::error_message("option lookup failed", token);
+                result = false;
+                util::error_message("empty token");
                 break;
             }
 
@@ -363,6 +364,11 @@ multiparser::parse (int argc, char * argv [])
                 m_current_options = & find_option_set(configtype, configsection);
                 if (m_current_options->active())
                     result = parse_value(argc, argv, i, token);
+            }
+            else
+            {
+                result = false;
+                util::error_message("option lookup failed", token);
             }
         }
     }

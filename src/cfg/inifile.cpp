@@ -24,7 +24,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2024-06-17
+ * \updates       2024-07-16
  * \license       GNU GPLv2 or above
  *
  */
@@ -47,7 +47,8 @@ namespace cfg
 
 inifile::inifile
 (
-    inisections & sections,
+    // inisections & sections,
+    const inisections & sections,
     const std::string & filename,
     const std::string & cfgtype
 ) :
@@ -99,7 +100,12 @@ inifile::parse ()
             }
              */
 
-            inisections::sectionlist & sections = m_ini_sections.section_list();
+            inisections::sectionlist & sections =
+                const_cast<inisections::sectionlist &>
+                (
+                    m_ini_sections.section_list()
+                );
+
             for (auto & section : sections)
                 parse_section(file, section);
         }
@@ -158,12 +164,10 @@ inifile::write ()
          *
          * It's too problematic to have these built in.
          *
-
-        const inisection & cfg66sec = get_inifile_cfg66_section();
-        write_section(file, cfg66sec);
-
-        const inisection & commsec = get_inifile_comment_section();
-        write_section(file, commsec);
+         *  const inisection & cfg66sec = get_inifile_cfg66_section();
+         *  write_section(file, cfg66sec);
+         *  const inisection & commsec = get_inifile_comment_section();
+         *  write_section(file, commsec);
          *
          */
 
@@ -173,9 +177,7 @@ inifile::write ()
 
         const inisections::sectionlist & sections = m_ini_sections.section_list();
         for (const auto & section : sections)
-        {
             write_section(file, section);
-        }
 
         /*
          * Write the stock INI file footer.
@@ -205,10 +207,14 @@ inifile::write_section
     const inisection & section
 )
 {
-    file
-        << "\n" << section.name() << "\n\n"
-        << section.description_commented() << "\n"
-        ;
+    if (! section.name().empty())
+    {
+        file << "\n" << section.name() << "\n\n";
+    }
+    if (! section.section_description().empty())
+    {
+        file << section.description_commented() << "\n";
+    }
 
     const options & opset = section.option_set();
     options::container opspecs = opset.option_pairs();

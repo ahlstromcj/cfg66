@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-07-15
+ * \updates       2024-07-16
  * \license       See above.
  *  section.
  *
@@ -165,6 +165,19 @@ public:
         const std::string & sectionname =   global
     ) const;
 
+    std::string value
+    (
+        const std::string & name,
+        const std::string & cfgtype     =   global,
+        const std::string & sectionname =   global
+    ) const;
+    void value
+    (
+        const std::string & name,
+        const std::string & value,
+        const std::string & cfgtype     =   global,
+        const std::string & sectionname =   global
+    );
     bool boolean_value
     (
         const std::string & name,

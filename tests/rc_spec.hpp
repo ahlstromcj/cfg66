@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-07-22
- * \updates       2024-07-15
+ * \updates       2024-07-16
  * \license       See above.
  *
  */
@@ -686,6 +686,40 @@ inisection::specification rc_recent_files_data
  * All sections of the 'rc' configuration
  *------------------------------------------------------------------------*/
 
+const std::string rc_extension{"rc"};
+
+inisection::specification rc_cfg66_data
+{
+    "[Cfg66]",
+    {
+"One generally needs to replace inifile_cfg66_data, a stock set of data,\n"
+"with a more specific structure. We need to specify the config-type and\n"
+"the version.\n"
+    },
+    {
+        /*
+         * Name, Name, Code, Kind, Enabled, Default, Value,
+         * FromCli, Dirty, Description, Built-in
+         */
+        {
+            "config-type",
+            {
+                options::code_null, options::kind::string, options::disabled,
+                "rc", "", false, false,
+                "Rc configuration file.", false
+            }
+        },
+        {
+            "version",
+            {
+                options::code_null, options::kind::integer, options::disabled,
+                "0", "0", false, false,
+                "Configuration file version.", false
+            }
+        },
+    }
+};
+
 inisection::specification rc_comments = inifile_comment_data;
 
 inisections::specification rc_data
@@ -697,7 +731,7 @@ inisections::specification rc_data
     "metronome function, JACK settings, recent-files list, and a few more."
     ,
     {
-        std::ref(inifile_cfg66_data),       // std::ref(rc_cfg66_data)
+        std::ref(rc_cfg66_data),            /* replaces inifile_cfg66_data  */
         std::ref(rc_comments),
         std::ref(rc_misc_data),
         std::ref(rc_meta_data),

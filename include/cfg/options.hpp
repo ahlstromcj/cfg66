@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-15
+ * \updates       2024-07-16
  * \license       See above.
  *
  *  Supports variables of the following types:
@@ -96,13 +96,18 @@ namespace cfg
  *  Strings to represent the default configuration type and section name,
  *  which indicate to use the stock default option set.
  *
- *  The loopup string indicated to ignore the configuration type and
+ *  The lookup string indicated to ignore the configuration type and
  *  section name and use a brute-force lookup. Simpler calls, but slower
- *  access to an option.,
+ *  access to an option.
+ *
+ *  The bad string is used to return bad values, such as when an option
+ *  is not found. It is the same value as returned by
+ *  util::questionable_string().
  */
 
 static std::string global{""};
 static std::string lookup{"?"};
+static std::string bad{"?"};
 
 /**
  *  Accessor function class.

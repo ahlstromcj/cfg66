@@ -27,7 +27,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2024-06-19
+ * \updates       2024-07-16
  * \license       GNU GPLv2 or above
  *
  *  An inifile is a configfile that overrides the parse() and write()
@@ -69,13 +69,15 @@ private:
      *  hidden.
      */
 
-    inisections & m_ini_sections;
+    // inisections & m_ini_sections;
+    const inisections & m_ini_sections;
 
 public:
 
     inifile
     (
-        inisections & sections,
+        // inisections & sections,
+        const inisections & sections,
         const std::string & name,
         const std::string & cfgtype
     );

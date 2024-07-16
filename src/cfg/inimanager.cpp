@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-07-14
+ * \updates       2024-07-16
  * \license       See above.
  *
  *  In an application, we want to access options via the triplet of
@@ -351,6 +351,36 @@ inimanager::help_text () const
  * Options accessors
  *------------------------------------------------------------------------*/
 
+std::string
+inimanager::value
+(
+    const std::string & name,
+    const std::string & cfgtype,
+    const std::string & sectionname
+) const
+{
+    const std::string s_dummy;
+    const options & opts = find_options(cfgtype, sectionname);
+    if (opts.active())
+        return opts.value(name);
+    else
+        return s_dummy;
+}
+
+void
+inimanager::value
+(
+    const std::string & name,
+    const std::string & value,
+    const std::string & cfgtype,
+    const std::string & sectionname
+)
+{
+    options & opts = find_options(cfgtype, sectionname);
+    if (opts.active())
+        opts.value(name, value);
+}
+
 bool
 inimanager::boolean_value
 (
@@ -359,7 +389,7 @@ inimanager::boolean_value
     const std::string & sectionname
 ) const
 {
-    const options & opts = find_options (cfgtype, sectionname);
+    const options & opts = find_options(cfgtype, sectionname);
     if (opts.active())
         return opts.boolean_value(name);
     else
@@ -374,7 +404,7 @@ inimanager::integer_value
     const std::string & sectionname
 ) const
 {
-    const options & opts = find_options (cfgtype, sectionname);
+    const options & opts = find_options(cfgtype, sectionname);
     if (opts.active())
         return opts.integer_value(name);
     else
@@ -389,7 +419,7 @@ inimanager::floating_value
     const std::string & sectionname
 ) const
 {
-    const options & opts = find_options (cfgtype, sectionname);
+    const options & opts = find_options(cfgtype, sectionname);
     if (opts.active())
         return opts.floating_value(name);
     else

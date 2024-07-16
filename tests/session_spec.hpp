@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-07-22
- * \updates       2024-07-15
+ * \updates       2024-07-16
  * \license       See above.
  *
  *  This is the first of a set of test/demo header files to set up a large
@@ -122,7 +122,7 @@ inisection::specification session_cfg66_data
             "config-type",
             {
                 options::code_null, options::kind::string, options::disabled,
-                "session", "session", false, false,
+                "session", "", false, false,
                 "Session configuration file.", false
             }
         },
@@ -130,7 +130,7 @@ inisection::specification session_cfg66_data
             "version",
             {
                 options::code_null, options::kind::integer, options::disabled,
-                "0", "0", false, false,
+                "0", "", false, false,
                 "Configuration file version.", false
             }
         },
