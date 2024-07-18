@@ -108,6 +108,24 @@ static cfg::options::container s_test_options
     }
 };
 
+#if defined PLATFORM_DEBUG
+#if defined USE_COMMENTS_COPY           /* see rc_spec.hpp  */
+void
+copy_check ()
+{
+    cfg::inisection::specification check_1{cfg::inifile_comment_data};
+    printf("Good: name = '%s'\n", check_1.sec_name.c_str());
+
+    /*
+     * inisection::specification rc_comments{inifile_comment_data};
+     */
+
+    cfg::inisection::specification & check_2{cfg::rc_comments};
+    printf(" Bad: name = '%s'\n", check_2.sec_name.c_str());
+}
+#endif
+#endif
+
 /*
  * Process:
  *
@@ -163,12 +181,20 @@ main (int argc, char * argv [])
     cfg::inimanager cfg_set(s_test_options);    /* add the test options     */
     cfg::set_client_name("iniset");
 
-    bool success = cfg_set.add_inisections
-    (
-        "small", cfg::small_data                /* see small_spec.hpp       */
-    );
+#if defined PLATFORM_DEBUG
+#if defined USE_COMMENTS_COPY
+    copy_check();
+#endif
+#endif
+
+#if 0
+    bool success = cfg_set.add_inisections(cfg::small_data); /* small_spec  */
     if (success)
-        success = cfg_set.add_inisections("rc", cfg::rc_data);
+        success = cfg_set.add_inisections(cfg::rc_data);
+#else
+    bool success = cfg_set.add_inisections(cfg::rc_data); /* small_spec  */
+#endif
+
 #if defined USE_ALT_TEST
     std::string clihelp = cfg_set.cli_help_text();
     std::cout << clihelp << std::endl;

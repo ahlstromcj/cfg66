@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-15
+ * \updates       2024-07-17
  * \license       See above.
  *
  *  The cli::options class provides a way to hold the state of command-line
@@ -169,9 +169,9 @@ namespace cfg
 
 #if defined USER_CONSTRUCTOR_FOR_OPTIONS_SPEC
 
-/*------------------------------------------------------------------------
- * options::spec default constructor
- *------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------
+ * options::spec constructors
+ *--------------------------------------------------------------------------*/
 
 options::spec::spec () :
     option_code         (0),
@@ -185,10 +185,6 @@ options::spec::spec () :
 {
     // No other code
 }
-
-/*------------------------------------------------------------------------
- * options::spec principal constructor
- *------------------------------------------------------------------------*/
 
 options::spec::spec
 (
@@ -210,11 +206,11 @@ options::spec::spec
 
 #endif // defined USER_CONSTRUCTOR_FOR_OPTIONS_SPEC
 
-/*------------------------------------------------------------------------
+/*--------------------------------------------------------------------------
  * options
- *------------------------------------------------------------------------*/
+ *--------------------------------------------------------------------------*/
 
-options::options () :
+options::options (bool loadglobal) :
     m_code_list         (),
     m_has_error         (false),
     m_error_msg         (),
@@ -222,8 +218,11 @@ options::options () :
     m_source_section    (),
     m_option_pairs      ()
 {
-    if (add(stock_options()))         /* add the default/stock options    */
-        initialize();
+    if (loadglobal)
+    {
+        if (add(global_options()))      /* add the default/global options   */
+            initialize();
+    }
 }
 
 options::options
@@ -239,13 +238,9 @@ options::options
     m_source_section    (section),
     m_option_pairs      (specs)
 {
-    /*
-     * if (file == "stock" && section == "[stock]")
-     */
-
     if (file.empty() && section.empty())
     {
-        if (add(stock_options()))     /* add the default/stock options    */
+        if (add(global_options()))     /* add the default/stock options    */
             initialize();
     }
     else
@@ -691,7 +686,7 @@ options::long_name (const std::string & code) const
 const options::spec &
 options::find_spec (const std::string & name) const
 {
-    static spec s_inactive_spec;
+    static spec s_inactive_spec{! stock};   /* do not load global options   */
     if (! name.empty())
     {
         const auto opt = find_match(name);
@@ -1477,9 +1472,9 @@ options::floating_value_range
     return result;
 }
 
-/*------------------------------------------------------------------------
+/*--------------------------------------------------------------------------
  * static options functions
- *------------------------------------------------------------------------*/
+ *--------------------------------------------------------------------------*/
 
 std::string
 options::kind_to_string (kind k)
@@ -1533,13 +1528,13 @@ options::string_to_kind (const std::string & s)
     return result;
 }
 
-/*------------------------------------------------------------------------
+/*--------------------------------------------------------------------------
  * Free functions
- *------------------------------------------------------------------------*/
+ *--------------------------------------------------------------------------*/
 
-/*------------------------------------------------------------------------
+/*--------------------------------------------------------------------------
  * Default list of options
- *------------------------------------------------------------------------*/
+ *--------------------------------------------------------------------------*/
 
 /*
  *  Internal and commonly useful options.  The following option codes are
@@ -1573,7 +1568,7 @@ options::string_to_kind (const std::string & s)
  */
 
 options::container &
-stock_options ()
+global_options ()
 {
     static options::container s_default_options =
     {

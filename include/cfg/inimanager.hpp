@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-07-16
+ * \updates       2024-07-17
  * \license       See above.
  *  section.
  *
@@ -135,11 +135,7 @@ public:
         return m_sections_map;
     }
 
-    bool add_inisections
-    (
-        const std::string & cfgtype,
-        inisections::specification & op
-    );
+    bool add_inisections (inisections::specification & op);
 
     /*
      *  These will return a dummy (empty inisections) reference if not found.
@@ -184,18 +180,39 @@ public:
         const std::string & cfgtype     =   global,
         const std::string & sectionname =   global
     ) const;
+    void boolean_value
+    (
+        const std::string & name,
+        bool value,
+        const std::string & cfgtype,
+        const std::string & sectionname
+    );
     int integer_value
     (
         const std::string & name,
         const std::string & cfgtype     =   global,
         const std::string & sectionname =   global
     ) const;
+    void integer_value
+    (
+        const std::string & name,
+        int value,
+        const std::string & cfgtype,
+        const std::string & sectionname
+    );
     float floating_value
     (
         const std::string & name,
         const std::string & cfgtype     =   global,
         const std::string & sectionname =   global
     ) const;
+    void floating_value
+    (
+        const std::string & name,
+        float value,
+        const std::string & cfgtype,
+        const std::string & sectionname
+    );
 
 private:
 

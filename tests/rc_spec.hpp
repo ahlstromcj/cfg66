@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-07-22
- * \updates       2024-07-16
+ * \updates       2024-07-18
  * \license       See above.
  *
  */
@@ -73,7 +73,7 @@ inisection::specification rc_misc_data
             "sets-mode",
             {
                 options::code_null, options::kind::string, options::enabled,
-                "normal", "normal", false, false,
+                "normal", "", false, false,
                 "Mode for handling arming/muting during play-set changes.",
                 false
             }
@@ -82,7 +82,7 @@ inisection::specification rc_misc_data
             "port-naming",
             {
                 options::code_null, options::kind::string, options::enabled,
-                "short", "short", false, false,
+                "short", "", false, false,
                 "Port amount-of-label showing.", false
             }
         },
@@ -90,8 +90,8 @@ inisection::specification rc_misc_data
             "init-disabled-ports",
             {
                 options::code_null, options::kind::boolean, options::disabled,
-                "false", "false", false, false,
-                "An experimental option; not recommended.", false
+                "false", "", false, false,
+                "Experimental option; not recommended.", false
             }
         },
         {
@@ -110,7 +110,7 @@ inisection::specification rc_misc_data
             "reveal-ports",             /* was called "show-system-ports"   */
             {
                 options::code_null, options::kind::boolean, options::enabled,
-                "false", "false", false, false,
+                "false", "", false, false,
                 "Show real system ports, not 'usr' port names.", false
             }
         },
@@ -118,7 +118,7 @@ inisection::specification rc_misc_data
             "manual-ports",             /* "auto-ports" = "no-manual-ports" */
             {
                 options::code_null, options::kind::boolean, options::enabled,
-                "false", "false", false, false,
+                "false", "", false, false,
                 "Show real system ports, not 'usr' port names.", false
             }
         }
@@ -139,7 +139,7 @@ inisection::specification rc_meta_data
             "tempo-track",
             {
                 options::code_null, options::kind::integer, options::enabled,
-                "0", "0", false, false,
+                "0", "", false, false,
                 "Specifies an alternate track to hold tempo events.", false
             }
         }
@@ -263,7 +263,7 @@ inisection::specification rc_midi_clock_mod_data
             "ticks",
             {
                 options::code_null, options::kind::integer, options::disabled,
-                "64", "64", false, false,
+                "64", "", false, false,
                 "The mod-ticks value for MIDI output ports.", false
             }
         },
@@ -271,7 +271,7 @@ inisection::specification rc_midi_clock_mod_data
             "record-by-channel",
             {
                 options::code_null, options::kind::boolean, options::disabled,
-                "false", "false", false, false,
+                "false", "", false, false,
                 "If true, place input in pattern corresponding to channel.",
                 false
             }
@@ -291,7 +291,7 @@ inisection::specification rc_midi_metro_data
             "output-buss",
             {
                 options::code_null, options::kind::integer, options::disabled,
-                "0", "0", false, false,
+                "0", "", false, false,
                 "The output bus for the metronome.", false
             }
         },
@@ -299,7 +299,7 @@ inisection::specification rc_midi_metro_data
             "output-channel",
             {
                 options::code_null, options::kind::integer, options::disabled,
-                "0", "0", false, false,
+                "0", "", false, false,
                 "The output channel for the metronome.", false
             }
         },
@@ -307,7 +307,7 @@ inisection::specification rc_midi_metro_data
             "beats-per-bar",
             {
                 options::code_null, options::kind::integer, options::disabled,
-                "0", "0", false, false,
+                "4", "", false, false,
                 "The beats/measure for the metronome.", false
             }
         },
@@ -315,7 +315,7 @@ inisection::specification rc_midi_metro_data
             "beat-width",
             {
                 options::code_null, options::kind::integer, options::disabled,
-                "0", "0", false, false,
+                "4", "", false, false,
                 "The beat unit (width) for the metronome.", false
             }
         },
@@ -323,7 +323,7 @@ inisection::specification rc_midi_metro_data
             "main-patch",
             {
                 options::code_null, options::kind::integer, options::disabled,
-                "15", "15", false, false,
+                "15", "", false, false,
                 "The patch/program for the highlight beat.", false
             }
         },
@@ -331,7 +331,7 @@ inisection::specification rc_midi_metro_data
             "main-note",
             {
                 options::code_null, options::kind::integer, options::disabled,
-                "75", "75", false, false,
+                "75", "", false, false,
                 "The note value for the highlight beat.", false
             }
         },
@@ -339,7 +339,7 @@ inisection::specification rc_midi_metro_data
             "main-note-velocity",
             {
                 options::code_null, options::kind::integer, options::disabled,
-                "120", "120", false, false,
+                "120", "", false, false,
                 "The note velocity for the highlight beat.", false
             }
         },
@@ -347,7 +347,7 @@ inisection::specification rc_midi_metro_data
             "main-note-length",
             {
                 options::code_null, options::kind::integer, options::disabled,
-                "0", "0", false, false,
+                "192", "", false, false,
                 "The note length for the highlight beat.", false
             }
         },
@@ -355,7 +355,7 @@ inisection::specification rc_midi_metro_data
             "sub-patch",
             {
                 options::code_null, options::kind::integer, options::disabled,
-                "33", "33", false, false,
+                "33", "", false, false,
                 "The patch/program for the sub beat.", false
             }
         },
@@ -363,7 +363,7 @@ inisection::specification rc_midi_metro_data
             "sub-note",
             {
                 options::code_null, options::kind::integer, options::disabled,
-                "76", "76", false, false,
+                "76", "", false, false,
                 "The note value for the sub beat.", false
             }
         },
@@ -371,7 +371,7 @@ inisection::specification rc_midi_metro_data
             "sub-note-velocity",
             {
                 options::code_null, options::kind::integer, options::disabled,
-                "84", "84", false, false,
+                "84", "", false, false,
                 "The note velocity for the sub beat.", false
             }
         },
@@ -379,7 +379,7 @@ inisection::specification rc_midi_metro_data
             "sub-note-length",
             {
                 options::code_null, options::kind::integer, options::disabled,
-                "0", "0", false, false,
+                "0", "", false, false,
                 "The note length for the sub beat.", false
             }
         },
@@ -387,7 +387,7 @@ inisection::specification rc_midi_metro_data
             "count-in-active",
             {
                 options::code_null, options::kind::boolean, options::disabled,
-                "false", "false", false, false,
+                "false", "", false, false,
                 "If true, count-in at start of song.", false
             }
         },
@@ -395,7 +395,7 @@ inisection::specification rc_midi_metro_data
             "count-in-measures",
             {
                 options::code_null, options::kind::integer, options::disabled,
-                "1", "1", false, false,
+                "1", "", false, false,
                 "The number of measures to count-in.", false
             }
         },
@@ -403,7 +403,7 @@ inisection::specification rc_midi_metro_data
             "count-in-recording",
             {
                 options::code_null, options::kind::boolean, options::disabled,
-                "false", "false", false, false,
+                "false", "", false, false,
                 "If true, record during count-in.", false
             }
         },
@@ -411,7 +411,7 @@ inisection::specification rc_midi_metro_data
             "recording-buss",
             {
                 options::code_null, options::kind::integer, options::disabled,
-                "3", "3", false, false,
+                "3", "", false, false,
                 "The port number for count-in recording.", false
             }
         },
@@ -419,7 +419,7 @@ inisection::specification rc_midi_metro_data
             "recording-measures",
             {
                 options::code_null, options::kind::integer, options::disabled,
-                "1", "1", false, false,
+                "1", "", false, false,
                 "The number of measures to count-in record.", false
             }
         },
@@ -427,7 +427,7 @@ inisection::specification rc_midi_metro_data
             "thru-buss",
             {
                 options::code_null, options::kind::integer, options::disabled,
-                "0", "0", false, false,
+                "0xff", "", false, false,
                 "The through bus for the metronome.", false
             }
         },
@@ -435,7 +435,7 @@ inisection::specification rc_midi_metro_data
             "thru-channel",
             {
                 options::code_null, options::kind::integer, options::disabled,
-                "0", "0", false, false,
+                "0", "", false, false,
                 "The through channel for the metronome.", false
             }
         }
@@ -460,7 +460,7 @@ inisection::specification rc_interaction_data
             "snap-split",
             {
                 options::code_null, options::kind::boolean, options::disabled,
-                "false", "false", false, false,
+                "false", "", false, false,
                 "If true, split trigger at snap point.", false
             }
         },
@@ -468,7 +468,7 @@ inisection::specification rc_interaction_data
             "double-click-edit",
             {
                 options::code_null, options::kind::boolean, options::disabled,
-                "false", "false", false, false,
+                "false", "", false, false,
                 "If true, allow double-click edit.", false
             }
         }
@@ -538,7 +538,7 @@ inisection::specification rc_jack_transport_data
             "transport-type",
             {
                 'J', options::kind::string, options::enabled,
-                "none", "none", false, false,
+                "none", "", false, false,
                 "Sets JACK transport to 'none', 'slave', "
                     "'master', or 'conditional'.", false
             }
@@ -547,7 +547,7 @@ inisection::specification rc_jack_transport_data
             "song-start-mode",
             {
                 options::code_null, options::kind::string, options::disabled,
-                "auto", "auto", false, false,
+                "auto", "", false, false,
                 "Sets the song-mode to 'live', 'song', or 'auto'.", false
             }
         },
@@ -555,7 +555,7 @@ inisection::specification rc_jack_transport_data
             "jack",                     /* replaces "jack-midi"             */
             {
                 'j', options::kind::boolean, options::enabled,
-                "false", "false", false, false,
+                "false", "", false, false,
                 "Indicates to use JACK MIDI instead of ALSA MIDI.", false
             }
         },
@@ -563,7 +563,7 @@ inisection::specification rc_jack_transport_data
             "auto-connect",             /* replaces "jack-auto-connect"     */
             {
                 options::code_null, options::kind::boolean, options::enabled,
-                "true", "true", false, false,
+                "true", "", false, false,
                 "Indicates to automatically connect ports found in the system.",
                 false
             }
@@ -572,7 +572,7 @@ inisection::specification rc_jack_transport_data
             "jack-use-offset",
             {
                 options::code_null, options::kind::boolean, options::enabled,
-                "true", "true", false, false,
+                "true", "", false, false,
                 "Adjust the JACK frame count.", false
             }
         },
@@ -580,7 +580,7 @@ inisection::specification rc_jack_transport_data
             "jack-buffer-size",
             {
                 options::code_null, options::kind::integer, options::enabled,
-                "0", "0", false, false,
+                "0", "", false, false,
                 "Sets JACK frame-count to a power of 2 or "
                     "0 for internal default.", false
             }
@@ -605,7 +605,7 @@ inisection::specification rc_auto_save_data
             "auto-save-rc",
             {
                 options::code_null, options::kind::boolean, options::disabled,
-                "true", "true", false, false,
+                "true", "", false, false,
                 "Specifies to always save the 'rc' file.", false
             }
         },
@@ -613,7 +613,7 @@ inisection::specification rc_auto_save_data
             "save-old-triggers",
             {
                 options::code_null, options::kind::boolean, options::disabled,
-                "false", "false", false, false,
+                "false", "", false, false,
                 "Saves triggers in the legacy Seq24 format.", false
             }
         },
@@ -621,7 +621,7 @@ inisection::specification rc_auto_save_data
             "save-old-mutes",
             {
                 options::code_null, options::kind::boolean, options::disabled,
-                "false", "false", false, false,
+                "false", "", false, false,
                 "Saves mute-groups in the legacy Seq24 format.", false
             }
         }
@@ -659,7 +659,7 @@ inisection::specification rc_recent_files_data
             "full-paths",
             {
                 options::code_null, options::kind::boolean, options::disabled,
-                "false", "false", false, false,
+                "false", "", false, false,
                 "Specifies to show the whole path to the file.", false
             }
         },
@@ -667,7 +667,7 @@ inisection::specification rc_recent_files_data
             "load-most-recent",
             {
                 'L', options::kind::boolean, options::enabled,
-                "true", "true", false, false,
+                "true", "", false, false,
                 "Specifies to load the most recent file at startup.", false
             }
         },
@@ -675,7 +675,7 @@ inisection::specification rc_recent_files_data
             "count",
             {
                 options::code_null, options::kind::list, options::disabled,
-                "0", "0", false, false,
+                "0", "", false, false,
                 "The number of files in the most-recent list.", false
             }
         }
@@ -686,7 +686,17 @@ inisection::specification rc_recent_files_data
  * All sections of the 'rc' configuration
  *------------------------------------------------------------------------*/
 
+/*
+ * Not yet used.
+ */
+
 const std::string rc_extension{"rc"};
+
+/*
+ *  Each INI file needs its own "[Cfg66]" section. It is recommended to
+ *  not use the global Cfg66-data structure for each INI file supported
+ *  by an application.
+ */
 
 inisection::specification rc_cfg66_data
 {
@@ -701,6 +711,7 @@ inisection::specification rc_cfg66_data
          * Name, Name, Code, Kind, Enabled, Default, Value,
          * FromCli, Dirty, Description, Built-in
          */
+
         {
             "config-type",
             {
@@ -713,14 +724,69 @@ inisection::specification rc_cfg66_data
             "version",
             {
                 options::code_null, options::kind::integer, options::disabled,
-                "0", "0", false, false,
+                "0", "", false, false,
                 "Configuration file version.", false
             }
         },
     }
 };
 
-inisection::specification rc_comments = inifile_comment_data;
+/*
+ *  It is recommended to make a copy of the global comment-data structure
+ *  for each INI file supported by an application..
+ *
+ * Warning:
+ *
+ *  However, if we use the following to make a copy, then this section
+ *  has an empty name, an empty description, and an empty spcref
+ *  vector. Why?
+ *
+ *      inisection::specification rc_comments{inifile_comment_data};
+ *
+ *  The following works properly, but obviously does not make a copy:
+ *
+ *      inisection::specification & rc_comments{inifile_comment_data};
+ */
+
+#undef USE_COMMENTS_COPY
+#if defined USE_COMMENTS_COPY
+
+inisection::specification & rc_comments{inifile_comment_data};
+
+#else
+
+inisection::specification rc_comments
+{
+    "[comments]",
+    {
+"[comments] holds user documentation for this file. The first empty, hash-\n"
+"commented, or tag line ends the comment. \n"
+" \n"
+"Use a space for line breaks as done in the line above.\n"
+    },
+    {
+        {
+            "comment",
+            {
+                options::code_null, options::kind::section, options::disabled,
+                "Add your comment block here.", "",
+                false, false, "Configuration file user comments.", false
+            }
+        }
+    }
+};
+
+#endif
+
+/*
+ * Fields:
+ *
+ *  std::string file_extension
+ *  std::string file_directory
+ *  std::string file_basename
+ *  std::string file_description
+ *  specrefs file_sections
+ */
 
 inisections::specification rc_data
 {
@@ -728,7 +794,7 @@ inisections::specification rc_data
     "",             /* use value from appinfo's get_home_cfg_directory()    */
     "",             /* use value derived from appinfo's get_home_cfg_file() */
     "This 'rc' file defines some basic features, such as MIDI ports, the\n"
-    "metronome function, JACK settings, recent-files list, and a few more."
+    "metronome function, JACK settings, recent-files list, and a few more.\n"
     ,
     {
         std::ref(rc_cfg66_data),            /* replaces inifile_cfg66_data  */

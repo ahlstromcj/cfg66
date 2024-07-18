@@ -95,7 +95,7 @@ static std::string s_stock_file_intro
 
 /**
  *  Create an inisections that has only one inisection, that being one
- *  holding only the "stock" options. See the inisection default constructor.
+ *  holding only the "global" options. See the inisection default constructor.
  */
 
 inisections::inisections () :
@@ -192,10 +192,32 @@ inisections::inisections
 
     /*
      * specref = std::reference_wrapper<inisection::specification>
+     * specrefs = std::vector<specref>
+     *
+     * for (auto & sec : spec.file_sections)   // vector of specref (wrappers)
+     *
+     *  std::reference_wrapper<inisection::specification> sec :
+     *      spec.file_sections
      */
 
-    for (auto & sec : spec.file_sections)   /* vector of specref (wrappers) */
+#if defined PLATFORM_DEBUG
+    size_t index = 0;
+#endif
+
+    for (auto sec : spec.file_sections)
     {
+
+#if defined PLATFORM_DEBUG
+        const inisection::specification & s = spec.file_sections[index].get();
+        std::string desc = s.sec_description.substr(0, 16);
+        printf
+        (
+            "inispec[%2d]: name = '%s', desc = '%s', count = %d\n",
+            int(index++), s.sec_name.c_str(), desc.c_str(),
+            int(s.sec_optionlist.size())
+        );
+#endif
+
         /*
          * Create a new inisection. Using the stored std::ref() object and
          * the file-extension. Don't override the section name in
@@ -267,7 +289,7 @@ inisections::help_text () const
 const inisection &
 inisections::find_inisection (const std::string & sectionname) const
 {
-    static inisection s_inactive_inisection;
+    static inisection s_inactive_inisection{! options::stock};
     for (const auto & section : section_list())
     {
         if (section.name() == sectionname)
@@ -303,7 +325,7 @@ inisections::find_inisection (const std::string & sectionname)
 const options &
 inisections::find_options (const std::string & sectionname) const
 {
-    static options s_inactive_options;
+    static options s_inactive_options{! options::stock};
     const inisection & section = find_inisection(sectionname);
     if (section.active())
         return section.option_set();
@@ -366,7 +388,7 @@ inisections::find_option_spec (const std::string & name) const
     for (const auto & section : section_list())
     {
         const options::spec & opt = section.find_option_spec(name);
-        if (! opt.option_desc.empty())          // TODO? (opt.active())
+        if (! options::inactive(opt))
             return opt;
     }
     return s_inactive_spec;

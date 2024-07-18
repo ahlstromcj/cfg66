@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-07-16
+ * \updates       2024-07-17
  * \license       See above.
  *
  *  In an application, we want to access options via the triplet of
@@ -65,6 +65,7 @@
  */
 
 #include "cfg/inimanager.hpp"           /* cfg::inimanager class            */
+#include "util/msgfunctions.hpp"        /* util::error_message(), etc.      */
 
 namespace cfg
 {
@@ -79,7 +80,7 @@ namespace cfg
  *
  *  -   inisections()
  *      -   inisection()
- *          -   options() : add(stock_options()) and initialize()
+ *          -   options() : add(global_options()) and initialize()
  */
 
 inimanager::inimanager () :
@@ -113,15 +114,15 @@ inimanager::inimanager (const options::container & additional) :
     bool ok = sec.add_options(additional);
     if (! ok)
     {
-        printf("FAILED to add options\n");          // UPGRADE LATER
+        util::error_message("Failed to add additional global options", "inimanager");
     }
 
-    auto p = std::make_pair("", sec);               /* does it make a copy? */
+    auto p = std::make_pair(global, sec);           /* does it make a copy? */
     auto r = sections_map().insert(p);              /* another copy         */
     ok = r.second;
     if (ok)
     {
-        const options & opts = sec.find_options();  /* find stock options   */
+        const options & opts = sec.find_options();  /* find global options  */
         if (opts.active())
         {
             (void) multi_parser().cli_mappings_add(opts.option_pairs());
@@ -129,7 +130,7 @@ inimanager::inimanager (const options::container & additional) :
     }
     else
     {
-        printf("FAILED to add inisection\n");       // UPGRADE LATER
+        util::error_message("Failed to add inisection", "inimanager");
     }
 }
 
@@ -153,12 +154,9 @@ inimanager::inimanager (const options::container & additional) :
  */
 
 bool
-inimanager::add_inisections
-(
-    const std::string & cfgtype,
-    inisections::specification & spec
-)
+inimanager::add_inisections (inisections::specification & spec)
 {
+    std::string cfgtype = spec.file_extension;      /* configuration type   */
     bool result = ! cfgtype.empty();
     if (result)
     {
@@ -170,10 +168,8 @@ inimanager::add_inisections
         {
             result = multi_parser().cli_mappings_add(spec);
         }
-#if defined PLATFORM_DEBUG
         else
-            printf("Unable to insert sections %s\n", cfgtype.c_str());
-#endif
+            util::error_message("Unable to insert sections", cfgtype);
     }
     return result;
 }
@@ -396,6 +392,20 @@ inimanager::boolean_value
         return false;
 }
 
+void
+inimanager::boolean_value
+(
+    const std::string & name,
+    bool value,
+    const std::string & cfgtype,
+    const std::string & sectionname
+)
+{
+    options & opts = find_options(cfgtype, sectionname);
+    if (opts.active())
+        opts.boolean_value(name, value);
+}
+
 int
 inimanager::integer_value
 (
@@ -411,6 +421,20 @@ inimanager::integer_value
         return (-1);        /* or INT_MAX? */
 }
 
+void
+inimanager::integer_value
+(
+    const std::string & name,
+    int value,
+    const std::string & cfgtype,
+    const std::string & sectionname
+)
+{
+    options & opts = find_options(cfgtype, sectionname);
+    if (opts.active())
+        opts.integer_value(name, value);
+}
+
 float
 inimanager::floating_value
 (
@@ -424,6 +448,20 @@ inimanager::floating_value
         return opts.floating_value(name);
     else
         return (-1.0);      /* or FLOAT_MAX? */
+}
+
+void
+inimanager::floating_value
+(
+    const std::string & name,
+    float value,
+    const std::string & cfgtype,
+    const std::string & sectionname
+)
+{
+    options & opts = find_options(cfgtype, sectionname);
+    if (opts.active())
+        opts.floating_value(name, value);
 }
 
 }           // namespace cfg

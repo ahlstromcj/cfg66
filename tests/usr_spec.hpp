@@ -190,7 +190,7 @@ inisection::specification usr_interface_data
             "inverse-colors",
             {
                 'K', options::kind::boolean, options::enabled,
-                "false", "false", false, false,
+                "false", "", false, false,
                 "Invert the colors of the panes and piano rolls.", false
             }
         },
@@ -198,7 +198,7 @@ inisection::specification usr_interface_data
             "dark-theme",
             {
    /* TODO */   options::code_null, options::kind::boolean, options::enabled,
-                "false", "false", false, false,
+                "false", "", false, false,
                 "Compensate for a dark desktop theme.", false
             }
         },
@@ -206,7 +206,7 @@ inisection::specification usr_interface_data
             "progress-bar-thick",
             {
                 options::code_null, options::kind::boolean, options::disabled,
-                "false", "false", false, false,
+                "false", "", false, false,
                 "Enhance the progress bar and the slot font.", false
             }
         },
@@ -214,7 +214,7 @@ inisection::specification usr_interface_data
             "swap-coordinates",
             {
                 options::code_null, options::kind::boolean, options::disabled,
-                "false", "false", false, false,
+                "false", "", false, false,
                 "Make pattern number vary fastest by columns.", false
             }
         }

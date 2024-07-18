@@ -138,7 +138,7 @@ inisection::specification session_cfg66_data
             "quiet",
             {
                 options::code_null, options::kind::boolean, options::enabled,
-                "false", "false", false, false,
+                "false", "", false, false,
                 "Disable startup error prompts.", false
             }
         },
@@ -146,7 +146,7 @@ inisection::specification session_cfg66_data
             "verbose",
             {
                 options::code_null, options::kind::boolean, options::enabled,
-                "false", "false", false, false,
+                "false", "", false, false,
                 "Show informational messages.", false
             }
         }
@@ -203,7 +203,7 @@ inisection::specification session_config_file_data
             "active",
             {
                 options::code_null, options::kind::boolean, options::enabled,
-                "false", "false", false, false,
+                "false", "", false, false,
                 "Usage of configuration file; otherwise a default is used.",
                 false
             }
@@ -256,7 +256,7 @@ inisection::specification session_rc_file_data
             "active",
             {
                 options::code_null, options::kind::boolean, options::disabled,
-                "false", "false", false, false,
+                "false", "", false, false,
                 "Usage of the specified file.", false
             }
         },
@@ -272,7 +272,7 @@ inisection::specification session_rc_file_data
             "rc",                       /* instead of the generic "name"    */
             {
                 'f', options::kind::filename, options::enabled,
-                "seq66v2.rc", "seq66v2.rc", false, false,
+                "seq66v2.rc", "", false, false,
                 "The base file-name of the ports/settings file.", false
             }
         },
@@ -280,7 +280,7 @@ inisection::specification session_rc_file_data
             "rc-save",
             {
                 options::code_null, options::kind::boolean, options::disabled,
-                "false", "false", false, false,
+                "false", "", false, false,
                 "Saving of the 'rc' file at exit.", false
             }
         }
@@ -300,7 +300,7 @@ inisection::specification session_usr_file_data
             "active",
             {
                 options::code_null, options::kind::boolean, options::disabled,
-                "false", "false", false, false,
+                "false", "", false, false,
                 "Usage of the specified file.", false
             }
         },
@@ -316,7 +316,7 @@ inisection::specification session_usr_file_data
             "usr",                      /* instead of the generic "name"    */
             {
                 'F', options::kind::filename, options::enabled,
-                "seq66v2.usr", "seq66v2.usr", false, false,
+                "seq66v2.usr", "", false, false,
                 "The base file-name of the user file.", false
             }
         },
@@ -324,7 +324,7 @@ inisection::specification session_usr_file_data
             "usr-save",
             {
                 'u', options::kind::boolean, options::enabled,
-                "false", "false", false, false,
+                "false", "", false, false,
                 "Saving of the 'usr' file at exit.", false
             }
         }
@@ -347,7 +347,7 @@ inisection::specification session_palette_file_data
             "active",
             {
                 options::code_null, options::kind::boolean, options::disabled,
-                "false", "false", false, false,
+                "false", "", false, false,
                 "Usage of the specified file.", false
             }
         },
@@ -363,7 +363,7 @@ inisection::specification session_palette_file_data
             "name",
             {
                 options::code_null, options::kind::filename, options::disabled,
-                "seq66v2.palette", "seq66v2.palette", false, false,
+                "seq66v2.palette", "", false, false,
                 "The base file-name of the palette file.", false
             }
         }
@@ -382,7 +382,7 @@ inisection::specification session_ctrl_file_data
             "active",
             {
                 options::code_null, options::kind::boolean, options::disabled,
-                "false", "false", false, false,
+                "false", "", false, false,
                 "Usage of the specified file.", false
             }
         },
@@ -398,7 +398,7 @@ inisection::specification session_ctrl_file_data
             "name",
             {
                 options::code_null, options::kind::filename, options::disabled,
-                "seq66v2.ctrl", "seq66v2.ctrl", false, false,
+                "seq66v2.ctrl", "", false, false,
                 "The base file-name of the 'ctrl' file.", false
             }
         }
@@ -417,7 +417,7 @@ inisection::specification session_mutes_file_data
             "active",
             {
                 options::code_null, options::kind::boolean, options::enabled,
-                "false", "false", false, false,
+                "false", "", false, false,
                 "Usage of the specified file.", false
             }
         },
@@ -433,7 +433,7 @@ inisection::specification session_mutes_file_data
             "name",
             {
                 options::code_null, options::kind::filename, options::enabled,
-                "seq66v2.mutes", "seq66v2.mutes", false, false,
+                "seq66v2.mutes", "", false, false,
                 "The base file-name of the 'mutes' file.", false
             }
         }
@@ -451,7 +451,7 @@ inisection::specification session_drums_file_data
             "active",
             {
                 options::code_null, options::kind::boolean, options::disabled,
-                "false", "false", false, false,
+                "false", "", false, false,
                 "Usage of the specified file.", false
             }
         },
@@ -467,7 +467,7 @@ inisection::specification session_drums_file_data
             "name",
             {
                 options::code_null, options::kind::filename, options::disabled,
-                "seq66v2.drums", "seq66v2.drums", false, false,
+                "seq66v2.drums", "", false, false,
                 "The base file-name of the 'drums' file.", false
             }
         }
@@ -485,7 +485,7 @@ inisection::specification session_playlist_file_data
             "active",
             {
                 options::code_null, options::kind::boolean, options::enabled,
-                "false", "false", false, false,
+                "false", "", false, false,
                 "Usage of the specified file.", false
             }
         },
@@ -501,7 +501,7 @@ inisection::specification session_playlist_file_data
             "playlist",                 /* instead of the generic "name".   */
             {
                 'X', options::kind::filename, options::enabled,
-                "seq66v2.playlist", "seq66v2.playlist", false, false,
+                "seq66v2.playlist", "", false, false,
                 "The base file-name of the 'playlist' file.", false
             }
         }

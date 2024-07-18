@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-24
- * \updates       2024-07-16
+ * \updates       2024-07-18
  * \license       See above.
  *
  *      The limitations of command-line options as implemented in cli::parser
@@ -169,20 +169,16 @@ multiparser::cli_mappings_add
             bool allowcli = opt.second.option_cli_enabled;
             if (allowcli)
             {
-                char optcode = opt.second.option_code;
-                std::string optname = opt.first;
-                if (optcode > ' ')
+                char code = opt.second.option_code;
+                std::string name = opt.first;
+                if (code > ' ')
                 {
-                    auto p = std::make_pair(optcode, optname);
+                    auto p = std::make_pair(code, name);
                     auto r = code_mappings().insert(p);
                     if (r.second)
                     {
 #if defined PLATFORM_DEBUG_TMI
-                        printf
-                        (
-                            "Inserted pair <'%c','%s'>\n",
-                            optcode, optname.c_str()
-                        );
+                        printf("Inserted <'%c','%s'>\n", code, name.c_str());
 #endif
                     }
                     else
@@ -190,16 +186,15 @@ multiparser::cli_mappings_add
                         char tmp[64];
                         snprintf
                         (
-                            tmp, sizeof tmp,
-                            "Couldn't insert pair <'%c','%s'>\n",
-                            optcode, optname.c_str()
+                            tmp, sizeof tmp, "Could not insert <'%c','%s'>",
+                            code, name.c_str()
                         );
                         util::warn_message(tmp);
                     }
                 }
 
                 duo d{configtype, configsection};
-                auto p = std::make_pair(optname, d);
+                auto p = std::make_pair(name, d);
                 auto r = cli_mappings().insert(p);
                 if (r.second)
                 {
@@ -207,7 +202,7 @@ multiparser::cli_mappings_add
                     printf
                     (
                         "Inserted option <'%s',('%s',%s)>\n",
-                        optname.c_str(), configtype.c_str(),
+                        name.c_str(), configtype.c_str(),
                         configsection.c_str()
                     );
 #endif
@@ -219,7 +214,7 @@ multiparser::cli_mappings_add
                     (
                         tmp, sizeof tmp,
                         "Couldn't insert <%s,(%s,%s)>",
-                        optname.c_str(), configtype.c_str(),
+                        name.c_str(), configtype.c_str(),
                         configsection.c_str()
                     );
                     util::warn_message(tmp, "Change option to a unique name");

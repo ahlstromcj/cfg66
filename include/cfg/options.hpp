@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-16
+ * \updates       2024-07-17
  * \license       See above.
  *
  *  Supports variables of the following types:
@@ -120,11 +120,14 @@ class options
 public:
 
     /**
-     *  Provides a clearer specification than bare true/false.
+     *  These constantns provide clearer specifications than bare true/false.
      *  Compare to the C enumeration opt_flags in the c_macros.h module.
-     *  Note that these values currently apply to whether an option
+     *
+     *  Note that the disabled/enabled values usually indicate whether an option
      *  is enabled from the command-line. If not, it is likely an option
      *  supported only in a configuration file.
+     *
+     *  The "global" boolean corresponds to the "global" string defined above.
      */
 
     static const bool disabled{false};
@@ -285,7 +288,7 @@ private:
 
 public:
 
-    options ();
+    options (bool loadglobal = stock);
     options
     (
         const container & specs,
@@ -301,6 +304,10 @@ public:
     static std::string kind_to_string (kind k);
     static kind string_to_kind (const std::string & s);
     static void init_container (container & pairs); /* used in inisection   */
+    static bool inactive (const spec & s)
+    {
+        return s.option_kind == kind::dummy;
+    }
 
     void reset ();
     void initialize ();
@@ -349,11 +356,6 @@ public:
     bool active () const
     {
         return ! empty();
-    }
-
-    bool active (const spec & s)
-    {
-        return s.option_kind != kind::dummy;
     }
 
     bool has_error () const
@@ -576,7 +578,7 @@ private:
 
 extern bool almost_equal (float ftarget, float fsource, int ulp = 7);
 extern bool approximates (float ftarget, float fsource, float precision = 0.0);
-extern options::container & stock_options ();
+extern options::container & global_options ();
 extern options::option make_option
 (
     const std::string & name,

@@ -47,7 +47,6 @@ namespace cfg
 
 inifile::inifile
 (
-    // inisections & sections,
     const inisections & sections,
     const std::string & filename,
     const std::string & cfgtype

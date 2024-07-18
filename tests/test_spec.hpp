@@ -59,7 +59,7 @@ static cfg::options::container s_test_options
             "alertable",
             {
                 'a', cfg::options::kind::boolean, cfg::options::enabled,
-                "false", "false", false, false,
+                "false", "", false, false,
                 "If specified, the application is alertable.",
                 false
             }
@@ -68,7 +68,7 @@ static cfg::options::container s_test_options
             "canned-code",
             {
                 'c', cfg::options::kind::boolean, cfg::options::enabled,
-                "true", "true", false, false,
+                "true", "", false, false,
                 "If specified, the application employs canned code.",
                 false
             }
@@ -77,7 +77,7 @@ static cfg::options::container s_test_options
             "dead-code",
             {
                 'd', cfg::options::kind::boolean, cfg::options::enabled,
-                "false", "false", false, false,
+                "false", "", false, false,
                 "If specified, detect dead code.",
                 false
             }
@@ -86,7 +86,7 @@ static cfg::options::container s_test_options
             "ethernet",
             {
                 'e', cfg::options::kind::boolean, cfg::options::enabled,
-                "false", "false", false, false,
+                "false", "", false, false,
                 "If specified, use the ethernet adapter.",
                 false
             }
@@ -95,7 +95,7 @@ static cfg::options::container s_test_options
             "fast-code",
             {
                 'f', cfg::options::kind::boolean, cfg::options::enabled,
-                "false", "false", false, false,
+                "false", "", false, false,
                 "If specified, detect fast code :-D.",
                 false
             }
@@ -104,7 +104,7 @@ static cfg::options::container s_test_options
             "find-me",
             {
                 'F', cfg::options::kind::boolean, cfg::options::enabled,
-                "false", "false", false, false,
+                "false", "", false, false,
                 "If specified, detect 'find-me' on the CLI.",
                 false
             }
@@ -113,7 +113,7 @@ static cfg::options::container s_test_options
             "disabled",
             {
                 'D', cfg::options::kind::boolean, cfg::options::disabled,
-                "false", "false", false, false,
+                "false", "", false, false,
                 "If specified, disable the code.",
                 false
             }
@@ -132,7 +132,7 @@ static cfg::options::container s_test_options
             {
                 cfg::options::code_null, cfg::options::kind::integer,
                 cfg::options::enabled,
-                "0<=0<=99", "30", false, false,
+                "0<=0<=99", "", false, false,
                 "Specifies the number of loops to make.", false
             }
         },
@@ -148,7 +148,7 @@ static cfg::options::container s_test_options
 
                 cfg::options::code_null, cfg::options::kind::floating,
                 cfg::options::enabled,
-                "0.0<=0.1<=50.0", "22.3", false, false,
+                "0.0<=0.1<=50.0", "", false, false,
                 "Specifies the magnetic flux.",
                 false
             }

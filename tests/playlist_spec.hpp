@@ -155,7 +155,7 @@ inisections::specification playlist_data
     "",             /* use value from appinfo's get_home_cfg_directory()    */
     "",             /* use value derived from appinfo's get_home_cfg_file() */
     "This file holds multiple playlists, each in a [playlist] section. Each has\n"
-    "a user-specified number for sorting and MIDI control, ranging from 0 to 127.\n"
+    "a user-specified number for sorting and MIDI control, range 0 to 127.\n"
     "Next comes a quoted name for this list, followed by the quoted name\n"
     "of the song directory using the UNIX separator ('/').\n"
     "\n"

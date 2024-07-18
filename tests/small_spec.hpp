@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-07-06
- * \updates       2024-07-15
+ * \updates       2024-07-17
  * \license       See above.
  *
  */
@@ -62,7 +62,7 @@ inisection::specification small_misc_data
             "sets-mode",
             {
                 options::code_null, options::kind::string, options::enabled,
-                "normal", "normal", false, false,
+                "normal", "", false, false,
                 "Mode for handling arming/muting during play-set changes.",
                 false
             }
@@ -71,7 +71,7 @@ inisection::specification small_misc_data
             "port-naming",
             {
                 options::code_null, options::kind::string, options::enabled,
-                "short", "short", false, false,
+                "short", "", false, false,
                 "Port amount-of-label showing.", false
             }
         },
@@ -90,7 +90,7 @@ inisection::specification small_interaction_data
             "snap-split",
             {
                 options::code_null, options::kind::boolean, options::enabled,
-                "false", "false", false, false,
+                "false", "", false, false,
                 "If true, split trigger at snap point.", false
             }
         },
@@ -98,7 +98,7 @@ inisection::specification small_interaction_data
             "double-click-edit",
             {
                 options::code_null, options::kind::boolean, options::disabled,
-                "false", "false", false, false,
+                "false", "", false, false,
                 "If true, allow double-click edit.", false
             }
         }
@@ -109,17 +109,50 @@ inisection::specification small_interaction_data
  * All sections of the 'small' configuration
  *------------------------------------------------------------------------*/
 
+const std::string small_extension{"small"};
+
 inisection::specification small_comments = inifile_comment_data;
+
+inisection::specification small_cfg66_data
+{
+    "[Cfg66]",
+    {
+"One generally needs to replace inifile_cfg66_data, a stock set of data,\n"
+"with a more specific structure. We need to specify the config-type and\n"
+"the version.\n"
+    },
+    {
+        /*
+         * Name, Name, Code, Kind, Enabled, Default, Value,
+         * FromCli, Dirty, Description, Built-in
+         */
+        {
+            "config-type",
+            {
+                options::code_null, options::kind::string, options::disabled,
+                "small", "", false, false,
+                "Small configuration file.", false
+            }
+        },
+        {
+            "version",
+            {
+                options::code_null, options::kind::integer, options::disabled,
+                "0", "", false, false,
+                "Configuration file version.", false
+            }
+        }
+    }
+};
 
 inisections::specification small_data
 {
     "small",        /* the file extension for any 'small' file.             */
     "tests/data",   /* use value from appinfo's get_home_cfg_directory()    */
     "tests/data",   /* use value derived from appinfo's get_home_cfg_file() */
-    "This 'small' file defines some basic features."
-    ,
+    "This 'small' file defines some basic features.",
     {
-        std::ref(inifile_cfg66_data),       // std::ref(small_cfg66_data)
+        std::ref(small_cfg66_data),                 // not inifile_cfg66_data)
         std::ref(small_comments),
         std::ref(small_misc_data),
         std::ref(small_interaction_data)

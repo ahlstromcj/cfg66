@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-07-15
+ * \updates       2024-07-17
  * \license       See above.
  *
  *  See the inisections class and modules for details.
@@ -43,26 +43,26 @@ namespace cfg
  *--------------------------------------------------------------------------*/
 
 /**
- *  This constructor creates an inisection for the optional stock options.
+ *  This constructor creates an inisection for the optional global options.
+ *
+ * \param loadglobal
+ *      If true (the default is options::stock == true), then the default
+ *      global stock options are loaded.
  */
 
-inisection::inisection () :
+inisection::inisection (bool loadglobal) :
     m_config_type           (),
     m_name                  (),
-    m_section_description   ("Internal default stock options."),
+    m_section_description   ("Default global options."),
     m_option_names          (),
-    m_option_set            ()
+    m_option_set            (loadglobal)
 {
-    /*
-     * Iffy
-     *
-     * m_option_set.reset(options::stock);
-     *
-     */
-
-    options::container & opspecs = option_set().option_pairs();
-    for (const auto & opt : opspecs)
-        add_name(opt.first);
+    if (loadglobal)
+    {
+        options::container & opspecs = option_set().option_pairs();
+        for (const auto & opt : opspecs)
+            add_name(opt.first);
+    }
 }
 
 /**
@@ -86,19 +86,26 @@ inisection::inisection () :
 inisection::inisection
 (
     inisection::specification & spec,
-    const std::string & extension,
-    const std::string & sectname
+    const std::string & extension
 ) :
     m_config_type           (),
-    m_name                  (sectname.empty() ? spec.sec_name : sectname),
+    m_name                  (spec.sec_name),
     m_section_description   (spec.sec_description),
     m_option_names          (),
-    m_option_set            (spec.sec_optionlist, extension, sectname)
+    m_option_set            (spec.sec_optionlist, extension, m_name)
 {
     if (extension[0] == '.')
         m_config_type = extension.substr(1);
     else
         m_config_type = extension;
+
+#if defined PLATFORM_DEBUG
+    if (m_name.empty())
+        printf("inisection(): no section name\n");
+
+    if (m_section_description.empty())
+        printf("inisection(): no section description\n");
+#endif
 
 #if defined WE_NEED_THIS_CODE
     options::container & opspecs = spec.sec_optionlist;
@@ -218,27 +225,10 @@ inisection::help_text () const
 std::string
 inisection::description_commented () const
 {
-#if defined USE_SIMPLISTIC_CODE
-    std::string result;
-    if (! section_description().empty())
-    {
-        size_t count = section_description().length();
-        result += "# ";
-        for (auto c : section_description())
-        {
-            --count;
-            result += c;
-            if (c == '\n' && count > 0)
-                result += "# ";
-        }
-    }
-    return result;
-#else
     return util::word_wrap
     (
         section_description(), options::terminal_width, '#'
     );
-#endif
 }
 
 /**
@@ -310,7 +300,9 @@ inisection::specification inifile_comment_data
     "[comments]",
     {
 "[comments] holds user documentation for this file. The first empty, hash-\n"
-"commented, or tag line ends the comment. Use a space for line breaks.\n"
+"commented, or tag line ends the comment. \n"
+" \n"
+"Use a space for line breaks as done in the line above.\n"
     },
     {
         {

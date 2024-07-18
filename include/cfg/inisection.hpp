@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-07-15
+ * \updates       2024-07-17
  * \license       See above.
  *
  *  We want to provide a list of { filename, sectionname } pairs, and
@@ -141,12 +141,11 @@ private:
 
 public:
 
-    inisection ();                          /* sets up "stock" options      */
+    inisection (bool loadglobal = options::stock);  /* "global" options     */
     inisection
     (
         inisection::specification & spec,   /* name, description, opt list  */
-        const std::string & extension,      /* mandatory file-kind ('rc')   */
-        const std::string & sectname = ""   /* can override the name        */
+        const std::string & extension       /* mandatory file-kind ('rc')   */
     );
     inisection (const inisection & inif) = default;
     inisection & operator = (const inisection & inif) = default;
