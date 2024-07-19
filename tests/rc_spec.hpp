@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-07-22
- * \updates       2024-07-18
+ * \updates       2024-07-19
  * \license       See above.
  *
  */
@@ -701,11 +701,11 @@ const std::string rc_extension{"rc"};
 inisection::specification rc_cfg66_data
 {
     "[Cfg66]",
-    {
+
 "One generally needs to replace inifile_cfg66_data, a stock set of data,\n"
 "with a more specific structure. We need to specify the config-type and\n"
 "the version.\n"
-    },
+    ,
     {
         /*
          * Name, Name, Code, Kind, Enabled, Default, Value,
@@ -746,37 +746,11 @@ inisection::specification rc_cfg66_data
  *  The following works properly, but obviously does not make a copy:
  *
  *      inisection::specification & rc_comments{inifile_comment_data};
+ *
+ *  This works!
  */
 
-#undef USE_COMMENTS_COPY
-#if defined USE_COMMENTS_COPY
-
-inisection::specification & rc_comments{inifile_comment_data};
-
-#else
-
-inisection::specification rc_comments
-{
-    "[comments]",
-    {
-"[comments] holds user documentation for this file. The first empty, hash-\n"
-"commented, or tag line ends the comment. \n"
-" \n"
-"Use a space for line breaks as done in the line above.\n"
-    },
-    {
-        {
-            "comment",
-            {
-                options::code_null, options::kind::section, options::disabled,
-                "Add your comment block here.", "",
-                false, false, "Configuration file user comments.", false
-            }
-        }
-    }
-};
-
-#endif
+inisection::specification rc_comments = stock_comment_data();
 
 /*
  * Fields:

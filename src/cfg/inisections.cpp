@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-15
+ * \updates       2024-07-19
  * \license       See above.
  *
  * Operations to support:
@@ -200,19 +200,19 @@ inisections::inisections
      *      spec.file_sections
      */
 
-#if defined PLATFORM_DEBUG
+#if defined PLATFORM_DEBUG_TMI
     size_t index = 0;
 #endif
 
     for (auto sec : spec.file_sections)
     {
 
-#if defined PLATFORM_DEBUG
+#if defined PLATFORM_DEBUG_TMI
         const inisection::specification & s = spec.file_sections[index].get();
         std::string desc = s.sec_description.substr(0, 16);
         printf
         (
-            "inispec[%2d]: name = '%s', desc = '%s', count = %d\n",
+            "inispec[%2d]: name='%s', desc='%s...', size=%d\n",
             int(index++), s.sec_name.c_str(), desc.c_str(),
             int(s.sec_optionlist.size())
         );
@@ -401,24 +401,6 @@ inisections::find_option_spec (const std::string & name)
     (
         static_cast<const inisections &>(*this).find_option_spec(name)
     );
-}
-
-/*------------------------------------------------------------------------
- * Free functions
- *------------------------------------------------------------------------*/
-
-const inisection &
-get_inifile_cfg66_section ()
-{
-    static inisection s_ini_section(inifile_cfg66_data, global);
-    return s_ini_section;
-}
-
-const inisection &
-get_inifile_comment_section ()
-{
-    static inisection s_ini_section(inifile_comment_data, global);
-    return s_ini_section;
 }
 
 }           // namespace cfg

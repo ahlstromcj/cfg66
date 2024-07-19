@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-07-06
- * \updates       2024-07-17
+ * \updates       2024-07-19
  * \license       See above.
  *
  */
@@ -111,7 +111,7 @@ inisection::specification small_interaction_data
 
 const std::string small_extension{"small"};
 
-inisection::specification small_comments = inifile_comment_data;
+inisection::specification small_comments = stock_comment_data();
 
 inisection::specification small_cfg66_data
 {

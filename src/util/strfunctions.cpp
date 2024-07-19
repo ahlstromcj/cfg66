@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-24
- * \updates       2024-07-15
+ * \updates       2024-07-19
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -1562,6 +1562,47 @@ hanging_word_wrap
             result += w;
             linelen += w.length();
         }
+    }
+    return result;
+}
+
+/**
+ *  Slightly similar to word_wrap(), but newlines are preserved, and
+ *  no formatting is done apart from prepending the comment character
+ *  to each line.
+ */
+
+std::string
+line_comments (const std::string & source, char commentchar)
+{
+    std::string result;
+    if (! source.empty())
+    {
+        std::string commenting;
+        std::string::size_type start = 0;
+        std::string::size_type nlpos;
+        if (commentchar != 0)
+        {
+            commenting = "  ";
+            commenting[0] = commentchar;
+        }
+        do
+        {
+            nlpos = source.find_first_of("\n", start);
+
+            size_t count = nlpos != std::string::npos ?
+                nlpos - start + 1 : std::string::npos ;
+
+            std::string line = source.substr(start, count);
+            if (! commenting.empty())
+                result += commenting;
+
+            result += line;
+            start += line.length();
+            if (nlpos == std::string::npos)
+                result += "\n";
+        }
+        while (nlpos != std::string::npos);
     }
     return result;
 }

@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-17
+ * \updates       2024-07-19
  * \license       See above.
  *
  *  The cli::options class provides a way to hold the state of command-line
@@ -686,7 +686,7 @@ options::long_name (const std::string & code) const
 const options::spec &
 options::find_spec (const std::string & name) const
 {
-    static spec s_inactive_spec{! stock};   /* do not load global options   */
+    static spec s_inactive_spec;            /* do not load global options   */
     if (! name.empty())
     {
         const auto opt = find_match(name);

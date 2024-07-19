@@ -161,21 +161,7 @@ configfile::trimline () const
 std::string
 configfile::parse_comments (std::ifstream & file)
 {
-#if 0
-    std::string result;
-    if (line_after(file, "[comments]", 0, false))   /* 1st line w/out strip */
-    {
-        do
-        {
-            result += line();
-            result += "\n";
-
-        } while (next_data_line(file, false));      /* no strip here either */
-    }
-    return result;
-#else
     return parse_section_option(file, "[comments]");
-#endif
 }
 
 std::string

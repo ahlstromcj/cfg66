@@ -27,7 +27,7 @@
  *
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2024-07-09
+ * \updates       2024-07-19
  * \version       $Revision$
  *
  *    Also see the strfunctions.cpp module.
@@ -179,6 +179,11 @@ extern std::string hanging_word_wrap
     const std::string & source,
     size_t leftmargin   = 28,
     size_t rightmargin  = 80
+);
+extern std::string line_comments
+(
+    const std::string & source,
+    char commentchar = 0
 );
 extern std::string first_sentence
 (

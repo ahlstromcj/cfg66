@@ -230,20 +230,6 @@ private:
 
 };          // class inisections
 
-/*------------------------------------------------------------------------
- * Reusable objects for "[Cfg66]" and "[comments]"
- *------------------------------------------------------------------------*/
-
-extern inisection::specification inifile_cfg66_data;
-extern inisection::specification inifile_comment_data;
-
-/*------------------------------------------------------------------------
-* Free functions
-*------------------------------------------------------------------------*/
-
-extern const inisection & get_inifile_cfg66_section ();
-extern const inisection & get_inifile_comment_section ();
-
 }           // namespace cfg
 
 #endif      // CFG66_CFG_INISECTIONS_HPP

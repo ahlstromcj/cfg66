@@ -132,7 +132,7 @@ parser::~parser ()
  *
  *  One issue is the use of token_match() to set some flags. We really
  *  need for parse() to, at the end, to call options::boolean_value(),
- *  etc. See the "#if 0" code below.
+ *  etc.
  *
  *  Note that this function will fail if something in the parser constructor
  *  failed.

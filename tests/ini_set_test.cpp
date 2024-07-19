@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-27
- * \updates       2024-07-16
+ * \updates       2024-07-19
  * \license       See above.
  *
  *  See the ini_test module for information. This module goes beyond that
@@ -44,6 +44,11 @@
 #if ! defined USE_STD_COUT_CERR
 #include "util/msgfunctions.hpp"        /* util::error_message()            */
 #endif
+
+/*
+ * Turn on to see a problem with copying an inisection::specification.
+ * See this macro in the file rc_spec.hpp.
+ */
 
 #include "rc_spec.hpp"                  /* chunk of data for an 'rc' file   */
 #include "small_spec.hpp"               /* small for easier debugging       */
@@ -108,24 +113,6 @@ static cfg::options::container s_test_options
     }
 };
 
-#if defined PLATFORM_DEBUG
-#if defined USE_COMMENTS_COPY           /* see rc_spec.hpp  */
-void
-copy_check ()
-{
-    cfg::inisection::specification check_1{cfg::inifile_comment_data};
-    printf("Good: name = '%s'\n", check_1.sec_name.c_str());
-
-    /*
-     * inisection::specification rc_comments{inifile_comment_data};
-     */
-
-    cfg::inisection::specification & check_2{cfg::rc_comments};
-    printf(" Bad: name = '%s'\n", check_2.sec_name.c_str());
-}
-#endif
-#endif
-
 /*
  * Process:
  *
@@ -181,19 +168,9 @@ main (int argc, char * argv [])
     cfg::inimanager cfg_set(s_test_options);    /* add the test options     */
     cfg::set_client_name("iniset");
 
-#if defined PLATFORM_DEBUG
-#if defined USE_COMMENTS_COPY
-    copy_check();
-#endif
-#endif
-
-#if 0
     bool success = cfg_set.add_inisections(cfg::small_data); /* small_spec  */
     if (success)
         success = cfg_set.add_inisections(cfg::rc_data);
-#else
-    bool success = cfg_set.add_inisections(cfg::rc_data); /* small_spec  */
-#endif
 
 #if defined USE_ALT_TEST
     std::string clihelp = cfg_set.cli_help_text();

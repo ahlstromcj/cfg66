@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-07-25
- * \updates       2024-07-15
+ * \updates       2024-07-19
  * \license       See above.
  *
  *  Rationale:
@@ -276,6 +276,9 @@ static cfg::inisection::specification s_section_spec
     }
 };
 
+cfg::inisection::specification exp_cfg_data = cfg::stock_cfg66_data();
+cfg::inisection::specification exp_comments = cfg::stock_comment_data();
+
 /**
  *  Provide some sample inisections. Note the inclusion of the pre-made
  *  cfg66 and comment sections defined in the inisections.cpp file.
@@ -286,8 +289,8 @@ static cfg::inisections::specification exp_file_data
     "exp", "~/.config/experiment/", "exp.session",
     "This is a test INI file specification.",
     {
-        std::ref(cfg::inifile_cfg66_data),
-        std::ref(cfg::inifile_comment_data),
+        std::ref(exp_cfg_data),
+        std::ref(exp_comments),
         s_simple_ini_spec,
         s_section_spec
     }

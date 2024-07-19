@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-07-17
+ * \updates       2024-07-19
  * \license       See above.
  *
  *  See the inisections class and modules for details.
@@ -127,7 +127,7 @@ std::string
 inisection::settings_text () const
 {
     std::string result = "\n";
-    result += description_commented();
+    result += description_commented();          /* description_wrapped() */
     result += "\n";
     result += name();
     result += "\n\n";
@@ -223,12 +223,26 @@ inisection::help_text () const
  */
 
 std::string
-inisection::description_commented () const
+inisection::description_wrapped () const
 {
     return util::word_wrap
     (
         section_description(), options::terminal_width, '#'
     );
+}
+
+/**
+ *  Similar to description_wrapped(), but newlines are respected and used.
+ *  This feature is useful when the description contains lists, for
+ *  example.
+ *
+ *  The program is responsible for text width and for formatting.
+ */
+
+std::string
+inisection::description_commented () const
+{
+    return util::line_comments(section_description(), '#');
 }
 
 /**
@@ -261,60 +275,75 @@ inisection::find_option_spec (const std::string & name)
  *------------------------------------------------------------------------*/
 
 /**
- *  This object cannot be const because it is included in a vector of
- *  non-const items. Luckily, one has to go out of one's way to modify
- *  this section specification.
+ *  This function wraps the "[Cfg66]" inisection::specification in a
+ *  function so that we can guarantee it is initialized when it is
+ *  first used.
  */
 
-inisection::specification inifile_cfg66_data
+const inisection::specification &
+stock_cfg66_data ()
 {
-    "[Cfg66]",
+    static inisection::specification s_cfg66_data
     {
-"The main configuration data for Cfg66-compliant applications, similar\n"
-"to an MS-DOS INI file.\n"
-"'config-type' indicates the kind of file and file extension.\n"
-"'version' allows detection of older configuration files.\n"
-    },
-    {
-        {
-            "config-type",
-            {
-                options::code_null, options::kind::string, options::disabled,
-                "session", "", false, false,
-                "The type of configuration file.", false
-            }
-        },
-        {
-            "version",
-            {
-                options::code_null, options::kind::integer, options::disabled,
-                "0", "", false, false,
-                "Configuration file version.", false
-            }
-        }
-    }
-};
+        "[Cfg66]",
 
-inisection::specification inifile_comment_data
-{
-    "[comments]",
-    {
-"[comments] holds user documentation for this file. The first empty, hash-\n"
-"commented, or tag line ends the comment. \n"
-" \n"
-"Use a space for line breaks as done in the line above.\n"
-    },
-    {
+    "The main configuration data for Cfg66-compliant applications, similar\n"
+    "to an MS-DOS INI file.\n"
+    "'config-type' indicates the kind of file and file extension.\n"
+    "'version' allows detection of older configuration files." // no newline
+        ,
         {
-            "comment",
             {
-                options::code_null, options::kind::section, options::disabled,
-                "Add your comment block here.", "",
-                false, false, "Configuration file user comments.", false
+                "config-type",
+                {
+                    options::code_null, options::kind::string, options::disabled,
+                    "session", "", false, false,
+                    "The type of configuration file.", false
+                }
+            },
+            {
+                "version",
+                {
+                    options::code_null, options::kind::integer, options::disabled,
+                    "0", "", false, false,
+                    "Configuration file version.", false
+                }
             }
         }
-    }
-};
+    };
+    return s_cfg66_data;
+}
+
+/**
+ *  This function guarantees that the stcok comment data is not just
+ *  zero-initialized, but fully initialized, before usage.
+ */
+
+const inisection::specification &
+stock_comment_data ()
+{
+    static inisection::specification s_comment_data
+    {
+        "[comments]",
+
+    "[comments] holds user documentation for this file. The first empty, hash-\n"
+    "commented, or tag line ends the comment. \n"
+    " \n"
+    "Use a space for line breaks as done in the line above."
+        ,
+        {
+            {
+                "comment",
+                {
+                    options::code_null, options::kind::section, options::disabled,
+                    "Add your comment block here.", "",
+                    false, false, "Configuration file user comments.", false
+                }
+            }
+        }
+    };
+    return s_comment_data;
+}
 
 }           // namespace cfg
 

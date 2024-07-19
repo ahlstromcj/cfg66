@@ -1,13 +1,15 @@
 # Cfg66-style configuration file for app v. 0
 #
 # File: tests/data/fooout.rc
-# Written: 2024-07-08 11:23:13
+# Written: 2024-07-19 13:08:52
 
 [Cfg66]
 
-# The main configuration data for Cfg66-compliant applications, similar to an
-# MS-DOS INI file. 'config-type' indicates the kind of file and file
-# extension. 'version' allows detection of older configuration files.
+# The main configuration data for Cfg66-compliant applications, similar
+# to an MS-DOS INI file.
+# 'config-type' indicates the kind of file and file extension.
+# 'version' allows detection of older configuration files.
+# 
 
 config-type = "session"                 # The type of configuration file.
 version = 0                             # Configuration file version.
@@ -15,19 +17,24 @@ version = 0                             # Configuration file version.
 [comments]
 
 # [comments] holds user documentation for this file. The first empty, hash-
-# commented, or tag line ends the comment. Use a space for line breaks.
+# commented, or tag line ends the comment. 
+#  
+# Use a space for line breaks as done in the line above.
+# 
 
 Add your comment block here.
 
 [experiments]
 
-# This section is just a bunch of dummies for some simple tests. By itself, it
-# shows the output string for a list of described options. This description
-# string is deliberately long to show how word-wrapping and commenting with
-# '#' can work. Also note that white space such as newlines are converted to
-# spaces for this purpose. Further note that this output can be dumped to a
-# configuration file to save the settings. Lastly, note that, by default,
-# options are output ordered alphabetically by their long option name.
+# This section is just a bunch of dummies for some simple tests.
+# By itself, it shows the output string for a list of described
+# options. This description string is deliberately long to show
+# how word-wrapping and commenting with '#' can work. Also note
+# that white space such as newlines are converted to spaces for
+# this purpose. Further note that this output can be dumped to
+# a configuration file to save the settings. Lastly, note that,
+# by default, options are output ordered alphabetically by their
+# long option name.
 
 boolean-value = false                   
 count = 0                               
@@ -39,8 +46,9 @@ string-value = "I am a string."
 
 [section-test]
 
-# This "section" option shows how only one bald string is contained in a
-# section option.
+# This "section" option shows how only one bald string is
+# contained in a section option.
+# 
 
 This is actually a multi-line '[section]' value.
 This is the second line of the [section] value.

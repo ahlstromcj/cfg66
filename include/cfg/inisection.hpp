@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-07-17
+ * \updates       2024-07-19
  * \license       See above.
  *
  *  We want to provide a list of { filename, sectionname } pairs, and
@@ -152,6 +152,7 @@ public:
     ~inisection () = default;
 
     std::string settings_text () const;
+    std::string description_wrapped () const;
     std::string description_commented () const;
     std::string cli_help_text () const;
     std::string help_text () const;
@@ -241,6 +242,9 @@ private:
 /*------------------------------------------------------------------------
  * Free functions
  *------------------------------------------------------------------------*/
+
+extern const inisection::specification & stock_cfg66_data ();
+extern const inisection::specification & stock_comment_data ();
 
 }           // namespace cfg
 
