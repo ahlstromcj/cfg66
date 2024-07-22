@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-17
+ * \updates       2024-07-22
  * \license       See above.
  *
  *  Supports variables of the following types:
@@ -209,7 +209,7 @@ public:
         bool option_read_from_cli;  /**< Option already set from CLI.       */
         bool option_modified;       /**< Option changed since read/save.    */
         std::string option_desc;    /**< A one-line description of option.  */
-        bool option_built_in;       /**< This option present in all apps.   */
+        bool option_global;         /**< This option present in all apps.   */
 
 #if defined USER_CONSTRUCTOR_FOR_OPTIONS_SPEC   /* see top of this module   */
 
@@ -518,15 +518,15 @@ public:
      */
 
     bool
-    is_option_built (const option & opt) const
+    is_option_global (const option & opt) const
     {
-        return opt.second.option_built_in;
+        return opt.second.option_global;
     }
 
     bool
-    is_option_built (const spec & s) const
+    is_option_global (const spec & s) const
     {
-        return s.option_built_in;
+        return s.option_global;
     }
 
     std::string help_line (const spec & op) const;

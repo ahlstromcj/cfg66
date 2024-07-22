@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-19
+ * \updates       2024-07-22
  * \license       See above.
  *
  *  The cli::options class provides a way to hold the state of command-line
@@ -181,7 +181,7 @@ options::spec::spec () :
     option_value        (),
     option_modified     (false),
     option_desc         (),
-    option_built_in     (false)
+    option_global       (false)
 {
     // No other code
 }
@@ -199,7 +199,7 @@ options::spec::spec
     option_value        (value),
     option_modified     (modified),
     option_desc         (desc),
-    option_built_in     (false)
+    option_global       (false)
 {
     // No other code
 }
@@ -1076,7 +1076,7 @@ options::debug_text (bool show_builtins) const
     {
         for (const auto & opt : option_pairs())
         {
-            if (show_builtins || ! opt.second.option_built_in)
+            if (show_builtins || ! opt.second.option_global)
             {
                 std::string s = debug_line(opt);
                 if (! s.empty())

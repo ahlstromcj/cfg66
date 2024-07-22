@@ -1,7 +1,7 @@
 # Cfg66-style configuration file for app v. 0
 #
 # File: tests/data/fooout.rc
-# Written: 2024-07-19 13:08:52
+# Written: 2024-07-22 08:13:02
 
 [Cfg66]
 
@@ -9,7 +9,6 @@
 # to an MS-DOS INI file.
 # 'config-type' indicates the kind of file and file extension.
 # 'version' allows detection of older configuration files.
-# 
 
 config-type = "session"                 # The type of configuration file.
 version = 0                             # Configuration file version.
@@ -20,7 +19,6 @@ version = 0                             # Configuration file version.
 # commented, or tag line ends the comment. 
 #  
 # Use a space for line breaks as done in the line above.
-# 
 
 Add your comment block here.
 

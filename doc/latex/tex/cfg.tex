@@ -6,11 +6,12 @@
 % \library     Documents
 % \author      Chris Ahlstrom
 % \date        2024-04-16
-% \update      2024-07-02
+% \update      2024-07-22
 % \version     $Revision$
 % \license     $XPC_GPL_LICENSE$
 %
-%     Provides a description of the entities in the cfg66 library.
+%     Provides a description of the entities in the cfg66 library, in the
+%     "cfg" namespace.
 %
 %-------------------------------------------------------------------------------
 
@@ -28,10 +29,14 @@
       \item \texttt{cfg::comments}
       \item \texttt{cfg::configfile}
       \item \texttt{cfg::history}
+      \item \texttt{cfg::inifile}
+      \item \texttt{cfg::inimanager}
+      \item \texttt{cfg::inisection}
       \item \texttt{cfg::inisections}
       \item \texttt{cfg::memento}
       \item \texttt{cfg::options}
       \item \texttt{cfg::palette}
+      \item \texttt{cfg::recent}
    \end{itemize}
 
 \subsection{cfg::appinfo}
@@ -53,6 +58,10 @@
       \item \textsl{App version}.
          Provides a version number, or optionally, a variant on the
          \textsl{Name} plus the version number.
+      \item \textsl{Main config section name}.
+         Holds the name of main configuration section (usually present
+         only in the "session" or "rc" file).
+         The default value is "[Cfg66]".
       \item \textsl{App home configuration directory}.
          Provides the name of the configuration directory for the application,
          such as \texttt{/home/user/.config/appname}.
@@ -204,51 +213,73 @@
    The \texttt{history.cpp} module provide a small test of history for
    the \texttt{cfg::options} class.
 
+\subsection{cfg::inifile}
+\label{subsec:cfg_namespace_inifile}
+
+   \texttt{cfg::inifile} is derived from the \texttt{cfg::configfile} class.
+   It contains a reference to a class that manages multiple
+   INI sections: \texttt{cfg::inisections}.
+   It override the
+   \texttt{cfg::configfile::parse()} and
+   \texttt{cfg::configfile::write()} functions.
+   It provides two protected functions,
+   \texttt{parse\_section()} and
+   \texttt{write\_section()}.
+
+   WALK THROUGH the ini\_test application.
+
+\subsection{cfg::inimanager}
+\label{subsec:cfg_namespace_inimanager}
+         
+   \texttt{cfg::inimanager} defines two types:
+
+   \begin{itemize}
+      \item \texttt{optionref}.
+         \texttt{std::reference\_wrapper<options::spec>}.
+      \item \texttt{optionmap}.
+         \texttt{std::map<std::string, optionref>}.
+   \end{itemize}
+
+   Also defined is a function to add an named \texttt{cfg::option}
+   to the option map.
+
+\subsection{cfg::inisection}
+\label{subsec:cfg_namespace_inisection}
+
+   \texttt{cfg::inisection}  contains a \texttt{specification} structure that
+   provides the name of a section, it's description, and
+   a container of options.
+   It is represent in a configuration file by a section or tag name
+   enclosed in brackets:  \texttt{[output-ports]} as an example.
+   Each section can also define a file extension
+   (e.g. \texttt{.rc}) to indicate its locus.
+
 \subsection{cfg::inisections}
 \label{subsec:cfg_namespace_inisections}
 
-   The \texttt{inisections.hpp} file actually declares four classes:
+   The \texttt{inisections.hpp} file has been split,
+   and no long declares four classes.
+
+   \texttt{cfg::inisections} defines four types:
 
    \begin{itemize}
-      \item \texttt{cfg::inimanager}.
-         Defines two types:
-         \begin{itemize}
-            \item \texttt{optionref}.
-               \texttt{std::reference\_wrapper<options::spec>}.
-            \item \texttt{optionmap}.
-               \texttt{std::map<std::string, optionref>}.
-         \end{itemize}
-         Also defined is a function to add an named \texttt{cfg::option}
-         to the option map.
-      \item \texttt{cfg::inisection}.
-         This object contains a \texttt{specification} structure that
-         provides the name of a section, it's description, and
-         a container of options.
-         It is represent in a configuration file by a section or tag name
-         enclosed in brackets:  \texttt{[output-ports]} as an example.
-         Each section can also define a file extension
-         (e.g. \texttt{.rc}) to indicate its locus.
-      \item \texttt{cfg::inifile}.
-         Defines four types:
-         \begin{itemize}
-            \item \texttt{specref}.
-                \texttt{std::reference\_wrapper<inisection::specification>}.
-            \item \texttt{specrefs}.
-                \texttt{std::vector<specref>}.
-            \item \texttt{sectionlist}.
-               \texttt{std::vector<inisection>}.
-            \item \texttt{specification}.
-               This structure holds the configuration file's extension,
-               directory, base name, description, and a vector of
-               \texttt{specrefs}.
-         \end{itemize}
-      \item \texttt{cfg::inifiles}.
-         Holds a list of inifile objects. Represents all of the files, and all of
-         the options that are held by the files.  The options are in a single list,
-         and the INI items look them up by name.
-         NOT SURE THIS CONCEPT IS USEFUL.
-      \item \texttt{cfg::xxx}.
+      \item \texttt{specref}.
+          \texttt{std::reference\_wrapper<inisection::specification>}.
+      \item \texttt{specrefs}.
+          \texttt{std::vector<specref>}.
+      \item \texttt{sectionlist}.
+         \texttt{std::vector<inisection>}.
+      \item \texttt{specification}.
+         This structure holds the configuration file's extension,
+         directory, base name, description, and a vector of
+         \texttt{specrefs}.
    \end{itemize}
+
+   \texttt{cfg::inisections} holds a list of \texttt{inisection} objects.
+   It represents all of the files, and all of
+   the options that are held by the files.
+   The options are in a single list,
+   and the INI items look them up by name.
 
    There is a lot to this module.
    For now, see the comment in the \texttt{.hpp} and \texttt{.cpp} files.
@@ -335,6 +366,14 @@
    a palette of color code pair with a platform-specific color class
    such as \texttt{QColor} from \textsl{Qt}.
    This is a feature copped from \textsl{Seq66}.
+
+\subsection{cfg::recent}
+\label{subsec:cfg_namespace_recent}
+
+   \texttt{recent} provides for the managment of a list of recently-used
+   items.
+
+   TODO.
 
 %-------------------------------------------------------------------------------
 % vim: ts=3 sw=3 et ft=tex

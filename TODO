@@ -7,10 +7,12 @@ to do for Cfg66.
 
 ini_test_cpp:
 
-    -   Why are not the addition globabl option codes appearing in
+    -   Why are not the addition global option codes appearing in
         the code-list? See inimanager ctor. Also find where
         code_mappings().insert() is called in multiparser.
         It only has 8 entries!
+    -   Note/document the rules for descriptions; detect a final
+        newline to avoid adding a blank line.
     -   Add a [last-used-dir] value based on reading/writing.
     -   Add to the [recent-files] based on reading/writing.
     -   Add some fake ports to [midi-input], [midi-input-map],

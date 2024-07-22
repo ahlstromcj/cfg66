@@ -271,6 +271,64 @@ public:
         return option_set().option_is_boolean(name);
     }
 
+#if defined USE_NAME_OPTION_ACCESSORS
+
+    /*
+     * These are not supported in cfg::options.
+     */
+
+    bool is_int (const std::string & name) const
+    {
+        return option_set().option_is_int(name);
+    }
+
+    bool is_int_pair (const std::string & name) const
+    {
+        return option_set().option_is_int_pair(name);
+    }
+
+    bool is_float (const std::string & name) const
+    {
+        return option_set().option_is_float(name);
+    }
+
+    bool is_float_pair (const std::string & name) const
+    {
+        return option_set().option_is_float_pair(name);
+    }
+
+    bool is_number (const std::string & name) const
+    {
+        return option_set().option_is_number(name);
+    }
+
+    bool is_list (const std::string & name) const
+    {
+        return option_set().option_is_list(name);
+    }
+
+    bool is_string (const std::string & name) const
+    {
+        return option_set().option_is_string(name);
+    }
+
+    bool is_recents (const std::string & name) const
+    {
+        return option_set().option_is_recents(name);
+    }
+
+    bool is_section (const std::string & name) const
+    {
+        return option_set().option_is_section(name);
+    }
+
+    bool is_dummy (const std::string & name) const
+    {
+        return option_set().option_is_dummy(name);
+    }
+
+#endif  // defined USE_NAME_OPTION_ACCESSORS
+
     bool modified () const
     {
         return option_set().modified();

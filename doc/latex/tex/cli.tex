@@ -6,7 +6,7 @@
 % \library     Documents
 % \author      Chris Ahlstrom
 % \date        2024-04-16
-% \update      2024-04-16
+% \update      2024-07-20
 % \version     $Revision$
 % \license     $XPC_GPL_LICENSE$
 %
@@ -26,6 +26,7 @@
    \begin{itemize}
       \item \texttt{cliparser\_c}
       \item \texttt{cli::parser}
+      \item \texttt{cli::multiparser}
    \end{itemize}
 
 \subsection{cliparser\_c Module}
@@ -47,15 +48,277 @@
    The \texttt{cli::parser} class contains a number of options in a
    \texttt{cfg::options} object.
    Many of the member functions are pass-alongs to this object.
+   This parser is meant for simple usage; it has no support for accessing
+   configuration files, and supports just one set of options.
 
-   It also holds values indicating if some basic options (help, version,
-   verbosity, log-file usage) are set.
+\subsection{cli::parser / Global Options}
+\label{subsec:cli_namespace_parser_global_options}
+
+   The \texttt{cli::parser} also provides support for options that can
+   be command to all applications:
+
+   \begin{itemize}
+      \item \texttt{--version}.
+         Provides the version of the application.
+      \item \texttt{--help}.
+         Emits help text. This help text is assembled from
+         the specification structures set up according to the
+         \texttt{cfg::options::container}.
+      \item \texttt{--description}.
+         This option is meant to show the description fields of the
+         options.
+      \item \texttt{--verbose}.
+         Indicates to emit additional information about the run of the
+         application.
+      \item \texttt{--inspect}.
+         This option is meant to activate debugging code.
+         The applications determines what this means.
+      \item \texttt{--investigate}.
+         This option is meant to activate temporary debugging code for
+         the current purpose desired by the programmer.
+         The applications determines what this means.
+      \item \texttt{--log}.
+         This option enables a log file for recording error and information
+         output.
+   \end{itemize}
+
    The \texttt{parse()} function looks for stock option such as
    \texttt{--help} and \texttt{--option log filename}.
-   The \texttt{--} sequence can terminate a list of options.
+   The \texttt{--} sequence terminates a list of options.
 
-   It is meant to be similar to getopt, but much more flexible and
+   It is meant to be similar to \texttt{getopt(3)}, but much more flexible and
    perhaps easier to set up.
+
+   The caller can call the following member functions:
+
+   \begin{itemize}
+      \item \texttt{show\_information\_only()}.
+         This function returns a boolean value that is true if
+         help, description, or version were requested.
+         Generally, if this information is shown, the application does
+         nothing but show the desired information, and exits.
+      \item \texttt{version\_request()}.
+         Indicates if version information was requested.
+      \item \texttt{help\_request()}.
+         Indicates if application help was requested.
+         The command-line help text is shown.
+         The caller can also provide further help if desired.
+      \item \texttt{description\_request()}.
+         Indicates if description information was requested.
+      \item \texttt{verbose\_request()} and \texttt{verbose()}.
+         Indicates if extra output (either command line or via
+         dialog boxes) was requested.
+      \item \texttt{inspect\_request()}.
+         Indicates if inspection was specified was requested.
+         Generally can be used to output data values as appropriate.
+      \item \texttt{investigate\_request()}.
+         Indicates if investigation was specified was requested.
+         Defined by the application.
+      \item \texttt{use\_log\_file()} and \texttt{log\_file()}.
+         Indicates that standard I/O should be redirected to a log file.
+   \end{itemize}
+
+   There are functions to add, verify, and set option values:
+
+   \begin{itemize}
+      \item \texttt{add()}.
+      \item \texttt{verify()}.
+      \item \texttt{set\_value()}.
+      \item \texttt{change\_value()}.
+      \item \texttt{clear()}.
+      \item \texttt{unmodify()}.
+      \item \texttt{unmodify\_all()}.
+   \end{itemize}
+
+   There are also functions to test and retrieve option values:
+
+   \begin{itemize}
+      \item \textsl{string}.
+         All options are encoded as strings.
+         Strings can be retrieved using \texttt{cli::parser::value()}.
+         The default string can be retrieved by \texttt{default\_value()}.
+      \item \textsl{boolean}.
+         \texttt{is\_boolean()} tests for a value being boolean.
+      \item \textsl{other, to do}.
+         There are many more value-related functions in the
+         \texttt{cfg::options} class, but they use a reference to
+         a \texttt{cfg::options::spec} structure, and can be accessed
+         only by getting the option and spec reference.
+         See \sectionref{subsec:cfg_namespace_options}.
+   \end{itemize}
+
+   The format of the default value is either a simple string showing the
+   default value, or a \textsl{range} string such as "0<=10<=99", where
+   the middle value is the default value.
+
+\subsection{cli::parser / Usage}
+\label{subsec:cli_namespace_parser_usage}
+
+   This section provides a walk through the test application
+   \texttt{cliparser\_test}. It starts with an \texttt{appinfo} function
+   to see the name that will appear in console messages:
+
+   \begin{verbatim}
+      cfg::set_client_name("cli");
+      cfg::set_app_version("0.2.0");
+   \end{verbatim}
+
+   Next, a parser is created via:
+
+   \begin{verbatim}
+      cli::parser clip(s_test_options);
+   \end{verbatim}
+
+   The \texttt{s\_test\_options} list is defined in the \texttt{test\_spec}
+   header file. Here is an excerpt. Note that we could use an anonymous
+   namespace instead of the keyword \texttt{static}.
+
+   \begin{verbatim}
+      static cfg::options::container s_test_options
+      {
+          {
+              {
+                  "alertable",
+                  {
+                      'a', cfg::options::kind::boolean, cfg::options::enabled,
+                      "false", "", false, false,
+                      "If specified, the application is alertable.", false
+                  }
+              },
+              {
+                  "canned-code",
+                  {
+                      'c', cfg::options::kind::boolean, cfg::options::enabled,
+                      "true", "", false, false,
+                      "If specified, the application employs canned code.", false
+                  }
+              },
+              . . .
+          }
+      };
+   \end{verbatim}
+
+   As an example, this list provides the \texttt{-a} and \texttt{--alertable}
+   option, which is a boolean option and is enabled. It has a default value
+   of "false", which is set once the list is initialized.
+   The values for "set-from-cli" and "dirty" are false by default at first.
+   After the one-line description, the boolean indicates if the options
+   is a built-in (global, stock) option. 
+   That value is set only in the \texttt{global\_options()} function
+   in the \texttt{options} module.
+   The options in this list are added to the global options.
+
+   After construction, the parser can be applied to the command-line
+   arguments:
+
+   \begin{verbatim}
+       bool success = clip.parse(argc, argv);
+   \end{verbatim}
+
+   This can modify (set the value, raise the "set-from-cli" and "dirty"
+   flags) options based on the command-line.
+
+   Not all options will have a code, in general, especially if there are a
+   large number of options. Duplicates are checked for.
+   The existing codes can be listed:
+
+   \begin{verbatim}
+      std::string msg = "Option codes: " + clip.code_list();
+   \end{verbatim}
+
+   The command line can also be scanned to see if an option is present.
+   The last parameter indicates if the option is required to exist:
+
+   \begin{verbatim}
+      bool findme_active = clip.check_option(argc, argv, "find-me", false);
+   \end{verbatim}
+
+   Built-in (global) options that make the application show something and
+   then quit can be tested:
+
+   \begin{verbatim}
+      if (clip.show_information_only())
+      {
+          if (clip.help_request()) . . .
+          if (clip.description_request()) . . .
+          if (clip.version_request()) . . .
+      }
+   \end{verbatim}
+
+   Some other built-in options:
+
+   \begin{verbatim}
+      if (clip.verbose_request()) . . .
+      if (clip.inspect_request()) . . .
+      if (clip.investigate_request()) . . .
+      if (clip.use_log_file()) . . .
+   \end{verbatim}
+
+   Debug text can be shown; it lists all the options, their values, their
+   default values, and if the value has been modified:
+
+   \begin{verbatim}
+      std::string dbgtxt = clip.debug_text(cfg::options::stock);
+   \end{verbatim}
+
+   Values can also be set or changed by the application itself, rather
+   than from the command-line. It can be retrieved by the long option
+   name or the option code.
+
+   \begin{verbatim}
+      success = clip.change_value("username", "C. Ahlstrom");
+      std::string name = clip.value("u");    // or "username"
+      success = name == "C. Ahlstrom";
+   \end{verbatim}
+
+   If an error occurs, which can be checked by a function's return code
+   or by a call to \texttt{cli::parser::error\_msg()}, then the message can
+   be retrieved for display:
+
+   \begin{verbatim}
+        std::string errmsg = clip.error_msg();
+        util::error_message(errmsg);
+   \end{verbatim}
+
+\subsection{cli::multiparser}
+\label{subsec:cli_namespace_multiparser}
+
+   The \texttt{cli::multiparser} class extends \texttt{cli::parser} in
+   a number of ways, in order to support a suite of command-line options
+   covering mutltiple configuration files.
+
+   Support is provided to look up the long option name from an option code
+   character. (The \texttt{cfg::options} class also provides this, but it
+   is not directly exposed to \texttt{cli::parser}.
+
+   \begin{verbatim}
+      using codes = std::map<char, std::string>;
+      codes & code_mappings();
+   \end{verbatim}
+
+   This function is used in the \texttt{multiparser} override of the
+   the virtual \texttt{cli::parser::parse()} function.
+
+   In order to support multiple configuration files and multiple
+   configuration sections, we need to way to find out in which file and section
+   an option resides.
+
+   \begin{verbatim}
+      using duo = struct
+      {
+         std::string config_type;
+         std::string config_section;
+      };
+      using names = std::map<std::string, duo>;
+      names & cli_mappings();
+   \end{verbatim}
+
+   This function is used to find the desired option set, a pointer to
+   the \texttt{cfg::options} for a particular file and section.
+
+   For a walk-through, see the section concerning the "INI set test".
+   TO DO.
+
 
 %-------------------------------------------------------------------------------
 % vim: ts=3 sw=3 et ft=tex

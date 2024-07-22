@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-02
+ * \updates       2024-07-21
  * \license       See above.
  *
  */
@@ -66,12 +66,12 @@ main (int argc, char * argv [])
 {
     int rcode = EXIT_FAILURE;
     cfg::set_client_name("cli");                    /* for error_message()  */
-    cli::parser clip(s_test_options);               /* see test_spec.hpp    */
+    cfg::set_app_version("0.2.0");
+    cli::parser clip{s_test_options};               /* see test_spec.hpp    */
     bool success = clip.parse(argc, argv);
     if (success)
     {
-        std::string msg = "Option codes: ";
-        msg += clip.code_list();
+        std::string msg = "Option codes: " + clip.code_list();
 #if defined USE_STD_COUT_CERR
         std::cout << msg << std::endl;
 #else
@@ -88,7 +88,6 @@ main (int argc, char * argv [])
             util::status_message("--find-me option found.");
 #endif
 
-        cfg::set_app_version("0.2.0");
         rcode = EXIT_SUCCESS;
         if (clip.show_information_only())
         {
@@ -167,22 +166,12 @@ main (int argc, char * argv [])
                     if (found)
                     {
                         std::cout << "found." << std::endl;
-                        std::cout << "Looking for 'dead-code'" << std::endl;
+                        std::cout << "Looking for 'dead-code'...";
                         found = clip.check_option(argc, argv, "dead-code");
                         if (found)
-                        {
-                            std::cout
-                                << "found." << std::endl
-                                << "find-me tests succeeded." << std::endl
-                                ;
-                        }
+                            std::cout << "found." << std::endl;
                         else
-                        {
-                            std::cerr
-                                << "not found." << std::endl
-                                << "find-me tests failed." << std::endl
-                                ;
-                        }
+                            std::cout << "not provided." << std::endl;
                     }
                 }
                 else
@@ -207,8 +196,14 @@ main (int argc, char * argv [])
             {
                 success = clip.change_value("alertable", "true");
                 if (success)
+                {
                     success = clip.change_value("username", "C. Ahlstrom");
-
+                    if (success)
+                    {
+                        std::string name = clip.value("u");
+                        success = name == "C. Ahlstrom";
+                    }
+                }
                 if (success)
                     success = clip.change_value("loop-count", "28");
 
@@ -217,6 +212,11 @@ main (int argc, char * argv [])
                     success = ! clip.change_value("", "");
                     if (success)
                         success = ! clip.change_value("dummy", "true");
+                }
+                if (success)
+                {
+                    std::string dbgtxt = clip.debug_text(cfg::options::stock);
+                    std::cout << dbgtxt << std::endl;
                 }
             }
         }

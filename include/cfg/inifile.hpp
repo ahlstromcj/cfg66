@@ -69,14 +69,12 @@ private:
      *  hidden.
      */
 
-    // inisections & m_ini_sections;
     const inisections & m_ini_sections;
 
 public:
 
     inifile
     (
-        // inisections & sections,
         const inisections & sections,
         const std::string & name,
         const std::string & cfgtype
