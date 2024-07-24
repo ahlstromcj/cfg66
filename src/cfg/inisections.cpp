@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-19
+ * \updates       2024-07-24
  * \license       See above.
  *
  * Operations to support:
@@ -273,9 +273,39 @@ inisections::help_text () const
     return result;
 }
 
+std::string
+inisections::debug_text () const
+{
+    std::string result;
+    for (auto & sec : section_list())
+        result += sec.debug_text();
+
+    return result;
+}
+
 /*------------------------------------------------------------------------
  * Finding an inisection object
  *------------------------------------------------------------------------*/
+
+/**
+ *  Makes sure the section name is bracketed.
+ *
+ *  Is this wise? Should we force the programmer to ensure this?
+ */
+
+std::string
+inisections::fix_section_name (const std::string & s) const
+{
+    std::string result;
+    if (! s.empty())
+    {
+        if (s.front() != '[' && s.back() != ']')
+            result = "[" + s + "]";
+        else
+            result = s;
+    }
+    return result;
+}
 
 /**
  *  Look up an inisection in this inisections object using the section name.
@@ -290,9 +320,10 @@ const inisection &
 inisections::find_inisection (const std::string & sectionname) const
 {
     static inisection s_inactive_inisection{! options::stock};
+    std::string name = fix_section_name(sectionname);
     for (const auto & section : section_list())
     {
-        if (section.name() == sectionname)
+        if (section.name() == name)
             return section;
     }
     return s_inactive_inisection;

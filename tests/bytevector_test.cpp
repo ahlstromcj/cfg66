@@ -97,7 +97,6 @@ basic_string_io ()
     std::string all{bv0.peek_string()};
     bool result = all == fname;
     std::cout << "The whole string: '" << all << "'" << std::endl;
-
     if (result)
     {
         util::bytevector bv1{fname};

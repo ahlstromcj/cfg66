@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-27
- * \updates       2024-07-19
+ * \updates       2024-07-24
  * \license       See above.
  *
  *  See the ini_test module for information. This module goes beyond that
@@ -113,6 +113,27 @@ static cfg::options::container s_test_options
     }
 };
 
+/**
+ *  Show the options, in support of the --list option.
+ */
+
+static void
+list_options (const cfg::options & opts)
+{
+    std::string dbgtxt = opts.debug_text(cfg::options::stock);
+    std::cout << dbgtxt << std::endl;
+}
+
+/**
+ *  Handle the non-global options.
+ */
+
+static bool
+handle_section_options ()
+{
+    return false;
+}
+
 /*
  * Process:
  *
@@ -172,7 +193,7 @@ main (int argc, char * argv [])
     if (success)
         success = cfg_set.add_inisections(cfg::rc_data);
 
-#if defined USE_ALT_TEST
+#if defined USE_ALT_TEST                        /* normally undefined       */
     std::string clihelp = cfg_set.cli_help_text();
     std::cout << clihelp << std::endl;
     return EXIT_SUCCESS;
@@ -191,26 +212,41 @@ main (int argc, char * argv [])
             {
                 if (success)
                 {
-                    if (cfg_set.boolean_value("list"))
+                    if (cfg_set.boolean_value("list"))  /* added global opt */
                     {
                         /*
-                         * Can do this in C++20:
+                         * Find the global options first, and then display
+                         * their "debug" text.
                          *
+                         * Can do this in C++20:
                          * const cfg::options & opts =
                          *      std::as_const(cfg_set).find_options();
                          */
 
                         const cfg::inimanager & ccfg = cfg_set;
+                        cfg::inimanager & nc_ccfg =
+                            const_cast<cfg::inimanager &>(cfg_set);
+
+
+#if defined USE_THIS_CODE
+                        nc_ccfg.value("port-naming", "long", "rc", "[misc]");
+
                         const cfg::options & opts = ccfg.find_options();
                         std::cout
                             << "--list selected, showing values:"
                             << std::endl
                             ;
-                        std::string dbgtxt = opts.debug_text
+                        list_options(opts);
+
+                        const cfg::options & rcopts = ccfg.find_options
                         (
-                            cfg::options::stock
+                            "rc", "misc"
                         );
-                        std::cout << dbgtxt << std::endl;
+                        list_options(rcopts);
+#else
+                        std::string dbgtext = ccfg.debug_text();
+                        std::cout << dbgtext << std::endl;
+#endif
                     }
                     else if (cfg_set.boolean_value("test"))
                     {
@@ -266,7 +302,18 @@ main (int argc, char * argv [])
                             success = false;
                         }
                     }
-                    rcode = EXIT_SUCCESS;
+                    else if (handle_section_options())
+                    {
+                    }
+                    else
+                    {
+                        std::cerr
+                            << "No action specified; see --help"
+                            << std::endl
+                            ;
+                        success = false;
+                    }
+                    rcode = success ? EXIT_SUCCESS : EXIT_FAILURE ;
                 }
 
 #if defined USE_STD_COUT_CERR

@@ -192,8 +192,8 @@ static cfg::inisection::specification s_simple_ini_spec
             {
                 'f', cfg::options::kind::filename, cfg::options::enabled,
                 "~/.config/seq66v2/seq66v2.session", "", false, false,
-                "This is a filename test option with a bogus dummy value. "
-                    "The circumflex represent the user's HOME + configuration "
+                "Filename test option with a bogus dummy value. "
+                    "'~' represents the user's 'home' configuration "
                     "directory.",
                 false
             }

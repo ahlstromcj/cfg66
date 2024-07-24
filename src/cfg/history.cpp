@@ -133,7 +133,7 @@ options_history (const history<options> & h)
             const options & current = h.get(index);
             ost
                 << "(" << index << ")" << std::endl
-                << current.debug_text() ///// << std::endl
+                << current.debug_text()
                 ;
         }
         result = ost.str();

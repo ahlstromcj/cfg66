@@ -251,7 +251,6 @@ main (int argc, char * argv [])
                         std::cerr << "Value-changes failed!" << std::endl;
 
                     // TODO Test range validation.
-                    // TODO Test range validation.
                 }
             }
         }

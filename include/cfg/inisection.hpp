@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-07-19
+ * \updates       2024-07-24
  * \license       See above.
  *
  *  We want to provide a list of { filename, sectionname } pairs, and
@@ -156,6 +156,7 @@ public:
     std::string description_commented () const;
     std::string cli_help_text () const;
     std::string help_text () const;
+    std::string debug_text () const;
 
     bool inactive () const
     {

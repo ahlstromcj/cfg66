@@ -817,7 +817,7 @@ options::help_line (const option & opt) const
                 desc += " [" + op.option_value + "]";
             else
                 desc += " [" + op.option_default + "]";
-
+        }
         desc = util::hanging_word_wrap
         (
             desc, options::hanging_width, options::terminal_width
@@ -1046,23 +1046,41 @@ options::debug_line (const option & opt) const
     const spec & op = opt.second;
     if (option_exists(op))
     {
-        std::string value = "\"" + op.option_value + "\"";
+        std::string value;
         std::ostringstream ost;
+        if (op.option_value.length() > 18)
+        {
+            std::string sub = op.option_value.substr(0, 14);
+            value = "\"" + sub;
+            value += "...\"";
+        }
+        else
+            value = "\"" + op.option_value + "\"";
+
         ost
             << "   "
-            << std::setw(16) << std::left << opt.first << " = "
+            << std::setw(20) << std::left << opt.first << " = "
             << std::setw(20) << std::left << value
             ;
 
         if (op.option_code != 'h' && op.option_code != 'v')
         {
-            ost << " [" << op.option_default << "]";
+            if (op.option_default.length() > 18)
+            {
+                value = "[" + op.option_default.substr(0, 14);
+                value += "...]";
+            }
+            else
+                value = "[" + op.option_default + "]";
+
+            ost << std::setw(20) << std::left << value;
+            if (op.option_cli_enabled)
+                ost << " CLI";
+
             if (op.option_modified)
-                ost << " modified";
+                ost << " *";
         }
         result = ost.str();
-        if (! op.option_cli_enabled)
-            result += " CLI-disabled";
     }
     return result;
 }

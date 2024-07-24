@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-07-19
+ * \updates       2024-07-24
  * \license       See above.
  *
  *  See the inisections class and modules for details.
@@ -210,6 +210,17 @@ inisection::help_text () const
     result += section_description();
     result += "\n";
     result += option_set().help_text();
+    return result;
+}
+
+std::string
+inisection::debug_text () const
+{
+    std::string result = config_type();
+    result += ":";
+    result += name();
+    result += "\n";
+    result += option_set().debug_text();
     return result;
 }
 

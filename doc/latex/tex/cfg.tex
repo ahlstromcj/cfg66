@@ -6,7 +6,7 @@
 % \library     Documents
 % \author      Chris Ahlstrom
 % \date        2024-04-16
-% \update      2024-07-22
+% \update      2024-07-24
 % \version     $Revision$
 % \license     $XPC_GPL_LICENSE$
 %
@@ -20,7 +20,6 @@
 
    This section provides a useful walkthrough of the \texttt{cfg} namespace of
    the \textsl{cfg66} library.
-
    Here are the classes (or modules) in this namespace:
 
    \begin{itemize}
@@ -122,12 +121,16 @@
 \subsection{cfg::basesettings}
 \label{subsec:cfg_namespace_basesettings}
 
-   Provides common settings useful in any application.
+   THe \texttt{cfg::basesettings} class is a base class.
+   It provides common settings useful in any application:
 
    \begin{itemize}
       \item \textsl{File name}.
          Holds the (optional) name of the file that holds the settings data.
-      \item \textsl{Modified}.
+      \item \textsl{Ordinal version}.
+         Provides a simple integer indicating the version of the file,
+         useful in adapting to changes in settings.
+      \item \textsl{Modify/unmodify function and "modified" flag}.
          Indicates if the settings have been modified.
       \item \textsl{Config format}.
          A free-form string indicating the format of the data, such as
@@ -155,16 +158,22 @@
 \subsection{cfg::comments}
 \label{subsec:cfg_namespace_comments}
 
-   Holds a string describing something general about the configuration.
+   \texttt{cfg::comments} holds a string describing
+   something general about the configuration,
+   meant to be included as the text of a \texttt{[comment]} section.
    Provides some setter and getter functions.
+   It is a simple class.
 
 \subsection{cfg::configfile}
 \label{subsec:cfg_namespace_configfile}
 
-   Provides some items common to configuration files, including
+   The \texttt{cfg::configfile} class is an \texttt{abstract base class}.
+   It provides some items common to configuration files, including
    an extensive set of functions to parse sections and configuration
-   variables in an
-   INI format in a line-by-line fashion.
+   variables in an INI format in a line-by-line fashion.
+   The member functions \texttt{parse()} and \texttt{write()}
+   are \textsl{pure virtual}, and must be overridden in a derived class.
+   A good example is \texttt{cfg::inifile}.
 
    These are the main externally-accessible values:
 
@@ -198,7 +207,7 @@
    undo/redo functionality.
    The \texttt{history} template class implements undo/redo using the 
    \texttt{memento} class described below. It follows
-   the \textsl{Design Patterns} book (\cite{dpatterns}) starting on page 62.
+   the \textsl{Design Patterns} book (\cite{dpatterns}).
    Also informative is \cite{deque}.
    Also see the \texttt{cfg::memento} class below.
 
@@ -213,24 +222,49 @@
    The \texttt{history.cpp} module provide a small test of history for
    the \texttt{cfg::options} class.
 
+   The \texttt{history\_test} application provides a more substantive
+   test of history.
+   It provides an \texttt{cfg::options::container} with a few options, and
+   then applies \texttt{undo} and
+   \texttt{redo} operations on them, checking the results.
+
+   \textbf{To do}: test range validation.
+
 \subsection{cfg::inifile}
 \label{subsec:cfg_namespace_inifile}
 
    \texttt{cfg::inifile} is derived from the \texttt{cfg::configfile} class.
    It contains a reference to a class that manages multiple
    INI sections: \texttt{cfg::inisections}.
-   It override the
+   It overrides the
    \texttt{cfg::configfile::parse()} and
    \texttt{cfg::configfile::write()} functions.
    It provides two protected functions,
    \texttt{parse\_section()} and
    \texttt{write\_section()}.
 
-   WALK THROUGH the ini\_test application.
+   The \texttt{ini\_test} application sets up a couple of
+   \texttt{cfg::inisection::specification} named structures 
+   with a long description and a list of values to be stored.
+   The \texttt{cfg::stock\_cfg66\_data()} and
+   \texttt{cfg::stock\_comment\_data()} specification are defined as well.
+   All section specifications are wrapped in a
+   \texttt{cfg::inisections::specification} structure
+   that is used to create a
+   \texttt{cfg::inisections} object and then use it to
+   create an INI file for output, exercising \texttt{inifile::write()}.
+
+   The same setup is used to exercise \texttt{inifile::parse()}.
+   The results can be found in the \texttt{tests/data} directory.
 
 \subsection{cfg::inimanager}
 \label{subsec:cfg_namespace_inimanager}
          
+   \texttt{cfg::inimanager} is meant to manage multiple
+   \texttt{cfg::inifile} objects.
+   Each INI file is associated with a unique configuration file type,
+   such as "rc" or "session", and a section name,
+
    \texttt{cfg::inimanager} defines two types:
 
    \begin{itemize}
@@ -242,6 +276,35 @@
 
    Also defined is a function to add an named \texttt{cfg::option}
    to the option map.
+
+   The \texttt{ini\_set\_test} application first defines some
+   \textsl{global} options
+   peculiar to it: "list", "read", "test", and "write".
+   These are \texttt{global} options because they are not associated with
+   an INI file or an INI section.
+   The \texttt{cfg::inimanager} is created with this list, and populates
+   the options. Then two \texttt{cfg::inisection} objects are
+   added, one for \texttt{cfg::small\_data} and
+   one for \texttt{cfg::rc\_data}.
+
+   The caller can then exercise the global options (including the internal,
+   stock options).  The \texttt{--help} option will show all of the global
+   option, plus all of the sections and options defined for
+   \texttt{cfg::small\_data} and
+   \texttt{cfg::rc\_data}.
+   The \texttt{--read} and \texttt{write} options accept a file-name and
+   process it.
+
+   Note: if something like the following message appears, fix the issue.
+   Otherwise, the option cannot be parsed, even if it appears in the
+   help text.
+
+   \begin{verbatim}
+      [iniset] Couldn't insert <sets-mode,(rc,[misc])>: Change option to a
+      unique name
+   \end{verbatim}
+
+   THIS TEST NEEDS TO BE ELABORATED.
 
 \subsection{cfg::inisection}
 \label{subsec:cfg_namespace_inisection}

@@ -6,11 +6,12 @@
 % \library     Documents
 % \author      Chris Ahlstrom
 % \date        2024-04-16
-% \update      2024-05-16
+% \update      2024-07-24
 % \version     $Revision$
 % \license     $XPC_GPL_LICENSE$
 %
-%     Provides a description of the entities in the cfg66 library.
+%     Provides a description of the entities in the cfg66 library, in the
+%     util namespace.
 %
 %-------------------------------------------------------------------------------
 
@@ -48,20 +49,46 @@
    Since this data is big-endian, it is suitable for use with MIDI
    files and network data streams.
 
+   This module defines some types in the \texttt{util} namespace:
+
+   \begin{itemize}
+      \item \texttt{byte} = \texttt{uint8\_t}
+      \item \texttt{ushort} = \texttt{uint16\_t}
+      \item \texttt{ulong} = \texttt{uint32\_t}
+      \item \texttt{ulonglong} = \texttt{uint64\_t}
+      \item \texttt{bytes} = \texttt{std::vector<byte>}.
+   \end{itemize}
+
+   The \texttt{util::bytes} type holds the big-endian data.
+   The \texttt{util::bytevector} class keeps track of the
+   section of data being processed, and the position in the data.
+   In addition, errors are detected, and an error message is stored
+   for later display.
+
+   Various overloads of the \texttt{assign} member function are used
+   for loading data into the byte-vector.
+   Functions are provided to "get" and "peek" at items in the byte-vector.
+   The former change the position value, while the latter do not.
+   Functions are provided to "put" and "poke" items into the byte-vector.
+   The former change the position value, while the latter do not.
+
+   Lastly, "read" and "write" functions are provided for interactions
+   with a data file.
+
 \subsection{util::filefunctions module}
 \label{subsec:util_namespace_filefunctions}
 
    The \texttt{util::filefunctions} module contains a large number of
    function dealing file-names and files.
-
-   The file functions are basically wrappers around the \texttt{C FILE *}
-   API.
-
    The file-name functions are useful for building paths and for splitting
    paths into parts.
+   The file functions are basically wrappers around the \texttt{C FILE *}
+   API.
+   Also provided are functions to check file attributes, to read/write
+   strings, and to open, close, copy, and append data.
 
    Really, just skim the \texttt{filefunctions} modules to learn what is
-   there.  They include every convenient function we needed in implementing
+   there.  They include every convenience function we needed in implementing
    \textsl{Seq66}.
 
 \subsection{util::msgfunctions module}
@@ -69,10 +96,16 @@
 
    The \texttt{util::msgfunctions} module defines functions for writing
    messages to the console along with tags showing the short name of the
-   application that wrote them, and in color.
+   application that wrote them, and in color represent whether the message
+   is an error, warning, debug, status, file-related, or session message.
 
    Also included are some "async safe" functions for output and for
    converting unsigned numbers to string arrays.
+
+   Setters and getters are provided for the \texttt{--verbose} and
+   \texttt{--investigate} options of the command-line parser.
+
+   Again, skim the \texttt{util::msgfunctions} module for details.
 
 \subsection{util::named\_bools}
 \label{subsec:util_namespace_named_bools}
@@ -82,7 +115,7 @@
    boolean values by name.
 
    This class could be useful if one does not want the full capability
-   of the classes in the \texttt{cfg} namespace.
+   of the options-related classes in the \texttt{cfg} namespace.
 
 \subsection{util::strfunctions module}
 \label{subsec:util_namespace_strfunctions}
@@ -92,6 +125,8 @@
    strings and values with the added feature of defaulting, word-wrapping,
    and formatting of \texttt{std::string} values without using
    \texttt{std::stringstream}.
+
+   Skim the \texttt{util::strfunctions} module for details.
 
 %-------------------------------------------------------------------------------
 % vim: ts=3 sw=3 et ft=tex

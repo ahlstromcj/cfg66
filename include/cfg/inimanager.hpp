@@ -64,9 +64,9 @@ class inimanager
 public:
 
     /**
-     *  An inimanager::sections holds actual inisections objects. They are created
-     *  on the fly from static inisections::specifications definitions, so
-     *  we need to store copies.
+     *  An inimanager::sections holds actual inisections objects. They are
+     *  created on the fly from static inisections::specifications
+     *  definitions, so we need to store copies.
      *
      *      using sectionsref = std::reference_wrapper<inisections>;
      *
@@ -98,6 +98,7 @@ public:
 
     std::string cli_help_text () const;
     std::string help_text () const;
+    std::string debug_text () const;
 
     int count () const
     {

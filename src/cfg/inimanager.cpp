@@ -343,6 +343,16 @@ inimanager::help_text () const
     return result;
 }
 
+std::string
+inimanager::debug_text () const
+{
+    std::string result;
+    for (const auto & sections : sections_map())
+        result += sections.second.debug_text();
+
+    return result;
+}
+
 /*------------------------------------------------------------------------
  * Options accessors
  *------------------------------------------------------------------------*/
