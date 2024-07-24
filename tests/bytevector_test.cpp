@@ -24,15 +24,16 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-05-17
- * \updates       2024-05-17
+ * \updates       2024-07-24
  * \license       See above.
  *
  */
 
 #include <cstdlib>                      /* EXIT_SUCCESS, EXIT_FAILURE       */
-#include <iostream>                     /* std::cout                        */
+#include <iostream>                     /* std::cout, set::cerr             */
 
 #include "cfg/appinfo.hpp"              /* cfg::appinfo functions           */
+#include "cli/parser.hpp"               /* cli::parser, etc.                */
 #include "util/bytevector.hpp"          /* util::bytevector big-endian code */
 #include "util/msgfunctions.hpp"        /* util::file_message(), etc.       */
 
@@ -42,7 +43,7 @@
 
 static cfg::appinfo s_application_info
 {
-    cfg::appkind::cli,                  // "cli"
+    cfg::appkind::test,                 // "test"
     "bytevector_test",                  // _app_name (mandatory!)
     "0.0",                              // _app_version
     "[Byte66]",                         // _main_cfg_section_name
@@ -68,7 +69,18 @@ static cfg::appinfo s_application_info
 
 static const std::string s_help_intro
 {
+    "Not all of the above options are fully supported.\n\n"
     "This test program illustrates/tests the util::bytevector class.\n"
+    "For a list of build and run-time details, use the --description\n"
+    "command-line option.\n"
+};
+
+static const std::string s_desc_intro
+{
+    "This test exercises the util::bytevector big-endian file I/O.\n"
+    "The file '1Bar.midi' is a short sample MIDI file to illustrate\n"
+    "the process.  This test reads that file; we still need to write\n"
+    "code to write the file.\n"
 };
 
 /*
@@ -171,25 +183,53 @@ big_endian_file_io ()
 }
 
 /*
- * main() routine
+ *  main() routine. Rather than call cfg::set_client_name(),
+ *  cfg::set_app_version(), etc., we use a structure to set the application
+ *  information.
  */
 
 int
-main (int /* argc */ , char * argv [])
+main (int argc, char * argv [])
 {
     int rcode = EXIT_FAILURE;
-    bool success = cfg::initialize_appinfo(s_application_info, argv[0]);
+    cli::parser clip;                   /* provides global/stock options    */
+    bool success = clip.parse(argc, argv);
+    if (success)
+        success = cfg::initialize_appinfo(s_application_info, argv[0]);
+
     if (success)
     {
-        std::cout << cfg::get_build_details() << std::endl;
-        success = basic_string_io();
-        if (success)
-            success = big_endian_file_io();
-
+        if (clip.show_information_only())
+        {
+            if (clip.help_request())
+            {
+                std::cout << s_help_intro << std::endl;
+            }
+            if (clip.description_request())
+            {
+                std::cout
+                    << s_desc_intro << "\n"
+                    << "Build details: \n\n" << cfg::get_build_details()
+                    << "Run-time details: \n\n" << cfg::get_runtime_details()
+                    ;
+            }
+            if (clip.version_request())
+            {
+                std::cout
+                    << "There is still more to do in this app." << std::endl
+                    ;
+            }
+        }
+        else
+        {
+            success = basic_string_io();
+            if (success)
+                success = big_endian_file_io();
+        }
         if (success)
             std::cout << "util::bytevector C++ test succeeded" << std::endl;
         else
-            std::cout << "util::bytevector C++ test failed" << std::endl;
+            std::cerr << "util::bytevector C++ test failed" << std::endl;
     }
     return rcode;
 }

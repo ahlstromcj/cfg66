@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-04
+ * \updates       2024-07-24
  * \license       See above.
  *
  *      While this parser follows the basics of GNU getopt fairly well,
@@ -540,7 +540,12 @@ parser::show_information_only () const
     }
     if (description_request())
     {
-        std::cout << description_text();
+        /**
+         *  Somewhat redundant re the --help option.
+         *
+         *      std::cout << description_text();
+         */
+
         result = true;
     }
     if (version_request())

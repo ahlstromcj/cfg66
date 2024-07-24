@@ -369,6 +369,10 @@ public:
         return option_set().debug_text(showbuiltins);
     }
 
+    /**
+     *  Somewhat redundant re the --help option.
+     */
+
     std::string description_text () const
     {
         return option_set().description();          /* shows all options    */

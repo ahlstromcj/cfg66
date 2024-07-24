@@ -22,20 +22,18 @@
 /**
  * \file          appinfo.hpp
  *
- *    This module summarizes or defines all of the configure and build-time
- *    options available for Seq66.
+ *    This module summarizes the main characteristics of an application,
+ *    such as application type, application version, and client name,
  *
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2018-11-24
- * \updates       2024-07-15
+ * \updates       2024-07-23
  * \license       GNU GPLv2 or above
  *
  *    Provides some useful functions for displaying information about the
  *    application.  More flexible than macros.
  */
-
-#include <string>
 
 #include "cpp_types.hpp"                /* string, vector, lib66::msglevel  */
 #include "util/msgfunctions.hpp"        /* enum clas msglevel               */
@@ -132,7 +130,7 @@ public:
 
     /**
      *  Provides the short name of the application plus the version number
-     *  of the application.  Set it via the build system.
+     *  of the application. Set it via the build system.
      */
 
     std::string _app_tag;
@@ -296,6 +294,7 @@ extern const std::string & level_color (int index);
 extern std::string get_client_tag (lib66::msglevel el = lib66::msglevel::none);
 extern std::string get_session_tag (const std::string & refinement = "");
 extern std::string get_build_details ();
+extern std::string get_runtime_details ();
 extern bool get_app_cli ();
 extern bool get_app_headless ();
 extern bool is_a_tty (int fd = (-1));

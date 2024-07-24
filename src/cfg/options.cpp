@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-22
+ * \updates       2024-07-24
  * \license       See above.
  *
  *  The cli::options class provides a way to hold the state of command-line
@@ -812,8 +812,11 @@ options::help_line (const option & opt) const
 
         std::string desc = op.option_desc;
         if (code != 'h' && code != 'v')
-            desc += " [" + op.option_default + "]";
-
+        {
+            if (op.option_value != op.option_default)
+                desc += " [" + op.option_value + "]";
+            else
+                desc += " [" + op.option_default + "]";
 
         desc = util::hanging_word_wrap
         (
@@ -1575,9 +1578,10 @@ global_options ()
         {
             "description",
             {
-                options::code_null, options::kind::boolean, options::disabled,
+                options::code_null, options::kind::boolean, options::enabled,
                 "false", "", false, false,
-                "Flags application to show descriptive information.", true
+                "Flags application to show extra descriptive information.",
+                true
             }
         },
         {
