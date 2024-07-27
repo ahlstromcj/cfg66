@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-24
- * \updates       2024-07-18
+ * \updates       2024-07-27
  * \license       See above.
  *
  *      The limitations of command-line options as implemented in cli::parser
@@ -64,7 +64,10 @@ multiparser::multiparser (cfg::inimanager & mgr) :
     m_code_mappings     (),
     m_cli_mappings      ()
 {
-    // no code
+    // no code; QUESTION: should we set m_current_options (null at this point)
+    // to the current value of options_set()?
+    // ????????????????????
+
 }
 
 multiparser::~multiparser ()
@@ -342,15 +345,17 @@ multiparser::parse (int argc, char * argv [])
 
             /*
              *  2.  Look up the long name's configuration type and section.
+             *      Note that extract_value() separates the name and value
+             *      of a token like "name=value".
              */
 
-            std::string configtype;
-            std::string configsection;
+            std::string value;
+            bool has_value = extract_value(longname, value);  /* name=value */
             auto dit = cli_mappings().find(longname);
             if (dit != cli_mappings().end())
             {
-                configtype = dit->second.config_type;
-                configsection = dit->second.config_section;
+                std::string configtype = dit->second.config_type;
+                std::string configsection = dit->second.config_section;
 
                 /*
                  *  3.  Get the option-set from the INI section.

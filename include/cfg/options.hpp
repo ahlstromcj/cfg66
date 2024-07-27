@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-22
+ * \updates       2024-07-27
  * \license       See above.
  *
  *  Supports variables of the following types:
@@ -133,6 +133,7 @@ public:
     static const bool disabled{false};
     static const bool enabled{true};
     static const bool stock{true};      /* used in reset() & debug_text()   */
+    static const bool nostock{false};
 
     /**
      *  More searchable versions of specific booleans and a null option
@@ -403,7 +404,7 @@ public:
     std::string setting_line (const std::string & name) const;
     std::string setting_line (const option & op) const;
     std::string debug_line (const option & op) const;
-    std::string debug_text (bool show_builtins = false) const;
+    std::string debug_text (bool show_builtins = stock) const;
     std::string description (const std::string & name) const;
     std::string description () const;
     std::string long_description (const option & op) const;

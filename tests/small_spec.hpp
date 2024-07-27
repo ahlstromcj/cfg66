@@ -48,7 +48,7 @@ namespace cfg
 
 /*
  * Note that we use [misc] : last-used-dir instead of a section of that
- * name.
+ * name. Note that we now avoid conflicts with the rc_spec.hpp module.
  */
 
 inisection::specification small_misc_data
@@ -59,7 +59,7 @@ inisection::specification small_misc_data
     },
     {
         {
-            "sets-mode",
+            "sets-mode-bak",        /* otherwise conflicts w/rc_spec.hpp    */
             {
                 options::code_null, options::kind::string, options::enabled,
                 "normal", "", false, false,
@@ -68,7 +68,7 @@ inisection::specification small_misc_data
             }
         },
         {
-            "port-naming",
+            "port-naming-bak",      /* otherwise conflicts w/rc_spec.hpp    */
             {
                 options::code_null, options::kind::string, options::enabled,
                 "short", "", false, false,

@@ -94,7 +94,6 @@ main (int argc, char * argv [])
             std::cout
                 << "Using log file '" << clip.log_file() << "'" << std::endl
                 ;
-
         }
         success = clip.change_value("alertable", "true");
         if (success)
