@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-24
- * \updates       2024-07-19
+ * \updates       2024-07-29
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -1595,7 +1595,10 @@ line_comments (const std::string & source, char commentchar)
 
             std::string line = source.substr(start, count);
             if (! commenting.empty())
-                result += commenting;
+            {
+                if (nlpos != std::string::npos)
+                    result += commenting;
+            }
 
             result += line;
             start += line.length();
@@ -1651,6 +1654,33 @@ first_sentence
     if (addellipse)
         result += "...";
 
+    return result;
+}
+
+/**
+ *  Simply counts the number of a specific character (newline by default)
+ *  in the string. Returns -1 upon error, an empty string.
+ */
+
+int
+count_character (const std::string & s, char target)
+{
+    int result = s.empty() ? (-1) : 0 ;
+    if (result == 0)
+    {
+        std::string::size_type nlpos = 0;
+        for (;;)
+        {
+            nlpos = s.find_first_of(target, nlpos);
+            if (nlpos != std::string::npos)
+            {
+                ++nlpos;
+                ++result;
+            }
+            else
+                break;
+        }
+    }
     return result;
 }
 

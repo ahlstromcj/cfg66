@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-07-24
+ * \updates       2024-07-27
  * \license       See above.
  *
  *  We want to provide a list of { filename, sectionname } pairs, and
@@ -158,7 +158,11 @@ public:
 
     inisections ();
     inisections (const std::string & ininame);
-    inisections (const std::string & ininame, inisections::specification & spec);
+    inisections
+    (
+        inisections::specification & spec,
+        const std::string & ininame = ""
+    );
     inisections (const inisections & ini) = default;
     inisections & operator = (const inisections & ini) = default;
     ~inisections () = default;
@@ -225,6 +229,7 @@ private:
         return m_section_list;
     }
 
+    void extract_file_values (const std::string & fname);
     std::string fix_section_name (const std::string & s) const;
     inisection & find_inisection (const std::string & sectionname = global);
     options & find_options (const std::string & sectionname = global);

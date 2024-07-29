@@ -120,25 +120,19 @@
  *
  *      -   "control specification"
  *          loop number, key name, 3x5 stanza
- *
  *      -   "control out specification"
  *          loop number, 4x3 stanzas
- *
  *      -   "mute out specification"
  *          mute number, 3x3 stanzas
- *
  *      -   "automatic out specification"
  *          enabled, 3x3 stanzas
- *
  *      -   "mutes"
  *          group number, 4x8 stanza or HEX
- *
  *      -   "playlist"
  *      -   "palette"
  *      -   "metro"
  *      -   "keymap"
  *      -   "ui"
- *
  *
  *  The following option kinds are generally not used for command-line
  *  options (though allowed), but for arrays of values.
@@ -990,6 +984,22 @@ options::setting_line (const std::string & name) const
 /**
  *  This function creates a line describing the current status of the
  *  setting.
+ *
+ *  We have the following kinds of setting values:
+ *
+ *      -   Simple. Single-line (i.e. short) values, which generally do not
+ *          have a newline, but we want to handle that properly.
+ *          -   value-name = value      # description
+ *          -   value-name = "value"    # description (if < 80 columns)
+ *      -   Long. Values long enough to require multiple lines, with or
+ *          without newlines (it's the programmer's decision). We don't
+ *          yet have a strategy for these.
+ *      -   List value. These include a count and then a list of values
+ *          without comments.
+ *      -   Section value. These are generated already formatted.
+ *
+ *  Empty or lines that would be too long to hold the description will not
+ *  provide the description.
  */
 
 std::string
@@ -1009,6 +1019,7 @@ options::setting_line (const option & opt) const
         }
         else
         {
+            size_t width = options::field_width;        /* 40 characters    */
             std::string value = opt.first;  /* the key (the option's name   */
             value += " = ";
             if (option_is_quotable(op))
@@ -1018,15 +1029,32 @@ options::setting_line (const option & opt) const
             if (option_is_quotable(op))
                 value += "\"";
 
-            std::string desc = "# " + op.option_desc;
-            size_t width = options::field_width;
-            size_t vlen = value.length();
-            size_t dlen = op.option_desc.length();
-            bool show_description = vlen <= width && dlen <= width;
-            std::ostringstream ost;
-            ost << std::setw(width) << std::left << value;
+            std::string desc;
+            bool show_description = ! op.option_desc.empty();
             if (show_description)
+            {
+                size_t vlen = value.length();
+                size_t dlen = op.option_desc.length();
+                show_description = vlen <= width && dlen <= width;
+                if (show_description)
+                {
+                    desc = "# " + op.option_desc;
+                    int newlinecount = util::count_character(desc);
+                    if (newlinecount == 0)
+                        desc += "\n";
+                }
+            }
+            if (! show_description)
+                value += "\n";
+
+            std::ostringstream ost;
+            if (show_description)
+            {
+                ost << std::setw(width) << std::left << value;
                 ost << desc;
+            }
+            else
+                ost << value;
 
             result = ost.str();
         }
@@ -1115,9 +1143,9 @@ options::debug_text (bool show_builtins) const
 }
 
 /**
- *  Looks up the long name in this options object.  If found, then
- *  the corresponding option description is returned.  Otherwise, an empty
- *  string is returned.
+ *  Looks up the long name in this options object.  If found, then the
+ *  corresponding option description is returned.  Otherwise, an empty string
+ *  is returned.
  *
  * \param name
  *      Provides the long name for the option.  However, the code name for the

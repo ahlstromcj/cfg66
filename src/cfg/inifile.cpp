@@ -24,7 +24,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2024-07-16
+ * \updates       2024-07-29
  * \license       GNU GPLv2 or above
  *
  */
@@ -160,21 +160,21 @@ inifile::write ()
 
         /*
          * Stock [Cfg66] and [comments] sections.
-         *
          * It's too problematic to have these built in.
          *
          *  const inisection & cfg66sec = get_inifile_cfg66_section();
          *  write_section(file, cfg66sec);
          *  const inisection & commsec = get_inifile_comment_section();
          *  write_section(file, commsec);
-         *
          */
 
         /*
          * Write the rest of the sections.
          */
 
-        const inisections::sectionlist & sections = m_ini_sections.section_list();
+        const inisections::sectionlist & sections =
+            m_ini_sections.section_list();
+
         for (const auto & section : sections)
             write_section(file, section);
 
@@ -193,10 +193,10 @@ inifile::write ()
 }
 
 /**
- *  Writes out the INI section's name and description. Then gets the
- *  options object, which provides the option pairs, a map of option names
- *  and option specs. From that we get the option name, and then use that
- *  to look up the setting line.  This process is a bit stilted!
+ *  Writes out the INI section's name and description. Then gets the options
+ *  object, which provides the option pairs, a map of option names and option
+ *  specs. From that we get the option name, and then use that to look up the
+ *  setting line.  This process is a bit stilted!
  */
 
 void
@@ -212,15 +212,24 @@ inifile::write_section
     }
     if (! section.section_description().empty())
     {
-        file << section.description_commented() << "\n";
+        /*
+         * All description lines in an INI file should be terminated
+         * with a newline. No formatting changes at all.
+         */
+
+        file << section.description_commented();    /*  << "\n"             */
     }
 
     const options & opset = section.option_set();
     options::container opspecs = opset.option_pairs();
     for (const auto & opt : opspecs)
     {
+        /* TODO: fix setting line to handle multiple lines (e.g. for
+         * comments/section values.
+         */
+
         const std::string & name = opt.first;
-        file << opset.setting_line(name) << "\n";   /* ugh, too indirect!   */
+        file << opset.setting_line(name);           /*  << "\n";            */
     }
 }
 

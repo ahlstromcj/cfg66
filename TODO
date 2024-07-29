@@ -1,6 +1,6 @@
 TODOs for the cfg66 library
 Chris Ahlstrom
-2023-07-16 to 2023-07-24
+2023-07-16 to 2023-07-28
 
 This file lists only the high-priority features and fixtures we need
 to do for Cfg66.
@@ -15,6 +15,7 @@ ini_test_cpp:
         newline to avoid adding a blank line.
     -   Add processing to at least some of the options in
         ini_set_test.
+    -   Improve ini_test.
     -   Add a [last-used-dir] value based on reading/writing.
     -   Add to the [recent-files] based on reading/writing.
     -   Add some fake ports to [midi-input], [midi-input-map],

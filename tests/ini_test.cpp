@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-07-25
- * \updates       2024-07-19
+ * \updates       2024-07-29
  * \license       See above.
  *
  *  Rationale:
@@ -158,21 +158,23 @@ static cfg::options::container s_test_options
  *  Test options. Note that the newlines are not necessary (they
  *  can be replaced by spaces). For descriptions we now treat
  *  the newlines (and other white space) as space characters.
+ *
+ *  Note that the main description is read in exactly as formatted, and
+ *  is written to an INI exactly as formatted..
  */
 
 static cfg::inisection::specification s_simple_ini_spec
 {
     "[experiments]",
     {
-        "This section is just a bunch of dummies for some simple tests.\n"
-        "By itself, it shows the output string for a list of described\n"
-        "options. This description string is deliberately long to show\n"
-        "how word-wrapping and commenting with '#' can work. Also note\n"
-        "that white space such as newlines are converted to spaces for\n"
-        "this purpose. Further note that this output can be dumped to\n"
-        "a configuration file to save the settings. Lastly, note that,\n"
-        "by default, options are output ordered alphabetically by their\n"
-        "long option name."
+"This section is just a bunch of dummies for some simple tests.  By itself,\n"
+"it shows the output string for a list of described options. This\n"
+"description string is deliberately long to show how word-wrapping and\n"
+"commenting with '#' can work. Also note that white space such as newlines\n"
+"are converted to spaces for this purpose. Further note that this output\n"
+"can be dumped to a configuration file to save the settings. Lastly, note\n"
+"that, by default, options are output ordered alphabetically by their long\n"
+"option name.\n"
     },
     {
         {
@@ -254,8 +256,8 @@ static cfg::inisection::specification s_section_spec
 {
     "[section-test]",
     {
-        "This \"section\" option shows how only one bald string is\n"
-        "contained in a section option.\n"
+"This \"section\" option shows how only one bald string is contained\n"
+"in a section option.\n"
     },
     {
         {
@@ -286,7 +288,7 @@ cfg::inisection::specification exp_comments = cfg::stock_comment_data();
 
 static cfg::inisections::specification exp_file_data
 {
-    "exp", "~/.config/experiment/", "exp.session",
+    "exp", "~/.config/experiment/", "ini_test_session",
     "This is a test INI file specification.",
     {
         std::ref(exp_cfg_data),
@@ -410,6 +412,9 @@ main (int argc, char * argv [])
             std::cout
                 << "HELP TEXT:\n\n"
                 << s_help_intro << clip.help_text()
+                << "Note that --inspect can be used here to show some extra\n"
+                   "settings information."
+                << std::endl
                 ;
         }
         if (clip.version_request())
@@ -442,24 +447,25 @@ main (int argc, char * argv [])
                 std::cout
                     << "Using log file '" << clip.log_file() << "'" << std::endl
                     ;
-
             }
-
-            cfg::inisections ini_experiment("experiment", exp_file_data);
-            std::string settings = ini_experiment.settings_text();
-            std::cout
-                << "======== INIFILE SETTINGS ========\n"
-                << settings
-                << "========   SETTINGS END   ========\n"
-                ;
-            if (success)
+            if (clip.inspect_request())
             {
-                cfg::inisections sections("fooout", exp_file_data);
+                cfg::inisections ini_experiment(exp_file_data, "experiment");
+                std::string settings = ini_experiment.settings_text();
+                std::cout
+                    << "============ INIFILE SETTINGS ============\n"
+                    << settings
+                    << "============ SETTINGS END     ============\n"
+                    ;
+            }
+            else
+            {
+                cfg::inisections sections(exp_file_data);
                 cfg::inifile f_out(sections, "tests/data/fooout", "rc");
                 success = f_out.write();
                 if (success)
                 {
-                    cfg::inisections sections2("fooout", exp_file_data);
+                    cfg::inisections sections2(exp_file_data);
                     cfg::inifile f_in(sections2, "tests/data/fooin", "rc");
                     success = f_in.parse();
                     if (success)

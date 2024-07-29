@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-07-17
+ * \updates       2024-07-28
  * \license       See above.
  *
  *  In an application, we want to access options via the triplet of
@@ -160,7 +160,7 @@ inimanager::add_inisections (inisections::specification & spec)
     bool result = ! cfgtype.empty();
     if (result)
     {
-        inisections sec{cfgtype, spec};
+        inisections sec{spec, cfgtype};
         auto p = std::make_pair(cfgtype, sec);      /* does it make a copy? */
         auto r = sections_map().insert(p);          /* another copy         */
         result = r.second;

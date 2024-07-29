@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2024-04-30
+ * \updates       2024-07-28
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -2030,7 +2030,7 @@ file_extension_set (const std::string & path, const std::string & ext)
         std::string extdummy;
         bool ok = filename_split_ext(path, pathspec, filebare, extdummy);
         if (ok)
-            result += pathspec;
+            result = pathspec;
 
         result += filebare;
         result += ext;

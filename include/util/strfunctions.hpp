@@ -27,7 +27,7 @@
  *
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2024-07-19
+ * \updates       2024-07-29
  * \version       $Revision$
  *
  *    Also see the strfunctions.cpp module.
@@ -191,6 +191,7 @@ extern std::string first_sentence
     size_t limit    = 72,
     char ender      = '.'
 );
+extern int count_character (const std::string & s, char target = '\n');
 
 /**
  *  This function comes, slightly modified to avoid throwing an exception,

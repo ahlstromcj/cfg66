@@ -1,16 +1,15 @@
 NEWS for Cfg66 0.2
 Chris Ahlstrom
-2024-04-15 to 2024-07-15
+2024-04-15 to 2024-07-29
 
 # Changelog
 
-## [0.2] - 2024-07-15
+## [0.2] - 2024-07-29
 
 ### Added
 
 - Added the util::bytevector class to work with big-endian data (e.g.
-  MIDI files).
-- Added a test for the util::bytevector class.
+  MIDI files). Added a test for the util::bytevector class.
 - Renamed the cfg::inifile class to "inisections" because it was
   misleading.
 - Added an actual cfg::inifile class to extend cfg::configfile.
@@ -19,7 +18,8 @@ Chris Ahlstrom
 - Added diagrams to clarify the hierarchy.
 - Split the inisections module into inimanager, inisection, and
   inisections modules. The inimanager handles multiple INI files with
-  multiple INI sections.
+  multiple INI sections. Added the ini\_set\_test program to test
+  the inimanager and its associates.
 - Added a "multi-parser" to cover multiple INI-style files for an
   application.
 - Tightened up the interactions between command-line parsing and INI
@@ -29,6 +29,7 @@ Chris Ahlstrom
 - Added display/access for parsing error messages.
 - Added "recents" as a kind of option, and added a class called
   recent (taken from Seq66) to handle them.
+- Added some useful functions to the strfunctions module.
 
 ### Fixed
 

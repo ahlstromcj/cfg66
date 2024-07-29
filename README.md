@@ -1,4 +1,4 @@
-# README for Library Cfg66 0.2 2024-06-20
+# README for Library Cfg66 0.2 2024-07-29
 
 __Cfg66__ is a configuration library based on the "cfg" directories
 in the __Seq66__ project, but that is useful in other applications.
@@ -73,6 +73,8 @@ or classes in a namespace of the same name:
     *   Beef up the LaTeX documentation.
 
 ## Recent Changes
+
+    For all changes, see the NEWS file.
 
     *   Version 0.1.0:
         *   Usage of meson instead of autotools, cmake, or qmake.

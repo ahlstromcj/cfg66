@@ -1,26 +1,32 @@
-# Cfg66-style configuration file for an application
+# Cfg66-style configuration file for app v. 0
 #
 # File: tests/data/fooin.rc
-# Written: 2024-06-17 08:27:45
+# Written: 2024-07-29 00:00:00
+#
+# Note: it is best if each line of a comment is shorter than 78 characters.
+# The Cfg66 library uses that as the terminal width.
 
 [Cfg66]
 
 # This file holds the main configuration data for Cfg66-compliant
 # applications. It follows a format similar to the old INI files of MS-DOS.
+#
 # 'config-type' can be used to make sure the right kind of file is in use.
-# 'version' helps the application to detect older configuration files. See the
-# 'session' specification for the common 'quiet' and 'verbose' options.
+# 'version' helps the application to detect older configuration files. See
+# the 'session' specification for the common 'quiet' and 'verbose' options.
 
 config-type = "rc"                      # The type of configuration file.
 version = 1                             # Configuration file version.
 
 [comments]
 
-# [comments] holds user documentation for this file. The first empty, hash-
-# commented, or tag line ends the comment. Use a space for line breaks.
+# The [comments] section holds user documentation for this file. The first
+# empty, hash-commented, or tag (section) line ends the comment.
+#  
+# Use a space for line breaks as done in the line above.
 
-Add your comment block here. Comments are a "section" option. For "section"
-options, there are no "variable = value" lines, just lines that are read
+Add your comment block here. Comments are a 'section' option. For 'section'
+options, there are no 'variable = value' lines, just lines that are read
 as is.
  
 This is the next paragraph, separated from the above with a line blank
@@ -28,13 +34,14 @@ except for a single space.
 
 [experiments]
 
-# This section is just a bunch of dummies for some simple tests. By itself, it
-# shows the output string for a list of described options. This description
-# string is deliberately long to show how word-wrapping and commenting with
-# '#' can work. Also note that white space such as newlines are converted to
-# spaces for this purpose. Further note that this output can be dumped to a
-# configuration file to save the settings. Lastly, note that, by default,
-# options are output ordered alphabetically by their long option name.
+# This section is just a bunch of dummies for some simple tests.  By itself,
+# it shows the output string for a list of described options. This
+# description string is deliberately long to show how word-wrapping and
+# commenting with '#' can work. Also note that white space such as newlines
+# are converted to spaces for this purpose. Further note that this output
+# can be dumped to a configuration file to save the settings. Lastly, note
+# that, by default, options are output ordered alphabetically by their long
+# option name.
 
 boolean-value = true                   
 count = 9                               
@@ -46,8 +53,8 @@ string-value = "I am not a string."
 
 [section-test]
 
-# This "section" option shows how only one bald string is contained in a
-# section option.
+# This "section" option shows how only one bald string is contained
+# in a section option.
 
 This is the new version of the section value.
 This is the second line of the new [section] value.

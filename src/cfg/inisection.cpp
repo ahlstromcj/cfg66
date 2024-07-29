@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-07-24
+ * \updates       2024-07-28
  * \license       See above.
  *
  *  See the inisections class and modules for details.
@@ -159,7 +159,9 @@ inisection::cli_help_text () const
         if (! enabledoptshelp.empty())
         {
 #if defined USE_COLOR_CLI_HELP_TEXT
-            result += level_color(3);                   /* see appinfo module   */
+            bool showcolor = is_a_tty();
+            if (showcolor)
+                result += level_color(3);           /* see appinfo module   */
 #endif
             if (! config_type().empty())
             {
@@ -176,6 +178,7 @@ inisection::cli_help_text () const
                 havenames = true;
             }
 #if defined USE_COLOR_CLI_HELP_TEXT
+            if (showcolor)
                 result += level_color(0);
 #endif
             if (! section_description().empty())
@@ -298,10 +301,17 @@ stock_cfg66_data ()
     {
         "[Cfg66]",
 
-    "The main configuration data for Cfg66-compliant applications, similar\n"
-    "to an MS-DOS INI file.\n"
-    "'config-type' indicates the kind of file and file extension.\n"
-    "'version' allows detection of older configuration files." // no newline
+        /*
+         * This description is formatted exactly as it should appear,
+         * with all lines ending with a newline.
+         */
+
+"This file holds the main configuration data for Cfg66-compliant\n"
+"applications. It follows a format similar to the old INI files of MS-DOS.\n"
+"\n"
+"'config-type' can be used to make sure the right kind of file is in use.\n"
+"'version' helps the application to detect older configuration files. See\n"
+"the 'session' specification for the common 'quiet' and 'verbose' options.\n"
         ,
         {
             {
@@ -337,17 +347,24 @@ stock_comment_data ()
     {
         "[comments]",
 
-    "[comments] holds user documentation for this file. The first empty, hash-\n"
-    "commented, or tag line ends the comment. \n"
-    " \n"
-    "Use a space for line breaks as done in the line above."
+"The [comments] section holds user documentation for this file. The first\n"
+"empty, hash-commented, or tag (section) line ends the comment.\n"
+" \n"
+"Use a space for line breaks as done in the line above.\n"  // note the newline
         ,
         {
             {
                 "comment",
                 {
                     options::code_null, options::kind::section, options::disabled,
-                    "Add your comment block here.", "",
+"Add your comment block here. Comments are a 'section' option. For 'section'\n"
+"options, there are no 'variable = value' lines, just lines that are read\n"
+"as is.\n"
+"  \n"
+"This is the next paragraph, separated from the above with a line blank\n"
+"except for a single space.\n"
+                    ,
+                    "",
                     false, false, "Configuration file user comments.", false
                 }
             }

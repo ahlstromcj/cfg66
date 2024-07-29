@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-24
+ * \updates       2024-07-27
  * \license       See above.
  *
  * Operations to support:
@@ -125,30 +125,31 @@ inisections::inisections (const std::string & ininame) :
     m_description   ("A generic configuration file."),
     m_section_list  ()
 {
-    if (! ininame.empty())
-    {
-        (void) util::filename_split(ininame, m_directory, m_name);
-        m_extension = util::file_extension(m_name);
-        if (m_extension[0] == '.')
-            m_config_type = m_extension.substr(1);
-        else
-            m_config_type = m_extension;
-    }
+    extract_file_values(ininame);                   /* works if non-empty   */
+
+    inisection ini;
+    add(ini);
 }
 
 /**
  *  Create an INI file object and populate it with [sections] filled with
  *  "options".
  *
- * \param ininame
- *      The full path specification to the INI file, such as
- *      "~/.config/seq66v2/special-session/seq66v2.session".
+ * For-loop notes:
+ *
+ *      specref = std::reference_wrapper<inisection::specification>
+ *      specrefs = std::vector<specref>
+ *
+ *      for (auto & sec : spec.file_sections)   // vector of specref (wrappers)
+ *
+ *          std::reference_wrapper<inisection::specification> sec :
+ *              spec.file_sections
  *
  * \param spec
  *      This structure contains:
  *
  *          -   The type of INI file, such as 'session' or 'rc'. It is
- *              essentially a file extension.
+ *              essentially a file extension without the period.
  *          -   The home directory, which might be prepended to a bare
  *              file-name.
  *          -   The name of the home configuration file.
@@ -157,67 +158,28 @@ inisections::inisections (const std::string & ininame) :
  *          -   A list of inisection::specification objects. This object
  *              contains a section name and description plus a container
  *              of named options::spec structures.
+ *
+ * \param ininame
+ *      The full path specification to the INI file, such as
+ *      "~/.config/seq66v2/special-session/seq66v2.session".
+ *      This parameter is optional, since the relevant items can be found
+ *      in the spec parameter.
  */
 
 inisections::inisections
 (
-    const std::string & ininame,
-    inisections::specification & spec
+    inisections::specification & spec,
+    const std::string & ininame
 ) :
     m_app_version   ("Cfg66-based application configuration file"),
     m_directory     (spec.file_directory),
     m_name          (spec.file_basename),
     m_extension     (spec.file_extension),
-    m_config_type   (),
-    m_description   (spec.file_description),
     m_section_list  ()
 {
-    if (! ininame.empty())
+    extract_file_values(ininame);                   /* works if non-empty   */
+    for (auto sec : spec.file_sections)             /* see banner notes     */
     {
-        /* WHAT ABOUT the dir/base.ext info in the spec parameter!??? */
-
-        if (m_extension.empty())
-        {
-            if (! ininame.empty())
-            {
-                (void) util::filename_split(ininame, m_directory, m_name);
-                m_extension = util::file_extension(m_name);
-            }
-        }
-        if (m_extension[0] == '.')
-            m_config_type = m_extension.substr(1);
-        else
-            m_config_type = m_extension;
-    }
-
-    /*
-     * specref = std::reference_wrapper<inisection::specification>
-     * specrefs = std::vector<specref>
-     *
-     * for (auto & sec : spec.file_sections)   // vector of specref (wrappers)
-     *
-     *  std::reference_wrapper<inisection::specification> sec :
-     *      spec.file_sections
-     */
-
-#if defined PLATFORM_DEBUG_TMI
-    size_t index = 0;
-#endif
-
-    for (auto sec : spec.file_sections)
-    {
-
-#if defined PLATFORM_DEBUG_TMI
-        const inisection::specification & s = spec.file_sections[index].get();
-        std::string desc = s.sec_description.substr(0, 16);
-        printf
-        (
-            "inispec[%2d]: name='%s', desc='%s...', size=%d\n",
-            int(index++), s.sec_name.c_str(), desc.c_str(),
-            int(s.sec_optionlist.size())
-        );
-#endif
-
         /*
          * Create a new inisection. Using the stored std::ref() object and
          * the file-extension. Don't override the section name in
@@ -230,6 +192,57 @@ inisections::inisections
         /*
          * TODO. Provide a way to add all named options to the globql inimanager
          */
+    }
+}
+
+/**
+ *  This function can be used to override the following
+ *  inisections::specification values:
+ *
+ *      -   file_directory
+ *      -   file_basename
+ *      -   file_extension
+ *
+ *  The configuration type member, m_config_type, can also be set.
+ *
+ * \param fname
+ *      The name of the file, used only if not empty. It can contain
+ *      the following parts:
+ *
+ *              ~/.config/application/application-162.session
+ *              Path----------------= Base-name-----=Extension
+ *
+ *      Only the components that are present will change these members:
+ *
+ *          -   m_directory
+ *          -   m_name
+ *          -   m_extension
+ *          -   m_config_type
+ *
+ *      If all components are present, the 3 spec values and configuration
+ *      type are modified.
+ */
+
+void
+inisections::extract_file_values (const std::string & fname)
+{
+    if (! fname.empty())
+    {
+        std::string path;
+        std::string filebase;
+        std::string ext;
+        bool has_path = util::filename_split_ext(fname, path, filebase, ext);
+        if (has_path)
+            m_directory = path;
+
+        if (! filebase.empty())
+            m_name = filebase;
+
+        if (! ext.empty() && ext[0] == '.')
+        {
+            m_extension = ext;
+            m_config_type = m_extension.substr(1);
+        }
     }
 }
 

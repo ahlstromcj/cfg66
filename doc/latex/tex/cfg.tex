@@ -6,7 +6,7 @@
 % \library     Documents
 % \author      Chris Ahlstrom
 % \date        2024-04-16
-% \update      2024-07-24
+% \update      2024-07-29
 % \version     $Revision$
 % \license     $XPC_GPL_LICENSE$
 %
@@ -219,9 +219,11 @@
 
    Member functions are provided to see if history entries are
    undoable/redoable, undo and redo them, check the maximum size of the list,
+   etc.
    The \texttt{history.cpp} module provide a small test of history for
    the \texttt{cfg::options} class.
 
+   \index{history\_test}
    The \texttt{history\_test} application provides a more substantive
    test of history.
    It provides an \texttt{cfg::options::container} with a few options, and
@@ -243,6 +245,7 @@
    \texttt{parse\_section()} and
    \texttt{write\_section()}.
 
+   \index{ini\_test}
    The \texttt{ini\_test} application sets up a couple of
    \texttt{cfg::inisection::specification} named structures 
    with a long description and a list of values to be stored.
@@ -253,9 +256,32 @@
    that is used to create a
    \texttt{cfg::inisections} object and then use it to
    create an INI file for output, exercising \texttt{inifile::write()}.
+   The file generated is \texttt{tests/data/fooout.rc}.
 
    The same setup is used to exercise \texttt{inifile::parse()}.
+   The file read is \texttt{tests/data/fooin.rc}.
+   The file generated from \texttt{fooin.rc} is
+   \texttt{tests/data/fooinout.rc}.
+   The file generated from the test's internal data is
+   \texttt{tests/data/fooout.rc}.
    The results can be found in the \texttt{tests/data} directory.
+   The files \texttt{fooin.rc} and 
+   \texttt{fooinout.rc} should be almost identical.
+
+   How does it work?
+
+   \begin{verbatim}
+       cfg::inisections sections("fooout", exp_file_data);
+   \end{verbatim}
+
+   The \texttt{exp\_file\_data} specification provides
+   the configuration type (file extension) "exp",
+   the putative configuration directory "~/.config/experiment/",
+   the base name of the configuration file "ini\_test\_session",
+   followed by the description of the INI sections object and
+   a list of the sections in the INI sections object.
+
+   TODO
 
 \subsection{cfg::inimanager}
 \label{subsec:cfg_namespace_inimanager}
@@ -277,6 +303,7 @@
    Also defined is a function to add an named \texttt{cfg::option}
    to the option map.
 
+   \index{ini\_set\_test}
    The \texttt{ini\_set\_test} application first defines some
    \textsl{global} options
    peculiar to it: "list", "read", "test", and "write".
@@ -304,7 +331,50 @@
       unique name
    \end{verbatim}
 
-   THIS TEST NEEDS TO BE ELABORATED.
+   Let us walk through some runs of
+   \texttt{ini\_set\_test}.
+
+   \begin{verbatim}
+      $ ./build/test/ini_set_test --help
+   \end{verbatim}
+
+   This command emits color-coded help text showing the options, a brief
+   description of each, and the default value of eac option.
+   The text is extracted from the setup structures:
+
+   \begin{verbatim}
+      cfg::options::container s_test_options} 
+      inisection::specification small_misc_data
+      inisection::specification small_interaction_data
+      inisection::specification small_comments = stock_comment_data();
+      inisection::specification small_cfg66_data
+      inisections::specification small_data
+   \end{verbatim}
+
+   The last specification collects all of the others and adds directory and
+   descriptions.  Also included are all the specifications in the
+   file \texttt{tests/rc\_spec.hpp}, which we will not show here.
+
+   The first part of the help text shows the "global" options, which consist
+   of internal stock options plus some additional test options:
+   "list", "read", "write", and "tests.
+   The global options are not associated with either an INI file
+   or an INI section.
+
+   Following the global options are specific options associated with an
+   INI file and and INI section.  Here's a partial example:
+
+   \begin{verbatim}
+      rc:[misc] A number of miscellaneous options
+       --manual-ports           Show real system ports, not 'usr' port names.
+                                [false]
+       --port-naming=v          Port amount-of-label showing. [short]
+   \end{verbatim}
+
+   The "rc" represents the INI file, which can have any name, but with an
+   extension of \texttt{.rc}.
+   For a given program, there can be only one INI file with that extension.
+   The "[misc]" represents an INI section in that INI file.
 
 \subsection{cfg::inisection}
 \label{subsec:cfg_namespace_inisection}
