@@ -1,7 +1,7 @@
 # Cfg66-style configuration file for app v. 0
 #
-# File: tests/data/fooout.rc
-# Written: 2024-07-29 13:24:28
+# File: ./tests/data/fooout.rc
+# Written: 2024-07-31 06:57:34
 
 [Cfg66]
 
@@ -56,6 +56,7 @@ string-value = "I am a string."
 This is actually a multi-line '[section]' value.
 This is the second line of the [section] value.
 Normally, this is the ONLY value in an [section] option.
-# End of tests/data/fooout.rc
+
+# End of ./tests/data/fooout.rc
 #
 # vim: sw=4 ts=4 wm=4 et ft=dosini

@@ -1686,7 +1686,7 @@ append_file
  *  path. If it doesn't have one at the end, one is added.
  *
  *  The second path is stripped of any slash it has at the beginning, converting
- *  it to a relative path. And end slash is added, if necessary.
+ *  it to a relative path. An end slash is added, if necessary.
  *
  *  Compare this function to pathname_concatenate().
  */

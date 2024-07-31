@@ -533,7 +533,7 @@ void
 configfile::write_cfg66_footer (std::ofstream & file)
 {
     file
-        << "\n# End of " << file_name() <<
+        << "\n\n# End of " << file_name() <<
         "\n#\n# vim: sw=4 ts=4 wm=4 et ft=dosini\n"
         ;
 }

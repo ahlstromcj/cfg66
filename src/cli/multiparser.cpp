@@ -346,11 +346,12 @@ multiparser::parse (int argc, char * argv [])
             /*
              *  2.  Look up the long name's configuration type and section.
              *      Note that extract_value() separates the name and value
-             *      of a token like "name=value".
+             *      of a token like "name=value"; we currently need only
+             *      the name part. FIXME!
              */
 
             std::string value;
-            bool has_value = extract_value(longname, value);  /* name=value */
+            /* bool has_value = */ extract_value(longname, value);
             auto dit = cli_mappings().find(longname);
             if (dit != cli_mappings().end())
             {

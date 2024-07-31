@@ -24,7 +24,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2024-07-29
+ * \updates       2024-07-30
  * \license       GNU GPLv2 or above
  *
  */
@@ -39,10 +39,12 @@ namespace cfg
  *  Provides the string constructor for a configuration file.
  *
  * \param name
- *      The name of the configuration file.
+ *      The name of the configuration file. If empty, it is assembled
+ *      from the file-name components of the inisections parameters.
  *
  * \param cfgtype
  *      The file-extension for this type of configuration file.
+ *      If empty, it is taken from the inisections parameter.
  */
 
 inifile::inifile
@@ -51,7 +53,11 @@ inifile::inifile
     const std::string & filename,
     const std::string & cfgtype
 ) :
-    configfile      (filename, cfgtype),
+    configfile
+    (
+        filename.empty() ? sections.file_specification() : filename,
+        cfgtype.empty() ? sections.config_type() : cfgtype
+    ),
     m_ini_sections  (sections)
 {
     // no code needed
@@ -121,9 +127,6 @@ inifile::parse_section
 {
     options & opset = section.option_set();
     options::container opspecs = opset.option_pairs();
-#if defined PLATFORM_DEBUG_TMI
-    printf("SECTION %s\n", section.name().c_str());
-#endif
     for (auto & opt : opspecs)
     {
         const std::string & name = opt.first;

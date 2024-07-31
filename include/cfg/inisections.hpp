@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-07-27
+ * \updates       2024-07-30
  * \license       See above.
  *
  *  We want to provide a list of { filename, sectionname } pairs, and
@@ -121,22 +121,24 @@ private:
     std::string m_directory;
 
     /**
-     *  The name of the INI file as a group.  This could be a file-name,
-     *  or just a file extension such as "rc". For now, prefer the latter,
-     *  and treat it as a "configuration type".
+     *  The name of the INI file as a group.  This should be the base of
+     *  a file-name (i.e. "filename.rc" without the ".rc"), and is treated
+     *  as such.
      */
 
-    std::string m_name;
+    std::string m_base_name;
 
     /**
-     *  The stock file-extension to use for this INI file. Examples would
-     *  be '.session', '.rc', and '.usr'.
+     *  The file-extension to use for this INI file. Examples would
+     *  be '.session', '.rc', and '.usr', which are some of the "stock"
+     *  file extensions supported by Cfg66.
      */
 
     std::string m_extension;
 
     /**
-     *  The type of configuration file. Usually similar to the file extension.
+     *  The type of configuration file. Usually the same as the file
+     *  extension, but without the period.
      */
 
     std::string m_config_type;
@@ -171,6 +173,7 @@ public:
     std::string cli_help_text () const;
     std::string help_text () const;
     std::string debug_text () const;
+    std::string file_specification () const;
 
     bool active () const
     {
@@ -190,6 +193,21 @@ public:
     void clear ()
     {
         section_list().clear();
+    }
+
+    const std::string & directory () const
+    {
+        return m_directory;
+    }
+
+    const std::string & base_name () const
+    {
+        return m_base_name;
+    }
+
+    const std::string & extension () const
+    {
+        return m_extension;
     }
 
     const std::string & config_type () const
@@ -230,6 +248,7 @@ private:
     }
 
     void extract_file_values (const std::string & fname);
+    void fix_extension (const std::string & ext);
     std::string fix_section_name (const std::string & s) const;
     inisection & find_inisection (const std::string & sectionname = global);
     options & find_options (const std::string & sectionname = global);

@@ -3,6 +3,10 @@
 # File: tests/data/fooin.rc
 # Written: 2024-07-29 00:00:00
 #
+# To use this file, run "./build/test/ini_test". The file written after reading
+# this one is "./tests/data/fooinout.rc", which should be almost identical
+# to this one, except for date/time, filename, and this comment section.
+#
 # Note: it is best if each line of a comment is shorter than 78 characters.
 # The Cfg66 library uses that as the terminal width.
 

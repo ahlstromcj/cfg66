@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-24
+ * \updates       2024-07-31
  * \license       See above.
  *
  *  The cli::options class provides a way to hold the state of command-line
@@ -1011,10 +1011,6 @@ options::setting_line (const option & opt) const
     {
         if (option_is_section(op))
         {
-            /*
-             * TODO: perform wrapping by adding newlines as needed.
-             */
-
             result = op.option_value;       /* just dump the whole string   */
         }
         else

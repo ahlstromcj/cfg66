@@ -282,14 +282,22 @@ cfg::inisection::specification exp_cfg_data = cfg::stock_cfg66_data();
 cfg::inisection::specification exp_comments = cfg::stock_comment_data();
 
 /**
- *  Provide some sample inisections. Note the inclusion of the pre-made
+ *  Provides the following items:
+ *
+ *      std::string file_extension;         Actually the config type.
+ *      std::string file_directory;
+ *      std::string file_basename;
+ *      std::string file_description;
+ *      specrefs file_sections;             Contains "[sections]"
+ *
+ *  Provides some sample inisections. Note the inclusion of the pre-made
  *  cfg66 and comment sections defined in the inisections.cpp file.
  */
 
 static cfg::inisections::specification exp_file_data
 {
-    "exp", "~/.config/experiment/", "ini_test_session",
-    "This is a test INI file specification.",
+    "rc", "./tests/data", "ini_test_session",   /* base-name gets overriden */
+    "This is a test 'rc' INI file specification.",
     {
         std::ref(exp_cfg_data),
         std::ref(exp_comments),
@@ -358,7 +366,7 @@ static cfg::inisection::specification s_dummy_ini_spec
 
 static cfg::inisections::specification expex_file_data
 {
-    "expex", "~/.config/experiment/", "expex.session",
+    "session", "~/.config/experiment/", "expex",
     "This is another test INI file specification.",
     {
         s_expex_ini_spec,
@@ -406,46 +414,58 @@ main (int argc, char * argv [])
          *  newer function clip.show_information_only().
          */
 
-        if (clip.help_request())
+        if (clip.show_information_only())
         {
             canrun = false;
-            std::cout
-                << "HELP TEXT:\n\n"
-                << s_help_intro << clip.help_text()
-                << "Note that --inspect can be used here to show some extra\n"
-                   "settings information."
-                << std::endl
-                ;
-        }
-        if (clip.version_request())
-        {
-            canrun = false;
-            std::cout
-                << "VERSION TEXT: (TODO)\n\n"
-                << "Version 0.0.0" << std::endl;  /* TODO! */
-        }
-        if (clip.verbose_request())
-        {
-            canrun = false;
-            std::cout
-                << "VERBOSE. Let's just show the option (--help) list.\n"
-                << clip.help_text()
-                ;
-        }
-        if (clip.description_request())
-        {
-            canrun = false;
-            std::cout
-                << "DESCRIPTION TEXT:\n\n"
-                << clip.description_text()
-                ;
+            if (clip.help_request())
+            {
+                /*
+                 * cli_help_text() is called automatically, and adds
+                 * color.
+                 *
+                 * << "HELP TEXT:\n\n"
+                 * << s_help_intro << clip.help_text()
+                 */
+
+                std::cout
+                    << "Note that --inspect can be used here to show some extra\n"
+                       "settings information.\n"
+                    << std::endl
+                    ;
+            }
+            if (clip.version_request())
+            {
+                /*
+                 * cfg::get_app_version() called internally.
+                 *
+                 * std::cout
+                 *  << "VERSION TEXT: (TODO)\n\n"
+                 *  << "Version 0.0.0" << std::endl;
+                 */
+            }
+            if (clip.verbose_request())
+            {
+                std::cout
+                    << "VERBOSE. Let's just show the option (--help) list.\n"
+                    << clip.help_text()
+                    ;
+            }
+            if (clip.description_request())
+            {
+                canrun = false;
+                std::cout
+                    << "DESCRIPTION TEXT:\n\n"
+                    << clip.description_text()
+                    ;
+            }
         }
         if (canrun)
         {
             if (clip.use_log_file())
             {
                 std::cout
-                    << "Using log file '" << clip.log_file() << "'" << std::endl
+                    << "Pretending to use log file '"
+                    << clip.log_file() << "'" << std::endl
                     ;
             }
             if (clip.inspect_request())
@@ -460,20 +480,29 @@ main (int argc, char * argv [])
             }
             else
             {
-                cfg::inisections sections(exp_file_data);
-                cfg::inifile f_out(sections, "tests/data/fooout", "rc");
+                /*
+                 * In these examples, the base name of the specification
+                 * is overridden in the specification, and the configuration
+                 * type ("rc") is taken from the specification.
+                 *
+                 *  inifile(inisections & sect, fname = "", cfgtype = "");
+                 *
+                 * The inifile constructor uses cfg :: inisections ::
+                 * file_specification() for the file-name.
+                 */
+
+                cfg::inisections sections(exp_file_data, "fooout");
+                cfg::inifile f_out(sections);
                 success = f_out.write();
                 if (success)
                 {
-                    cfg::inisections sections2(exp_file_data);
-                    cfg::inifile f_in(sections2, "tests/data/fooin", "rc");
+                    cfg::inisections sections(exp_file_data, "fooin");
+                    cfg::inifile f_in(sections);
                     success = f_in.parse();
                     if (success)
                     {
-                        cfg::inifile f_inout
-                        (
-                            sections2, "tests/data/fooinout", "rc"
-                        );
+                        cfg::inisections sections(exp_file_data, "fooinout");
+                        cfg::inifile f_inout(sections);
                         success = f_inout.write();
                     }
                 }

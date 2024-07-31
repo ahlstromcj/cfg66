@@ -271,11 +271,11 @@
    How does it work?
 
    \begin{verbatim}
-       cfg::inisections sections("fooout", exp_file_data);
+       cfg::inisections sections(exp_file_data);
    \end{verbatim}
 
    The \texttt{exp\_file\_data} specification provides
-   the configuration type (file extension) "exp",
+   the configuration type (file extension without the period) "exp",
    the putative configuration directory "~/.config/experiment/",
    the base name of the configuration file "ini\_test\_session",
    followed by the description of the INI sections object and

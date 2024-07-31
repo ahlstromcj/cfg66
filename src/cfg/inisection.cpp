@@ -128,13 +128,13 @@ inisection::settings_text () const
 {
     std::string result = "\n";
     result += description_commented();          /* description_wrapped() */
-    result += "\n";
+//  result += "\n";
     result += name();
-    result += "\n\n";
+//  result += "\n\n";
     for (const auto & s : option_names())
     {
         result += option_set().setting_line(s);
-        result += "\n";
+//      result += "\n";
     }
     return result;
 }

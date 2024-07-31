@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-27
+ * \updates       2024-07-30
  * \license       See above.
  *
  * Operations to support:
@@ -96,12 +96,13 @@ static std::string s_stock_file_intro
 /**
  *  Create an inisections that has only one inisection, that being one
  *  holding only the "global" options. See the inisection default constructor.
+ *  No directory, file-name, extension, or configuration type.
  */
 
 inisections::inisections () :
     m_app_version   ("Cfg66 stock configuration"),
     m_directory     (),
-    m_name          (),
+    m_base_name     (),
     m_extension     (),
     m_config_type   (),
     m_description   ("A stock configuration, not a file."),
@@ -114,21 +115,25 @@ inisections::inisections () :
 /**
  *  Create an inisections, filling in members by splitting the
  *  INI file name.
+ *
+ * \param ininame
+ *      Provides the name of the INI file, preferably a full
+ *      file-specification, to fill in the members for directory,
+ *      base-name, and file-extension/configuration type.
  */
 
 inisections::inisections (const std::string & ininame) :
     m_app_version   ("Cfg66 configuration file"),
     m_directory     (),
-    m_name          (),
+    m_base_name     (),
     m_extension     (),
     m_config_type   (),
     m_description   ("A generic configuration file."),
     m_section_list  ()
 {
-    extract_file_values(ininame);                   /* works if non-empty   */
-
     inisection ini;
     add(ini);
+    extract_file_values(ininame);                   /* works if non-empty   */
 }
 
 /**
@@ -140,7 +145,7 @@ inisections::inisections (const std::string & ininame) :
  *      specref = std::reference_wrapper<inisection::specification>
  *      specrefs = std::vector<specref>
  *
- *      for (auto & sec : spec.file_sections)   // vector of specref (wrappers)
+ *      for (auto & sec : spec.file_sections)   // vector of specref wrappers
  *
  *          std::reference_wrapper<inisection::specification> sec :
  *              spec.file_sections
@@ -160,8 +165,15 @@ inisections::inisections (const std::string & ininame) :
  *              of named options::spec structures.
  *
  * \param ininame
- *      The full path specification to the INI file, such as
- *      "~/.config/seq66v2/special-session/seq66v2.session".
+ *      Information about the file-specification of the INI file. It can
+ *      be a full path like:
+ *
+ *          "~/.config/seq66v2/special-session/seq66v2.session".
+ *
+ *      The parts of this file name replace whatever the spec specifies.
+ *      It can also be just a directory, base-name, and extension, to override
+ *      just some of the spec values.
+ *
  *      This parameter is optional, since the relevant items can be found
  *      in the spec parameter.
  */
@@ -173,7 +185,7 @@ inisections::inisections
 ) :
     m_app_version   ("Cfg66-based application configuration file"),
     m_directory     (spec.file_directory),
-    m_name          (spec.file_basename),
+    m_base_name     (spec.file_basename),
     m_extension     (spec.file_extension),
     m_section_list  ()
 {
@@ -186,11 +198,12 @@ inisections::inisections
          * that constructor, use the name in the inisection::specification.
          */
 
-        inisection ini(sec.get(), m_extension); /* leave 3rd argument empty */
+        inisection ini(sec.get(), m_extension);     /* 3rd argument empty   */
         add(ini);
 
         /*
-         * TODO. Provide a way to add all named options to the globql inimanager
+         * TODO. Provide a way to add all named options to the global
+         * inimanager
          */
     }
 }
@@ -215,18 +228,27 @@ inisections::inisections
  *      Only the components that are present will change these members:
  *
  *          -   m_directory
- *          -   m_name
+ *          -   m_base_name
  *          -   m_extension
  *          -   m_config_type
  *
  *      If all components are present, the 3 spec values and configuration
  *      type are modified.
+ *
+ *      If empty, only some fix-ups are made, such as making sure the
+ *      file-extension has a period.
+ *
+ *  This function is kind of an inverse of file_specification().
  */
 
 void
 inisections::extract_file_values (const std::string & fname)
 {
-    if (! fname.empty())
+    if (fname.empty())
+    {
+        fix_extension(m_extension);
+    }
+    else
     {
         std::string path;
         std::string filebase;
@@ -236,14 +258,43 @@ inisections::extract_file_values (const std::string & fname)
             m_directory = path;
 
         if (! filebase.empty())
-            m_name = filebase;
+            m_base_name = filebase;
 
-        if (! ext.empty() && ext[0] == '.')
-        {
-            m_extension = ext;
-            m_config_type = m_extension.substr(1);
-        }
+        if (ext.empty())
+            fix_extension(m_extension);
+        else
+            fix_extension(ext);
     }
+}
+
+/**
+ *  This function makes sure that m_extension and m_config_type are
+ *  appropriate.
+ */
+
+void
+inisections::fix_extension (const std::string & ext)
+{
+    std::string extension = ext;
+    if (extension[0] != '.')
+        extension = "." + extension;
+
+    m_extension = extension;
+    m_config_type = m_extension.substr(1);
+}
+
+/**
+ *  Reconstructs the name of the INI file holding all of the sections
+ *  from existing values. It assumes nothing about the values at this
+ *  time.
+ *
+ *  This function is kind of an inverse of extract_file_values().
+ */
+
+std::string
+inisections::file_specification () const
+{
+    return util::filename_concatenate(m_directory, m_base_name, m_extension);
 }
 
 /**
@@ -254,7 +305,7 @@ inisections::extract_file_values (const std::string & fname)
 std::string
 inisections::settings_text () const
 {
-    std::string filespec = util::filename_concatenate(m_directory, m_name);
+    std::string filespec = util::filename_concatenate(m_directory, m_base_name);
     std::string result = "# ";
     result += m_app_version + "\n# INI: "; // result += s_stock_file_intro + "\n"
     result += filespec + "\n# ";

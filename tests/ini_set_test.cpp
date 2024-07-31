@@ -115,17 +115,6 @@ static cfg::options::container s_test_options
 };
 
 /**
- *  Show the options, in support of the --list option.
- */
-
-static void
-list_options (const cfg::options & opts)
-{
-    std::string dbgtxt = opts.debug_text(cfg::options::stock);
-    std::cout << dbgtxt << std::endl;
-}
-
-/**
  *  Handle the non-global options.
  */
 
