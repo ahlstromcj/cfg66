@@ -192,6 +192,7 @@ extern std::string first_sentence
     char ender      = '.'
 );
 extern int count_character (const std::string & s, char target = '\n');
+extern bool target_terminated (const std::string & s, char target = '\n');
 
 /**
  *  This function comes, slightly modified to avoid throwing an exception,

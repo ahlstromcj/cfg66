@@ -1,0 +1,221 @@
+# Cfg66-style configuration file for app v. 0
+#
+# File: ini_set_test.rc
+# Written: 2024-07-31 15:23:25
+#
+# This file is meant for testing "ini_set_test --read ini_set_test.rc"
+
+[Cfg66]
+
+# One generally needs to replace inifile_cfg66_data, a stock set of data,
+# with a more specific structure. We need to specify the config-type and
+# the version.
+# 
+
+config-type = "rc"                      # Rc configuration file.
+version = 9                             # Configuration file version.
+
+[comments]
+
+# The [comments] section holds user documentation for this file. The first
+# empty, hash-commented, or tag (section) line ends the comment.
+#  
+# Use a space for line breaks as done in the line above.
+# 
+
+This file is meant for testing "ini_set_test --read ini_set_test.rc"
+
+[misc]
+
+# A number of miscellaneous options. They fit into no obvious grouping.
+# 
+# 'sets-mode' affects set muting when moving to the next set. 'normal' leaves
+# the next set muted. 'auto-arm' unmutes it. 'additive' keeps the previous set
+# armed when moving to the next set. 'all-sets' arms all sets at once.
+# 
+# 'port-naming': 'short', 'pair', or 'long'. If 'short', the device name is
+# shown. If it  is generic, the client name is added for clarity. If 'pair',
+# the client:port number is prepended. If 'long', the full set of name items
+# is shown. If port-mapping is active (now the default), this does not apply.
+# 
+# 'init-disabled-ports' is experimental. It tries live toggle of port state.
+
+init-disabled-ports = true              # Experimental option; not recommended.
+last-used-dir = "."
+manual-ports = true                     # false by default
+port-naming = "long"                    # Port amount-of-label showing.
+reveal-ports = true                     # false by default
+sets-mode = "auto-arm"
+
+[midi-meta-events]
+
+# Defines features of MIDI meta-event handling. Tempo events occur in the first
+# track (pattern 0), but one can move them elsewhere. It changes where tempo
+# events are recorded. The default is 0, the maximum is 1023. A pattern must
+# exist at this number.
+
+tempo-track = 99
+
+[midi-input]
+
+# These MIDI ports are for input and control. JACK's view: these are
+# 'playback' devices. The first number is the bus, the second number is the
+# input status, disabled (0) or enabled (1). The item in quotes is the full
+# input bus name.
+
+count = 0
+
+[midi-input-map]
+
+# Defines alternate port numbers for MIDI input ports. This table is similar
+# to the [midi-clock-map] section, but the values are different:
+# -2 = unavailable; 0 = not inputing; 1 = enabled for inputing.
+
+count = 0
+
+[midi-clock]
+
+# These MIDI ports are for output/playback and display. JACK's view: these
+# are 'capture' devices. The first line shows the count of output ports.
+# Each line shows the bus number and clock status of that bus:
+# 
+#  -2 = The output port is not present on the system (unavailable).
+#  -1 = The output port is disabled.
+#   0 = MIDI Clock is off. The output port is enabled.
+#   1 = MIDI Clock on; Song Position and MIDI Continue are sent.
+#   2 = MIDI Clock Modulo.
+# 
+# With Clock Modulo, clocking doesn't begin until song position reaches the
+# start-modulo value [midi-clock-mod-ticks]. Ports that are unavailable
+# (because another portapplication, e.g. Windows MIDI Mapper, has exclusive
+# access to the device) are displayed ghosted.
+# 
+
+count = 0
+
+[midi-clock-map]
+
+# Patterns use buss numbers, not names. This table provides virtual bus numbers
+# that match real devices and can be stored in each pattern. The bus number
+# is looked up in this table, the port nick-name is retrieved, and the true
+# bus number is obtained and used. Thus, if the ports change order in the MIDI
+# system, the pattern will use the proper port. The short nick-names work in
+# ALSA or JACK (a2jmidid bridge).
+
+count = 0
+
+[midi-clock-mod]
+
+# 'ticks' provides the Song Position (16th notes) at which clocking begins if
+# the bus is set to MIDI Clock Mod setting.
+# 
+# 'record-by-channel' allows the master MIDI bus to record/filter incoming MIDI
+# data by channel, adding each new MIDI event to the pattern that is set to
+# that channel. Option adopted from the Seq32 project at GitHub.
+
+record-by-channel = true
+ticks = 128
+
+[metronome]
+
+# Provides for before-playback count-in and recording, and a metronome that
+# can play any sound on the major and minor beats.
+
+beat-width = 8                          # The beat unit (width) for the metronome.
+beats-per-bar = 8                       # The beats/measure for the metronome.
+count-in-active = true                  # If true, count-in at start of song.
+count-in-measures = 1                   # The number of measures to count-in.
+count-in-recording = false              # If true, record during count-in.
+main-note = 99                          # The note value for the highlight beat.
+main-note-length = 96                   # The note length for the highlight beat.
+main-note-velocity = 96 
+main-patch = 99
+output-buss = 9                         # The output bus for the metronome.
+output-channel = 9                      # The output channel for the metronome.
+recording-buss = 9                      # The port number for count-in recording.
+recording-measures = 2
+sub-note = 76                           # The note value for the sub beat.
+sub-note-length = 0                     # The note length for the sub beat.
+sub-note-velocity = 84                  # The note velocity for the sub beat.
+sub-patch = 33                          # The patch/program for the sub beat.
+thru-buss = 0xff                        # The through bus for the metronome.
+thru-channel = 0                        # The through channel for the metronome.
+
+[interaction-method]
+
+# Sets mouse usage for drawing/editing patterns. 'Fruity' mode is NOT
+# supported. Other settings are available:
+# 
+# 'snap-split' enables splitting song-editor triggers at a snap position
+# instead of in its middle. Split is done by a middle-click or ctrl-left click.
+# 
+# 'double-click-edit' allows double-click on a slot to open it in a pattern
+# editor. Set it to false if you don't like how it works.
+
+double-click-edit = true                # If true, allow double-click edit.
+snap-split = true                       # If true, split trigger at snap point.
+
+[jack-transport]
+
+# 'transport-type' enables JACK Transport.
+# 'none':        No JACK Transport in use.
+# 'slave':       Use JACK Transport as Slave.
+# 'master':      Attempt to serve as JACK Transport Master.
+# 'conditional': Serve as JACK master if no JACK master exists.
+# 
+# 'song-start-mode' playback is either Live, Song, or Auto:
+# 'live': Muting & unmuting of loops in the main window.
+# 'song': Playback uses Song (performance) editor data.
+# 'auto': If the loaded tune has song triggers, use Song mode.
+# 
+# 'jack' sets/unsets JACK MIDI, separate from JACK transport.
+# 
+# 'auto-connect' sets connecting to ALSA/JACK ports found. Default = true; use
+# false to have a session manager make the connections.
+# 
+# 'jack-use-offset' attempts to calculate timestamp offsets to
+# improve accuracy at high-buffer sizes. Still a work in progress.
+# 
+# 'jack-buffer-size' allows for changing the frame-count, a power of 2.
+
+auto-connect = true
+jack = true 
+jack-buffer-size = 256
+jack-use-offset = true                  # Adjust the JACK frame count.
+song-start-mode = "auto"
+transport-type = "none"
+
+[auto-option-save]
+
+# 'auto-save-rc' sets automatic saving of the  'rc' and other files. If set,
+# many command-line settings are saved to configuration files.
+# 
+# 'old-triggers' saves triggers in a format compatible with Seq24. Otherwise,
+# triggers are saved with an additional 'transpose' setting.
+# 
+# 'save-old-mutes' saves mute-groups as long legacy values instead of bytes.
+
+auto-save-rc = true                     # Specifies to always save the 'rc' file.
+save-old-mutes = true
+save-old-triggers = true
+
+[last-used-dir]
+
+# Holds the name of the directory for the last MIDI song that was loaded.
+
+"bogus/cfg66"
+
+[recent-files]
+
+# The most recently-loaded MIDI files. 'full-paths' = true means to show the
+# full file-path in the menu. The most recent file (top of list) can be loaded
+# via 'load-most-recent' at startup.
+
+count = 0
+full-paths = false
+load-most-recent = true
+
+
+# End of ini_set_test.rc
+#
+# vim: sw=4 ts=4 wm=4 et ft=dosini

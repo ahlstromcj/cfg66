@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-24
- * \updates       2024-07-29
+ * \updates       2024-07-31
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -1594,11 +1594,11 @@ line_comments (const std::string & source, char commentchar)
                 nlpos - start + 1 : std::string::npos ;
 
             std::string line = source.substr(start, count);
+            if (! target_terminated(line))
+                line += "\n";
+
             if (! commenting.empty())
-            {
-                if (nlpos != std::string::npos)
-                    result += commenting;
-            }
+                result += commenting;
 
             result += line;
             start += line.length();
@@ -1681,6 +1681,21 @@ count_character (const std::string & s, char target)
                 break;
         }
     }
+    return result;
+}
+
+/**
+ *  Does nothing but determine if the final character matches the target.
+ *  By default the target is a newline.
+ */
+
+bool
+target_terminated (const std::string & s, char target)
+{
+    bool result = false;
+    if (! s.empty())
+        result = s.back() == target;
+
     return result;
 }
 

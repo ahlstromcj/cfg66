@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-30
+ * \updates       2024-07-31
  * \license       See above.
  *
  * Operations to support:
@@ -187,6 +187,8 @@ inisections::inisections
     m_directory     (spec.file_directory),
     m_base_name     (spec.file_basename),
     m_extension     (spec.file_extension),
+    m_config_type   (spec.file_extension),
+    m_description   (spec.file_description),
     m_section_list  ()
 {
     extract_file_values(ininame);                   /* works if non-empty   */
@@ -250,9 +252,7 @@ inisections::extract_file_values (const std::string & fname)
     }
     else
     {
-        std::string path;
-        std::string filebase;
-        std::string ext;
+        std::string path, filebase, ext;
         bool has_path = util::filename_split_ext(fname, path, filebase, ext);
         if (has_path)
             m_directory = path;
@@ -289,12 +289,32 @@ inisections::fix_extension (const std::string & ext)
  *  time.
  *
  *  This function is kind of an inverse of extract_file_values().
+ *
+ *  Also see its usage in the inifile constructor.
+ *
+ * \param basename
+ *      If not empty (the default is empty), this parameter causes some
+ *      changes:
+ *      -   If the name has a path, it is used as is. This allows
+ *          full control of the file-name.
+ *      -   If the name does not have a path, the current INI file-name is
+ *          reconstructed with a different base-name.  This supports the
+ *          use-case where we read in one file from a given directory, and
+ *          want to write to another file in that directory.
  */
 
 std::string
-inisections::file_specification () const
+inisections::file_specification (const std::string & basename) const
 {
-    return util::filename_concatenate(m_directory, m_base_name, m_extension);
+    if (util::name_has_path(basename))
+    {
+        return basename;
+    }
+    else
+    {
+        const std::string & base = basename.empty() ? m_base_name : basename ;
+        return util::filename_concatenate(m_directory, base, m_extension);
+    }
 }
 
 /**

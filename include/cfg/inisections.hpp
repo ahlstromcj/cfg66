@@ -173,7 +173,7 @@ public:
     std::string cli_help_text () const;
     std::string help_text () const;
     std::string debug_text () const;
-    std::string file_specification () const;
+    std::string file_specification (const std::string & basename = "") const;
 
     bool active () const
     {

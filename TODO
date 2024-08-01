@@ -1,6 +1,6 @@
 TODOs for the cfg66 library
 Chris Ahlstrom
-2023-07-16 to 2023-07-28
+2023-07-16 to 2023-07-31
 
 This file lists only the high-priority features and fixtures we need
 to do for Cfg66.
@@ -15,11 +15,13 @@ ini_test_cpp:
         newline to avoid adding a blank line.
     -   Add processing to at least some of the options in
         ini_set_test.
-    -   Improve ini_test.
+    -   Add a variable main-section name (besides "[Cfg66]") to
+        configfile.
+    -   In the ini_set_test for reading, we see that the main-section
+        has m_source_file = ".rc". Does this matter?
     -   Add a [last-used-dir] value based on reading/writing.
     -   Add to the [recent-files] based on reading/writing.
     -   Add some fake ports to [midi-input], [midi-input-map],
         [midi-clock], and [midi-clock-map].
 
 # vim: sw=4 ts=4 wm=8 et ft=sh
-

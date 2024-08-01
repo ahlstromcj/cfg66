@@ -253,12 +253,42 @@ main (int argc, char * argv [])
                 }
                 else if (! cfg_set.value("read").empty())
                 {
+#if 0
                     std::string fname = cfg_set.value("read");
                     std::cout
                         << "--read selected, more to come.\n"
                         << "The file-name is '" << fname << "'"
                         << std::endl
                         ;
+#endif
+                    /*
+                     * For a decent test, read tests/data/ini_set_test.rc,
+                     * redirect --list to a log file, and verify the results
+                     * of parsing.
+                     */
+
+                    std::string fname;
+                    const cfg::inimanager & ccfg = cfg_set;
+                    const cfg::inisections & rcs = ccfg.find_inisections("rc");
+                    if (rcs.active())
+                    {
+                        fname = cfg_set.value("read");
+                        std::cout
+                            << "--read: file-name '" << fname << "'"
+                            << std::endl
+                            ;
+
+                        cfg::inifile f_in(rcs, fname, "rc");
+                        success = f_in.parse();
+                        if (! success)
+                            util::error_message("Read failed", fname);
+                    }
+                    else
+                    {
+                        util::error_message("No options to parse", fname);
+                        success = false;
+                    }
+
                 }
                 else if (! cfg_set.value("write").empty())
                 {
@@ -269,9 +299,7 @@ main (int argc, char * argv [])
 
                     std::string fname;
                     const cfg::inimanager & ccfg = cfg_set;
-                    const cfg::inisections & rcs =
-                        ccfg.find_inisections("rc");
-
+                    const cfg::inisections & rcs = ccfg.find_inisections("rc");
                     if (rcs.active())
                     {
                         fname = cfg_set.value("write");

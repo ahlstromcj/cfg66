@@ -6,7 +6,7 @@
 % \library     Documents
 % \author      Chris Ahlstrom
 % \date        2024-04-16
-% \update      2024-07-29
+% \update      2024-07-31
 % \version     $Revision$
 % \license     $XPC_GPL_LICENSE$
 %
@@ -265,23 +265,55 @@
    The file generated from the test's internal data is
    \texttt{tests/data/fooout.rc}.
    The results can be found in the \texttt{tests/data} directory.
-   The files \texttt{fooin.rc} and 
-   \texttt{fooinout.rc} should be almost identical.
 
    How does it work?
 
    \begin{verbatim}
-       cfg::inisections sections(exp_file_data);
+       cfg::inisections sections(exp_file_data, "fooout");
    \end{verbatim}
 
    The \texttt{exp\_file\_data} specification provides
-   the configuration type (file extension without the period) "exp",
-   the putative configuration directory "~/.config/experiment/",
-   the base name of the configuration file "ini\_test\_session",
+   the configuration type (file extension without the period)
+   \texttt{rc},
+   the putative file directory
+   \texttt{./tests/data},
+   the default base name of the configuration file
+   \texttt{ini\_test\_session},
    followed by the description of the INI sections object and
    a list of the sections in the INI sections object.
 
-   TODO
+   Once the \texttt{exp\_file\_data} structure is loaded into the
+   \texttt{inisection}, we can hook it to an \texttt{inifile} and
+   write the file:
+
+   \begin{verbatim}
+       cfg::inifile f_out(sections);
+       success = f_out.write();
+   \end{verbatim}
+
+   The section data items are written to the assembled full
+   file-specification, \texttt{./tests/data/fooout.rc}.
+
+   The next test creates an \texttt{inisections} with the base name
+   "fooin". An \texttt{inifile} is created from this section and
+   is used to parse \texttt{./tests/data/fooin.rc}.
+
+   \begin{verbatim}
+        cfg::inisections sections(exp_file_data, "fooin");
+        cfg::inifile f_in(sections);
+        success = f_in.parse();
+   \end{verbatim}
+
+   Once written, we create another \texttt{inifile}, changing it's base-name
+   to "fooinout". Then we write it:
+
+   \begin{verbatim}
+         cfg::inifile f_inout(sections, "fooinout");  // changes the name
+         success = f_inout.write();
+   \end{verbatim}
+
+   The files \texttt{./tests/data/fooin.rc} and 
+   \texttt{./tests/data/fooinout.rc} should be almost identical.
 
 \subsection{cfg::inimanager}
 \label{subsec:cfg_namespace_inimanager}
@@ -306,17 +338,17 @@
    \index{ini\_set\_test}
    The \texttt{ini\_set\_test} application first defines some
    \textsl{global} options
-   peculiar to it: "list", "read", "test", and "write".
-   These are \texttt{global} options because they are not associated with
+   peculiar to it: "--list", "--read", "--test", and "--write".
+   These are \textsl{global} options because they are not associated with
    an INI file or an INI section.
    The \texttt{cfg::inimanager} is created with this list, and populates
    the options. Then two \texttt{cfg::inisection} objects are
    added, one for \texttt{cfg::small\_data} and
    one for \texttt{cfg::rc\_data}.
 
-   The caller can then exercise the global options (including the internal,
-   stock options).  The \texttt{--help} option will show all of the global
-   option, plus all of the sections and options defined for
+   The caller can then exercise the global options, including the internal,
+   stock options.  The \texttt{--help} option will show all of the global
+   options, plus all of the sections and options defined for
    \texttt{cfg::small\_data} and
    \texttt{cfg::rc\_data}.
    The \texttt{--read} and \texttt{write} options accept a file-name and
@@ -339,15 +371,15 @@
    \end{verbatim}
 
    This command emits color-coded help text showing the options, a brief
-   description of each, and the default value of eac option.
-   The text is extracted from the setup structures:
+   description of each, and the default value of each option.
+   The text is extracted from the setup structures, as provided in
+   the file \texttt{./tests/small\_spec.hpp}:
 
    \begin{verbatim}
-      cfg::options::container s_test_options} 
       inisection::specification small_misc_data
       inisection::specification small_interaction_data
-      inisection::specification small_comments = stock_comment_data();
-      inisection::specification small_cfg66_data
+      inisection::specification small_comments (stock comments)
+      inisection::specification small_cfg66_data (stock [Cfg66] section)
       inisections::specification small_data
    \end{verbatim}
 
@@ -355,9 +387,12 @@
    descriptions.  Also included are all the specifications in the
    file \texttt{tests/rc\_spec.hpp}, which we will not show here.
 
+
    The first part of the help text shows the "global" options, which consist
-   of internal stock options plus some additional test options:
-   "list", "read", "write", and "tests.
+   of internal stock options plus some additional test options
+   defined by \texttt{cfg::options::container s\_test\_options} in
+   \texttt{tests/ini\_set\_test.cpp}:
+   "--list", "--read", "--write", and "--tests".
    The global options are not associated with either an INI file
    or an INI section.
 
@@ -375,6 +410,68 @@
    extension of \texttt{.rc}.
    For a given program, there can be only one INI file with that extension.
    The "[misc]" represents an INI section in that INI file.
+
+   The setup process is fairly simple once all of the INI specification
+   structures have been coded. First, we add the global test options
+   to the stock options. Then we add the \texttt{inisections}
+   defined in the test "hpp" files.
+
+   \begin{verbatim}
+      cfg::inimanager cfg_set(s_test_options);
+      bool success = cfg_set.add_inisections(cfg::small_data);
+      if (success)
+          success = cfg_set.add_inisections(cfg::rc_data);
+   \end{verbatim}
+
+   Next, we need to create a \texttt{cli::multiparser} and parse the
+   command-line:
+
+   \begin{verbatim}
+      cli::multiparser & clip = cfg_set.multi_parser();
+      success = clip.parse(argc, argv);
+   \end{verbatim}
+
+   Now, not all of the global options have been implemented, so we describe
+   only the ones that work.
+
+   \begin{verbatim}
+      $ ./build/test/ini_set_test --list --verbose
+   \end{verbatim}
+
+   The "verbose" option does nothing, but the "list" option shows
+   the current values of all options, and it stars the ones that
+   have been modified from the command line: "verbose" and "list".
+   We can add a "log" option to dump the list to a file:
+
+   \begin{verbatim}
+      $ ./build/test/ini_set_test --log=t.log --list --verbose
+   \end{verbatim}
+
+   The next test option:
+
+   \begin{verbatim}
+      $ ./build/test/ini_set_test --test
+   \end{verbatim}
+
+   This option is currently a minimal implementation. More to come.
+
+   \begin{verbatim}
+      $ ./build/test/ini_set_test --read=tests/data/fooin.rc
+   \end{verbatim}
+
+   This option is currently not completely implemented. More to come.
+
+   It depends on being able to find the the desired INI sections object in the
+   INI manager and finding that it is active (it has entries).
+   This INI sections object can then be used to determine what needs to
+   be found in the INI file.
+
+   \begin{verbatim}
+      $ ./build/test/ini_set_test --write=tests/data/t.rc
+   \end{verbatim}
+
+   This option writes the current settings to an 'rc' file.
+   Still has some bugs.
 
 \subsection{cfg::inisection}
 \label{subsec:cfg_namespace_inisection}

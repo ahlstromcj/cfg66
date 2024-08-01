@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-07-25
- * \updates       2024-07-29
+ * \updates       2024-07-31
  * \license       See above.
  *
  *  Rationale:
@@ -501,8 +501,13 @@ main (int argc, char * argv [])
                     success = f_in.parse();
                     if (success)
                     {
-                        cfg::inisections sections(exp_file_data, "fooinout");
-                        cfg::inifile f_inout(sections);
+                        /*
+                         * We have read in the "fooin" INI file. Now we want
+                         * to write that data to the "fooinout" INI file,
+                         * keeping the path and the file-extension the same.
+                         */
+
+                        cfg::inifile f_inout(sections, "fooinout");
                         success = f_inout.write();
                     }
                 }
