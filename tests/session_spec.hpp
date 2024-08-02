@@ -96,7 +96,7 @@ const std::string session_extension{"session"};
 
 inisection::specification session_cfg66_data
 {
-    "[Cfg66]",
+    "[Cfg66]",              /* can replace via set_main_cfg_section_name()  */
     {
 "'version' is used by the application to detect older configuration files,\n"
 "which are upgraded to the new version when saved.\n"

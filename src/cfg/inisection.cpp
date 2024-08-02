@@ -128,14 +128,10 @@ inisection::settings_text () const
 {
     std::string result = "\n";
     result += description_commented();          /* description_wrapped() */
-//  result += "\n";
     result += name();
-//  result += "\n\n";
     for (const auto & s : option_names())
-    {
         result += option_set().setting_line(s);
-//      result += "\n";
-    }
+
     return result;
 }
 
@@ -299,7 +295,7 @@ stock_cfg66_data ()
 {
     static inisection::specification s_cfg66_data
     {
-        "[Cfg66]",
+        "[Cfg66]",          /* can replace via set_main_cfg_section_name()  */
 
         /*
          * This description is formatted exactly as it should appear,

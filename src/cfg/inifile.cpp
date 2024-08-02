@@ -24,7 +24,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2024-07-31
+ * \updates       2024-08-02
  * \license       GNU GPLv2 or above
  *
  */
@@ -78,7 +78,13 @@ inifile::parse ()
     bool result = set_up_ifstream(file);
     if (result)
     {
-        util::file_message("Read", file_name());
+        /*
+         *  Get the version immediately and use it to evaluate the
+         *  configuration file. It is loaded into the section in
+         *  the for-loop below.
+         */
+
+        util::file_message("Parse", file_name());
         std::string s = parse_version(file);
         if (s.empty() || file_version_old(file))
         {
@@ -97,18 +103,6 @@ inifile::parse ()
         }
         if (result)
         {
-            /*
-             *  To do: modify the stored comment.
-
-            std::string comments = parse_comments(file);
-            if (! comments.empty())
-            {
-#if defined PLATFORM_DEBUG_TMI
-                printf("[comments] %s\n", comments.c_str());
-#endif
-            }
-             */
-
             inisections::sectionlist & sections =
                 const_cast<inisections::sectionlist &>
                 (

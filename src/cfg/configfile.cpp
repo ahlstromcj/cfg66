@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2024-06-19
+ * \updates       2024-08-01
  * \license       GNU GPLv2 or above
  *
  *  std::streamoff is a signed integral type (usually long long) that can
@@ -187,7 +187,8 @@ configfile::parse_section_option
 std::string
 configfile::parse_version (std::ifstream & file)
 {
-    std::string result = get_variable(file, "[Cfg66]", "version");
+    std::string maincfg = get_main_cfg_section_name();
+    std::string result = get_variable(file, maincfg, "version");
     file_version(result);
     return result;
 }
@@ -523,8 +524,9 @@ configfile::write_cfg66_header
     const std::string & ver
 )
 {
+    std::string maincfg = get_main_cfg_section_name();
     file <<
-        "\n[Cfg66]\n\nconfig-type = \"" << configtype << "\"\n"
+        "\n" << maincfg << "\n\nconfig-type = \"" << configtype << "\"\n"
         "version = " << ver << "\n"
         ;
 }
@@ -981,7 +983,8 @@ configfile::set_up_ifstream (std::ifstream & instream)
     {
         instream.seekg(0, std::ios::beg);                   /* seek to start */
 
-        std::string s = get_variable(instream, "[Cfg66]", "version");
+        std::string maincfg = get_main_cfg_section_name();
+        std::string s = get_variable(instream, maincfg, "version");
         if (s.empty())
         {
             char temp[128];

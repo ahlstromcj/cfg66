@@ -6,7 +6,7 @@
 % \library     Documents
 % \author      Chris Ahlstrom
 % \date        2024-04-16
-% \update      2024-07-31
+% \update      2024-08-02
 % \version     $Revision$
 % \license     $XPC_GPL_LICENSE$
 %
@@ -459,9 +459,8 @@
       $ ./build/test/ini_set_test --read=tests/data/fooin.rc
    \end{verbatim}
 
-   This option is currently not completely implemented. More to come.
-
-   It depends on being able to find the the desired INI sections object in the
+   This option
+   depends on being able to find the the desired INI sections object in the
    INI manager and finding that it is active (it has entries).
    This INI sections object can then be used to determine what needs to
    be found in the INI file.
@@ -472,6 +471,17 @@
 
    This option writes the current settings to an 'rc' file.
    Still has some bugs.
+
+   We can combine a number of options to read an INI file, list the
+   data read to a log file, and write it to another file:
+
+   \begin{verbatim}
+      $ ./build/test/ini_set_test --list --log test.log
+         --read tests/data/ini_set_test.rc --write ini-out.rc
+   \end{verbatim}
+
+   The output in \texttt{test.log} and \texttt{ini-out.rc}
+   should match up well with \texttt{tests/data/ini\_set\_test.rc}.
 
 \subsection{cfg::inisection}
 \label{subsec:cfg_namespace_inisection}

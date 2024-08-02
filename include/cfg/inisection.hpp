@@ -107,7 +107,8 @@ private:
 
     /**
      *  The name of the INI section. It must include the "[]" wrapping,
-     *  as in "[Cfg66]" or "[directories]".
+     *  as in "[Cfg66]" or "[directories]". Don't forget about the appinfo
+     *  function set_main_cfg_section_name() to change that value.
      *
      *  If equal to "" (empty, value cfg::global), this inisection contains
      *  only the internal stock options, which is a list defined in the
