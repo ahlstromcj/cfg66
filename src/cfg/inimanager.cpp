@@ -114,7 +114,10 @@ inimanager::inimanager (const options::container & additional) :
     bool ok = sec.add_options(additional);
     if (! ok)
     {
-        util::error_message("Failed to add additional global options", "inimanager");
+        util::error_message
+        (
+            "Failed to add additional global options", "inimanager"
+        );
     }
 
     auto p = std::make_pair(global, sec);           /* does it make a copy? */

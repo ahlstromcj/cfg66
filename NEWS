@@ -28,7 +28,7 @@ Chris Ahlstrom
 - Improved the range checking for integer/float options.
 - Added display/access for parsing error messages.
 - Added "recents" as a kind of option, and added a class called
-  recent (taken from Seq66) to handle them.
+  "recent" (adapted from Seq66) to handle them.
 - Added some useful functions to the strfunctions module.
 
 ### Fixed

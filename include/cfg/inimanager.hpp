@@ -71,7 +71,9 @@ public:
      *      using sectionsref = std::reference_wrapper<inisections>;
      *
      *  Remember that an inisections object represents all of the sections
-     *  in a single INI file.
+     *  in a single INI file. The key value is the configuration type,
+     *  which is a variation of the file extension of an INI file. A good
+     *  example is "rc", which represents a "*.rc" INI file.
      */
 
     using sections = std::map<std::string, inisections>;

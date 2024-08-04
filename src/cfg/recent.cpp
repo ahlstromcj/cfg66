@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-03-29
- * \updates       2024-07-02
+ * \updates       2024-08-03
  * \license       GNU GPLv2 or above
  *
  *  The cfg66::recent class simply keeps track of recently-used files for the
@@ -221,6 +221,41 @@ recent::get (int index) const
     {
         result = m_recent_list[container::size_type(index)];
         result = util::normalize_path(result);  /* UNIX, no '/' terminator  */
+    }
+    return result;
+}
+
+/**
+ * \getter m_recent_list
+ *
+ *  Gets the desired recent file-name, if present.
+ *
+ * \param index
+ *      Provides the desired index into the recent-files deque.
+ *
+ * \param shorten
+ *      If true, remove the path-name from the file-name.  True by default.
+ *      It needs to be short for the menu entry (though now using the full
+ *      path is an option), but the full path-name for the "rc" file.
+ *
+ * \return
+ *      Returns m_recent_list[index], perhaps shortened.  An empty string is
+ *      returned if there is no such animal.
+ */
+
+std::string
+recent::file (int index, bool shorten) const
+{
+    std::string result = get(index);
+    if (shorten && ! result.empty())
+    {
+        if (util::name_has_path(result))
+        {
+            std::string destpath, destbase;
+            bool ok = util::filename_split(result, destpath, destbase);
+            if (ok)
+                result = destbase;
+        }
     }
     return result;
 }

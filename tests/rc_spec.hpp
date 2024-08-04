@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-07-22
- * \updates       2024-07-19
+ * \updates       2024-08-04
  * \license       See above.
  *
  */
@@ -765,8 +765,8 @@ inisection::specification rc_comments = stock_comment_data();
 inisections::specification rc_data
 {
     "rc",           /* the file extension for any 'rc' file.                */
-    "",             /* use value from appinfo's get_home_cfg_directory()    */
-    "",             /* use value derived from appinfo's get_home_cfg_file() */
+    "tests/data",   /* use value from appinfo's get_home_cfg_directory()    */
+    "tests/data",   /* use value derived from appinfo's get_home_cfg_file() */
     "This 'rc' file defines some basic features, such as MIDI ports, the\n"
     "metronome function, JACK settings, recent-files list, and a few more.\n"
     ,

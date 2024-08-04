@@ -27,9 +27,11 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-03-29
- * \updates       2024-07-04
+ * \updates       2024-08-03
  * \license       GNU GPLv2 or above
  *
+ *  It is based on the "recent" class of Seq66, with some additional
+ *  convenience functions.
  */
 
 #include <deque>
@@ -99,7 +101,17 @@ public:
         return m_maximum_size;
     }
 
+    /**
+     *  Gets the "most recent" file-name.
+     */
+
+    const std::string & front () const
+    {
+        return m_recent_list.front();
+    }
+
     std::string get (int index) const;
+    std::string file (int index, bool shorten = true) const;
     bool append (const std::string & item);
     bool add (const std::string & item);
     bool remove (const std::string & item);

@@ -2011,9 +2011,9 @@ file_extension (const std::string & path)
  *      also be a simple base filename, with no path.
  *
  * \param ext
- *      Provides the desired extension.  It must include the period, as in
+ *      Provides the desired extension. It must include the period, as in
  *      ".ctrl". If this parameter is empty, and an extension exists, it is
- *      stripped off.  The default value is empty.
+ *      stripped off. The default value is empty.
  *
  * \return
  *      Returns a copy of the augmented (or extension-stripped) string.

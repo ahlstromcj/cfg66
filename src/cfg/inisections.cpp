@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-31
+ * \updates       2024-08-04
  * \license       See above.
  *
  * Operations to support:
@@ -301,19 +301,45 @@ inisections::fix_extension (const std::string & ext)
  *          reconstructed with a different base-name.  This supports the
  *          use-case where we read in one file from a given directory, and
  *          want to write to another file in that directory.
+ *
+ * \param cfgtype
+ *      If not empty, this value changes the extension of the file-name.
  */
 
 std::string
-inisections::file_specification (const std::string & basename) const
+inisections::file_specification
+(
+    const std::string & basename,
+    const std::string & cfgtype
+) const
 {
     if (util::name_has_path(basename))
     {
+        std::string base = basename;
+        std::string extension = cfgtype;
+        if (! extension.empty())
+        {
+            if (extension.front() != '.')
+                extension = "." + extension;
+
+           base = util::file_extension_set(base, extension);
+        }
         return basename;
     }
     else
     {
         const std::string & base = basename.empty() ? m_base_name : basename ;
-        return util::filename_concatenate(m_directory, base, m_extension);
+        std::string extension = cfgtype;
+        if (extension.empty())
+        {
+            extension = m_extension;
+        }
+        else
+        {
+            if (extension.front() != '.')
+                extension = "." + extension;
+        }
+        return util::filename_concatenate(m_directory, base, extension);
     }
 }
 

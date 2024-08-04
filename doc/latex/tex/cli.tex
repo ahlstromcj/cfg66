@@ -55,7 +55,9 @@
 \label{subsec:cli_namespace_parser_global_options}
 
    The \texttt{cli::parser} also provides support for options that can
-   be command to all applications:
+   be command to all applications. These stock options are called
+   "global" options, since they are not associated with any configuration
+   file.
 
    \begin{itemize}
       \item \texttt{--version}.
@@ -82,6 +84,9 @@
          output.
    \end{itemize}
 
+   Additional global options can be added, as illustrated in the
+   \texttt{ini\_set\_test} program.
+
    The \texttt{parse()} function looks for stock option such as
    \texttt{--help} and \texttt{--option log filename}.
    The \texttt{--} sequence terminates a list of options.
@@ -95,7 +100,8 @@
       \item \texttt{show\_information\_only()}.
          This function returns a boolean value that is true if
          help, description, or version were requested.
-         Generally, if this information is shown, the application does
+         Generally, if this information is shown on a command-line,
+         the application does
          nothing but show the desired information, and exits.
       \item \texttt{version\_request()}.
          Indicates if version information was requested.
@@ -316,9 +322,8 @@
    This function is used to find the desired option set, a pointer to
    the \texttt{cfg::options} for a particular file and section.
 
-   For a walk-through, see the section concerning the "INI set test".
-   TO DO.
-
+   For a walk-through, see the section concerning the "INI set test",
+   \sectionref{subsec:cfg_namespace_inimanager}.
 
 %-------------------------------------------------------------------------------
 % vim: ts=3 sw=3 et ft=tex

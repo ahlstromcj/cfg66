@@ -6,7 +6,7 @@
 % \library     Documents
 % \author      Chris Ahlstrom
 % \date        2024-04-16
-% \update      2024-07-31
+% \update      2024-08-03
 % \version     $Revision$
 % \license     $XPC_GPL_LICENSE$
 %
@@ -319,21 +319,22 @@
 \label{subsec:cfg_namespace_inimanager}
          
    \texttt{cfg::inimanager} is meant to manage multiple
-   \texttt{cfg::inifile} objects.
+   \texttt{cfg::inisections} objects.
+   Each \texttt{cfg::inisections} holds multiple
+   \texttt{cfg::inisection} objects, and represent the
+   setting in an \texttt{cfg::inifile}.
    Each INI file is associated with a unique configuration file type,
    such as "rc" or "session", and a section name,
 
-   \texttt{cfg::inimanager} defines two types:
+   \texttt{cfg::inimanager} defines a \texttt{section} types, which is a 
+   a map with the key being a configuration type, such as "rc", and
+   the value being an \texttt{cfg::inisections} object.
 
-   \begin{itemize}
-      \item \texttt{optionref}.
-         \texttt{std::reference\_wrapper<options::spec>}.
-      \item \texttt{optionmap}.
-         \texttt{std::map<std::string, optionref>}.
-   \end{itemize}
-
-   Also defined is a function to add an named \texttt{cfg::option}
-   to the option map.
+   \texttt{cfg::inimanager} also contains a
+   \texttt{cli::multiparser} which can map unique option names to
+   the INI file and INI sections to which they belong.
+   Not all options from an INI file will be useful from the command
+   line, though.
 
    \index{ini\_set\_test}
    The \texttt{ini\_set\_test} application first defines some
@@ -453,36 +454,72 @@
       $ ./build/test/ini_set_test --test
    \end{verbatim}
 
-   This option is currently a minimal implementation. More to come.
+   That option is currently a minimal implementation. More to come.
 
    \begin{verbatim}
       $ ./build/test/ini_set_test --read=tests/data/fooin.rc
    \end{verbatim}
 
-   This option is currently not completely implemented. More to come.
+   Note that the "=" can be replaced by a space.
 
-   It depends on being able to find the the desired INI sections object in the
+   This option
+   depends on being able to find the the desired INI sections object in the
    INI manager and finding that it is active (it has entries).
    This INI sections object can then be used to determine what needs to
    be found in the INI file.
 
    \begin{verbatim}
-      $ ./build/test/ini_set_test --write=tests/data/t.rc
+      $ ./build/test/ini_set_test --write=t.rc
    \end{verbatim}
 
-   This option writes the current settings to an 'rc' file.
-   Still has some bugs.
+   This option writes the current settings to \texttt{t.rcv} and
+   \texttt{t.small} in the \texttt{tests/data} directory.
+
+   We can combine a number of options to read an INI file, list the
+   data read to a log file, and write it to another file:
+
+   \begin{verbatim}
+      $ ./build/test/ini_set_test --list --log test.log
+              --read tests/data/ini_set_test.rc --write ini-out.rc
+   \end{verbatim}
+
+   The output in \texttt{test.log} and \texttt{ini-out.rc}
+   should match up well with \texttt{tests/data/ini\_set\_test.rc}.
+
+   One more use case. Copy \texttt{tests/data/ini\_set\_test.rc}
+   to a temporary file, \texttt{i.rc}.
+   Then edit all of the comments (indicated by the hash mark, '\#')
+   so that they are obviously different.
+   Then read that file and write it to another temporary file.
+
+   \begin{verbatim}
+      $ ./build/test/ini_set_test --read=i.rc --write=j.rc
+   \end{verbatim}
+
+   Comparing \texttt{i.rc} and \texttt{j.rc}, one sees that
+   \texttt{j.rc} retains the original comments, which ultimately
+   came from the specification defined in the application.
+   That is, the comments are not modifiable in the 'rc' file.
+   (They aren't modifiable in \textsl{Seq66} either.
+
+   In the future it would be good to read in the comments as well
+   and store them in the descriptions.
 
 \subsection{cfg::inisection}
 \label{subsec:cfg_namespace_inisection}
 
    \texttt{cfg::inisection}  contains a \texttt{specification} structure that
    provides the name of a section, it's description, and
-   a container of options.
-   It is represent in a configuration file by a section or tag name
-   enclosed in brackets:  \texttt{[output-ports]} as an example.
+   a container of \texttt{cfg::options}.
+   It is represented in a configuration file by a section or tag name
+   enclosed in brackets: \texttt{[output-ports]} as an example.
    Each section can also define a file extension
    (e.g. \texttt{.rc}) to indicate its locus.
+
+   It provides a number of functions to return option setting, help text, and
+   more.
+   Also provided are free functions to return a stock main configuration
+   and a stock comments section.
 
 \subsection{cfg::inisections}
 \label{subsec:cfg_namespace_inisections}
@@ -510,6 +547,12 @@
    the options that are held by the files.
    The options are in a single list,
    and the INI items look them up by name.
+
+   Functions are provided to pass along to the \texttt{cfg::inisection}
+   objects and to look up INI sections and options.
+   The various parts of a file-name (path, base-name, and file extension)
+   are held, and can be used to get the full file-specification for
+   reading and writing an INI file.
 
    There is a lot to this module.
    For now, see the comment in the \texttt{.hpp} and \texttt{.cpp} files.
@@ -587,7 +630,7 @@
    The \texttt{options.cpp} module not only contains many comments explaining
    the module, but also a statically-initialized list of
    default options that any application can use.
-   It is also a great example of how to creat a list of options.
+   It is also a good example of how to create a list of options.
 
 \subsection{cfg::palette}
 \label{subsec:cfg_namespace_}
@@ -600,10 +643,13 @@
 \subsection{cfg::recent}
 \label{subsec:cfg_namespace_recent}
 
-   \texttt{recent} provides for the managment of a list of recently-used
-   items.
+   \texttt{recent} provides for the management of a list of recently-used
+   items. It is implemented as a deque of strings.
 
-   TODO.
+   Included are functions to get the most-recent file-name, a file-name by
+   index (with optional removal of the path, for use in menu displays),
+   and functions to manage the list.
+   This is a feature adapted and extended from \textsl{Seq66}.
 
 %-------------------------------------------------------------------------------
 % vim: ts=3 sw=3 et ft=tex

@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-07-30
+ * \updates       2024-08-04
  * \license       See above.
  *
  *  We want to provide a list of { filename, sectionname } pairs, and
@@ -173,7 +173,11 @@ public:
     std::string cli_help_text () const;
     std::string help_text () const;
     std::string debug_text () const;
-    std::string file_specification (const std::string & basename = "") const;
+    std::string file_specification
+    (
+        const std::string & basename = "",
+        const std::string & cfgtype = ""
+    ) const;
 
     bool active () const
     {
@@ -226,7 +230,7 @@ public:
 
     const inisection & find_inisection
     (
-        const std::string & sectionname = global    /* default is stock options */
+        const std::string & sectionname = global /* default = stock options */
     ) const;
     const options & find_options
     (

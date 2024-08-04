@@ -1,27 +1,24 @@
 TODOs for the cfg66 library
 Chris Ahlstrom
-2023-07-16 to 2023-07-31
+2023-07-16 to 2023-08-03
 
 This file lists only the high-priority features and fixtures we need
 to do for Cfg66.
 
 ini_test_cpp:
 
-    -   Why are not the addition global option codes appearing in
-        the code-list? See inimanager ctor. Also find where
-        code_mappings().insert() is called in multiparser.
-        It only has 8 entries!
-    -   Note/document the rules for descriptions; detect a final
-        newline to avoid adding a blank line.
     -   Add processing to at least some of the options in
         ini_set_test.
     -   Add a variable main-section name (besides "[Cfg66]") to
         configfile.
-    -   In the ini_set_test for reading, we see that the main-section
-        has m_source_file = ".rc". Does this matter?
+    -   In the ini_set_test for reading/writing, add processing of
+        a "small" INI file to handle more than onte INI file.
     -   Add a [last-used-dir] value based on reading/writing.
     -   Add to the [recent-files] based on reading/writing.
     -   Add some fake ports to [midi-input], [midi-input-map],
         [midi-clock], and [midi-clock-map].
+    -   Test specifying one port on the command line.
+    -   Make sure filefunctions rigorously use UNIX path styles
+        internally and externally.
 
 # vim: sw=4 ts=4 wm=8 et ft=sh

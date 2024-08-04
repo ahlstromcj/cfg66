@@ -24,7 +24,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2024-07-31
+ * \updates       2024-08-04
  * \license       GNU GPLv2 or above
  *
  */
@@ -39,16 +39,17 @@ namespace cfg
  *  Provides the string constructor for a configuration file.
  *
  * \param sections
- *      Provides a reference to a constant inisections object from which
- *      the INI data will be obtained.
+ *      Provides a reference to a constant inisections object from which the
+ *      INI data will be obtained.
  *
- * \param name
- *      The name of the configuration file. If empty, it is assembled
- *      from the file-name components of the inisections parameters.
+ * \param filename
+ *      The name of the configuration file. If empty, it is assembled from the
+ *      file-name components of the inisections parameters.  The default is
+ *      empty.
  *
  * \param cfgtype
- *      The file-extension for this type of configuration file.
- *      If empty, it is taken from the inisections parameter.
+ *      The file-extension for this type of configuration file.  If empty, it
+ *      is taken from the inisections parameter.  The default is empty.
  */
 
 inifile::inifile
@@ -59,7 +60,7 @@ inifile::inifile
 ) :
     configfile
     (
-        sections.file_specification(filename),
+        sections.file_specification(filename, cfgtype),
         cfgtype.empty() ? sections.config_type() : cfgtype
     ),
     m_ini_sections  (sections)

@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-27
- * \updates       2024-07-26
+ * \updates       2024-08-04
  * \license       See above.
  *
  *  See the ini_test module for information. This module goes beyond that
@@ -124,6 +124,69 @@ handle_section_options ()
     return false;           // TODO
 }
 
+/**
+ *  Find the global options first, and then display their "debug" text. The
+ *  sets of options shown are those added via calls to add_inisections():
+ *
+ *      -   Global options.
+ *      -   'rc' options.
+ *      -   'small' options.
+ */
+
+static bool
+list_sections
+(
+    const cfg::inimanager & ccfg,
+    bool use_log_file,
+    const std::string & log_file
+)
+{
+    std::string dbgtext = ccfg.debug_text();
+    bool result = ! dbgtext.empty();
+    if (use_log_file)
+    {
+        util::file_message("Appending list text to the log file", log_file);
+        result = util::file_write_string(log_file, dbgtext);
+    }
+    else
+        std::cout << dbgtext << std::endl;
+
+    return result;
+}
+
+/**
+ *  Write the sections provided. The file-name is taken from the command-line,
+ *  and we replace the extension with the configuration type (e.g. "rc").
+ */
+
+static bool
+write_sections (const cfg::inimanager & ccfg, const std::string & cfgtype)
+{
+    const cfg::inisections & rcs = ccfg.find_inisections(cfgtype);
+    std::string fname = ccfg.value("write");
+    bool result = rcs.active() && ! fname.empty();
+    if (result)
+    {
+        cfg::inifile f_out(rcs, fname, cfgtype);
+        result = f_out.write();
+        if (! result)
+            util::error_message("Write failed", fname);
+    }
+    else
+    {
+        /*
+         * Note that util::error_message() could also
+         * be used.  In fact, let's use it.
+         *
+         * std::cerr << "No options to write" << std::endl;
+         */
+
+        util::error_message("No options to write", fname);
+        result = false;
+    }
+    return result;
+}
+
 /*
  * Process:
  *
@@ -213,54 +276,27 @@ main (int argc, char * argv [])
             }
             else
             {
-                if (cfg_set.boolean_value("list"))  /* added global opt */
+                bool do_test = cfg_set.boolean_value("test");
+                bool do_list = cfg_set.boolean_value("list");
+                bool do_read = ! cfg_set.value("read").empty();
+                bool do_write = ! cfg_set.value("write").empty();
+                bool do_list_only = ! do_read && ! do_write;
+                if (do_list_only)
                 {
-                    /*
-                     * Find the global options first, and then display
-                     * their "debug" text.
-                     *
-                     * Can do this in C++20:
-                     * const cfg::options & opts =
-                     *      std::as_const(cfg_set).find_options();
-                     */
-
-                    const cfg::inimanager & ccfg = cfg_set;
-
-#if defined USE_THIS_CODE
-                    cfg::inimanager & nc_ccfg =
-                        const_cast<cfg::inimanager &>(cfg_set);
-
-                    nc_ccfg.value("port-naming", "long", "rc", "[misc]");
-#endif
-                    std::string dbgtext = ccfg.debug_text();
-                    if (clip.use_log_file())
-                    {
-                        std::cout
-                            << "Appending the list text to the log file"
-                            << std::endl
-                            ;
-                        util::file_write_string(clip.log_file(), dbgtext);
-                    }
-                    else
-                        std::cout << dbgtext << std::endl;
+                    success = list_sections
+                    (
+                        cfg_set, clip.use_log_file(), clip.log_file()
+                    );
                 }
-                else if (cfg_set.boolean_value("test"))
+                if (do_test)
                 {
                     std::cout
                         << "--test selected, more to come"
                         << std::endl
                         ;
                 }
-                else if (! cfg_set.value("read").empty())
+                if (do_read)
                 {
-#if 0
-                    std::string fname = cfg_set.value("read");
-                    std::cout
-                        << "--read selected, more to come.\n"
-                        << "The file-name is '" << fname << "'"
-                        << std::endl
-                        ;
-#endif
                     /*
                      * For a decent test, read tests/data/ini_set_test.rc,
                      * redirect --list to a log file, and verify the results
@@ -273,14 +309,30 @@ main (int argc, char * argv [])
                     if (rcs.active())
                     {
                         fname = cfg_set.value("read");
-                        std::cout
-                            << "--read: file-name '" << fname << "'"
-                            << std::endl
-                            ;
 
                         cfg::inifile f_in(rcs, fname, "rc");
                         success = f_in.parse();
-                        if (! success)
+                        if (success)
+                        {
+                            if (do_list)            /* --list --read=file   */
+                            {
+                                success = list_sections
+                                (
+                                    cfg_set, clip.use_log_file(),
+                                    clip.log_file()
+                                );
+                            }
+                            if (success && do_write)
+                            {
+                                success = write_sections(ccfg, "rc");
+
+                                /*
+                                 * if (success)
+                                 *     success = write_sections(ccfg, "small");
+                                 */
+                            }
+                        }
+                        else
                             util::error_message("Read failed", fname);
                     }
                     else
@@ -288,49 +340,25 @@ main (int argc, char * argv [])
                         util::error_message("No options to parse", fname);
                         success = false;
                     }
-
                 }
-                else if (! cfg_set.value("write").empty())
+                else if (do_write)
                 {
-
                     /*
                      * Compare to the writing done in ini_test.cpp.
                      */
 
-                    std::string fname;
                     const cfg::inimanager & ccfg = cfg_set;
-                    const cfg::inisections & rcs = ccfg.find_inisections("rc");
-                    if (rcs.active())
-                    {
-                        fname = cfg_set.value("write");
-                        std::cout
-                            << "--write: file-name '" << fname << "'"
-                            << std::endl
-                            ;
-
-                        cfg::inifile f_out(rcs, fname, "rc");
-                        success = f_out.write();
-                        if (! success)
-                            util::error_message("Write failed", fname);
-                    }
-                    else
-                    {
-                        /*
-                         * Note that util::error_message() could also
-                         * be used.  In fact, let's use it.
-                         *
-                         * std::cerr << "No options to write" << std::endl;
-                         */
-
-                        util::error_message("No options to write", fname);
-                        success = false;
-                    }
+                    success = write_sections(ccfg, "rc");
+                    if (success)
+                        success = write_sections(ccfg, "small");
                 }
                 else if (handle_section_options())
                 {
+                    // anything usful?
                 }
                 else
                 {
+                    /*****
                     if ( ! clip.use_log_file())
                     {
                         std::cerr
@@ -339,6 +367,7 @@ main (int argc, char * argv [])
                             ;
                         success = false;
                     }
+                     *****/
                 }
                 rcode = success ? EXIT_SUCCESS : EXIT_FAILURE ;
 
