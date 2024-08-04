@@ -9,6 +9,9 @@
 #
 # Note: it is best if each line of a comment is shorter than 78 characters.
 # The Cfg66 library uses that as the terminal width.
+#
+# Also note that it is possible to change "[Cfg66]" early in the application\
+# via a call to set_main_cfg_section_name().
 
 [Cfg66]
 

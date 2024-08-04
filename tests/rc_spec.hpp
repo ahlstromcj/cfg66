@@ -695,12 +695,13 @@ const std::string rc_extension{"rc"};
 /*
  *  Each INI file needs its own "[Cfg66]" section. It is recommended to
  *  not use the global Cfg66-data structure for each INI file supported
- *  by an application.
+ *  by an application. Also, the section name can be changed early on in
+ *  main() [for exampe] via set_main_cfg_section_name().
  */
 
 inisection::specification rc_cfg66_data
 {
-    "[Cfg66]",
+    "[Cfg66]",              /* can replace via set_main_cfg_section_name()  */
 
 "One generally needs to replace inifile_cfg66_data, a stock set of data,\n"
 "with a more specific structure. We need to specify the config-type and\n"

@@ -67,6 +67,8 @@ private:
      *  to the whole application. Therefore this value should not
      *  be a copy, but a reference, otherwise changes would be
      *  hidden.
+     *
+     *  In some cases, such as parsing, we cast away constness.
      */
 
     const inisections & m_ini_sections;
@@ -89,6 +91,11 @@ public:
 
     virtual bool parse () override;
     virtual bool write () override;
+
+    const inisections & ini_sections () const
+    {
+        return m_ini_sections;
+    }
 
 protected:
 

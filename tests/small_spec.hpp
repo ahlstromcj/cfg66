@@ -115,7 +115,7 @@ inisection::specification small_comments = stock_comment_data();
 
 inisection::specification small_cfg66_data
 {
-    "[Cfg66]",
+    "[Cfg66]",              /* can replace via set_main_cfg_section_name()  */
     {
 "One generally needs to replace inifile_cfg66_data, a stock set of data,\n"
 "with a more specific structure. We need to specify the config-type and\n"

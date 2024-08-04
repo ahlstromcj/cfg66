@@ -6,7 +6,7 @@
 % \library     Documents
 % \author      Chris Ahlstrom
 % \date        2024-04-16
-% \update      2024-08-03
+% \update      2024-08-04
 % \version     $Revision$
 % \license     $XPC_GPL_LICENSE$
 %
@@ -504,6 +504,17 @@
 
    In the future it would be good to read in the comments as well
    and store them in the descriptions.
+
+   We can combine a number of options to read an INI file, list the
+   data read to a log file, and write it to another file:
+
+   \begin{verbatim}
+      $ ./build/test/ini_set_test --list --log test.log
+         --read tests/data/ini_set_test.rc --write ini-out.rc
+   \end{verbatim}
+
+   The output in \texttt{test.log} and \texttt{ini-out.rc}
+   should match up well with \texttt{tests/data/ini\_set\_test.rc}.
 
 \subsection{cfg::inisection}
 \label{subsec:cfg_namespace_inisection}
