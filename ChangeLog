@@ -1,3 +1,431 @@
+2024-08-04  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* : Fixed merge conflicts.
+
+2024-08-02  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* doc/latex/tex/cfg.tex, include/cfg/inifile.hpp,
+	include/cfg/inisection.hpp, src/cfg/configfile.cpp,
+	src/cfg/inifile.cpp, src/cfg/inisection.cpp, tests/data/fooin.rc,
+	tests/ini_set_test.cpp, tests/rc_spec.hpp, tests/session_spec.hpp,
+	tests/small_spec.hpp: The ini-set-test list, read, write, and log
+	options all work together.
+
+2024-08-01  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* TODO, doc/latex/tex/cfg.tex, include/cfg/inisections.hpp,
+	include/util/strfunctions.hpp, src/cfg/inifile.cpp,
+	src/cfg/inisections.cpp, src/util/strfunctions.cpp,
+	tests/data/ini_set_test.rc, tests/ini_set_test.cpp,
+	tests/ini_test.cpp: Now working on parsing ini_set_test.rc.
+
+2024-07-31  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* doc/latex/tex/cfg.tex, include/cfg/inifile.hpp,
+	include/cfg/inisections.hpp, src/cfg/configfile.cpp,
+	src/cfg/inifile.cpp, src/cfg/inisection.cpp,
+	src/cfg/inisections.cpp, src/cfg/options.cpp,
+	src/cli/multiparser.cpp, src/util/filefunctions.cpp,
+	tests/data/fooin.rc, tests/data/fooout.rc, tests/ini_set_test.cpp,
+	tests/ini_test.cpp: Still having issue parsing fooin.rc.
+
+2024-07-29  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* NEWS, README.md, TODO, doc/latex/tex/cfg.tex,
+	include/cfg/inisections.hpp, include/util/strfunctions.hpp,
+	src/cfg/inifile.cpp, src/cfg/inimanager.cpp,
+	src/cfg/inisection.cpp, src/cfg/inisections.cpp,
+	src/cfg/options.cpp, src/util/filefunctions.cpp,
+	src/util/strfunctions.cpp, tests/data/fooin.rc,
+	tests/data/fooout.rc, tests/ini_test.cpp: Getting fooin.rc to
+	generate a nearly-identical fooinout.rc file.
+
+2024-07-27  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* include/cfg/options.hpp, src/cli/multiparser.cpp,
+	tests/ini_set_test.cpp, tests/options_test.cpp,
+	tests/small_spec.hpp: Fixed bug in handling --name=value constructs.
+
+2024-07-24  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* TODO, doc/latex/tex/cfg.tex, doc/latex/tex/references.tex,
+	doc/latex/tex/util.tex, extras/gdb/dot.gdbinit,
+	include/cfg/inimanager.hpp, include/cfg/inisection.hpp,
+	include/cfg/inisections.hpp, src/cfg/history.cpp,
+	src/cfg/inimanager.cpp, src/cfg/inisection.cpp,
+	src/cfg/inisections.cpp, src/cfg/options.cpp,
+	tests/bytevector_test.cpp, tests/history_test.cpp,
+	tests/ini_set_test.cpp, tests/ini_test.cpp: Getting
+	inimanager/parsing to work in progress.
+	* include/cfg/appinfo.hpp, include/cli/parser.hpp,
+	src/cfg/appinfo.cpp, src/cfg/options.cpp, src/cli/parser.cpp,
+	tests/bytevector_test.cpp: Enhanced bytevector test.
+
+2024-07-22  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* TODO, doc/latex/tex/cfg.tex, doc/latex/tex/cli.tex,
+	include/cfg/inifile.hpp, include/cfg/options.hpp,
+	include/cli/parser.hpp, src/cfg/options.cpp,
+	tests/cliparser_test.cpp, tests/data/fooout.rc: Cleanup and
+	documentation updates in progress.
+
+2024-07-19  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* TODO, include/cfg/inisection.hpp, include/cfg/inisections.hpp,
+	include/util/strfunctions.hpp, src/cfg/configfile.cpp,
+	src/cfg/inisection.cpp, src/cfg/inisections.cpp,
+	src/cfg/options.cpp, src/cli/parser.cpp, src/util/strfunctions.cpp,
+	tests/data/fooout.rc, tests/ini_set_test.cpp, tests/ini_test.cpp,
+	tests/rc_spec.hpp, tests/small_spec.hpp: Fixed static init issue
+	using wrapper function, added code to document lines without
+	justification.
+
+2024-07-18  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* TODO, include/cfg/inimanager.hpp, include/cfg/inisection.hpp,
+	include/cfg/options.hpp, src/cfg/inifile.cpp,
+	src/cfg/inimanager.cpp, src/cfg/inisection.cpp,
+	src/cfg/inisections.cpp, src/cfg/options.cpp,
+	src/cli/multiparser.cpp, tests/ini_set_test.cpp,
+	tests/playlist_spec.hpp, tests/rc_spec.hpp, tests/session_spec.hpp,
+	tests/small_spec.hpp, tests/test_spec.hpp, tests/usr_spec.hpp: Found
+	the source of blank specs, still not sure why it happens, see
+	ini_set_test.
+
+2024-07-16  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* TODO, include/cfg/inifile.hpp, include/cfg/inimanager.hpp,
+	include/cfg/options.hpp, src/cfg/inifile.cpp,
+	src/cfg/inimanager.cpp, src/cli/multiparser.cpp,
+	tests/ini_set_test.cpp, tests/rc_spec.hpp, tests/session_spec.hpp: 
+	Progress on writing INI via inimanager, TODOs to follow-up on.
+
+2024-07-15  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* : Fixed stupid merge conflicts.
+
+2024-07-13  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* NEWS, include/cfg/appinfo.hpp, include/cfg/inimanager.hpp,
+	include/cfg/inisection.hpp, include/cfg/inisections.hpp,
+	include/cfg/options.hpp, include/cli/multiparser.hpp,
+	include/cli/parser.hpp, include/util/strfunctions.hpp,
+	src/cfg/appinfo.cpp, src/cfg/inimanager.cpp,
+	src/cfg/inisection.cpp, src/cfg/inisections.cpp,
+	src/cfg/options.cpp, src/cli/multiparser.cpp,
+	src/util/msgfunctions.cpp, src/util/strfunctions.cpp,
+	tests/data/fooout.rc, tests/ini_set_test.cpp, tests/rc_spec.hpp: 
+	Added build option for --help coloring, more.
+
+2024-07-08  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* include/cfg/appinfo.hpp, include/cfg/inimanager.hpp,
+	include/cfg/inisection.hpp, include/cfg/inisections.hpp,
+	include/cfg/options.hpp, include/cli/multiparser.hpp,
+	include/cli/parser.hpp, src/cfg/appinfo.cpp,
+	src/cfg/inimanager.cpp, src/cfg/inisection.cpp,
+	src/cfg/inisections.cpp, src/cfg/options.cpp,
+	src/cli/cliparser_c.cpp, src/cli/multiparser.cpp,
+	src/cli/parser.cpp, tests/bytevector_test.cpp,
+	tests/manager_test.cpp, tests/small_spec.hpp: CLI help seems to
+	work.
+
+2024-07-06  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* include/cfg/inimanager.hpp, include/cfg/inisection.hpp,
+	include/cfg/inisections.hpp, include/cli/multiparser.hpp,
+	include/cli/parser.hpp, src/cfg/inimanager.cpp,
+	src/cfg/inisection.cpp, src/cfg/inisections.cpp,
+	src/cfg/options.cpp, src/cli/multiparser.cpp, tests/ctrl_spec.hpp,
+	tests/ini_set_test.cpp, tests/ini_test.cpp, tests/small_spec.hpp: 
+	Getting inisections help to work.
+
+2024-07-05  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* include/cfg/inimanager.hpp, include/cfg/inisection.hpp,
+	include/cli/multiparser.hpp, include/cli/parser.hpp,
+	src/cli/multiparser.cpp, src/cli/parser.cpp, tests/ini_set_test.cpp: 
+	Getting add_inisections() to work, in progress.
+
+2024-07-04  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* include/cfg/recent.hpp: Fixed clang move operator warning in
+	'recent' class.
+	* : commit 6356f2be189dea8d1318635b99e25519bc8da9c4 Author: Chris
+	Ahlstrom <ahlstromcj@gmail.com> Date:   Thu Jul 4 10:35:35 2024
+	-0400
+
+2024-07-02  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* include/cfg/recent.hpp, include/meson.build, src/cfg/recent.cpp,
+	src/meson.build: Added the 'recent' class to the library.
+	* NEWS, doc/latex/tex/cfg.tex, include/cfg/options.hpp,
+	include/cfg/optionsmaps.hpp, include/cli/parser.hpp,
+	src/cfg/options.cpp, src/cli/parser.cpp: Removed optionsmap, added
+	recents.
+
+2024-07-01  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* NEWS, RELNOTES, include/cfg/options.hpp, include/cli/parser.hpp,
+	src/cfg/options.cpp, src/cli/multiparser.cpp, src/cli/parser.cpp,
+	src/session/manager.cpp, tests/cliparser_test.cpp,
+	tests/history_test.cpp, tests/ini_test.cpp: Finished, we hope,
+	getting the cliparser test to work.
+	* include/cfg/inisection.hpp, include/cfg/options.hpp,
+	include/cli/parser.hpp, meson.build, src/cfg/inisection.cpp,
+	src/cfg/options.cpp, src/cli/parser.cpp, tests/cliparser_test.cpp,
+	tests/meson.build, tests/test_spec.hpp: Eliminated nasty option ctor
+	recursion.
+
+2024-06-29  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* include/cfg/options.hpp, include/cli/parser.hpp,
+	src/cfg/options.cpp, src/cli/parser.cpp,
+	src/util/filefunctions.cpp, tests/cliparser_test.cpp,
+	tests/test_spec.hpp: Adding error messaging to parser and options.
+	* include/cli/parser.hpp, include/session/configuration.hpp,
+	include/util/msgfunctions.hpp, src/cfg/options.cpp,
+	src/cli/parser.cpp, src/session/configuration.cpp,
+	src/util/msgfunctions.cpp: Moving some options between modules.
+
+2024-06-28  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* include/cfg/inimanager.hpp, include/cfg/options.hpp,
+	include/cli/parser.hpp, src/cfg/inimanager.cpp,
+	src/cfg/options.cpp, src/cli/parser.cpp, tests/cliparser_test.cpp,
+	tests/ini_set_test.cpp: Backtracking to fix cli::parser.
+	* NEWS, doc/cfg-structure.text, doc/latex/tex/cfg.tex,
+	include/cfg/appinfo.hpp, include/cfg/{inimap.hpp =>
+	inimanager.hpp}, include/cfg/inisections.hpp,
+	include/cli/parser.hpp, include/meson.build, src/cfg/appinfo.cpp,
+	src/cfg/{inimap.cpp => inimanager.cpp}, src/cfg/inisections.cpp,
+	src/cli/parser.cpp, src/meson.build, tests/cliparser_test.cpp,
+	tests/ini_set_test.cpp, tests/ini_test.cpp, tests/meson.build: 
+	Renamed inimap to inimanager.
+
+2024-06-27  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* include/cfg/inisection.hpp, include/cfg/inisections.hpp,
+	include/cfg/options.hpp, include/cli/multiparser.hpp,
+	include/cli/parser.hpp, src/cfg/inimap.cpp, src/cfg/inisection.cpp,
+	src/cfg/inisections.cpp, src/cfg/options.cpp,
+	src/cli/multiparser.cpp, src/cli/parser.cpp,
+	tests/cliparser_test.cpp, tests/ini_test.cpp,
+	tests/manager_test.cpp, tests/test_spec.hpp: Added stock-options
+	handling from options up to inimap.
+
+2024-06-26  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* include/cfg/inisections.hpp, include/cli/multiparser.hpp,
+	include/cli/parser.hpp, src/cfg/inimap.cpp,
+	src/cfg/inisections.cpp, src/cfg/options.cpp,
+	src/cli/multiparser.cpp, src/cli/parser.cpp: Worked out multiparser,
+	now must finish inimap.
+
+2024-06-25  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* include/cfg/inimap.hpp, include/cfg/inisection.hpp,
+	include/cfg/inisections.hpp, include/cfg/options.hpp,
+	include/cli/multiparser.hpp, include/cli/parser.hpp,
+	include/meson.build, src/cfg/inimap.cpp, src/cli/multiparser.cpp,
+	src/cli/parser.cpp, src/meson.build: Added a CLI multiparser and hid
+	some non-const member functions.
+
+2024-06-23  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* extras/notes/layout.text, include/cli/parser.hpp,
+	src/cli/parser.cpp: Figuring out how to merge CLI and file config
+	options.
+
+2024-06-22  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* include/cfg/inimap.hpp, include/cfg/inisections.hpp,
+	include/cli/parser.hpp, src/cfg/inimap.cpp, src/cfg/inisections.cpp: 
+	Finished writing inimap options access functions.
+
+2024-06-21  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* include/cfg/inimap.hpp, include/cfg/inisection.hpp,
+	include/cfg/inisections.hpp, include/cfg/options.hpp,
+	src/cfg/inimap.cpp, src/cfg/inisection.cpp,
+	src/cfg/inisections.cpp, src/cfg/options.cpp: Added a series of
+	find_xxx(name) functions to the inixxx classes.
+	* NEWS, include/cfg/inimap.hpp, include/cfg/inisection.hpp,
+	include/cfg/inisections.hpp, include/cfg/options.hpp,
+	src/cfg/inimap.cpp, src/cfg/inisection.cpp, src/cfg/options.cpp,
+	tests/data/fooout.rc, tests/ini_test.cpp: More inimap work.
+
+2024-06-20  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* extras/notes/ini-data.text, include/cfg/inimap.hpp,
+	src/cfg/inimap.cpp: Getting a handle on data layout in memory.
+	* NEWS, README.md, include/cfg/configfile.hpp,
+	include/cfg/inifile.hpp, include/cfg/inisection.hpp,
+	include/cfg/inisections.hpp, src/cfg/inisection.cpp,
+	src/cfg/inisections.cpp: Work started on inimap lookups of options.
+
+2024-06-19  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* NEWS, doc/dia/application.dia, doc/dia/history.dia,
+	extras/notes/undoredo.text, include/cfg/inimap.hpp,
+	include/cfg/inisection.hpp, include/cfg/inisections.hpp,
+	include/meson.build, src/cfg/configfile.cpp, src/cfg/history.cpp,
+	src/cfg/inimap.cpp, src/cfg/inisection.cpp,
+	src/cfg/inisections.cpp, src/meson.build: Updating documentation,
+	ini module split.
+	* doc/dia/application.dia, doc/dia/history.dia,
+	include/cfg/optionsmaps.hpp: Adding application session
+	manager/history layout diagram.
+
+2024-06-18  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* doc/dia/history.dia, doc/dia/ini.dia, doc/dia/session.dia,
+	include/cfg/history.hpp, include/cfg/inifile.hpp,
+	include/cfg/inisections.hpp, include/cli/parser.hpp: Dia diagrams
+	for INI, Session, and History.
+	* doc/dia/{cfg66.dia => ini.dia}, include/cfg/basesettings.hpp,
+	include/cfg/configfile.hpp, include/cfg/inifile.hpp,
+	include/cfg/inisections.hpp, include/session/climanager.hpp,
+	include/session/configuration.hpp, include/session/directories.hpp,
+	include/session/manager.hpp, src/cfg/inisections.cpp,
+	src/session/configuration.cpp, src/session/manager.cpp,
+	src/util/bytevector.cpp, src/util/strfunctions.cpp,
+	tests/bytevector_test.cpp: Cleanup and documentation tweaks.
+
+2024-06-17  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* include/cfg/inifile.hpp, include/cfg/inisections.hpp,
+	include/cfg/options.hpp, include/cfg/optionsmaps.hpp,
+	include/util/strfunctions.hpp, src/cfg/inifile.cpp,
+	src/cfg/inisections.cpp, src/cfg/options.cpp, tests/data/fooin.rc,
+	tests/ini_test.cpp, work.sh: Lotta work getting INI parsing to work.
+	* NEWS, include/cfg/configfile.hpp, include/cfg/inifile.hpp,
+	include/cfg/options.hpp, include/util/filefunctions.hpp,
+	src/cfg/configfile.cpp, src/cfg/inifile.cpp, tests/data/fooin.rc,
+	tests/data/fooout.rc, tests/ini_test.cpp: Working on parsing
+	section-values.
+
+2024-06-16  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* include/cfg/inisections.hpp, include/cfg/options.hpp,
+	src/cfg/configfile.cpp, src/cfg/inifile.cpp,
+	src/cfg/inisections.cpp, src/cfg/options.cpp, tests/ini_test.cpp: 
+	Got inifile::write() basically working.
+
+2024-06-15  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* include/cfg/configfile.hpp, include/cfg/inifile.hpp,
+	include/cfg/inisections.hpp, src/cfg/configfile.cpp,
+	src/cfg/inifile.cpp, src/cfg/inisections.cpp: Fleshing out inifile.
+
+2024-06-14  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* NEWS, RELNOTES, include/cfg/configfile.hpp,
+	include/cfg/inifile.hpp, include/cfg/inisections.hpp,
+	include/meson.build, src/cfg/inifile.cpp, src/cfg/inisections.cpp,
+	src/meson.build, tests/ctrl_spec.hpp, tests/drums_spec.hpp,
+	tests/ini_test.cpp, tests/mutes_spec.hpp, tests/palette_spec.hpp,
+	tests/playlist_spec.hpp, tests/rc_spec.hpp, tests/session_spec.hpp,
+	tests/usr_spec.hpp: Renamed inifile to inisections and added an
+	inifile class module.
+	* : commit 1f97218df643880b9ccbf47898c9e86c3529eaf8 Author: Chris
+	Ahlstrom <ahlstromcj@gmail.com> Date:   Fri Jun 14 06:26:39 2024
+	-0400
+
+2024-06-01  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* include/util/strfunctions.hpp, src/util/strfunctions.cpp, work.sh: 
+	Added yesno parameter to bool_to_string().
+
+2024-05-21  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* include/util/bytevector.hpp, src/util/bytevector.cpp: Added
+	peek_byte_at() to bytevector.
+
+2024-05-20  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* src/util/bytevector.cpp: Fixed bytevector::assign() init'er list
+	sizing.
+
+2024-05-18  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* include/util/bytevector.hpp, src/util/bytevector.cpp: Added
+	fatal-error check to bytevector, fixed bugs in data ranges.
+	* include/util/bytevector.hpp, src/util/bytevector.cpp: Added new
+	size() and nominal_size() to bytevector.
+	* include/util/bytevector.hpp, src/util/bytevector.cpp: Fixed some
+	weaknesses in bytevector.
+
+2024-05-17  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* NEWS, README.md, RELNOTES, doc/latex/tex/cfg66-library-guide.tex,
+	include/util/bytevector.hpp, meson.build, src/util/bytevector.cpp,
+	tests/bytevector_test.cpp, work.sh: Updated to version 0.2, added
+	file I/O testing.
+	* tests/bytevector_test.cpp: Forgot to add bytevector_test.cpp.
+	* include/util/bytevector.hpp, src/util/bytevector.cpp,
+	tests/meson.build: Beefing up bytevector and testing for it.
+	* include/util/bytevector.hpp, src/util/bytevector.cpp: Added an
+	assign overload, made bytevector constructor explicit.
+	* include/util/bytevector.hpp, src/util/bytevector.cpp: Added
+	assign(), increment/decrement(), etc. to bytevector.
+
+2024-05-16  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* include/util/bytevector.hpp, src/util/bytevector.cpp: Add
+	put_triple().
+	* include/util/bytevector.hpp: Unprotected bytevector member
+	functions.
+	* doc/latex/tex/util.tex, include/cpp_types.hpp,
+	include/meson.build, include/util/bytevector.hpp, src/meson.build,
+	src/util/bytevector.cpp: Added a bytevector class to handle
+	big-endian data.
+
+2024-04-30  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* NEWS, README.md, RELNOTES, doc/cfg-structure.text,
+	include/cfg/appinfo.hpp, include/cfg/configfile.hpp,
+	include/cpp_types.hpp, include/util/filefunctions.hpp,
+	include/util/msgfunctions.hpp, include/util/strfunctions.hpp,
+	src/cfg/appinfo.cpp, src/cfg/configfile.cpp, src/cfg/options.cpp,
+	src/cli/parser.cpp, src/util/filefunctions.cpp,
+	src/util/msgfunctions.cpp, src/util/strfunctions.cpp, work.sh: 
+	Adding some cpp types to lib66 namespace.
+
+2024-04-28  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* INSTALL, doc/latex/tex/cfg66-library-guide.tex,
+	doc/latex/tex/docs-structure.tex, include/cfg66-config.h.in,
+	include/cfg66.hpp, src/cfg66.cpp, src/util/filefunctions.cpp,
+	work.sh: Fixed TeX files and the HAVE macros.
+
+2024-04-26  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* README.md, extras/wraps/cfg66.wrap, work.sh: Updating wrap and
+	work.sh.
+	* include/c_macros.h, work.sh: Added uninstall to work.sh.
+
+2024-04-25  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* meson.build, src/cfg66.cpp: Add the project URL to pkgconfig.
+	* meson.build: Changed .pc name to make libcfg66 subproject name.
+
+2024-04-24  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* include/meson.build, meson.build: Got it to work with libs66 as a
+	subproject.
+	* include/meson.build, meson.build, src/meson.build: Fixes to build
+	setup.
+
+2024-04-23  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* meson.build, tests/meson.build: Changed cfg66_dep to libcfg66_dep.
+
+2024-04-18  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* meson.build, src/cfg66.cpp: Fixing build for version info and
+	subproject usage.
+
 2024-04-15  Chris Ahlstrom <ahlstromcj@gmail.com>
 
 	* ChangeLog: Cfg66 initial ChangeLog
