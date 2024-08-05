@@ -1,4 +1,4 @@
-# README for Library Cfg66 0.2 2024-08-05
+# README for Library Cfg66 0.3 2024-08-05
 
 __Cfg66__ is a configuration library based on the "cfg" directories
 in the __Seq66__ project, but that is useful in other applications.
@@ -76,6 +76,8 @@ or classes in a namespace of the same name:
 
     For all changes, see the NEWS file.
 
+    *   Version 0.3:
+        *   To do.
     *   Version 0.2:
         *   Added the bytevector big-endian handling class and added
             initial tests for it.

@@ -1,4 +1,4 @@
-# __Cfg66__ Licensing 0.2.0
+# __Cfg66__ Licensing 0.3.0
 
 ## Copyright (c) 2024
 

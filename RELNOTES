@@ -1,15 +1,7 @@
-Release Notes for Cfg66 v. 0.2 2024-08-05
+Release Notes for Cfg66 v. 0.3 2024-08-05
 
 - Cleanup, minor improvements, etc. as noted in the NEWS file.
-- Added a bytevector class to handle big-endian data in a vector,
-  with ability to read and write the data to a file.
-- Renamed the misnamed cfg::inifile class to "inisections".
-- Added an actual cfg::inifile class to extend cfg::configfile.
-- Added an INI file "manager" class.
-- Refactored and fixed command-line parsing and options handling
-  somewhat.
-- Added initial "recent files" handling.
-- Greatly beefed up the testing of CLI and INI files.
+- Greatly beefed up the testing of ...
 
 See NEWS for many more details, and the ChangeLog.
 

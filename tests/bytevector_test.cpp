@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-05-17
- * \updates       2024-07-24
+ * \updates       2024-08-05
  * \license       See above.
  *
  */
@@ -57,7 +57,7 @@ static cfg::appinfo s_application_info
     "",                                 // _app_icon_name (empty by default)
     "",                                 // _app_version_text derived
     "",                                 // _api_engine (empty by default)
-    "0.2",                              // _api_version (empty by default)
+    "0.3",                              // _api_version (empty by default)
     "",                                 // _gui_version (bogus here)
     "bvec",                             // _client_name_short
     "tag"                               // _client_name_tag
