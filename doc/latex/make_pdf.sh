@@ -8,7 +8,7 @@
 # \library    	cfg66
 # \author     	Chris Ahlstrom
 # \date       	2024-01-25
-# \update     	2024-04-07
+# \update     	2024-08-05
 # \version    	$Revision$
 # \license    	$XPC_SUITE_GPL_LICENSE$
 #
@@ -36,12 +36,11 @@ cat << E_O_F
 Usage: ./make_pdf.sh
 
    Run that command from the cfg66/doc/latex directory. The warnings are
-   found in doxygen-warnings.log there. The file doxygen.log is found in
-   $BUILDDIR. The PDF is found in $LATEXDIR.
-   The work.sh --clean command removes everything in
+   found in build/latex-warnings.log.  The PDF is found in
+   $LATEXDIR.  The work.sh --clean command removes everything in
    $BUILDDIR.
 
-Version: 2024-04-15
+Version: 2024-08-05
 
 E_O_F
 
@@ -54,7 +53,7 @@ else
    if test $? = 0 ; then
       echo "Running latexmk, output in $LATEXDIR, log in $BUILDDIR..."
       latexmk --aux-directory=$LATEXDIR --output-directory=$LATEXDIR -g --silent \
-         --pdf tex/$PDFBASENAME > dox-warnings.log
+         --pdf tex/$PDFBASENAME > $BUILDDIR/latex-warnings.log
 
 #     if test $? = 0 ; then
 #        echo "Reducing margins"
