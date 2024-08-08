@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-27
- * \updates       2024-08-04
+ * \updates       2024-08-08
  * \license       See above.
  *
  *  See the ini_test module for information. This module goes beyond that
@@ -53,6 +53,7 @@
 
 #include "rc_spec.hpp"                  /* chunk of data for an 'rc' file   */
 #include "small_spec.hpp"               /* small for easier debugging       */
+#include "session_spec.hpp"             /* for evaluation of this method    */
 
 #undef  USE_ALT_TEST                    /* define for quick experiments     */
 
@@ -62,7 +63,6 @@
 #include "mutes_spec.hpp"
 #include "palette_spec.hpp"
 #include "playlist_spec.hpp"
-#include "session_spec.hpp"
 #include "usr_spec.hpp"
 #endif
 
@@ -246,6 +246,9 @@ main (int argc, char * argv [])
     if (success)
         success = cfg_set.add_inisections(cfg::rc_data);
 
+    if (success)
+        success = cfg_set.add_inisections(cfg::session_data);
+
 #if defined USE_ALT_TEST                        /* normally undefined       */
     std::string clihelp = cfg_set.cli_help_text();
     std::cout << clihelp << std::endl;
@@ -351,6 +354,9 @@ main (int argc, char * argv [])
                     success = write_sections(ccfg, "rc");
                     if (success)
                         success = write_sections(ccfg, "small");
+
+                    if (success)
+                        success = write_sections(ccfg, "session");
                 }
                 else if (handle_section_options())
                 {

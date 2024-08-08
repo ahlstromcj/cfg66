@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-07-22
- * \updates       2024-07-16
+ * \updates       2024-08-08
  * \license       See above.
  *
  *  This is the first of a set of test/demo header files to set up a large
@@ -78,12 +78,12 @@ namespace cfg
  *  We assume the file sections have been moved to the session file.
  *  These are:
  *  `
- *      [midi-control-file]
- *      [mute-group-file]
- *      [usr-file]
- *      [playlist-file]
- *      [note-mapper-file]
- *      [palette-file]
+ *      [midi-control]
+ *      [mute-group]
+ *      [usr]
+ *      [playlist]
+ *      [note-mapper]
+ *      [palette]
  *      [user-session] ???
  *
  *  Additional sections, common to all files:
@@ -191,7 +191,7 @@ inisection::specification session_cfg66_data
 
 inisection::specification session_config_file_data
 {
-    "[config-file]",
+    "[config]",
     {
 "This section sets up the locations of: user configuration area ('home');\n"
 "the main configuration file or it's base-name ('config'); and the location\n"
@@ -237,7 +237,7 @@ inisection::specification session_config_file_data
 
 /**
  *  The next one is a sample of an application-specific configuration
- *  file. The "[config-file]" settings above could be used as well.
+ *  file. The "[config]" settings above could be used as well.
  *
  *  The programmer is free to add as many sections like this as necessary.
  *  The same three variables must be supported.
@@ -245,7 +245,7 @@ inisection::specification session_config_file_data
 
 inisection::specification session_rc_file_data
 {
-    "[rc-file]",
+    "[rc]",
     {
 "This section specifies the status, directory, and name of the 'rc' file.\n"
 "That file holds information about the I/O ports, transport settings, recent\n"
@@ -289,7 +289,7 @@ inisection::specification session_rc_file_data
 
 inisection::specification session_usr_file_data
 {
-    "[usr-file]",
+    "[usr]",
     {
 "This section specifies the status, directory, and name of the 'usr' file.\n"
 "That file holds information about port and channel naming, user-interface\n"
@@ -337,7 +337,7 @@ inisection::specification session_usr_file_data
 
 inisection::specification session_palette_file_data
 {
-    "[palette-file]",
+    "[palette]",
     {
 "This section specifies an alternate palette for the app-drawn GUI items\n"
 "such as the piano rolls and live grid slots.\n"
@@ -372,7 +372,7 @@ inisection::specification session_palette_file_data
 
 inisection::specification session_ctrl_file_data
 {
-    "[midi-ctrl-file]",
+    "[midi-ctrl]",
     {
 "Specifies an alternate set of keystroke and MIDI control/display control\n"
 "items.\n"
@@ -407,7 +407,7 @@ inisection::specification session_ctrl_file_data
 
 inisection::specification session_mutes_file_data
 {
-    "[mute-group-file]",
+    "[mute-group]",
     {
 "Specifies a set of pattern mute-group specifications for easy selection\n"
 "of pattern arrangements.\n"
@@ -442,7 +442,7 @@ inisection::specification session_mutes_file_data
 
 inisection::specification session_drums_file_data
 {
-    "[note-mapper-file]",
+    "[note-mapper]",
     {
 "Specifies a mapping using in changing drum notes to General MIDI.\n"
     },
@@ -476,7 +476,7 @@ inisection::specification session_drums_file_data
 
 inisection::specification session_playlist_file_data
 {
-    "[playlist-file]",
+    "[playlist]",
     {
         "Specifies a play-list(s) file.\n"
     },
@@ -512,19 +512,19 @@ inisection::specification session_playlist_file_data
  * All sections of the 'session' configuration
  *------------------------------------------------------------------------*/
 
-inisection::specification session_comments = inifile_comment_data;
+inisection::specification session_comments = stock_comment_data();
 
 inisections::specification session_data
 {
     "session",      /* the file extension for any 'session' file.           */
-    "",             /* use value from appinfo's get_home_cfg_directory()    */
-    "",             /* use value derived from appinfo's get_home_cfg_file() */
+    "tests/data",   /* use value from appinfo's get_home_cfg_directory()    */
+    "tests/data",   /* use value derived from appinfo's get_home_cfg_file() */
     "This file holds the main configuration for Cfg66-compliant applications.\n"
     "It follows a format similar to the old INI files of MS-DOS.\n"
     ,
     {
         std::ref(session_cfg66_data),
-        std::ref(session_comments),     /* used by every Cfg66 config file  */
+        std::ref(session_comments),
         std::ref(session_config_file_data),
         std::ref(session_rc_file_data),
         std::ref(session_usr_file_data),

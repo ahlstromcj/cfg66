@@ -6,7 +6,7 @@
 % \library     Documents
 % \author      Chris Ahlstrom
 % \date        2024-04-16
-% \update      2024-04-16
+% \update      2024-08-08
 % \version     $Revision$
 % \license     $XPC_GPL_LICENSE$
 %
@@ -14,8 +14,80 @@
 %
 %-------------------------------------------------------------------------------
 
+\section{Sessions}
+\label{sec:sessions}
+
+\subsection{Session Description}
+\label{subsec:session_description}
+
+   A session provides a specific configuration for an application.
+   The environment is contained and specified in a
+   \textsl{session directory}, also known as a
+   \textsl{home directory}.
+   As an example, home directories for \textsl{Seq66} running on its
+   own or inside an NSM session:
+
+   \begin{verbatim}
+      /home/user/.config/seq66
+      /home/user/NSM Sessions/Seq66/seq66.nGJDW
+   \end{verbatim}
+
+   Note that the \texttt{seq66.nGJDW} directory is created by NSM.
+   \textsl{Seq66} does not create a configuration directory by default, 
+   but it has some options:
+
+   \begin{itemize}
+      \item \texttt{--home}.
+         This option changes the "home" directory or appends a directory name
+         to the default "home".
+      \item \texttt{--session}.
+         This option selects a setup name from \texttt{sessions.rc}.
+         Each setup has a named section (e.g. \texttt[normal]) that specifies
+         the "home" directory, the client name, base-name for the
+         INI configuration files, and the name of a log file.
+         This file is only read, never written.
+         Since value names (e.g. "home") are duplicated, special processing
+         is needed.
+   \end{itemize}
+
+   The "home" directory could have subdirectories, such as
+   \texttt{config}, \texttt{audio}, \texttt{midi}, \texttt{data}, etc.
+
+   Currently \textsl{Cfg66} provides a \texttt{.session} file that lists
+   the names, locations, and activity of the various other INI files.
+   With that setup, we would need a session file for each session.
+   With NSM the session setup is directory-based.
+   Use cases to support:
+
+   \begin{itemize}
+      \item \textbf{Standalone application}.
+         The application automatically refers to a set of configuration files
+         in a "home" directory,
+         either \texttt{~/home/user/.config/seq66} or
+         either \texttt{~/home/user/.config/seq66/config}.
+      \item \textbf{Session selection}.
+         All session information resides in a known file in the home
+         directory, \texttt{sessions.rc}, and a selection of the session
+         is made at startup.
+      \item \textbf{NSM session}.
+         There is a session manager that communicates the session directory
+         to the application.
+   \end{itemize}
+
 \section{Session Namespace}
 \label{sec:session_namespace}
+
+   What is a session?
+   It is an environment in which an application runs, and is one of many
+   possible environments for the application.
+   \textsl{Cfg66} provides rudimentary management of the characteristics of
+   an application. Compare that to a true session manager such as the
+   \textsl{New Session Manager}(\cite{nsm}, NSM), which coordinates not only
+   the main application, but a group of applications and their configuration
+   and connections, recreating recreate complex setups.
+   Here, we want a way to provide various setups for an application.
+   Of course, these setups can be placed under the control of a more complex
+   session manager.
 
    This section provides a useful walkthrough of the \texttt{session} namespace of
    the \textsl{cfg66} library.

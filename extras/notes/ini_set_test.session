@@ -1,0 +1,75 @@
+# Cfg66-style configuration file for app v. 0
+#
+# This was generated via the ini_set_test application. For an alternative,
+# see cfg66.session in this directory.
+
+[Cfg66]
+
+config-type = "session"                 # Session configuration file.
+quiet = false                           # Disable startup error prompts.
+verbose = false                         # Show informational messages.
+version = 0                             # Configuration file version.
+
+[comments]
+
+Add your comment block here. Comments are a 'section' option. For 'section'
+options, there are no 'variable = value' lines, just lines that are read
+as is.
+  
+This is the next paragraph, separated from the above with a line blank
+except for a single space.
+
+[config]
+
+active = false
+config = ""
+data = ""                               # Overrides the default data directory.
+home = ""
+
+[rc]
+
+active = false                          # Usage of the specified file.
+directory = ""                          # The directory where this file is stored.
+rc = "seq66v2.rc"
+rc-save = false                         # Saving of the 'rc' file at exit.
+
+[usr]
+
+active = false                          # Usage of the specified file.
+directory = ""                          # The directory where this file is stored.
+usr = "seq66v2.usr"                     # The base file-name of the user file.
+usr-save = false                        # Saving of the 'usr' file at exit.
+
+[palette]
+
+active = false                          # Usage of the specified file.
+directory = ""                          # The directory where this file is stored.
+name = "seq66v2.palette"                # The base file-name of the palette file.
+
+[midi-ctrl]
+
+active = false                          # Usage of the specified file.
+directory = ""                          # The directory where this file is stored.
+name = "seq66v2.ctrl"                   # The base file-name of the 'ctrl' file.
+
+[mute-group]
+
+active = false                          # Usage of the specified file.
+directory = ""                          # The directory where this file is stored.
+name = "seq66v2.mutes"                  # The base file-name of the 'mutes' file.
+
+[note-mapper]
+
+active = false                          # Usage of the specified file.
+directory = ""                          # The directory where this file is stored.
+name = "seq66v2.drums"                  # The base file-name of the 'drums' file.
+
+[playlist]
+
+active = false                          # Usage of the specified file.
+directory = ""                          # The directory where this file is stored.
+playlist = "seq66v2.playlist"
+
+# End of tests/data/s.session
+#
+# vim: sw=4 ts=4 wm=4 et ft=dosini
