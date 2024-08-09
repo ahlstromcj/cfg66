@@ -1,4 +1,4 @@
-# Seq66 0.99.10 session 'rc' configuration file modified for Cfg66.
+# Seq66 0.99.10 'sessions' configuration file modified for Cfg66.
 
 [Seq66]
 
@@ -17,40 +17,32 @@ default.
 
 [default]
 
-home = "."
+home = "."                                  # "$home" yields this default name
 client-name = ""
 config = ""
 log = ""
-subdirectories = "config, audio, midi"
 
 [normal]
 
-home = "~/.config/seq66/"
+home = "$home"
 client-name = "seq66"
-config = "qseq66"
+file-base = "qseq66"
 log = "seq66.log"
 
 [test]
 
-home = "~/.config/seq66/test/"
+home = "$home/test/"
 client-name = "test66"
-config = "test66"
+file-base = "test66"
 log = "test66.log"
-
-[test-export]
-
-home = "~/.config/seq66/test2/"
-client-name = "test2"
-config = "test66"
-log = ""
 
 [4x4]
 
-home = "~/Home/ca/mls/git/seq66/contrib/tests/4x4/"
+home = "~/Home/user/git/seq66/contrib/tests/4x4/"
 client-name = "seq664x4"
-config = "qseq66"
+file-base = "qseq66"
 log = "4x4.log"
 
-# End of /home/user/.config/seq66/session.rc
+# End of $home/cfg/cfg66.sessions
 #
 # vim: sw=4 ts=4 wm=4 et ft=dosini

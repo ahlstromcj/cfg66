@@ -1,7 +1,8 @@
 # Cfg66-style configuration file for app v. 0
 #
 # This was generated via the ini_set_test application. For an alternative,
-# see cfg66.session in this directory.
+# see cfg66.session in this directory. That will be the best source.
+# Some of the stuff here is deprecated, but kept for reference.
 
 [Cfg66]
 

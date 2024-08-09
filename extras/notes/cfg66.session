@@ -6,15 +6,14 @@
 # relocate all other application directories and files to a totally different
 # directory by specifying a full path. Or the caller can specify a single
 # sub-directory name, whose parent directory is ~/.config/seq66v2".
-#
 
 [Cfg66]
 
-config-type = "session"
-session-path = "/home/user/MidiProjects"    # vice "/home/user/.config/seq66v2"
-version = 0
-verbose = false
-use-log-file = false
+config-type = "session"                     # session configuration file
+quiet = false                               # disable startup error prompts
+session-path = "/home/user/MidiProjects"    # or "/home/user/.config/seq66v2"
+verbose = false                             # show informational messages
+version = 0                                 # configuration file version
 
 # [comments] holds user documentation for this file.
 
@@ -22,6 +21,13 @@ use-log-file = false
 
 This file is a sample for reference as we build the Cfg66 session management
 scheme.
+
+# 'auto-save-rc' sets automatic saving of the running configuration
+# 'rc' and other files.
+
+[auto-option-save]
+
+auto-save-cfg = true
 
 # Specifies the location and main configuration file for an application.
 #
@@ -39,24 +45,39 @@ scheme.
 #       is specified by the session manager, and all other directories are
 #       relative to that directory.
 #
-# The possible kinds of values for "file-name":
+# The possible kinds of values for "file-base":
 #
-#   -   Empty. The "file-name" is the app-name (no extension).
-#   -   Name. The "file-name" is given as is.  No extension is needed; the
+#   -   Empty. The "file-base" is the app-name (no extension).
+#   -   Name. The "file-base" is given as is.  No extension is needed; the
 #       "ext" value will be appended anyway.
+
+[cfg]
+
+config = "cfg"                              # default config file storage
+data = "data"                               # default data directory
+midi = "midi"                               # additional data directory
+audio = "audio"                             # additional data directory
+home = ""                                   # needed?
+
+[session]
+
+active = true
+directory = "cfg"                           # "rc" or "cfg" if desired
+file-base = "cfg66"                         # $home/cfg/cfg66.sessions
+ext = ".sessions"                           # note the extra 's'
 
 [rc]
 
 active = true
-directory = ""              # "rc" or "cfg" if desired
-file-name = "seq66v2"
+directory = "cfg"                           # "rc" or "cfg" if desired
+file-base = ""
 ext = ".rc"
 
-[logs]
+[log]
 
 active = true
-directory = "logs"          # for log files, summaries, etc.
-file-name = ""              # for main log only
+directory = "logs"                          # log files, summaries, etc.
+file-base = ""                              # for main log only
 ext = ".log"
 
 # An example from the Seq66 application.  This same file will be present
@@ -66,7 +87,7 @@ ext = ".log"
 
 active = true
 directory = ""
-file-name = "seq66v2.usr"
+file-base = ""
 ext = ".usr"
 
 # Provides a flag and play-list file.
@@ -75,67 +96,51 @@ ext = ".usr"
 
 active = false
 directory = ""
-file-name = ""
+file-base = ""
 ext = ".playlist"
 
-# Provides a flag and file-name for note-mapping.
+# Provides a flag and file-base for note-mapping. Should we call it "[drums]?
 
 [note-mapper]
 
 active = false
 directory = ""
-file-name = "seq66v2.drums"
+file-base = ""
 ext = ".drums"
 
-# Provides a flag and a file-name to allow modifying the palette.
+# Provides a flag and a file-base to allow modifying the palette.
 
 [mute-groups]
 
 active = false
 directory = ""
-file-name = "seq66v2.mutes"
+file-base = ""
 ext = ".mutes"
 
 [midi-control]
 
 active = false
 directory = ""
-file-name = "seq66v2.ctrl"
+file-base = ""
 ext = ".ctrl"
 
-# Provides a flag and a file-name to allow modifying the palette.
+# Provides a flag and a file-base to allow modifying the palette.
 
 [palette]
 
 active = false
 directory = ""
-name = "seq66v2.palette"
+file-base = ""
 ext = ".palette"
 
-# Provides a flag and a file-name to allow modifying the palette.
+# Provides a flag and a file-base to allow modifying the palette.
 
 [keymap]
 
 active = false
 directory = ""
-name = ""
+file-base = ""
 ext = ".keymap"
-
-# 'auto-save-rc' sets automatic saving of the running configuration
-# 'rc' and other files.
-
-[auto-option-save]
-
-auto-save-rc = true
-
-# save-old-triggers = "false"
-# save-old-mutes = "false"
-
-[user-session]
-
-session = none
-url = ""
-visibility = true
 
 # End of /home/user/.config/seq66v2/seq66v2.session
 #
