@@ -83,11 +83,11 @@ public:
 
     using entry = struct
     {
-        std::string _section;       /**< Name of the config-file section.   */
-        bool _active;               /**< True if entry is used in session.  */
-        std::string _directory;     /**< The location of file(s), if given. */
-        std::string _basename;      /**< Base name of the file, if given.   */
-        std::string _extension;     /**< The optional extension of files.   */
+        std::string ent_section;       /**< Name of the config-file section.   */
+        bool ent_active;               /**< True if entry is used in session.  */
+        std::string ent_directory;     /**< The location of file(s), if given. */
+        std::string ent_basename;      /**< Base name of the file, if given.   */
+        std::string ent_extension;     /**< The optional extension of files.   */
     };
 
     /**
@@ -145,7 +145,9 @@ private:
      *      -   NSM (Linux): /home/user/NSM Sessions/MySession/seq66v2.nRSIQ
      *      -   Windows:     C:\Users\user\AppData\Local\seq66v2
      *
-     *  Note that "~" is equivalent to the OS-specific $HOME value.
+     *  Note that "~" is equivalent to the OS-specific $HOME value. Also note
+     *  that NSM sends the session directory to the application after it
+     *  starts it.
      *
      *  The user can supply a totally different directory, if desired. For
      *  example, this might be the directory returned by the session manager

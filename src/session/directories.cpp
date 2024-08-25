@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2020-03-22
- * \updates       2024-01-20
+ * \updates       2024-08-10
  * \license       GNU GPLv2 or above
  *
  *
@@ -51,16 +51,41 @@
  *   /home/user/NSM Sessions/RockNRoll/seq66v2.nLKKY/midi (many files)
  *
  *  For brevity, let $HOME represent the configuration home directory.
- *  Then, given a list of
- *  directories::entries structures, then we might have a list of
- *  full paths like the following, for all active entries:
+ *  Then, given a list of directories::entries structures, then we might
+ *  have a list of full paths like the following, for all active entries:
  *
  *      -   $HOME/seq66v2.rc or $HOME/seq66v2/cfg/seq66v2.rc
  *      -   $HOME/seq66v2.usr or $HOME/seq66v2/cfg/seq66v2.usr
  *      -   $HOME/logs/seq66v2.log
  *
+ * Naming conventions:
+ *
+ *  "~"                 The HOME directory of the user, in Linux or Windows
+ *  "$HOME"             HOME directory of the user
+ *  "$home"             The directory holding all session files. It is assumed
+ *                      if a specified directory name is "" or ".".
+ *  "$prefix"           The parent installation location for the application.
+ *
  *  The programmer should adopt a convention for subdirectories and
  *  app-name versus other-name, and stick with it.
+ *
+ * High-level process:
+ *
+ *      -   As early as possible, get the "home" configuration directory:
+ *          -   As set by the application using appinfo's
+ *              set_home_cfg_directory().
+ *          -   As modified via the command-line options.
+ *          -   As sent to the application by the session manager.
+ *          Also get the main section name (usually [Cfg66]) and the
+ *          name of the session file for later use.
+ *
+ * Operations to support:
+ *
+ *      -   Get the value of "home" from the main section of the session file,
+ *          or use the value provided above.
+ *      -   Get the values in the [cfg] section of the .session file.
+ *          -   Append each to $home
+ *          -   Make the directory.
  */
 
 #include "platform_macros.h"            /* PLATFORM_UNIX, etc.              */
@@ -175,12 +200,12 @@ directories::make_file_spec
     bool makedirectory
 )
 {
-    bool result = dentry._active;
+    bool result = dentry.ent_active;
     if (result)
     {
-        std::string directory = dentry._directory;
-        std::string basename = dentry._basename;
-        std::string extension = dentry._extension;
+        std::string directory = dentry.ent_directory;
+        std::string basename = dentry.ent_basename;
+        std::string extension = dentry.ent_extension;
         if (directory.empty())
         {
             directory = m_session_path; // cfg::get_home_cfg_directory();
@@ -192,7 +217,8 @@ directories::make_file_spec
         }
 
         /*
-         * Before we append the file-name, make the directory as desired.
+         * Before we append the file-name, make the directory as desired to
+         * make sure it works.
          */
 
         if (makedirectory)
@@ -204,14 +230,14 @@ directories::make_file_spec
                 basename = cfg::get_app_name();
 
             if (extension.empty())
-                extension = "." + dentry._section;
+                extension = "." + dentry.ent_section;
 
             basename += extension;
 
             std::string filepath =
                 util::filename_concatenate(directory, basename);
 
-            auto p = std::make_pair(dentry._section, filepath);
+            auto p = std::make_pair(dentry.ent_section, filepath);
             auto r = m_file_specs.insert(p);
             result = r.second;
         }

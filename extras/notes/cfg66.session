@@ -6,12 +6,35 @@
 # relocate all other application directories and files to a totally different
 # directory by specifying a full path. Or the caller can specify a single
 # sub-directory name, whose parent directory is ~/.config/seq66v2".
+#
+# Naming conventions:
+#
+#   "~"                 The HOME directory of the user, in Linux or Windows
+#   "$HOME"             HOME directory of the user
+#   "$home"             The directory holding all session files. It is assumed
+#                       if a specified directory name is "" or ".".
+#   "$prefix"           The parent installation location for the application.
+#
+# 'auto-save' sets automatic saving of the running configuration files.
+#
+# 'config-type' indicates the expected format of this INI file.
+#
+# 'quiet' disables showing error prompts at application startup.
+#
+# 'home' is the location of the configuration files for the session. If
+# empty, then $HOME + ".config" + app-name is set (Linux).
+#
+# 'verbose' indicates to show additional information during the run.
+#
+# 'version' indicates the ordinal version of this fiule, useful in upgrading
+# the session file.
 
 [Cfg66]
 
+auto-save = true                            # save 'rc', 'usr'. etc. files
 config-type = "session"                     # session configuration file
 quiet = false                               # disable startup error prompts
-session-path = "/home/user/MidiProjects"    # or "/home/user/.config/seq66v2"
+home = "/home/user/midiprojects/seq66v2"    # "/home/user/.config/seq66v2"
 verbose = false                             # show informational messages
 version = 0                                 # configuration file version
 
@@ -22,124 +45,141 @@ version = 0                                 # configuration file version
 This file is a sample for reference as we build the Cfg66 session management
 scheme.
 
-# 'auto-save-rc' sets automatic saving of the running configuration
-# 'rc' and other files.
+[cfg]
 
-[auto-option-save]
+# Specifies the list of sub-directories needed to be created in the $home
+# directory. Each name should not contain a path. If empty (""), the
+# directory is not created.
 
-auto-save-cfg = true
+audio = "audio"                             # additional data directory
+config = "cfg"                              # default config file storage
+data = "data"                               # default data directory
+logs = "logs"                               # logs and supplemental output
+midi = "midi"                               # additional data directory
 
-# Specifies the location and main configuration file for an application.
+# The section name describes the type of INI file.
 #
-# The section name describes the type of file. It is used for path lookups. It
-# will also be used as the extension if "ext" is blank.
+# 'active' indicates if the INI file is to be read. If not, internal
+# application defaults are used.
 #
-# The possible kinds of values for "directory":
+# 'directory' is the sub-directory of $home where the configuration file
+# should be stored. The possible kinds of values for "directory":
 #
-#   -   Empty (""). The session-path defined above is used.
-#   -   Plain name (e.g. "rc" or "cfg"). The directory name noted above
+#   -   Empty (""). The session-path (home) defined above is used. If all
+#       "directory" settings are empty, the home path can become
+#       cluttered.
+#   -   Plain name (e.g. "rc" or "cfg"). The $home directory name
 #       is appended with "/name" and is used as the configuration directory.
+#       Generally, the same directory as "config" specified above
+#       should be used.  Create a $config variable?
 #   -   Absolute path.  Can place the configuration directory basically
-#       anywhere.
-#   -   Session manager directory.  In this case, the session-path
+#       anywhere. Be careful with this option.
+#   -   Session manager directory.  In this case, the session-path (home)
 #       is specified by the session manager, and all other directories are
 #       relative to that directory.
 #
-# The possible kinds of values for "file-base":
+# 'fiel-base' is the name of the file without the path and the extension.
+# The possible kinds of values for "basename":
 #
-#   -   Empty. The "file-base" is the app-name (no extension).
-#   -   Name. The "file-base" is given as is.  No extension is needed; the
+#   -   Empty. The "basename" is the app-name (no extension).
+#   -   Name. The "basename" is given as is.  No extension is needed; the
 #       "ext" value will be appended anyway.
-
-[cfg]
-
-config = "cfg"                              # default config file storage
-data = "data"                               # default data directory
-midi = "midi"                               # additional data directory
-audio = "audio"                             # additional data directory
-home = ""                                   # needed?
+#
+# Normally the extension ("ext") should be the same as the section name.
+# If empty, there is no extension.
 
 [session]
 
+# Species the name and location (relative to $home) of this session file.
+
 active = true
-directory = "cfg"                           # "rc" or "cfg" if desired
-file-base = "cfg66"                         # $home/cfg/cfg66.sessions
+directory = "cfg"                           # should match [cfg]:config
+basename = "cfg66"                          # $home/cfg/cfg66.sessions
 ext = ".sessions"                           # note the extra 's'
-
-[rc]
-
-active = true
-directory = "cfg"                           # "rc" or "cfg" if desired
-file-base = ""
-ext = ".rc"
 
 [log]
 
+# Species the name and location (relative to $home) of the log file(s).
+
 active = true
 directory = "logs"                          # log files, summaries, etc.
-file-base = ""                              # for main log only
+basename = ""                               # for main log only
 ext = ".log"
 
-# An example from the Seq66 application.  This same file will be present
-# in Seq66v2.
+[rc]
+
+# Species the name and location (relative to $home) of the primary
+# configuration file.
+
+active = true
+directory = "cfg"                           # "rc" or "cfg" if desired
+basename = ""
+ext = ".rc"
 
 [usr]
 
+# Provides the name and location of the "user interface" file.
+# An example from the Seq66 application.  This same file will be present
+# in Seq66v2.
+
 active = true
 directory = ""
-file-base = ""
+basename = ""
 ext = ".usr"
-
-# Provides a flag and play-list file.
 
 [playlist]
 
+# Provides a flag and play-list file.
+
 active = false
 directory = ""
-file-base = ""
+basename = ""
 ext = ".playlist"
-
-# Provides a flag and file-base for note-mapping. Should we call it "[drums]?
 
 [note-mapper]
 
+# Provides a flag and basename for note-mapping. Should we call it "[drums]?
+# Nah, we can use it for reversing scales (for example).
+
 active = false
 directory = ""
-file-base = ""
+basename = ""
 ext = ".drums"
-
-# Provides a flag and a file-base to allow modifying the palette.
 
 [mute-groups]
 
+# Provides an optional mute-group file.
+
 active = false
 directory = ""
-file-base = ""
+basename = ""
 ext = ".mutes"
 
 [midi-control]
 
+# Provides an optional MIDI I/O control file.
+
 active = false
 directory = ""
-file-base = ""
+basename = ""
 ext = ".ctrl"
-
-# Provides a flag and a file-base to allow modifying the palette.
 
 [palette]
 
+# Provides a flag and a basename to allow modifying the palette.
+
 active = false
 directory = ""
-file-base = ""
+basename = ""
 ext = ".palette"
-
-# Provides a flag and a file-base to allow modifying the palette.
 
 [keymap]
 
+# Provides a flag and a basename to allow modifying the keystroke map.
+
 active = false
 directory = ""
-file-base = ""
+basename = ""
 ext = ".keymap"
 
 # End of /home/user/.config/seq66v2/seq66v2.session

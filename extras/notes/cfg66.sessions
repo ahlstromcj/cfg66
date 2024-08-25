@@ -1,4 +1,8 @@
 # Seq66 0.99.10 'sessions' configuration file modified for Cfg66.
+#
+# Not sure this Seq66 option is useful.  Instead of specifying sections, the
+# --session option can specify a session file, as in "--session cfg66" or
+# "--session cfg66.session".
 
 [Seq66]
 
