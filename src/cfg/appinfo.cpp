@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2017-03-12
- * \updates       2024-07-24
+ * \updates       2024-08-26
  * \license       GNU GPLv2 or above
  *
  *  The first part of this file defines a couple of global structure
@@ -125,24 +125,24 @@ app_info ()
  */
 
 appinfo::appinfo () :
-    _app_kind               (appkind::indeterminate),
-    _app_name               ("app"),
-    _app_version            ("0"),
-    _main_cfg_section_name  ("[Cfg66]"),
-    _home_cfg_directory     (),
-    _home_cfg_file          (),
-    _client_name            ("app"),
-    _app_tag                ("app-0"),
-    _arg_0                  (),
-    _package_name           ("NOPACKAGE"),
-    _session_tag            (),
-    _app_icon_name          (),
-    _app_version_text       ("app v. 0"),
-    _api_engine             (),
-    _api_version            (),
-    _gui_version            (),
-    _client_name_short      ("app"),
-    _client_name_tag        ()
+    m_app_kind              (appkind::indeterminate),
+    m_app_name              ("app"),
+    m_app_version           ("0"),
+    m_main_cfg_section_name ("[Cfg66]"),
+    m_home_cfg_directory    (),
+    m_home_cfg_file         (),
+    m_client_name           ("app"),
+    m_app_tag               ("app-0"),
+    m_arg_0                 (),
+    m_package_name          ("NOPACKAGE"),
+    m_session_tag           (),
+    m_app_icon_name         (),
+    m_app_version_text      ("app v. 0"),
+    m_api_engine            (),
+    m_api_version           (),
+    m_gui_version           (),
+    m_client_name_short     ("app"),
+    m_client_name_tag       ()
 {
     // no other code
 }
@@ -172,24 +172,24 @@ appinfo::appinfo
     const std::string & clientnameshort,
     const std::string & clientnametag
 ) :
-    _app_kind               (apptype),
-    _app_name               (appname),
-    _app_version            (appversion),
-    _main_cfg_section_name  (maincfgname),
-    _home_cfg_directory     (homecfgdirectory), // can be empty
-    _home_cfg_file          (homecfgfile),      // can be empty
-    _client_name            (clientname),
-    _app_tag                (apptag),
-    _arg_0                  (arg0),
-    _package_name           (packagename),
-    _session_tag            (sessiontag),
-    _app_icon_name          (appiconname),      // sometimes empty
-    _app_version_text       (appversiontext),   // often reconstructed
-    _api_engine             (apiengine),        // often empty
-    _api_version            (apiversion),       // often empty
-    _gui_version            (guiversion),       // usually filled in later
-    _client_name_short      (clientnameshort),  // usually constructed
-    _client_name_tag        (clientnametag)     // usually constructed
+    m_app_kind              (apptype),
+    m_app_name              (appname),
+    m_app_version           (appversion),
+    m_main_cfg_section_name (maincfgname),
+    m_home_cfg_directory    (homecfgdirectory), // can be empty
+    m_home_cfg_file         (homecfgfile),      // can be empty
+    m_client_name           (clientname),
+    m_app_tag               (apptag),
+    m_arg_0                 (arg0),
+    m_package_name          (packagename),
+    m_session_tag           (sessiontag),
+    m_app_icon_name         (appiconname),      // sometimes empty
+    m_app_version_text      (appversiontext),   // often reconstructed
+    m_api_engine            (apiengine),        // often empty
+    m_api_version           (apiversion),       // often empty
+    m_gui_version           (guiversion),       // usually filled in later
+    m_client_name_short     (clientnameshort),  // usually constructed
+    m_client_name_tag       (clientnametag)     // usually constructed
 {
     // no other code
 }
@@ -197,24 +197,24 @@ appinfo::appinfo
 bool
 appinfo::initialize (const std::string & arg0)
 {
-    std::string cname = _client_name;           /* might have a wart        */
+    std::string cname = m_client_name;           /* might have a wart        */
     if (cname.empty())
-        cname = _app_name;
+        cname = m_app_name;
 
-    set_client_name(_client_name);
-    _arg_0 = arg0;
-    if (_app_version.empty())
-        _app_version = "0.0";
+    set_client_name(m_client_name);
+    m_arg_0 = arg0;
+    if (m_app_version.empty())
+        m_app_version = "0.0";
 
-    if (_api_engine.empty())
-        _api_engine = "N/A";
+    if (m_api_engine.empty())
+        m_api_engine = "N/A";
 
-    if (_app_version_text.empty())
+    if (m_app_version_text.empty())
     {
-        if (! _app_name.empty())
+        if (! m_app_name.empty())
         {
-            _app_version_text = _app_name + " " + _app_version;
-            _app_tag = _app_name + "-" + _app_version;
+            m_app_version_text = m_app_name + " " + m_app_version;
+            m_app_tag = m_app_name + "-" + m_app_version;
         }
     }
     return true;
@@ -235,25 +235,25 @@ initialize_appinfo (const appinfo & source, const std::string & arg0)
 void
 set_home_cfg_directory (const std::string & v)
 {
-    app_info()._home_cfg_directory = v;
+    app_info().m_home_cfg_directory = v;
 }
 
 void
 set_main_cfg_section_name (const std::string & v)
 {
-    app_info()._main_cfg_section_name = v;
+    app_info().m_main_cfg_section_name = v;
 }
 
 void
 set_home_cfg_file (const std::string & v)
 {
-    app_info()._home_cfg_file = v;
+    app_info().m_home_cfg_file = v;
 }
 
 void
 set_gui_version (const std::string & v)
 {
-    app_info()._gui_version = v;
+    app_info().m_gui_version = v;
 }
 
 /**
@@ -263,7 +263,7 @@ set_gui_version (const std::string & v)
 void
 set_app_name (const std::string & aname)
 {
-    app_info()._app_name = aname;
+    app_info().m_app_name = aname;
 }
 
 /**
@@ -273,7 +273,7 @@ set_app_name (const std::string & aname)
 void
 set_app_version (const std::string & version)
 {
-    app_info()._app_version = version;
+    app_info().m_app_version = version;
 }
 
 /**
@@ -295,31 +295,31 @@ set_app_type (const std::string & atype)
     else if (atype == "test")
         temp = appkind::test;
 
-    app_info()._app_kind = temp;
+    app_info().m_app_kind = temp;
 }
 
 void
 set_app_cli (bool iscli)
 {
     if (iscli)
-        app_info()._app_kind = appkind::cli;
+        app_info().m_app_kind = appkind::cli;
     else
-        app_info()._app_kind = appkind::indeterminate;
+        app_info().m_app_kind = appkind::indeterminate;
 }
 
 void
 set_app_headless (bool isheadless)
 {
     if (isheadless)
-        app_info()._app_kind = appkind::headless;
+        app_info().m_app_kind = appkind::headless;
     else
-        app_info()._app_kind = appkind::indeterminate;
+        app_info().m_app_kind = appkind::indeterminate;
 }
 
 void
 set_api_engine (const std::string & aengine)
 {
-    app_info()._api_engine = aengine;
+    app_info().m_api_engine = aengine;
 }
 
 void
@@ -337,33 +337,33 @@ set_app_build_issue (const std::string & abuild_issue)
 void
 set_arg_0 (const std::string & arg)
 {
-    app_info()._arg_0 = arg;
+    app_info().m_arg_0 = arg;
 }
 
 void
 set_client_name (const std::string & cname)
 {
     auto pos = cname.find_first_of("./:");      /* session delimiters       */
-    app_info()._client_name = cname;            /* base name of client      */
-    app_info()._client_name_short = cname;
+    app_info().m_client_name = cname;           /* base name of client      */
+    app_info().m_client_name_short = cname;
     if (pos != std::string::npos)               /* strip off the wart       */
-        app_info()._client_name_short = cname.substr(0, pos);
+        app_info().m_client_name_short = cname.substr(0, pos);
 
-    app_info()._client_name_tag = "[";
-    app_info()._client_name_tag += app_info()._client_name_short;
-    app_info()._client_name_tag += "]";
+    app_info().m_client_name_tag = "[";
+    app_info().m_client_name_tag += app_info().m_client_name_short;
+    app_info().m_client_name_tag += "]";
 }
 
 void
 set_package_name (const std::string & pname)
 {
-    app_info()._package_name = pname;
+    app_info().m_package_name = pname;
 }
 
 void
 set_session_tag (const std::string & sname)
 {
-    app_info()._session_tag = sname;
+    app_info().m_session_tag = sname;
 }
 
 /*------------------------------------------------------------------------
@@ -417,15 +417,15 @@ get_home ()
  *  The home configuration path is the concatenation of:
  *
  *      -   HOME
- *      -   _home_cfg_directory
- *      -   _app_name
+ *      -   m_home_cfg_directory
+ *      -   m_app_name
  */
 
 std::string
 get_home_cfg_directory ()
 {
     std::string result = get_home();
-    if (app_info()._home_cfg_directory.empty())
+    if (app_info().m_home_cfg_directory.empty())
     {
         result = get_home();
         result += s_path_separator;
@@ -434,10 +434,10 @@ get_home_cfg_directory ()
 #elif defined PLATFORM_WINDOWS
         result += "\\AppData\\Local\\";
 #endif
-        result += app_info()._app_name;
+        result += app_info().m_app_name;
     }
     else
-        result = app_info()._home_cfg_directory;
+        result = app_info().m_home_cfg_directory;
 
     return result;
 }
@@ -445,13 +445,13 @@ get_home_cfg_directory ()
 std::string
 get_main_cfg_section_name ()
 {
-    return app_info()._main_cfg_section_name;
+    return app_info().m_main_cfg_section_name;
 }
 
 std::string
 get_home_cfg_file ()
 {
-    return app_info()._home_cfg_file;
+    return app_info().m_home_cfg_file;
 }
 
 std::string
@@ -459,7 +459,7 @@ get_home_cfg_filespec ()
 {
     std::string result = get_home_cfg_directory();
     result += s_path_separator;
-    result += app_info()._home_cfg_file;
+    result += app_info().m_home_cfg_file;
     return result;
 }
 
@@ -472,14 +472,14 @@ get_home_cfg_filespec ()
 const std::string &
 get_app_name ()
 {
-    return app_info()._app_name;
+    return app_info().m_app_name;
 }
 
 std::string
 get_app_type ()
 {
     std::string result;
-    switch (app_info()._app_kind)
+    switch (app_info().m_app_kind)
     {
     case appkind::cli:      result = "cli";         break;
     case appkind::gui:      result = "gui";         break;
@@ -494,13 +494,13 @@ get_app_type ()
 bool
 get_app_cli ()
 {
-    return app_info()._app_kind == appkind::cli;
+    return app_info().m_app_kind == appkind::cli;
 }
 
 bool
 get_app_headless ()
 {
-    return app_info()._app_kind == appkind::headless;
+    return app_info().m_app_kind == appkind::headless;
 }
 
 const std::string &
@@ -518,7 +518,7 @@ get_app_build_issue ()
 const std::string &
 get_arg_0 ()
 {
-    return app_info()._arg_0;
+    return app_info().m_arg_0;
 }
 
 /**
@@ -531,25 +531,25 @@ get_arg_0 ()
 const std::string &
 get_client_name ()
 {
-    return app_info()._client_name;
+    return app_info().m_client_name;
 }
 
 const std::string &
 get_client_name_tag ()
 {
-    return app_info()._client_name_tag;
+    return app_info().m_client_name_tag;
 }
 
 const std::string &
 get_client_short ()
 {
-    return app_info()._client_name_short;
+    return app_info().m_client_name_short;
 }
 
 const std::string &
 get_app_icon_name ()
 {
-    return app_info()._app_icon_name;
+    return app_info().m_app_icon_name;
 }
 
 /**
@@ -630,7 +630,7 @@ get_client_tag (lib66::msglevel el)
 {
     if (el == lib66::msglevel::none)
     {
-        return app_info()._client_name_tag;
+        return app_info().m_client_name_tag;
     }
     else
     {
@@ -656,7 +656,7 @@ get_client_tag (lib66::msglevel el)
 const std::string &
 get_icon_name ()
 {
-    return app_info()._app_icon_name;
+    return app_info().m_app_icon_name;
 }
 
 /**
@@ -667,13 +667,13 @@ get_icon_name ()
 const std::string &
 get_package_name ()
 {
-    return app_info()._package_name;
+    return app_info().m_package_name;
 }
 
 std::string
 get_session_tag (const std::string & refinement)
 {
-    std::string result = app_info()._session_tag;
+    std::string result = app_info().m_session_tag;
     if (! refinement.empty())
     {
         result += " ";
@@ -690,13 +690,13 @@ get_session_tag (const std::string & refinement)
 const std::string &
 get_api_engine ()
 {
-    return app_info()._api_engine;
+    return app_info().m_api_engine;
 }
 
 const std::string &
 get_api_version ()
 {
-    return app_info()._api_version;
+    return app_info().m_api_version;
 }
 
 const std::string &
@@ -707,7 +707,7 @@ get_api_subdirectory ()
     if (s_uninitialized)
     {
         s_uninitialized = false;
-        s_subdirectory = app_info()._client_name_short;
+        s_subdirectory = app_info().m_client_name_short;
         s_subdirectory += "-";
         s_subdirectory += get_api_version();
     }
@@ -717,7 +717,7 @@ get_api_subdirectory ()
 const std::string &
 get_app_version ()
 {
-    return app_info()._app_version;
+    return app_info().m_app_version;
 }
 
 /**
@@ -731,19 +731,19 @@ get_app_version ()
 const std::string &
 get_app_version_text ()
 {
-    return app_info()._app_version_text;
+    return app_info().m_app_version_text;
 }
 
 const std::string &
 get_gui_version ()
 {
-    return app_info()._gui_version;
+    return app_info().m_gui_version;
 }
 
 const std::string &
 get_app_tag ()
 {
-    return app_info()._app_tag;
+    return app_info().m_app_tag;
 }
 
 /**

@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2018-11-24
- * \updates       2024-07-23
+ * \updates       2024-08-26
  * \license       GNU GPLv2 or above
  *
  *    Provides some useful functions for displaying information about the
@@ -69,14 +69,14 @@ public:
      *  Indicates the type of application.
      */
 
-    appkind _app_kind;
+    appkind m_app_kind;
 
     /**
      *  Provides the short name for the application, usually the executable
      *  name (minus the ".exe" in Windows), such as "qcfg66".
      */
 
-    std::string _app_name;
+    std::string m_app_name;
 
     /**
      *  Provides the short and long version information for the application.
@@ -84,7 +84,7 @@ public:
      *  preceded by the app name, as in "qcfg66 0.99.2".
      */
 
-    std::string _app_version;
+    std::string m_app_version;
 
     /**
      *  Holds the name of the main section in an INI file. It
@@ -92,7 +92,7 @@ public:
      *  nor are the options saved.
      */
 
-    std::string _main_cfg_section_name;
+    std::string m_main_cfg_section_name;
 
     /**
      *  The caller normally sets this to an empty string to indicate
@@ -104,7 +104,7 @@ public:
      *  set_home_cfg_directory().
      */
 
-    std::string _home_cfg_directory;
+    std::string m_home_cfg_directory;
 
     /**
      *  Holds the name of the main configuration file, such as "myapp.rc".
@@ -113,7 +113,7 @@ public:
      *  set_home_cfg_file().
      */
 
-    std::string _home_cfg_file;
+    std::string m_home_cfg_file;
 
     /*
      *  The following members are all changed via set_client_name() and
@@ -126,48 +126,48 @@ public:
      *  An example under NSM would be "cfg66.nUKIE".
      */
 
-    std::string _client_name;
+    std::string m_client_name;
 
     /**
      *  Provides the short name of the application plus the version number
      *  of the application. Set it via the build system.
      */
 
-    std::string _app_tag;
+    std::string m_app_tag;
 
     /**
      *  Holds the full path to the executable file for the application.
      */
 
-    std::string _arg_0;
+    std::string m_arg_0;
 
     /**
      *  Provides the name of the package, obtained from the build system.
      *  An example is "Seq66".
      */
 
-    std::string _package_name;
+    std::string m_package_name;
 
     /**
      *  Useful in long error/warning/info messages. For example, as in
      *  a call to file_message(session_tag("path", pathname).
      */
 
-    std::string _session_tag;                  /* shown with an adornment  */
+    std::string m_session_tag;                  /* shown with an adornment  */
 
     /**
      *  Provides the base name of the application icon, such as "qcfg66".
      *  If empty, then there is no application icon.
      */
 
-    std::string _app_icon_name;
+    std::string m_app_icon_name;
 
     /**
-     *  See _app_version above.  If the caller leaves this empty, then it is
+     *  See m_app_version above.  If the caller leaves this empty, then it is
      *  reconstructed.
      */
 
-    std::string _app_version_text;
+    std::string m_app_version_text;
 
     /**
      *  Indicates the API or framework for the main functionality (MIDI, audio,
@@ -175,13 +175,13 @@ public:
      *  application it might be "rtmidi", "rtl66", or "portmidi".
      */
 
-    std::string _api_engine;
+    std::string m_api_engine;
 
     /**
      *  Provides the API version of this library.
      */
 
-    std::string _api_version;
+    std::string m_api_version;
 
     /**
      *  Indicates the GUI version, such as "Qt 6.1" or "Gtkmm 3.0".
@@ -189,7 +189,7 @@ public:
      *  macro in the API header files.
      */
 
-    std::string _gui_version;
+    std::string m_gui_version;
 
     /**
      *  Provides the bare name of an application where it is a client of some
@@ -197,7 +197,7 @@ public:
      *  wart appended to it.
      */
 
-    std::string _client_name_short;
+    std::string m_client_name_short;
 
     /**
      *  Provides the name to show on the console in error/warning/info messages.
@@ -205,7 +205,7 @@ public:
      *  "[cfg66]".
      */
 
-    std::string _client_name_tag;
+    std::string m_client_name_tag;
 
 public:
 

@@ -285,7 +285,10 @@ inimanager::find_options
 {
     return const_cast<options &>
     (
-        static_cast<const inimanager &>(*this).find_options(cfgtype, sectionname)
+        static_cast<const inimanager &>(*this).find_options
+        (
+            cfgtype, sectionname
+        )
     );
 }
 

@@ -42,23 +42,23 @@
 static cfg::appinfo s_application_info
 {
     cfg::appkind::cli,                  // "cli"
-    "manager_test",                     // _app_name (mandatory!)
-    "0.0",                              // _app_version
-    "[Mgr66]",                          // _main_cfg_section_name
-    "",                                 // _home_cfg_directory
-    "mgrtest.bogus",                    // _home_cfg_file
-    "mgrtest.123",                      // _client_name (fake session wart)
-    "",                                 // _app_tag
-    "",                                 // _arg_0
-    "CFG66",                            // _package_name
-    "",                                 // _session_tag
-    "mgricon",                          // _app_icon_name (empty by default)
-    "",                                 // _app_version_text derived
-    "nginx",                            // _api_engine (empty by default)
-    "1.0",                              // _api_version (empty by default)
-    "qt 5.5",                           // _gui_version (bogus here)
-    "",                                 // _client_name_short
-    ""                                  // _client_name_tag
+    "manager_test",                     // m_app_name (mandatory!)
+    "0.0",                              // m_app_version
+    "[Mgr66]",                          // m_main_cfg_section_name
+    "",                                 // m_home_cfg_directory
+    "mgrtest.bogus",                    // m_home_cfg_file
+    "mgrtest.123",                      // m_client_name (fake session wart)
+    "",                                 // m_app_tag
+    "",                                 // m_arg_0
+    "CFG66",                            // m_package_name
+    "",                                 // m_session_tag
+    "mgricon",                          // m_app_icon_name (empty by default)
+    "",                                 // m_app_version_text derived
+    "nginx",                            // m_api_engine (empty by default)
+    "1.0",                              // m_api_version (empty by default)
+    "qt 5.5",                           // m_gui_version (bogus here)
+    "",                                 // m_client_name_short
+    ""                                  // m_client_name_tag
 };
 
 /**

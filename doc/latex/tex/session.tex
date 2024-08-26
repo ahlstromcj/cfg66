@@ -6,7 +6,7 @@
 % \library     Documents
 % \author      Chris Ahlstrom
 % \date        2024-04-16
-% \update      2024-08-08
+% \update      2024-08-25
 % \version     $Revision$
 % \license     $XPC_GPL_LICENSE$
 %
@@ -17,6 +17,101 @@
 \section{Sessions}
 \label{sec:sessions}
 
+\subsection{Session Naming Conventions}
+\label{subsec:session_naming_conventions}
+
+   The \textsl{Cfg66} session support relies heavily on directories.
+   Here are the shorthand names we will use for them; "\$username" is the name
+   of the user account; "\$appname" is the short name of the application;
+   "\$clientname" is "\$appname" with a distinguishing wart (e.g \texttt{-123};
+   "\$app-version" is "\$appname" with the version appended
+   (e.g. \texttt{-0.99}.
+
+   \begin{itemize}
+      \item \texttt{\$prefix}.
+         The base installation directory of the application that uses the
+         \textsl{Cfg66} library.
+         \begin{itemize}
+            \item \textsl{Linux}:
+               \texttt{/usr/} or \texttt{/usr/local}.
+               Some common subdirectories:
+               \begin{itemize}
+                  \item \texttt{bin/}. 
+                     Contains the application's executable file.
+                  \item \texttt{include/\$app-version/}.
+                     Contains the directory hierarchy of the application,
+                     to support building the application from source code.
+                  \item \texttt{lib/\$app-version/}.
+                     Contains the libraries needed for the application.
+                  \item \texttt{man/}. 
+                     Contains the application's man pages.
+                  \item \texttt{doc/\$app-version/}. 
+                     Contains the application's documentation, which could
+                     include HTML text, PDF files, tutorial files, and more.
+                  \item \texttt{share/\$app-version/}. 
+                     Contains stock data for the application, including
+                     icons, pixmaps, sample data files, and sample
+                     configuration files.
+               \end{itemize}
+            \item \textsl{BSD}:
+               \texttt{/usr/local}.
+                  \textsl{FreeBSD} reserves \texttt{/usr/} for system
+                  files. Otherwise, the layout is about the same as for
+                  \textsl{Linux}.
+            \item \textsl{Windows}:
+               The layout for \textsl{Windows} is notably different.
+               \texttt{C:/Program Files/}. 
+               The user can choose a disk drive other than \texttt{C:}.
+               We currently aim to support only 64-bit applications.
+               Here are the common directories as set up by \textsl{Cfg66}.
+               \begin{itemize}
+                  \item \texttt{C:/Program Files/\$appname/}. 
+                     We might consider installing the executable into a
+                     versioned subdirectory of this one.
+                  \item \texttt{C:/Program Files/\$appname/data}. 
+                     Contains all the installed items that are in
+                     \texttt{share/} in UNIXen.
+               \end{itemize}
+         \end{itemize}
+      \item \texttt{\textasciitilde}.
+         The HOME directory of the user as supported in various operating
+         systems.
+         An equivalent symbol is \texttt{\$HOME}.
+         \begin{itemize}
+            \item \textsl{Linux}:
+               \texttt{/home/username/}
+            \item \textsl{BSD}:
+               \texttt{/home/username/}
+            \item \textsl{Windows}:
+               \texttt{C:/Users/username/}
+         \end{itemize}
+      \item \texttt{\$home}.
+         The directory of the configuration files as supported by default in
+         \textsl{Cfg66}.
+         It can be modified by a command-line option as described in the
+         next section.
+         \begin{itemize}
+            \item \textsl{Linux}:
+               \texttt{/home/username/.config/\$appname}.
+            \item \textsl{BSD}:
+               \texttt{/home/username/.config/\$appname}.
+            \item \textsl{Windows}:
+               \texttt{C:/Users/\$username/AppData/Local/\$appname}.
+         \end{itemize}
+      \item \texttt{\$directory}.
+         This subdirectory can be specified in the \texttt{.session} file.
+         Note that session files are \textsl{always} stored in
+         \textsl{\$home}, even if \texttt{\$home} is modified by a
+         command-line option.
+         If \texttt{\$directory} is not empty,
+         it replaces \texttt{\$home} as the home-directory of
+         the application while it is running.
+         It can have a full path if desired.
+         If it has no path, then it is a subdirectory of \texttt{\$home}.
+   \end{itemize}
+
+   Confused? I sure am!
+
 \subsection{Session Description}
 \label{subsec:session_description}
 
@@ -25,38 +120,42 @@
    \textsl{session directory}, also known as a
    \textsl{home directory}.
    As an example, home directories for \textsl{Seq66} running on its
-   own or inside an NSM session:
+   own or inside an \textsl{NSM} (\cite{nsm}) session:
 
    \begin{verbatim}
       /home/user/.config/seq66
       /home/user/NSM Sessions/Seq66/seq66.nGJDW
    \end{verbatim}
 
-   Note that the \texttt{seq66.nGJDW} directory is created by NSM.
-   \textsl{Seq66} does not create a configuration directory by default, 
+   Note that the \texttt{seq66.nGJDW} directory is created by \texttt{NSM}.
+   \textsl{Cfg66} does not create a configuration directory by default, 
    but it has some options:
 
    \begin{itemize}
-      \item \texttt{--home}.
-         This option changes the "home" directory or appends a directory name
-         to the default "home".
-      \item \texttt{--session}.
-         This option selects a setup name from \texttt{sessions.rc}.
-         Each setup has a named section (e.g. \texttt[normal]) that specifies
-         the "home" directory, the client name, base-name for the
-         INI configuration files, and the name of a log file.
-         This file is only read, never written.
-         Since value names (e.g. "home") are duplicated, special processing
-         is needed.
+      \item \texttt{--home \textless path \textgreater}.
+         This option changes the "home" directory if the argument includes 
+         a path, or appends a directory name to the default "home" if it
+         does not include a path.
+         This changes the directory where the \texttt{.session} files are
+         found.
+         If \texttt{NSM} is running (as shown above), that directory
+         becomes \texttt{\$home}.
+      \item \texttt{--session \textless name[.session] \textgreater}.
+         This option selects a session file from \texttt{\$home}.
+         The default session file \texttt{\$appname.session}.
+         This option is \textsl{not} to be used if \texttt{NSM} is running.
    \end{itemize}
 
    The "home" directory could have subdirectories, such as
    \texttt{config}, \texttt{audio}, \texttt{midi}, \texttt{data}, etc.
+   These are application specific, and can be listed in the 
+   \texttt{\$appname.session} file.
 
-   Currently \textsl{Cfg66} provides a \texttt{.session} file that lists
+   \textsl{Cfg66} supports a \texttt{.session} file that lists
    the names, locations, and activity of the various other INI files.
    With that setup, we would need a session file for each session.
-   With NSM the session setup is directory-based.
+   With \texttt{NSM} the session setup is determined by
+   \texttt{NSM}, and the session file is always \texttt{\$appname.session}.
    Use cases to support:
 
    \begin{itemize}
@@ -67,8 +166,8 @@
          either \texttt{~/home/user/.config/seq66/config}.
       \item \textbf{Session selection}.
          All session information resides in a known file in the home
-         directory, \texttt{sessions.rc}, and a selection of the session
-         is made at startup.
+         directory, \texttt{\$appname.session}, but a selection of the session
+         file can be made at startup.
       \item \textbf{NSM session}.
          There is a session manager that communicates the session directory
          to the application.
@@ -205,6 +304,30 @@
    default options.
 
    Note that there are currently a number of "To Dos" in this class.
+
+\section{Session Walkthroughs}
+\label{sec:session_walkthroughs}
+
+	While the session layouts that can be supported are many, we will
+	walk through only the most common (i.e. tested) scenarios.
+
+   The first thing to do when the application starts is determine
+   the \texttt{\$home} directory.
+
+   The first step is to provide a \texttt{cfg::appinfo} structure
+   that defines at least the app-name.
+   If desired, one can also provide non-empty string values for
+   the app-version, config-section name, home directory and home
+   configuration file, as well as other items. If empty, defaults
+   are used or assembled.
+
+   The next step (optional) is to call \texttt{user\_home(appfolder)}
+   to change the folder name.
+
+   TODO.
+   TODO.
+   TODO.
+   TODO.
 
 %-------------------------------------------------------------------------------
 % vim: ts=3 sw=3 et ft=tex

@@ -9,11 +9,7 @@
 #
 # Naming conventions:
 #
-#   "~"                 The HOME directory of the user, in Linux or Windows
-#   "$HOME"             HOME directory of the user
-#   "$home"             The directory holding all session files. It is assumed
-#                       if a specified directory name is "" or ".".
-#   "$prefix"           The parent installation location for the application.
+#   See the "Sessions" section of the PDF user manual.
 #
 # 'auto-save' sets automatic saving of the running configuration files.
 #
@@ -21,8 +17,8 @@
 #
 # 'quiet' disables showing error prompts at application startup.
 #
-# 'home' is the location of the configuration files for the session. If
-# empty, then $HOME + ".config" + app-name is set (Linux).
+# 'directory' is the location of the configuration files for the session. If
+# empty, then $home is used.
 #
 # 'verbose' indicates to show additional information during the run.
 #
@@ -34,7 +30,7 @@
 auto-save = true                            # save 'rc', 'usr'. etc. files
 config-type = "session"                     # session configuration file
 quiet = false                               # disable startup error prompts
-home = "/home/user/midiprojects/seq66v2"    # "/home/user/.config/seq66v2"
+directory = "/home/user/projects/seq66v2"   # "/home/user/.config/seq66v2"
 verbose = false                             # show informational messages
 version = 0                                 # configuration file version
 
@@ -49,7 +45,8 @@ scheme.
 
 # Specifies the list of sub-directories needed to be created in the $home
 # directory. Each name should not contain a path. If empty (""), the
-# directory is not created.
+# directory is not created. It is recommended to separate configuration files,
+# log files, and data files.
 
 audio = "audio"                             # additional data directory
 config = "cfg"                              # default config file storage
@@ -78,7 +75,7 @@ midi = "midi"                               # additional data directory
 #       is specified by the session manager, and all other directories are
 #       relative to that directory.
 #
-# 'fiel-base' is the name of the file without the path and the extension.
+# 'basename' is the name of the file without the path and the extension.
 # The possible kinds of values for "basename":
 #
 #   -   Empty. The "basename" is the app-name (no extension).
