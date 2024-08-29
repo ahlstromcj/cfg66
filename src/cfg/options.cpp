@@ -91,6 +91,12 @@
  *              xyz-0 = "item specification"
  *              xyz-1 = ...
  *
+ *          Alternate:
+ *
+ *              2                       # number of ports
+ *              0  1   "[0] 0:1 system:ALSA Announce"
+ *              1  0   "[1] 14:0 Midi Through Port-0"
+ *
  *          CLI:
  *
  *              --xyz-N="itemspec", where N is 0 on up.

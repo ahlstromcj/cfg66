@@ -57,11 +57,8 @@
  *
  *      inimanager::find_options_spec(cfgtype, sectionname, optionname)
  *
- * TODO:
- *
  *  Then we want a parser that, unlike cli::parser, can contain multiple
- *  cfg::options objects.
- *
+ *  cfg::options objects: cli::multiparser.
  */
 
 #include "cfg/inimanager.hpp"           /* cfg::inimanager class            */

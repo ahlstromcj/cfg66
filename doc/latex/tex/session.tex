@@ -311,20 +311,42 @@
 	While the session layouts that can be supported are many, we will
 	walk through only the most common (i.e. tested) scenarios.
 
-   The first thing to do when the application starts is determine
-   the \texttt{\$home} directory.
+   \begin{enumber}
+      \item Determine the \texttt{\$home} directory.
+      \begin{enumber}
+         \item Provide a \texttt{cfg::appinfo} structure
+            that defines at least the app-name.  One can also provide
+            non-empty string values for app-version, config-section name,
+            home directory and home configuration file, etc. If empty,
+            defaults are used or assembled.
+         \item Optionally, one can call \texttt{user\_home(appfolder)}
+            to change the folder name at run-time.
+         \item Another option is to use the \texttt{--home path} option
+            on the command-line.
+         \item If a session manager is running, use the path that it
+            provides.
+      \end{enumber}
+      \item Determine the session file.
+         By default this is \texttt{\$appname.session} in the \texttt{\$home}
+         directory. It can be changed only with the \texttt{--session}
+         command-line option.
+      \item Determine the session \texttt{\$home} directory.
+         By default this is the same as \texttt{\$home}.
+      \item Get the list of application sub-directories (for data and
+         other files) from the session file.
+         Make sure each directory is created or already in existence.
+   \end{enumber}
 
-   The first step is to provide a \texttt{cfg::appinfo} structure
-   that defines at least the app-name.
-   If desired, one can also provide non-empty string values for
-   the app-version, config-section name, home directory and home
-   configuration file, as well as other items. If empty, defaults
-   are used or assembled.
-
-   The next step (optional) is to call \texttt{user\_home(appfolder)}
-   to change the folder name.
+   Note that \texttt{\$home} can be set in the beginning via the CLI or
+   function call, but with a session manager it cannot be determined until
+   after a connection is made.
+   Therefore, the \texttt{manager::run()} override must start with a call to
+   \texttt{set\_home()}.
 
    TODO.
+
+   (We need a special inifile class to process a .session file.
+
    TODO.
    TODO.
    TODO.

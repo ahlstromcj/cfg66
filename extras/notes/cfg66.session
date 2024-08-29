@@ -17,8 +17,8 @@
 #
 # 'quiet' disables showing error prompts at application startup.
 #
-# 'directory' is the location of the configuration files for the session. If
-# empty, then $home is used.
+# 'home' is the location of the configuration files for the session. If
+# empty, then the default application $home is used.
 #
 # 'verbose' indicates to show additional information during the run.
 #
@@ -30,7 +30,7 @@
 auto-save = true                            # save 'rc', 'usr'. etc. files
 config-type = "session"                     # session configuration file
 quiet = false                               # disable startup error prompts
-directory = "/home/user/projects/seq66v2"   # "/home/user/.config/seq66v2"
+home = "$home"                              # "/home/user/.config/seq66v2"
 verbose = false                             # show informational messages
 version = 0                                 # configuration file version
 
@@ -43,16 +43,31 @@ scheme.
 
 [cfg]
 
-# Specifies the list of sub-directories needed to be created in the $home
-# directory. Each name should not contain a path. If empty (""), the
-# directory is not created. It is recommended to separate configuration files,
-# log files, and data files.
+# Specifies the list of sub-configuration sections that denote files needed
+# in the $home directory. Each name should not contain a path. If empty (""),
+# the directory is not created. It is recommended to separate configuration
+# files, log files, and data files.
 
-audio = "audio"                             # additional data directory
-config = "cfg"                              # default config file storage
-data = "data"                               # default data directory
-logs = "logs"                               # logs and supplemental output
-midi = "midi"                               # additional data directory
+count = 8
+cfg-0 = "session"
+cfg-1 = "log"
+cfg-2 = "rc"
+cfg-3 = "usr"
+cfg-4 = "playlist"
+cfg-5 = "note-mapper"
+cfg-6 = "mute-groups"
+cfg-7 = "midi-control"
+
+[data]
+
+# Specifies additional directories to be created. The application
+# itself (not the Cfg66 library) is responsible for populating
+# them.
+
+count = 3
+data-0 = "audio"                            # additional data directory
+data-1 = "data"                             # generic data directory
+data-2 = "midi"                             # additional data directory
 
 # The section name describes the type of INI file.
 #
@@ -90,9 +105,9 @@ midi = "midi"                               # additional data directory
 # Species the name and location (relative to $home) of this session file.
 
 active = true
-directory = "cfg"                           # should match [cfg]:config
+directory = "cfg"                           # 
 basename = "cfg66"                          # $home/cfg/cfg66.sessions
-ext = ".sessions"                           # note the extra 's'
+ext = ".session"                            # always this extension
 
 [log]
 
@@ -120,7 +135,7 @@ ext = ".rc"
 # in Seq66v2.
 
 active = true
-directory = ""
+directory = "cfg"
 basename = ""
 ext = ".usr"
 

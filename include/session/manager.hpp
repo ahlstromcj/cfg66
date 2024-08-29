@@ -28,7 +28,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2020-05-30
- * \updates       2024-06-17
+ * \updates       2024-08-27
  * \license       GNU GPLv2 or above
  *
  *  This class provides a process for starting, running, restarting, and
@@ -275,23 +275,33 @@ public:
     virtual bool create_session (int argc = 0, char * argv [] = nullptr);
     virtual bool close_session (std::string & msg, bool ok = true);
     virtual bool save_session (std::string & msg, bool ok = true);
+    virtual bool create_manager (int argc, char * argv []);
+    virtual bool settings (int argc, char * argv []);
+
+    /*
+     * Pure virtual functions.
+     */
+
+    virtual bool run () // = 0;
+    {
+        return false;
+    }
+
+    virtual bool set_home (const std::string & homepath) // = 0;
+    {
+        return false
+    }
+
     virtual bool create_project
     (
         int argc, char * argv [],
         const std::string & path
-    ) // ;  // TODO = 0;
+    ) // = 0;
     {
         (void) argc;
         (void) argv;
         (void) path;
         return false;
-    }
-    virtual bool create_manager (int argc, char * argv []);
-    virtual bool settings (int argc, char * argv []);
-
-    virtual bool run () // = 0;
-    {
-        return false;   // TODO
     }
 
     virtual void show_message
