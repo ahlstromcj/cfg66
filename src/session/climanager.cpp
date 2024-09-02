@@ -25,17 +25,20 @@
  * \library       climanager application
  * \author        Chris Ahlstrom
  * \date          2020-08-31
- * \updates       2024-01-24
+ * \updates       2024-09-02
  * \license       GNU GPLv2 or above
  *
  *  This object also works if there is no session manager in the build.  It
  *  handles non-session startup as well.
  */
 
-#include "xpc/daemonize.hpp"            /* xpc::session_setup(), _close()   */
-#include "xpc/timing.hpp"               /* xpc::millisleep()                */
+// #include "xpc/daemonize.hpp"         /* xpc::session_setup(), _close()   */
+// #include "xpc/timing.hpp"            /* xpc::millisleep()                */
+
+#include "cfg/appinfo.hpp"              /* cfg::get_session_tag()           */
 #include "session/climanager.hpp"       /* session::climanager class        */
-#include "util/strfunctions.hpp"        /* util::contains()                 */
+// #include "util/strfunctions.hpp"     /* util::contains()                 */
+#include "util/msgfunctions.hpp"        /* util::file_message() etc.        */
 
 namespace session
 {
@@ -46,10 +49,16 @@ namespace session
  *  configuration, well after this constructor.
  */
 
-climanager::climanager (const std::string & caps) :
-    manager             (caps),
+climanager::climanager
+(
+    directories & fileentries,
+    cfg::inimanager & inimgr,
+    const std::string & caps
+) :
+    manager             (fileentries, caps),
+    m_multi_parser      (inimgr),
     m_session_active    (false),
-    m_poll_period_ms    (3 * usr().window_redraw_rate())    /* in qsmainwnd */
+    m_poll_period_ms    (3 * 45)    // usr().window_redraw_rate()
 {
     // no code
 }
@@ -130,7 +139,7 @@ climanager::close_session (std::string & msg, bool ok)      // MAKE VIRTUAL NSM
 bool
 climanager::save_session (std::string & msg, bool ok)
 {
-    bool result = not_nullptr(perf());
+    bool result = ok; // not_nullptr(perf());
     if (ok)
         msg.clear();
 
@@ -146,10 +155,10 @@ climanager::save_session (std::string & msg, bool ok)
              */
 
             if (! session_active())
-                show_message(session_tag(), msg);
+                show_message(cfg::get_session_tag(), msg);
         }
         else
-            show_error(session_tag(), msg);
+            show_error(cfg::get_session_tag(), msg);
     }
     return result;
 }
@@ -162,21 +171,20 @@ climanager::save_session (std::string & msg, bool ok)
 bool
 climanager::run ()
 {
-    bool result = false;
-    session_setup();
-    while (! session_close())
+    bool result = setup_session();          /* daemonize: session_setup()   */
+    std::string msg;
+    while (! close_session(msg))            /* daemonize: session_close()   */
     {
         result = true;
-        if (session_save())
+        if (manager::save_session())        /* daemonize: session_save()    */
         {
-            std::string msg;
             result = save_session(msg, true);
             if (! result)
             {
-                file_error(msg, "CLI");
+                util::file_error(msg, "CLI");
             }
         }
-        millisleep(m_poll_period_ms);
+        // millisleep(m_poll_period_ms);
     }
     return true;
 }
@@ -231,9 +239,9 @@ climanager::create_project
     {
         std::string cfgpath;
         std::string midipath;
-        result = make_path_names(path, cfgpath, midipath);
+        result = make_path_names(path, cfgpath);    //, midipath);
         if (result)
-            result = create_configuration(argc, argv, path, cfgpath, midipath);
+            result = create_configuration(argc, argv, path, cfgpath); //, midipath);
     }
     return result;
 }
@@ -241,33 +249,52 @@ climanager::create_project
 void
 climanager::session_manager_name (const std::string & mgrname)
 {
-    manager::session_manager_name(mgrname);
+    // session_manager_name(mgrname);
     if (! mgrname.empty())
-        file_message(session_tag(), mgrname);
+        util::file_message(cfg::get_session_tag(), mgrname);
 }
 
 void
 climanager::session_manager_path (const std::string & pathname)
 {
-    manager::session_manager_path(pathname);
+    // session_manager_path(pathname);
     if (! pathname.empty())
-        file_message(session_tag("path"), pathname);
+        util::file_message(cfg::get_session_tag("path"), pathname);
 }
 
 void
 climanager::session_display_name (const std::string & dispname)
 {
-    manager::session_display_name(dispname);
+    // session_display_name(dispname);
     if (! dispname.empty())
-        file_message(session_tag("name"), dispname);
+        util::file_message(cfg::get_session_tag("name"), dispname);
 }
 
 void
 climanager::session_client_id (const std::string & clid)
 {
-    manager::session_client_id(clid);
+    // session_client_id(clid);
     if (! clid.empty())
-        file_message(session_tag("client ID"), clid);
+        util::file_message(cfg::get_session_tag("client ID"), clid);
+}
+
+bool
+climanager::add_inisections (cfg::inisections::specification & op)
+{
+    return multi_parser().ini_manager().add_inisections(op);
+}
+
+bool
+climanager::add_inisections (cfg::inimanager::sections_specs & ops)
+{
+    bool result = true;
+    for (auto & secptr : ops)
+    {
+        result = add_inisections(*secptr);
+        if (! result)
+            break;
+    }
+    return result;
 }
 
 /**

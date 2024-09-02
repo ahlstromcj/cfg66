@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2020-03-22
- * \updates       2024-07-15
+ * \updates       2024-08-31
  * \license       GNU GPLv2 or above
  *
  *  Note that this module is part of the libcfg66 library, not the libsessions
@@ -123,7 +123,6 @@ manager::manager () :
 
 manager::manager
 (
-    const cfg::options & optset,
     directories & fileentries,
     const std::string & cfgname,
     const std::string & comtext,
@@ -135,7 +134,6 @@ manager::manager
     (
         fileentries, cfgname, comtext, version, uselogfile
     ),
-    m_parse_mgr             (optset.option_pairs()),
     m_capabilities          (caps),
     m_manager_name          (),         // TODO
     m_manager_path          (),         // TODO

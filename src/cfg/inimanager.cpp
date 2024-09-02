@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-07-28
+ * \updates       2024-09-01
  * \license       See above.
  *
  *  In an application, we want to access options via the triplet of
@@ -170,6 +170,19 @@ inimanager::add_inisections (inisections::specification & spec)
         }
         else
             util::error_message("Unable to insert sections", cfgtype);
+    }
+    return result;
+}
+
+bool
+inimanager::add_inisections (inimanager::sections_specs & ops)
+{
+    bool result = true;
+    for (auto & secptr : ops)
+    {
+        result = add_inisections(*secptr);
+        if (! result)
+            break;
     }
     return result;
 }

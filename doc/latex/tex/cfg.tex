@@ -6,7 +6,7 @@
 % \library     Documents
 % \author      Chris Ahlstrom
 % \date        2024-04-16
-% \update      2024-08-04
+% \update      2024-08-30
 % \version     $Revision$
 % \license     $XPC_GPL_LICENSE$
 %
@@ -321,8 +321,8 @@
    \texttt{cfg::inimanager} is meant to manage multiple
    \texttt{cfg::inisections} objects.
    Each \texttt{cfg::inisections} holds multiple
-   \texttt{cfg::inisection} objects, and represent the
-   setting in an \texttt{cfg::inifile}.
+   \texttt{cfg::inisection} objects, and represents the
+   settings in an \texttt{cfg::inifile}.
    Each INI file is associated with a unique configuration file type,
    such as "rc" or "session", and a section name,
 
@@ -387,7 +387,6 @@
    The last specification collects all of the others and adds directory and
    descriptions.  Also included are all the specifications in the
    file \texttt{tests/rc\_spec.hpp}, which we will not show here.
-
 
    The first part of the help text shows the "global" options, which consist
    of internal stock options plus some additional test options
@@ -515,6 +514,11 @@
 
    The output in \texttt{test.log} and \texttt{ini-out.rc}
    should match up well with \texttt{tests/data/ini\_set\_test.rc}.
+
+   \textbf{Note}: The \texttt{cfg::inifile} objects are not dealt with
+   directory by \texttt{cfg::inimanager}. They are instantiated by the
+   test application. The \texttt{session::manager} class will provide
+   access to the functions that read/write INI files.
 
 \subsection{cfg::inisection}
 \label{subsec:cfg_namespace_inisection}

@@ -28,7 +28,7 @@
  * \library       climanager application
  * \author        Chris Ahlstrom
  * \date          2020-08-31
- * \updates       2024-01-24
+ * \updates       2024-09-02
  * \license       GNU GPLv2 or above
  *
  *  Provides a base class that can be used to manage the command-line version
@@ -37,10 +37,14 @@
 
 #include <memory>                       /* std::unique_ptr, shared_ptr<>    */
 
-#include "session/manager.hpp"          /* session::manager                 */
+#include "cfg/inimanager.hpp"           /* cfg::inimanager class            */
+#include "cli/multiparser.hpp"          /* cli::multiparser class           */
+#include "session/manager.hpp"          /* session::manager class           */
 
 namespace session
 {
+
+static const std::string c_cli_nsm_capabilities{};
 
 /**
  *  Provides command-line and user-interface support for session management.
@@ -54,7 +58,14 @@ class climanager : public manager
 private:
 
     /**
-     *
+     *  Holds a parser capable of parsing CLI options that apply to multiple
+     *  INI files.
+     */
+
+    cli::multiparser m_multi_parser;
+
+    /**
+     * TBD
      */
 
     bool m_session_active;
@@ -67,8 +78,23 @@ private:
 
 public:
 
-    climanager (const std::string & caps = c_cli_nsm_capabilities);
+    climanager
+    (
+        directories & fileentries,
+        cfg::inimanager & inimgr,
+        const std::string & caps = c_cli_nsm_capabilities
+    );
     virtual ~climanager ();
+
+    cli::multiparser & multi_parser ()
+    {
+        return m_multi_parser;
+    }
+
+    const cli::multiparser & multi_parser () const
+    {
+        return m_multi_parser;
+    }
 
     bool session_active () const
     {
@@ -93,10 +119,16 @@ public:
         const std::string & msg
     ) const override;
     virtual bool run () override;
-    virtual void session_manager_name (const std::string & mgrname) override;
-    virtual void session_manager_path (const std::string & pathname) override;
-    virtual void session_display_name (const std::string & dispname) override;
-    virtual void session_client_id (const std::string & clid) override;
+    virtual bool set_home (const std::string & homepath) override;
+
+    virtual bool add_inisections (cfg::inisections::specification & op) override;
+
+    bool add_inisections (cfg::inimanager::sections_specs & ops);
+
+    virtual void session_manager_name (const std::string & mgrname); // override;
+    virtual void session_manager_path (const std::string & pathname); // override;
+    virtual void session_display_name (const std::string & dispname); // override;
+    virtual void session_client_id (const std::string & clid); // override;
 
 protected:
 
@@ -107,11 +139,10 @@ protected:
 
 private:
 
-    bool read_configuration
+    virtual bool read_configuration
     (
         int argc, char * argv [],
-        const std::string & cfgfilepath,
-        const std::string & midifilepath
+        const std::string & cfgfilepath
     );
     bool detect_session (std::string & url);
 

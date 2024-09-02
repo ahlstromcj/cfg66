@@ -27,7 +27,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-23
- * \updates       2024-07-15
+ * \updates       2024-09-02
  * \license       See above.
  *
  *  This class provides a way to look up command-line options specified by
@@ -162,6 +162,11 @@ public:
         return m_cli_mappings;
     }
 
+    cfg::inimanager & ini_manager ()
+    {
+        return m_ini_manager;
+    }
+
     const cfg::inimanager & ini_manager () const
     {
         return m_ini_manager;
@@ -182,11 +187,6 @@ private:
     names & cli_mappings ()
     {
         return m_cli_mappings;
-    }
-
-    cfg::inimanager & ini_manager ()
-    {
-        return m_ini_manager;
     }
 
 };          // class multiparser

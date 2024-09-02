@@ -46,11 +46,6 @@
 #include "util/msgfunctions.hpp"        /* util::error_message()            */
 #endif
 
-/*
- * Turn on to see a problem with copying an inisection::specification.
- * See this macro in the file rc_spec.hpp.
- */
-
 #include "rc_spec.hpp"                  /* chunk of data for an 'rc' file   */
 #include "small_spec.hpp"               /* small for easier debugging       */
 #include "session_spec.hpp"             /* for evaluation of this method    */

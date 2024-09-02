@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-07-17
+ * \updates       2024-09-01
  * \license       See above.
  *  section.
  *
@@ -77,6 +77,13 @@ public:
      */
 
     using sections = std::map<std::string, inisections>;
+
+    /**
+     *  A convenience structure of pointers for adding inisections data in one
+     *  call.
+     */
+
+    using sections_specs = std::vector<inisections::specification *>;
 
 private:
 
@@ -138,7 +145,13 @@ public:
         return m_sections_map;
     }
 
+    /*
+     * Adds cfg::inisections (a list of std::ref items) for a
+     * set of data supporting a single INI file.
+     */
+
     bool add_inisections (inisections::specification & op);
+    bool add_inisections (inimanager::sections_specs & ops);
 
     /*
      *  These will return a dummy (empty inisections) reference if not found.

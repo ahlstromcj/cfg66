@@ -19,12 +19,12 @@
 /**
  * \file          manager_test.cpp
  *
- *      A test-file for the session::manager class.
+ *      A test-file for the session::climanager class.
  *
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-01-26
- * \updates       2024-07-08
+ * \updates       2024-09-01
  * \license       See above.
  *
  */
@@ -33,7 +33,12 @@
 #include <iostream>                     /* std::cout                        */
 
 #include "cfg/appinfo.hpp"              /* cfg::appinfo functions           */
-#include "session/manager.hpp"          /* session::manager class           */
+#include "cfg/inimanager.hpp"           /* cfg::inimanager class            */
+#include "session/climanager.hpp"       /* session::climanager class        */
+
+#include "rc_spec.hpp"                  /* chunk of data for an 'rc' file   */
+#include "small_spec.hpp"               /* small for easier debugging       */
+#include "session_spec.hpp"             /* for evaluation of this method    */
 
 /**
  *  App Info
@@ -62,7 +67,18 @@ static cfg::appinfo s_application_info
 };
 
 /**
- *  Test manager.
+ *  Consolidate the inisections::specifications into a vector of pointers.
+ */
+
+static cfg::inimanager::sections_specs s_sections_data
+{
+    &cfg::session_data,
+    &cfg::rc_data,
+    &cfg::small_data
+};
+
+/**
+ *  Test climanager.
  */
 
 /*
@@ -71,7 +87,7 @@ static cfg::appinfo s_application_info
 
 static const std::string s_help_intro
 {
-    "This test program illustrates/tests the session::manager class.\n"
+    "This test program illustrates/tests the session::climanager class.\n"
 };
 
 /*
@@ -81,8 +97,8 @@ static const std::string s_help_intro
 static bool
 simple_smoke_test ()
 {
-    // session::manager appmgr;    // (argc, argv);  TODO TODO
-    std::cerr << "session::manager C++ test not yet ready" << std::endl;
+    // session::climanager appmgr;    // (argc, argv);  TODO TODO
+    std::cerr << "session::climanager C++ test not yet ready" << std::endl;
     return false;
 }
 
@@ -100,9 +116,9 @@ main (int /* argc */ , char * argv [])
         success = simple_smoke_test();
         std::cout << cfg::get_build_details() << std::endl;
         if (success)
-            std::cout << "session::manager C++ test succeeded" << std::endl;
+            std::cout << "session::climanager C++ test succeeded" << std::endl;
         else
-            std::cout << "session::manager C++ test failed" << std::endl;
+            std::cout << "session::climanager C++ test failed" << std::endl;
     }
     return rcode;
 }

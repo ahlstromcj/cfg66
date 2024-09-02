@@ -28,7 +28,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2020-05-30
- * \updates       2024-08-27
+ * \updates       2024-09-02
  * \license       GNU GPLv2 or above
  *
  *  This class provides a process for starting, running, restarting, and
@@ -37,7 +37,7 @@
 
 #include <memory>                       /* std::shared_ptr<>, unique_ptr<>  */
 
-#include "cli/parser.hpp"               /* cli::parser class                */
+#include "cfg/inisections.hpp"          /* cfg::inisections class and kids  */
 #include "session/configuration.hpp"    /* session::configuration basics    */
 #include "session/directories.hpp"      /* session::directories, a helper   */
 
@@ -65,12 +65,6 @@ private:
      */
 
     configuration m_session_config;
-
-    /**
-     *  Provides access to the command-line parser.
-     */
-
-    cli::parser m_parse_mgr;
 
     /**
      *  Holds the capabilities string (if applicable) for the application
@@ -150,13 +144,12 @@ public:
     manager ();
     manager
     (
-        const cfg::options & optset,
         directories & fileentries,
         const std::string & cfgname = "",
         const std::string & comtext = "",
-        const std::string & caps = "",
-        int version = 0,
-        bool uselogfile = false
+        const std::string & caps    = "",
+        int version                 = 0,
+        bool uselogfile             = false
     );
     manager (manager &&) = delete;
     manager (const manager &) = default;                // delete;
@@ -278,31 +271,31 @@ public:
     virtual bool create_manager (int argc, char * argv []);
     virtual bool settings (int argc, char * argv []);
 
+    virtual bool setup_session ()
+    {
+        return true;
+    }
+
+    virtual bool save_session ()
+    {
+        return true;
+    }
+
     /*
      * Pure virtual functions.
+     *
+     * We might need to add an array of inisections::specifications as
+     * a parameter for run().
      */
 
-    virtual bool run () // = 0;
-    {
-        return false;
-    }
-
-    virtual bool set_home (const std::string & homepath) // = 0;
-    {
-        return false
-    }
-
+    virtual bool run () = 0;
+    virtual bool set_home (const std::string & homepath) = 0;
     virtual bool create_project
     (
         int argc, char * argv [],
         const std::string & path
-    ) // = 0;
-    {
-        (void) argc;
-        (void) argv;
-        (void) path;
-        return false;
-    }
+    ) = 0;
+    virtual bool add_inisections (cfg::inisections::specification & op) = 0;
 
     virtual void show_message
     (

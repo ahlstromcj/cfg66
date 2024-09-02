@@ -188,7 +188,6 @@ inisection::specification session_cfg66_data
  *      -   Native/z
  */
 
-
 inisection::specification session_config_file_data
 {
     "[config]",
