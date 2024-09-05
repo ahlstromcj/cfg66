@@ -25,7 +25,7 @@
  * \library       climanager application
  * \author        Chris Ahlstrom
  * \date          2020-08-31
- * \updates       2024-09-02
+ * \updates       2024-09-05
  * \license       GNU GPLv2 or above
  *
  *  This object also works if there is no session manager in the build.  It
@@ -34,10 +34,10 @@
 
 // #include "xpc/daemonize.hpp"         /* xpc::session_setup(), _close()   */
 // #include "xpc/timing.hpp"            /* xpc::millisleep()                */
+// #include "util/strfunctions.hpp"     /* util::contains()                 */
 
 #include "cfg/appinfo.hpp"              /* cfg::get_session_tag()           */
 #include "session/climanager.hpp"       /* session::climanager class        */
-// #include "util/strfunctions.hpp"     /* util::contains()                 */
 #include "util/msgfunctions.hpp"        /* util::file_message() etc.        */
 
 namespace session
@@ -59,11 +59,6 @@ climanager::climanager
     m_multi_parser      (inimgr),
     m_session_active    (false),
     m_poll_period_ms    (3 * 45)    // usr().window_redraw_rate()
-{
-    // no code
-}
-
-climanager::~climanager ()
 {
     // no code
 }
@@ -278,10 +273,13 @@ climanager::session_client_id (const std::string & clid)
         util::file_message(cfg::get_session_tag("client ID"), clid);
 }
 
+/*
+ * Not yet present in inimanager
+ *
 bool
 climanager::add_inisections (cfg::inisections::specification & op)
 {
-    return multi_parser().ini_manager().add_inisections(op);
+    return ini_manager().add_inisections(op);
 }
 
 bool
@@ -296,6 +294,7 @@ climanager::add_inisections (cfg::inimanager::sections_specs & ops)
     }
     return result;
 }
+ */
 
 /**
  *  Shows the collected messages in the console, and recommends the user

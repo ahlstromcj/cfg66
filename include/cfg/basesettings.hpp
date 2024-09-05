@@ -27,7 +27,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2019-01-17
- * \updates       2023-07-21
+ * \updates       2024-09-05
  * \license       GNU GPLv2 or above
  *
  *  This module defines some items common to all configuration files that get
@@ -131,11 +131,10 @@ public:
         int version = 0
     );
     basesettings (const basesettings & rhs) = default;
+    basesettings (basesettings && rhs) = default;
     basesettings & operator = (const basesettings & rhs) = default;
-    virtual ~basesettings ()
-    {
-        // default, member automatically deleted
-    }
+    basesettings & operator = (basesettings && rhs) = default;
+    virtual ~basesettings () = default;
 
     virtual void set_defaults ();
     virtual void normalize ();

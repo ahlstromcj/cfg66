@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-08-04
+ * \updates       2024-09-05
  * \license       See above.
  *
  *  We want to provide a list of { filename, sectionname } pairs, and
@@ -165,8 +165,10 @@ public:
         inisections::specification & spec,
         const std::string & ininame = ""
     );
-    inisections (const inisections & ini) = default;
-    inisections & operator = (const inisections & ini) = default;
+    inisections (const inisections &) = default;
+    inisections (inisections &&) = default;
+    inisections & operator = (const inisections &) = default;
+    inisections & operator = (inisections &&) = default;
     ~inisections () = default;
 
     std::string settings_text () const;

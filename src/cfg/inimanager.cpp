@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-09-01
+ * \updates       2024-09-03
  * \license       See above.
  *
  *  In an application, we want to access options via the triplet of
@@ -61,6 +61,7 @@
  *  cfg::options objects: cli::multiparser.
  */
 
+#include "cfg/inifile.hpp"              /* cfg::inifile class               */
 #include "cfg/inimanager.hpp"           /* cfg::inimanager class            */
 #include "util/msgfunctions.hpp"        /* util::error_message(), etc.      */
 
@@ -233,6 +234,58 @@ inimanager::find_inisections (const std::string & cfgtype)
 }
 
 /*------------------------------------------------------------------------
+ * Read/write an inisections object
+ *------------------------------------------------------------------------*/
+
+bool
+inimanager::read_sections
+(
+    const std::string & fname,
+    const std::string & cfgtype     /* could be found in fname, perhaps */
+)
+{
+    const cfg::inisections & rcs = find_inisections(cfgtype);
+    bool result = rcs.active() && ! fname.empty();
+    if (result)
+    {
+        cfg::inifile f_in(rcs, fname, cfgtype);
+        result = f_in.parse();
+        if (! result)
+            util::error_message("Read failed", fname);
+    }
+    else
+    {
+        util::error_message("No options to read", fname);
+        result = false;
+    }
+    return result;
+}
+
+bool
+inimanager::write_sections
+(
+    const std::string & fname,
+    const std::string & cfgtype     /* could be found in fname, perhaps */
+)
+{
+    const cfg::inisections & rcs = find_inisections(cfgtype);
+    bool result = rcs.active() && ! fname.empty();
+    if (result)
+    {
+        cfg::inifile f_out(rcs, fname, cfgtype);
+        result = f_out.write();
+        if (! result)
+            util::error_message("Write failed", fname);
+    }
+    else
+    {
+        util::error_message("No options to write", fname);
+        result = false;
+    }
+    return result;
+}
+
+/*------------------------------------------------------------------------
  * Finding an inisection object
  *------------------------------------------------------------------------*/
 
@@ -338,6 +391,10 @@ inimanager::find_options_spec
         )
     );
 }
+
+/*------------------------------------------------------------------------
+ * Text strings for help, etc.
+ *------------------------------------------------------------------------*/
 
 std::string
 inimanager::cli_help_text () const

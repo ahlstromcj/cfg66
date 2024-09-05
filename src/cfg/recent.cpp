@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-03-29
- * \updates       2024-08-03
+ * \updates       2024-09-05
  * \license       GNU GPLv2 or above
  *
  *  The cfg66::recent class simply keeps track of recently-used files for the
@@ -78,11 +78,6 @@ recent::operator = (const recent & source)
          */
     }
     return *this;
-}
-
-recent::~recent ()
-{
-    // no code
 }
 
 /**

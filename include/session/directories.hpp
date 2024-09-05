@@ -178,10 +178,10 @@ public:
         entries & fileentries,
         const std::string & sessiondir = ""
     );
-    directories (directories &&) = delete;
     directories (const directories &) = default;
-    directories & operator = (directories &&) = delete;
+    directories (directories &&) = delete;
     directories & operator = (const directories &) = default;
+    directories & operator = (directories &&) = delete;
     virtual ~directories ();
 
 public:

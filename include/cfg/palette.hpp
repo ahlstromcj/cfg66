@@ -185,6 +185,11 @@ private:
 public:
 
     palette ();                         /* initially empty, filled by add() */
+    palette (const palette &) = default;
+    palette (palette &&) = default;
+    palette & operator = (const palette &) = default;
+    palette & operator = (palette &&) = default;
+    ~palette () = default;
 
     bool add (PaletteColor index, const COLOR & c, const std::string & name);
     const COLOR & get_color (PaletteColor index) const;

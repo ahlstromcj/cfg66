@@ -70,7 +70,10 @@ public:
 
     comments (const std::string & comtext = "");
     comments (const comments & rhs) = default;
+    comments (comments && rhs) = default;
     comments & operator = (const comments & rhs) = default;
+    comments & operator = (comments && rhs) = default;
+    ~comments () = default;
 
     const std::string & text () const
     {

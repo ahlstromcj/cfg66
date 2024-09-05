@@ -118,10 +118,10 @@ public:
         int version = 0,
         bool uselogfile = false
     );
-    configuration (configuration &&) = delete;
     configuration (const configuration &) = default;
-    configuration & operator = (configuration &&) = delete;
+    configuration (configuration &&) = delete;
     configuration & operator = (const configuration &) = default;
+    configuration & operator = (configuration &&) = delete;
     virtual ~configuration ();
 
 public:

@@ -27,7 +27,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-23
- * \updates       2024-09-02
+ * \updates       2024-09-05
  * \license       See above.
  *
  *  This class provides a way to look up command-line options specified by
@@ -120,11 +120,11 @@ public:
 
     multiparser () = delete;
     multiparser (cfg::inimanager & mgr);
-    multiparser (const multiparser & other) = default;
-    multiparser (multiparser && other) = default;
-    multiparser & operator = (const multiparser & other) = delete;
-    multiparser & operator = (multiparser && other) = delete;
-    virtual ~multiparser ();
+    multiparser (const multiparser &) = default;
+    multiparser (multiparser &&) = default;
+    multiparser & operator = (multiparser &&) = delete;
+    multiparser & operator = (const multiparser &) = delete;
+    virtual ~multiparser () = default;
 
     virtual const cfg::options & option_set () const override;
     virtual cfg::options & option_set () override;

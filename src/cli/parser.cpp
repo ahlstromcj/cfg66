@@ -122,11 +122,6 @@ parser::parser
     // no code needed
 }
 
-parser::~parser ()
-{
-    // no code
-}
-
 /**
  *  A straightforward command-line parser, for the most part.
  *

@@ -70,11 +70,6 @@ multiparser::multiparser (cfg::inimanager & mgr) :
 
 }
 
-multiparser::~multiparser ()
-{
-    // no code
-}
-
 /**
  *  This override forwards the request to the inimanager (parent).
  */

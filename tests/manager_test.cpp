@@ -24,9 +24,10 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-01-26
- * \updates       2024-09-01
+ * \updates       2024-09-05
  * \license       See above.
  *
+ *  Also includes testing of session::manager.
  */
 
 #include <cstdlib>                      /* EXIT_SUCCESS, EXIT_FAILURE       */
@@ -35,16 +36,25 @@
 #include "cfg/appinfo.hpp"              /* cfg::appinfo functions           */
 #include "cfg/inimanager.hpp"           /* cfg::inimanager class            */
 #include "session/climanager.hpp"       /* session::climanager class        */
+#include "util/filefunctions.hpp"       /* util::file_write_string()        */
+#include "util/msgfunctions.hpp"        /* util::error_message()            */
+
+/*
+ * Sample data.
+ */
 
 #include "rc_spec.hpp"                  /* chunk of data for an 'rc' file   */
 #include "small_spec.hpp"               /* small for easier debugging       */
 #include "session_spec.hpp"             /* for evaluation of this method    */
 
+namespace
+{
+
 /**
  *  App Info
  */
 
-static cfg::appinfo s_application_info
+cfg::appinfo s_application_info
 {
     cfg::appkind::cli,                  // "cli"
     "manager_test",                     // m_app_name (mandatory!)
@@ -66,11 +76,55 @@ static cfg::appinfo s_application_info
     ""                                  // m_client_name_tag
 };
 
-/**
- *  Consolidate the inisections::specifications into a vector of pointers.
+/*
+ *  Contains additions to the stock command-line options. These are options
+ *  that are always present, and not associated with an INI file and INI
+ *  section.
+ *
+ *  These options represent stuff we want to do with this test application.
  */
 
-static cfg::inimanager::sections_specs s_sections_data
+cfg::options::container s_test_options
+{
+    /*
+     * option_code, option_kind, option_cli_enabled,
+     * option_default, option_value, option_read_from_cli, option_modified,
+     * option_desc, option_built_in
+     */
+    {
+        "list",
+        {
+            'l', cfg::options::kind::boolean, cfg::options::enabled,
+            "false", "", false, false,
+            "List all options and their values.", false
+        }
+    },
+    {
+        "read",
+        {
+            'r', cfg::options::kind::filename, cfg::options::enabled,
+            "", "", false, false,
+            "Read options from an 'xx' file.", false
+        }
+    },
+    {
+        "write",
+        {
+            'w', cfg::options::kind::filename, cfg::options::enabled,
+            "", "", false, false,
+            "Write options to an 'xx' file.", false
+        }
+    }
+};
+
+/**
+ *  Consolidate the inisections::specifications into a vector of pointers.
+ *  Replaces a few calls to add_inisections(inisections::specification &)
+ *  with
+ *  add_inisections(inimanager::sections_specs &)
+ */
+
+cfg::inimanager::sections_specs s_sections_data
 {
     &cfg::session_data,
     &cfg::rc_data,
@@ -85,29 +139,244 @@ static cfg::inimanager::sections_specs s_sections_data
  * Explanation text.
  */
 
-static const std::string s_help_intro
+const std::string s_help_intro
 {
     "This test program illustrates/tests the session::climanager class.\n"
 };
+
+/**
+ *  Find the global options first, and then display their "debug" text. The
+ *  sets of options shown are those added via calls to add_inisections():
+ *
+ *      -   Global options.
+ *      -   'rc' options.
+ *      -   'small' options.
+ */
+
+bool
+list_sections
+(
+    const cfg::inimanager & ccfg,
+    bool use_log_file,
+    const std::string & log_file
+)
+{
+    std::string dbgtext = ccfg.debug_text();
+    bool result = ! dbgtext.empty();
+    if (use_log_file)
+    {
+        util::file_message("Appending list text to the log file", log_file);
+        result = util::file_write_string(log_file, dbgtext);
+    }
+    else
+        std::cout << dbgtext << std::endl;
+
+    return result;
+}
 
 /*
  *  Smoke test.  Uses default constructors.
  */
 
-static bool
+bool
 simple_smoke_test ()
 {
     // session::climanager appmgr;    // (argc, argv);  TODO TODO
     std::cerr << "session::climanager C++ test not yet ready" << std::endl;
-    return false;
+    return true;
 }
+
+bool
+legacy_main_test (int argc, char * argv [])
+{
+    cfg::inimanager cfgmgr(s_test_options);    /* add test options */
+    bool success = cfgmgr.add_inisections(s_sections_data);
+    if (success)
+    {
+        session::directories dirs{};            /* TEMPORARY */
+        session::climanager{dirs, cfgmgr};
+        cli::multiparser & clip = cfgmgr.multi_parser();
+        success = clip.parse(argc, argv);
+        if (clip.use_log_file())
+        {
+            std::string msg
+            {
+"This file is the result of writing to this log file from the manager_test\n"
+"program. This is a test log file, written to directly...\n"
+            };
+            std::cout
+                << "Using log file '" << clip.log_file() << "'"
+                << std::endl
+                ;
+            success = util::file_write_string(clip.log_file(), msg);
+        }
+        if (clip.show_information_only())
+        {
+            success = true;
+        }
+        else
+        {
+            bool do_list = cfgmgr.boolean_value("list");
+            bool do_read = ! cfgmgr.value("read").empty();
+            bool do_write = ! cfgmgr.value("write").empty();
+            bool do_list_only = ! do_read && ! do_write;
+            if (do_list_only)
+            {
+                success = list_sections
+                (
+                    cfgmgr, clip.use_log_file(), clip.log_file()
+                );
+            }
+            if (do_read)
+            {
+                /*
+                 * For a decent test, read tests/data/ini_set_test.rc,
+                 * redirect --list to a log file, and verify the results
+                 * of parsing.
+                 */
+
+                std::string fname{cfgmgr.value("read")};
+                success = cfgmgr.read_sections(fname, "rc");
+                if (success)
+                {
+                    if (do_list)            /* --list --read=file   */
+                    {
+                        success = list_sections
+                        (
+                            cfgmgr, clip.use_log_file(),
+                            clip.log_file()
+                        );
+                    }
+                    if (success && do_write)
+                    {
+                        success = cfgmgr.write_sections(fname, "rc");
+
+                        /*
+                         * if (success)
+                         *     success = write_sections(ccfg, "small");
+                         */
+                    }
+                }
+            }
+            else if (do_write)
+            {
+                std::string fname{cfgmgr.value("write")};
+                success = cfgmgr.write_sections(fname, "rc");
+                /*
+                if (success)
+                    success = write_sections(fname, "small");
+
+                if (success)
+                    success = write_sections(fname, "session");
+                 */
+            }
+        }
+    }
+    return success;
+}
+
+#if defined USE_INIMANAGER_PASSALONG_FUNCTIONS
+
+bool
+main_test (int argc, char * argv [])
+{
+    cfg::inimanager cfgmgr(s_test_options);    /* add test options */
+    bool success = cfgmgr.add_inisections(s_sections_data);
+    if (success)
+    {
+        session::directories dirs{};            /* TEMPORARY */
+        session::climanager{dirs, cfgmgr};
+        cli::multiparser & clip = cfgmgr.multi_parser();
+        success = clip.parse(argc, argv);
+        if (clip.use_log_file())
+        {
+            std::string msg
+            {
+"This file is the result of writing to this log file from the manager_test\n"
+"program. This is a test log file, written to directly...\n"
+            };
+            std::cout
+                << "Using log file '" << clip.log_file() << "'"
+                << std::endl
+                ;
+            success = util::file_write_string(clip.log_file(), msg);
+        }
+        if (clip.show_information_only())
+        {
+            success = true;
+        }
+        else
+        {
+            bool do_list = cfgmgr.boolean_value("list");
+            bool do_read = ! cfgmgr.value("read").empty();
+            bool do_write = ! cfgmgr.value("write").empty();
+            bool do_list_only = ! do_read && ! do_write;
+            if (do_list_only)
+            {
+                success = list_sections
+                (
+                    cfgmgr, clip.use_log_file(), clip.log_file()
+                );
+            }
+            if (do_read)
+            {
+                /*
+                 * For a decent test, read tests/data/ini_set_test.rc,
+                 * redirect --list to a log file, and verify the results
+                 * of parsing.
+                 */
+
+                std::string fname{cfgmgr.value("read")};
+                success = cfgmgr.read_sections(fname, "rc");
+                if (success)
+                {
+                    if (do_list)            /* --list --read=file   */
+                    {
+                        success = list_sections
+                        (
+                            cfgmgr, clip.use_log_file(),
+                            clip.log_file()
+                        );
+                    }
+                    if (success && do_write)
+                    {
+                        success = cfgmgr.write_sections(fname, "rc");
+
+                        /*
+                         * if (success)
+                         *     success = write_sections(ccfg, "small");
+                         */
+                    }
+                }
+            }
+            else if (do_write)
+            {
+                std::string fname{cfgmgr.value("write")};
+                success = cfgmgr.write_sections(fname, "rc");
+                /*
+                if (success)
+                    success = write_sections(fname, "small");
+
+                if (success)
+                    success = write_sections(fname, "session");
+                 */
+            }
+        }
+    }
+    return success;
+}
+
+
+#endif  // defined USE_INIMANAGER_PASSALONG_FUNCTIONS
+
+}   // namespace (anonymous)
 
 /*
  * main() routine
  */
 
 int
-main (int /* argc */ , char * argv [])
+main (int argc, char * argv [])
 {
     int rcode = EXIT_FAILURE;
     bool success = cfg::initialize_appinfo(s_application_info, argv[0]);
@@ -116,9 +385,38 @@ main (int /* argc */ , char * argv [])
         success = simple_smoke_test();
         std::cout << cfg::get_build_details() << std::endl;
         if (success)
-            std::cout << "session::climanager C++ test succeeded" << std::endl;
+        {
+            /*
+             * The session::climanager has a cli::multiparser which has
+             * a cfg::inimanager.
+             *
+             * Consider this constructor to avoid making a temporary
+             * inimanager:
+             *
+             *      session::climanager
+             *      (
+             *          const cfg::options::container & additional,
+             *          cfg::inimanager::sections_specs & ops
+             *              - or - inisections::specification & op
+             *          session::directories & fileentries,
+             *          const std::string * caps
+             *      );
+             *
+             * Plus forwarding functions fo add_inisections(),
+             * read_sections(), write_sections(), parse(),
+             * show_information_only(), [use_]log_file(), and all
+             * the value() functions (setters and getters).  Worth it?
+             */
+
+            success = legacy_main_test(argc, argv);
+            if (success)
+            {
+                util::status_message("session::climanager C++ test succeeded");
+                rcode = EXIT_SUCCESS;
+            }
+        }
         else
-            std::cout << "session::climanager C++ test failed" << std::endl;
+            util::error_message("session::climanager C++ test failed");
     }
     return rcode;
 }

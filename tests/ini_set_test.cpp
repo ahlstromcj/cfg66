@@ -46,6 +46,10 @@
 #include "util/msgfunctions.hpp"        /* util::error_message()            */
 #endif
 
+/*
+ * Sample data.
+ */
+
 #include "rc_spec.hpp"                  /* chunk of data for an 'rc' file   */
 #include "small_spec.hpp"               /* small for easier debugging       */
 #include "session_spec.hpp"             /* for evaluation of this method    */
@@ -62,8 +66,9 @@
 #endif
 
 /*
- *  Contains additions to the stock options. These are options that
- *  are always present, and not associated with an INI file and INI section.
+ *  Contains additions to the stock command-line options. These are options
+ *  that are always present, and not associated with an INI file and INI
+ *  section.
  *
  *  These options represent stuff we want to do with this test application.
  */
@@ -257,14 +262,14 @@ main (int argc, char * argv [])
         {
             if (clip.use_log_file())
             {
-            std::string msg
-            {
-"This file is the result of writing to this log file from the ini_set_test\n"
+                std::string msg
+                {
+"This file is the result of writing to this log file from the manager_test\n"
 "program. This is a test log file, written to directly...\n"
-"no usage of xpc::reroute_stdio() from the Xpc66 library.\n"
-            };
+                };
                 std::cout
-                    << "Using log file '" << clip.log_file() << "'" << std::endl
+                    << "Using log file '" << clip.log_file() << "'"
+                    << std::endl
                     ;
                 success = util::file_write_string(clip.log_file(), msg);
             }

@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-09-01
+ * \updates       2024-09-05
  * \license       See above.
  *  section.
  *
@@ -104,6 +104,11 @@ public:
 
     inimanager ();
     inimanager (const options::container & additional);
+    inimanager (const inimanager &) = delete;
+    inimanager (inimanager &&) = delete;
+    inimanager & operator = (const inimanager &) = delete;
+    inimanager & operator = (inimanager &&) = delete;
+    virtual ~inimanager () = default;
 
     std::string cli_help_text () const;
     std::string help_text () const;
@@ -150,7 +155,7 @@ public:
      * set of data supporting a single INI file.
      */
 
-    bool add_inisections (inisections::specification & op);
+    bool add_inisections (inisections::specification & spec);
     bool add_inisections (inimanager::sections_specs & ops);
 
     /*
@@ -159,7 +164,16 @@ public:
 
     const inisections & find_inisections (const std::string & cfgtype) const;
     inisections & find_inisections (const std::string & cfgtype);
-
+    bool read_sections
+    (
+        const std::string & fname,
+        const std::string & cfgtype
+    );
+    bool write_sections
+    (
+        const std::string & fname,
+        const std::string & cfgtype
+    );
     const inisection & find_inisection
     (
         const std::string & cfgtype     =   global,
@@ -200,8 +214,8 @@ public:
     (
         const std::string & name,
         bool value,
-        const std::string & cfgtype,
-        const std::string & sectionname
+        const std::string & cfgtype     =   global,
+        const std::string & sectionname =   global
     );
     int integer_value
     (
@@ -213,8 +227,8 @@ public:
     (
         const std::string & name,
         int value,
-        const std::string & cfgtype,
-        const std::string & sectionname
+        const std::string & cfgtype     =   global,
+        const std::string & sectionname =   global
     );
     float floating_value
     (
@@ -226,8 +240,8 @@ public:
     (
         const std::string & name,
         float value,
-        const std::string & cfgtype,
-        const std::string & sectionname
+        const std::string & cfgtype     =   global,
+        const std::string & sectionname =   global
     );
 
 private:

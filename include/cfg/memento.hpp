@@ -27,7 +27,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-08-03
- * \updates       2024-01-22
+ * \updates       2024-09-05
  * \license       GNU GPLv2 or above
  *
  *  Documented in the cpp file. Also note the type alias, option_memento,
@@ -96,9 +96,10 @@ public:                                     /* originator's wide interface  */
         // no other code
     }
 
-    memento (memento &&) = default;
     memento (const memento &) = default;
+    memento (memento &&) = default;
     memento & operator = (const memento &) = default;
+    memento & operator = (memento &&) = default;
 
     bool set_state (const TYPE & s)
     {

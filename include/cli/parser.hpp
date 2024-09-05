@@ -138,9 +138,11 @@ public:
         const std::string & sectionname     = "",
         bool use_alternative_long_option    = false
     );
-    parser (const parser & other) = default;
-    parser & operator = (const parser & other) = default;
-    virtual ~parser ();
+    parser (const parser &) = default;
+    parser (parser &) = default;
+    parser & operator = (const parser &) = default;
+    parser & operator = (parser &) = default;
+    virtual ~parser () = default;
 
     virtual bool parse (int argc, char * argv []);
 

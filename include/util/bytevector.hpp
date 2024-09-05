@@ -156,6 +156,7 @@ public:
     bytevector (const bytevector &) = default;
     bytevector (bytevector &&) = default;
     bytevector & operator = (const bytevector &) = default;
+    bytevector & operator = (bytevector &&) = default;
     ~bytevector () = default;
 
     void assign

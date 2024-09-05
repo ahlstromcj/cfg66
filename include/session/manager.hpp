@@ -151,10 +151,10 @@ public:
         int version                 = 0,
         bool uselogfile             = false
     );
-    manager (manager &&) = delete;
     manager (const manager &) = default;                // delete;
-    manager & operator = (manager &&) = delete;
+    manager (manager &&) = delete;
     manager & operator = (const manager &) = default;   // delete;
+    manager & operator = (manager &&) = delete;
     virtual ~manager ();
 
     bool error_active () const
@@ -295,7 +295,9 @@ public:
         int argc, char * argv [],
         const std::string & path
     ) = 0;
+    /*
     virtual bool add_inisections (cfg::inisections::specification & op) = 0;
+     */
 
     virtual void show_message
     (

@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2018-11-24
- * \updates       2024-08-26
+ * \updates       2024-09-05
  * \license       GNU GPLv2 or above
  *
  *    Provides some useful functions for displaying information about the
@@ -234,6 +234,7 @@ public:
     appinfo (const appinfo &) = default;
     appinfo (appinfo &&) = default;
     appinfo & operator = (const appinfo &) = default;
+    appinfo & operator = (appinfo &&) = default;
     virtual ~appinfo () = default;
 
 private:
