@@ -9,11 +9,19 @@
 #
 # Naming conventions:
 #
-#   See the "Sessions" section of the PDF user manual.
+#   See the "Sessions" section of the PDF user manual. The most relevant here
+#   are:
+#
+#   -   $home
+#   -   $active
+#   -   $directory
+#   -   $basename
+#   -   $ext
 #
 # 'auto-save' sets automatic saving of the running configuration files.
 #
-# 'config-type' indicates the expected format of this INI file.
+# 'config-type' indicates the expected format of this INI file. It is included
+# in every INI file, and it's essentially the extension ("rc", "usr", ...).
 #
 # 'quiet' disables showing error prompts at application startup.
 #
@@ -22,19 +30,21 @@
 #
 # 'verbose' indicates to show additional information during the run.
 #
-# 'version' indicates the ordinal version of this fiule, useful in upgrading
-# the session file.
+# 'version' indicates the ordinal version of this file, useful in upgrading
+# the session file. This value is included in all configuration files.
 
 [Cfg66]
 
-auto-save = true                            # save 'rc', 'usr'. etc. files
+auto-option-save = true                     # save 'rc', 'usr'. etc. files
+auto-save = true                            # save edited data w/out prompt
 config-type = "session"                     # session configuration file
-quiet = false                               # disable startup error prompts
 home = "$home"                              # "/home/user/.config/seq66v2"
+quiet = false                               # disable startup error prompts
 verbose = false                             # show informational messages
 version = 0                                 # configuration file version
 
-# [comments] holds user documentation for this file.
+# [comments] holds user documentation for this file. It is included in
+# every configuration type.
 
 [comments]
 
@@ -44,30 +54,38 @@ scheme.
 [cfg]
 
 # Specifies the list of sub-configuration sections that denote files needed
-# in the $home directory. Each name should not contain a path. If empty (""),
+# in the $home directory. Each name must not contain a path. If empty (""),
 # the directory is not created. It is recommended to separate configuration
 # files, log files, and data files.
+#
+# The "session" section is always present. It can specify a subdirectory for
+# all of the other configuration files.
 
-count = 8
-cfg-0 = "session"
-cfg-1 = "log"
-cfg-2 = "rc"
-cfg-3 = "usr"
-cfg-4 = "playlist"
-cfg-5 = "note-mapper"
-cfg-6 = "mute-groups"
-cfg-7 = "midi-control"
+count = 10
+section = "session"                         # mandatory (sort of)
+section = "log"
+section = "rc"
+section = "usr"
+section = "playlist"
+section = "note-mapper"
+section = "mute-groups"
+section = "midi-control"
+section = "palette"
+section = "keymap"
 
 [data]
 
 # Specifies additional directories to be created. The application
 # itself (not the Cfg66 library) is responsible for populating
 # them.
+#
+# The resulting directories are stored in the
+# session::directories class and will be created if they don't yet exist.
 
 count = 3
-data-0 = "audio"                            # additional data directory
-data-1 = "data"                             # generic data directory
-data-2 = "midi"                             # additional data directory
+dir = "audio"                               # additional data directory
+dir = "data"                                # generic data directory
+dir = "midi"                                # additional data directory
 
 # The section name describes the type of INI file.
 #
@@ -102,10 +120,11 @@ data-2 = "midi"                             # additional data directory
 
 [session]
 
-# Species the name and location (relative to $home) of this session file.
+# Species the name and location (relative to $home) of the configuratioh
+# files defined in this session file.
 
 active = true
-directory = "cfg"                           # 
+directory = "cfg"                           # ~/.config/appname/cfg
 basename = "cfg66"                          # $home/cfg/cfg66.sessions
 ext = ".session"                            # always this extension
 
@@ -121,7 +140,8 @@ ext = ".log"
 [rc]
 
 # Species the name and location (relative to $home) of the primary
-# configuration file.
+# configuration file. For all these, we generally recommend the
+# directory variable to be "".
 
 active = true
 directory = "cfg"                           # "rc" or "cfg" if desired

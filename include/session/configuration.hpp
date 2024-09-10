@@ -28,15 +28,16 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2020-05-30
- * \updates       2024-06-29
+ * \updates       2024-09-10
  * \license       GNU GPLv2 or above
  *
- *  session::configuration contains and manages the data in the 'session'
- *  configuration file.
+ *  session::configuration contains and manages the data in a 'session'
+ *  configuration file. See extras/notes/cfg66.session for an example.
  */
 
 #include <memory>                       /* std::shared_ptr<>, unique_ptr<>  */
 #include <string>                       /* std::string                      */
+#include <vector>                       /* std::vector                      */
 
 #include "cfg/basesettings.hpp"         /* cfg::basesettings class          */
 #include "session/directories.hpp"      /* session::directories             */
@@ -75,20 +76,92 @@ public:
 
     using pointer = std::unique_ptr<configuration>;
 
+    /**
+     *  Provides a list of section names found in the session file.
+     */
+
+    using sections = std::vector<std::string>;
+
+    /**
+     *  Provides a list of sub-directories to be created in the $home
+     *  directory. These are in addition to any sub-directories specified
+     *  for [session], [log], etc.
+     */
+
+    using subdirectories = std::vector<std::string>;
+
 private:
 
     /**
      *  Provides the file/directory data needed by the session.
-     *  But the directories class already provides one of these!!! TODO
+     *  Provides basic session directory management. This example shows
+     *  the format:
      *
-     *      directories::entries m_file_entries;
-     */
-
-    /**
-     *  Provides basic session directory management.
+     *      [rc]
+     *      active = true
+     *      directory = "cfg"   // or empty ""
+     *      basename = ""
+     *      ext = ".rc"
      */
 
     directories m_dir_manager;
+
+    /**
+     *  Provides a list of sections to be process. Each section refers to
+     *  a group of variables to indicate active status, sub-directory,
+     *  base-name of the configuration file, and the configuration-file's
+     *  extension.
+     */
+
+    sections m_section_list;
+
+    /**
+     *  Holds the list of sub-directories to be created. They are optional.
+     */
+
+    subdirectories m_directories_list;
+
+    /**
+     *  [Cfg66] : auto-option-save
+     *
+     *  If true (the default), all modified configuration files are saved.
+     */
+
+    bool m_auto_option_save;
+
+    /**
+     *  [Cfg66] : auto-save
+     *
+     *  If true (the default), all modified data files are saved.
+     */
+
+    bool m_auto_save;
+
+    /**
+     *  [Cfg66] : quiet
+     *
+     *  If true, bypass startup error prompts.
+     */
+
+    bool m_quiet;
+
+    /**
+     *  [Cfg66] : verbose
+     *
+     *  If true, show additional status data. Does not negate quiet.
+     */
+
+    bool m_verbose;
+
+    /**
+     *  [Cfg66] : home
+     *
+     *  Provides the base configuration and data directory for the application.
+     *  If empty, then the system default (e.g. "~/.config/appname") is
+     *  used. Another value is "$home", which also default to that.
+     */
+
+    std::string m_home;
 
     /**
      *  If true, reroute console output to a log file. Note that
@@ -98,14 +171,6 @@ private:
 
     bool m_use_log_file;
     std::string m_log_file;
-
-    /**
-     *  [auto-option-save]
-     *
-     *  If true (the default), all modified configuration files are saved.
-     */
-
-    bool m_auto_option_save;
 
 public:
 
@@ -161,6 +226,21 @@ public:
         return m_auto_option_save;
     }
 
+    bool auto_save () const
+    {
+        return m_auto_save;
+    }
+
+    bool quiet () const
+    {
+        return m_quiet;
+    }
+
+    const std::string & home () const
+    {
+        return m_home;
+    }
+
 protected:
 
     void use_log_file (bool flag)
@@ -176,6 +256,21 @@ protected:
     void auto_option_save (bool flag)
     {
         m_auto_option_save = flag;
+    }
+
+    void auto_save (bool flag)
+    {
+        m_auto_save = flag;
+    }
+
+    void quiet (bool flag)
+    {
+        m_quiet = flag;
+    }
+
+    void home (const std::string & h)
+    {
+        m_home = h;
     }
 
 };          // class configuration

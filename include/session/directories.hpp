@@ -79,6 +79,8 @@ public:
 
     /**
      *  Provides a supported directory entry for an application.
+     *  Configuration files are also included, and should spur an
+     *  attempt to read/write the file.
      */
 
     using entry = struct

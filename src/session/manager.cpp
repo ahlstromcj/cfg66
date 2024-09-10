@@ -469,9 +469,6 @@ manager::error_handling ()
     std::string errmsg;
     if (internal_error_check(errmsg))
         show_error("Session error", errmsg);
-
-//  std::string logpath = log_filename("cfg66.log");
-//  (void) cfg66::file_append_log(path, errmsg);
 }
 
 /**

@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2020-03-22
- * \updates       2024-06-29
+ * \updates       2024-09-09
  * \license       GNU GPLv2 or above
  *
  *  What is a session configuration? It is a setup of the following
@@ -115,6 +115,14 @@ configuration::configuration () :
         0
     ),
     m_dir_manager       (),                 /* default rc & log directories */
+    m_section_list      (),                 /* vector of section names      */
+    m_directories_list  (),                 /* vector of subdirectory names */
+    m_auto_option_save  (false),            /* save rc, usr, etc.           */
+    m_auto_save         (false),            /* save edited data file        */
+    m_quiet             (false),            /* true suppresses startup errs */
+    m_verbose           (false),            /* true shows more status       */
+    m_home              (),                 /* the base app directory       */
+
     m_use_log_file      (false),
     m_log_file          ()
 {
@@ -135,6 +143,14 @@ configuration::configuration
 ) :
     cfg::basesettings   (cfgname, "INI", "session", comtext, version),
     m_dir_manager       (fileentries),
+    m_section_list      (),                 /* vector of section names      */
+    m_directories_list  (),                 /* vector of subdirectory names */
+    m_auto_option_save  (false),            /* save rc, usr, etc.           */
+    m_auto_save         (false),            /* save edited data file        */
+    m_quiet             (false),            /* true suppresses startup errs */
+    m_verbose           (false),            /* true shows more status       */
+    m_home              (),                 /* the base app directory       */
+
     m_use_log_file      (uselogfile),
     m_log_file          ()
 {
@@ -150,7 +166,7 @@ configuration::~configuration ()
     // no code so far
 }
 
-#if 0
+#if defined ENABLE_THIS_CODE
 
 /**
  *      -   Parse log option.
@@ -221,6 +237,33 @@ configuration::parse_command_line
 
 #endif
     return optionindex;
+}
+
+/**
+ *  Parsing is patterned after cfg::inifile::parse(), but does not
+ *  depend on filling in an options list. Instead, the data is stored
+ *  in class members.
+ *
+ * Note:
+ *
+ *  App-info settings can be made via a cfg::appinfo structure initialization
+ *  and passing it to cfg::initialize(); via modifications from the command line
+ *  or by calling appinfo setter functions.
+ *
+ * Assumptions:
+ *
+ *      -   Optional calls to the "set" versions of these functions in
+ *          appinfo.
+ *          -   get_app_name()
+ *          -   get_home_cfg_directory() ["~/.config/appname"]
+ *          -   get_main_cfg_section_name() ["[Cfg66]"]
+ */
+
+bool
+configuration::parse
+(
+)
+{
 }
 
 #endif
