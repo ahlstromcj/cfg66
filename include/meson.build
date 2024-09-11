@@ -6,7 +6,7 @@
 # \library     cfg66
 # \author      Chris Ahlstrom
 # \date        2022-06-22
-# \updates     2024-09-02
+# \updates     2024-09-10
 # \license     $XPC_SUITE_GPL_LICENSE$
 #
 #  This file is part of the "cfg66" library. See the top-level meson.build
@@ -40,6 +40,7 @@ libcfg66_headers += files(
    'cli/cliparser_c.h',
    'cli/multiparser.hpp',
    'cli/parser.hpp',
+   'session/cfgfile.hpp',
    'session/climanager.hpp',
    'session/configuration.hpp',
    'session/directories.hpp',

@@ -22,22 +22,25 @@
 /**
  * \file          cfgfile.hpp
  *
- *  This module declares an INI-handling class using configfile functions.
+ *  This module declares an INI-handling class using cfg::configfile
+ *  functions.
  *
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2024-09-09
- * \updates       2024-09-09
+ * \updates       2024-09-11
  * \license       GNU GPLv2 or above
  *
- *  An cfgfile is a configfile that overrides the parse() and write()
+ *  An cfgfile is a cfg::configfile that overrides the parse() and write()
  *  functions.
  */
 
 #include "cfg/configfile.hpp"           /* cfg::configfile class            */
 
-namespace cfg
+namespace session
 {
+
+class configuration;
 
 /**
  *    A class for handling the INI-style file for the session configuration.
@@ -45,22 +48,23 @@ namespace cfg
  *    the "generic" options setup..
  */
 
-class cfgfile : public configfile
+class cfgfile : public cfg::configfile
 {
 
 private:
 
-    // TODO
+    configuration & m_parent;
 
 public:
 
+    cfgfile () = delete;
     cfgfile
     (
+        configuration & parent,
         const std::string & filename    = "",
         const std::string & cfgtype     = ""
     );
 
-    cfgfile () = delete;
     cfgfile (cfgfile &&) = delete;
     cfgfile (const cfgfile &) = delete;
     cfgfile & operator = (const cfgfile &) = delete;
@@ -72,9 +76,14 @@ public:
 
 protected:
 
+    configuration & parent ()
+    {
+        return m_parent;
+    }
+
 };          // class cfgfile
 
-}           // namespace cfg
+}           // namespace session
 
 #endif      // CFG66_SESSION_CFGFILE_HPP
 

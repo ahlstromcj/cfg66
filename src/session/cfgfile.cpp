@@ -24,15 +24,17 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2024-09-09
- * \updates       2024-09-09
+ * \updates       2024-09-10
  * \license       GNU GPLv2 or above
  *
  */
 
-#include "cfg/cfgfile.hpp"              /* cfg::cfgfile class               */
+#include "cfg/appinfo.hpp"              /* cfg::<appinfo functions>         */
+#include "session/configuration.hpp"    /* cfg::configuration class         */
+#include "session/cfgfile.hpp"          /* session::cfgfile class           */
 #include "util/msgfunctions.hpp"        /* util::msgfunctions module        */
 
-namespace cfg
+namespace session
 {
 
 /**
@@ -47,10 +49,12 @@ namespace cfg
 
 cfgfile::cfgfile
 (
+    configuration & parent,
     const std::string & filename,
     const std::string & cfgtype
 ) :
-    configfile      (filename, cfgtype)
+    configfile  (filename, cfgtype),
+    m_parent    (parent)
 {
     // no code needed
 }
@@ -73,10 +77,23 @@ cfgfile::parse ()
          */
 
         util::file_message("Parse", file_name());
+        std::string section = cfg::get_main_cfg_section_name();
         std::string s = parse_version(file);
-        if (s.empty() || file_version_old(file))
+        std::string cfgtype = get_variable(file, section, "config-type");
+        bool correct = cfgtype == "session";
+        if (correct && (s.empty() || file_version_old(file)))
         {
-            // TODO
+            bool b = get_boolean(file, section, "auto-option-save");
+            parent().auto_option_save(b);
+            b = get_boolean(file, section, "auto-save");
+            parent().auto_save(b);
+            b = get_boolean(file, section, "quiet");
+            parent().quiet(b);
+            b = get_boolean(file, section, "verbose");
+            parent().verbose(b);
+
+            std::string h = get_variable(file, section, "home");
+            parent().home(h);
         }
     }
     return result;
@@ -115,7 +132,7 @@ cfgfile::write ()
          * standard Cfg66 options.
          */
 
-        TODO
+        // TODO
 
         /*
          * Write the stock INI file footer.
@@ -131,7 +148,7 @@ cfgfile::write ()
     return result;
 }
 
-}           // namespace cfg
+}           // namespace session
 
 /*
  * cfgfile.cpp

@@ -66,6 +66,7 @@ namespace session
 
 class configuration : public cfg::basesettings
 {
+    friend class cfgfile;
     friend class manager;
 
 public:
@@ -236,6 +237,11 @@ public:
         return m_quiet;
     }
 
+    bool verbose () const
+    {
+        return m_verbose;
+    }
+
     const std::string & home () const
     {
         return m_home;
@@ -266,6 +272,11 @@ protected:
     void quiet (bool flag)
     {
         m_quiet = flag;
+    }
+
+    void verbose (bool flag)
+    {
+        m_verbose = flag;
     }
 
     void home (const std::string & h)
