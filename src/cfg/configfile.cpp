@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2024-08-01
+ * \updates       2024-09-12
  * \license       GNU GPLv2 or above
  *
  *  std::streamoff is a signed integral type (usually long long) that can
@@ -78,6 +78,7 @@ lib66::tokenization configfile::sm_file_extensions
 {
     ".ctrl",
     ".drums",
+    ".keymap",
     ".mutes",
     ".palette",
     ".playlist",
@@ -111,7 +112,7 @@ configfile::configfile
     m_file_version  ("0"),
     m_line          (),
     m_line_number   (0),
-    m_line_pos      (0)
+    m_line_position      (0)
 {
     if (! util::name_has_extension(filename))
     {
@@ -180,6 +181,82 @@ configfile::parse_section_option
             result += "\n";
 
         } while (next_data_line(file, false));      /* no strip here either */
+    }
+    return result;
+}
+
+/**
+ *  This function finds a section tag, then a "count" value, and then
+ *  gets all of the lines with the given value tag (if not empty).
+ *
+ * \param file
+ *      The input stream to read.
+ *
+ * \param section
+ *      The section tag, a name of the form "[tag]".
+ *
+ * \param [out] items
+ *      Provides the destination for the list of strings. Each string will
+ *      have either the value string, or the whole trimmed line if valuetag
+ *      is empty.
+ *
+ * \param valuetag
+ *      This optional value, if not empty, indicates a variable name to
+ *      look for. This variable name will be the same for each item in the
+ *      list. If empty, the whole line will be retrieved, and the
+ *      caller is responsible for processing it.
+ *
+ * \return
+ *      Returns the number of list items found and stored. If 0, there
+ *      was no such animal.
+ */
+
+int
+configfile::parse_list
+(
+    std::ifstream & file,
+    const std::string & section,
+    lib66::tokenization & items,
+    const std::string & valuetag
+)
+{
+    int result = 0;
+    int position = 0;
+    int count = get_integer(file, section, "count", position);
+    items.clear();
+    if (count == configfile::sm_int_missing)                   /* -9998    */
+    {
+        count = 0;
+    }
+    else
+    {
+        position = line_position();
+        for (int linenum = 0; linenum < count; /* ++linenum */)
+        {
+            if (valuetag.empty())                               /* default  */
+            {
+                if (next_data_line(file))
+                {
+                    items.push_back(line());
+                    ++result;
+                }
+                else
+                    break;
+            }
+            else
+            {
+                std::string value = get_next_variable(file, valuetag);
+                if (! util::is_missing_string(value))
+                {
+                    items.push_back(line());
+                    ++result;
+                }
+                else
+                    break;
+            }
+        }
+        if (result < count)
+            util::warn_message("fewer list items than count value");
     }
     return result;
 }
@@ -268,7 +345,7 @@ configfile::version_error_message (const std::string & configtype, int vnumber)
 bool
 configfile::get_line (std::ifstream & file, bool strip)
 {
-    m_line_pos = file.tellg();
+    m_line_position = file.tellg();
     (void) std::getline(file, m_line);
     if (strip)
     {
@@ -284,10 +361,12 @@ configfile::get_line (std::ifstream & file, bool strip)
 }
 
 /**
- *  Gets the next line of data from an input stream.  If the line starts with
- *  a number-sign, or a null, it is skipped, to try the next line.  This
- *  occurs until a section marker ("[") or an EOF is encountered.  Member
+ *  Gets the next line of data from an input stream. If the line starts with
+ *  a number-sign, semi-colon, or a null, it is skipped, to try the next line.
+ *  This occurs until a section marker ("[") or an EOF is encountered. Member
  *  m_line is a "return" value (side-effect).
+ *
+ *  Note that "#" and ";" are both comment characters.
  *
  * \param file
  *      Points to an input stream.  We converted this item to a reference;
@@ -298,12 +377,12 @@ configfile::get_line (std::ifstream & file, bool strip)
  *
  * \param strip
  *      If true (the default), trims white space and strips out hash-tag
- *      comments.  Some sections, such as '[comments]', need this to be set to
+ *      comments. Some sections, such as '[comments]', need this to be set to
  *      false.
  *
  * \return
- *      Returns true if a presumed data line was found.  False is returned if
- *      not found before an EOF or a section marker ("[") is found.  This
+ *      Returns true if a presumed data line was found. False is returned if
+ *      not found before an EOF or a section marker ("[") is found. This
  *      feature assists in adding new data to the file without crapping out on
  *      old-style configuration files.
  */
@@ -315,7 +394,7 @@ configfile::next_data_line (std::ifstream & file, bool strip)
     if (result)
     {
         char ch = m_line[0];
-        while ((ch == '#' || ch == '[' || ch == 0) && ! file.eof())
+        while ((ch == '#' || ch == ';' || ch == '[' || ch == 0) && ! file.eof())
         {
             if (m_line[0] == '[')               /* we hit the next section  */
             {
@@ -364,7 +443,8 @@ configfile::next_data_line (std::ifstream & file, bool strip)
  *
  * \param tag
  *      Provides the section tag (e.g. "[midi-control]") to be found before
- *      the variable name parameter can be processed.
+ *      the variable name parameter can be processed. If empty, it is assumed
+ *      that the tag has been found already.
  *
  * \param variablename
  *      Provides the variablename to be found in the specified tag section.
@@ -372,7 +452,8 @@ configfile::next_data_line (std::ifstream & file, bool strip)
  * \param position
  *      Indicates the position to seek to, which defaults to 0
  *      (std::iso::beg).  A non-default value is useful to speed up parsing in
- *      cases where sections are always ordered.
+ *      cases where sections are always ordered or when a number of value lines
+ *      are expected..
  *
  * \return
  *      If the "variablename = value" clause is found, then the the value that
@@ -405,6 +486,33 @@ configfile::get_variable
                 result = value;
                 break;
             }
+        }
+    }
+    return result;
+}
+
+/**
+ *  Gets the next variable value from the current position.
+ *
+ *  TODO: tighten up use of empty string vs questionable string vs missing
+ *        string.
+ */
+
+std::string
+configfile::get_next_variable
+(
+    std::ifstream & file,
+    const std::string & variablename
+)
+{
+    std::string result = util::questionable_string();   /* for missing tag  */
+    if (next_data_line(file))
+    {
+        if (! line().empty())                           /* any value?       */
+        {
+            std::string value = extract_variable(line(), variablename);
+            if (! util::is_questionable_string(value))
+                result = value;
         }
     }
     return result;
@@ -538,6 +646,59 @@ configfile::write_cfg66_footer (std::ofstream & file)
         << "\n\n# End of " << file_name() <<
         "\n#\n# vim: sw=4 ts=4 wm=4 et ft=dosini\n"
         ;
+}
+
+/**
+ *  Write a list of options that comprise a whole section and are identical
+ *  in data type.
+ *
+ * \param file
+ *      Provides the output file stream.
+ *
+ * \param section
+ *      Provides the name of the section, in a format like "[sectionname]".
+ *
+ * \param items
+ *      A list of value items. If the value needs to be surrounded by
+ *      double-quotes, they must be part of the item; added by the caller.
+ *
+ * \param valuetag
+ *      If not empty, then the string "valuename = " is prepended to the
+ *      output.
+ *
+ * \return
+ *      The number of items written is returned.
+ */
+
+int
+configfile::write_list
+(
+    std::ofstream & file,
+    const std::string & section,
+    const lib66::tokenization & items,
+    const std::string & valuetag
+)
+{
+    int result = 0;
+    int count = int(items.size());
+    if (count > 0)
+    {
+        file
+            << "\n" << section << "\n\n"
+            << "count = " << count << "\n"
+            ;
+
+        for (auto & v : items)
+        {
+            if (! valuetag.empty())
+                file << valuetag << " = ";
+
+            file << v << "\n";
+        }
+        file << std::endl;
+        result = count;
+    }
+    return result;
 }
 
 void
@@ -802,8 +963,8 @@ configfile::next_section (std::ifstream & file, const std::string & tag)
  *
  * \param tag
  *      Provides a tag to be found.  Lines are read until a match occurs
- *      with this tag.  Normally, the tag is a section marker, such as
- *      "[user-interface]".  Best to assume an exact match is needed.
+ *      with this tag. Normally, the tag is a section marker, such as
+ *      "[user-interface]". Best to assume an exact match is needed.
  *
  * \param position
  *      Indicates the position to seek to, which defaults to 0
@@ -815,7 +976,7 @@ configfile::next_section (std::ifstream & file, const std::string & tag)
  *      comments, but only in lines after the tag is found.
  *
  * \return
- *      Returns true if the tag was found.  Otherwise, false is returned.
+ *      Returns true if the tag was found. Otherwise, false is returned.
  */
 
 bool
@@ -886,7 +1047,7 @@ configfile::find_tag (std::ifstream & file, const std::string & tag)
         bool match = util::strncompare(m_line, tag);
         if (match)
         {
-            result = line_position();           /* int(m_line_pos)          */
+            result = line_position();           /* int(m_line_position)     */
             break;
         }
         else

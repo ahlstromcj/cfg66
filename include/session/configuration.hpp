@@ -28,7 +28,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2020-05-30
- * \updates       2024-09-10
+ * \updates       2024-09-11
  * \license       GNU GPLv2 or above
  *
  *  session::configuration contains and manages the data in a 'session'
@@ -120,7 +120,7 @@ private:
      *  Holds the list of sub-directories to be created. They are optional.
      */
 
-    subdirectories m_directories_list;
+    subdirectories m_data_directories;
 
     /**
      *  [Cfg66] : auto-option-save
@@ -192,24 +192,24 @@ public:
 
 public:
 
-    directories & dir_manager ()
-    {
-        return m_dir_manager;
-    }
-
     const directories & dir_manager () const
     {
         return m_dir_manager;
     }
 
-    directories::entries & file_entries ()
+    const directories::entries & file_entries () const
     {
         return dir_manager().file_entries();
     }
 
-    const directories::entries & file_entries () const
+    const sections & section_list () const
     {
-        return dir_manager().file_entries();
+        return m_section_list;
+    }
+
+    const subdirectories & data_directories () const
+    {
+        return m_data_directories;
     }
 
     bool use_log_file () const
@@ -247,7 +247,27 @@ public:
         return m_home;
     }
 
-protected:
+private:
+
+    directories & dir_manager ()
+    {
+        return m_dir_manager;
+    }
+
+    directories::entries & file_entries ()
+    {
+        return dir_manager().file_entries();
+    }
+
+    sections & section_list ()
+    {
+        return m_section_list;
+    }
+
+    subdirectories & data_directories ()
+    {
+        return m_data_directories;
+    }
 
     void use_log_file (bool flag)
     {
@@ -283,6 +303,7 @@ protected:
     {
         m_home = h;
     }
+
 
 };          // class configuration
 

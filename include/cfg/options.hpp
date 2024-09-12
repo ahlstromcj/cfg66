@@ -43,6 +43,14 @@
  *      -   "list". The value is a multi-line list of items, such as
  *          a list of busses or a list of recent files. The first value
  *          is a count of the items. The whole section is just this list.
+ *          Many formats are possible.
+ *          -   "valuename = value"
+ *          -   "valuename-N = value"
+ *          -   "N = value"
+ *          -   "value"
+ *          -   Formatted string such as '0 1 LaunchpadMini..."
+ *          The whole line is obtained, and the application is
+ *          responsible for processing it.
  *      -   "overflow". The option is supported by the "--option" option.
  *      -   "section". The INI-section has no variables, but contains
  *          some section-specific values.  Example: the "[comments]"

@@ -28,7 +28,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2024-06-18
+ * \updates       2024-09-12
  * \license       GNU GPLv2 or above
  *
  *  This is actually an elegant little parser, and works well as long as one
@@ -189,7 +189,7 @@ protected:
      *  Holds the stream position before a line is obtained.
      */
 
-    std::streampos m_line_pos;
+    std::streampos m_line_position;
 
 public:
 
@@ -222,6 +222,13 @@ public:
     (
         std::ifstream & file,
         const std::string & secname
+    );
+    int parse_list
+    (
+        std::ifstream & file,
+        const std::string & section,
+        lib66::tokenization & items,
+        const std::string & valuetag    = ""
     );
     std::string parse_version (std::ifstream & file);
     bool file_version_old (std::ifstream & file);
@@ -268,7 +275,7 @@ public:
 
     int line_position () const
     {
-        return int(std::streamoff(m_line_pos));
+        return int(std::streamoff(m_line_position));
     }
 
     static const std::string & get_error_message ()
@@ -402,6 +409,11 @@ protected:
         const std::string & variablename,
         int position = 0
     );
+    std::string get_next_variable
+    (
+        std::ifstream & file,
+        const std::string & variablename
+    );
     std::string extract_variable
     (
         const std::string & line,
@@ -414,6 +426,13 @@ protected:
         const std::string & version
     );
     void write_cfg66_footer (std::ofstream & file);
+    int write_list
+    (
+        std::ofstream & file,
+        const std::string & section,
+        const lib66::tokenization & items,
+        const std::string & valuetag
+    );
     bool get_boolean
     (
         std::ifstream & file,

@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2020-03-22
- * \updates       2024-09-09
+ * \updates       2024-09-11
  * \license       GNU GPLv2 or above
  *
  *  What is a session configuration? It is a setup of the following
@@ -116,7 +116,7 @@ configuration::configuration () :
     ),
     m_dir_manager       (),                 /* default rc & log directories */
     m_section_list      (),                 /* vector of section names      */
-    m_directories_list  (),                 /* vector of subdirectory names */
+    m_data_directories  (),                 /* vector of subdirectory names */
     m_auto_option_save  (false),            /* save rc, usr, etc.           */
     m_auto_save         (false),            /* save edited data file        */
     m_quiet             (false),            /* true suppresses startup errs */
@@ -144,7 +144,7 @@ configuration::configuration
     cfg::basesettings   (cfgname, "INI", "session", comtext, version),
     m_dir_manager       (fileentries),
     m_section_list      (),                 /* vector of section names      */
-    m_directories_list  (),                 /* vector of subdirectory names */
+    m_data_directories  (),                 /* vector of subdirectory names */
     m_auto_option_save  (false),            /* save rc, usr, etc.           */
     m_auto_save         (false),            /* save edited data file        */
     m_quiet             (false),            /* true suppresses startup errs */

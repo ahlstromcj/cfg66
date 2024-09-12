@@ -24,7 +24,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2024-09-09
- * \updates       2024-09-10
+ * \updates       2024-09-11
  * \license       GNU GPLv2 or above
  *
  */
@@ -94,6 +94,9 @@ cfgfile::parse ()
 
             std::string h = get_variable(file, section, "home");
             parent().home(h);
+
+            std::string c = parse_comments(file);
+            parent().comments_block().set(c);
         }
     }
     return result;
