@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2024-09-12
+ * \updates       2024-09-13
  * \license       GNU GPLv2 or above
  *
  *  std::streamoff is a signed integral type (usually long long) that can
@@ -204,7 +204,8 @@ configfile::parse_section_option
  *      This optional value, if not empty, indicates a variable name to
  *      look for. This variable name will be the same for each item in the
  *      list. If empty, the whole line will be retrieved, and the
- *      caller is responsible for processing it.
+ *      caller is responsible for processing it. To handle cases like
+ *      'cfg-1 = "hello"', provide a valuetag like "cfg".
  *
  * \return
  *      Returns the number of list items found and stored. If 0, there
@@ -245,7 +246,7 @@ configfile::parse_list
             }
             else
             {
-                std::string value = get_next_variable(file, valuetag);
+                std::string value = get_next_variable(file, valuetag, true);
                 if (! util::is_missing_string(value))
                 {
                     items.push_back(line());
@@ -492,17 +493,32 @@ configfile::get_variable
 }
 
 /**
- *  Gets the next variable value from the current position.
+ *  Gets the next variable value starting from the current position.
  *
  *  TODO: tighten up use of empty string vs questionable string vs missing
  *        string.
+ *
+ * \param file
+ *      Provides the input stream to read.
+ *
+ * \param variablename
+ *      Provides the variable name to be found.
+ *
+ * \param partial
+ *      If true (the default is false), then an incomplete match is allowed.
+ *      For example, \a variablename = "cfg" would match "cfg-1". Useful
+ *      in numbered lists.
+ *
+ * \return
+ *      Returns the value to the right of the "=" sign.
  */
 
 std::string
 configfile::get_next_variable
 (
     std::ifstream & file,
-    const std::string & variablename
+    const std::string & variablename,
+    bool partial
 )
 {
     std::string result = util::questionable_string();   /* for missing tag  */
@@ -510,7 +526,7 @@ configfile::get_next_variable
     {
         if (! line().empty())                           /* any value?       */
         {
-            std::string value = extract_variable(line(), variablename);
+            std::string value = extract_variable(line(), variablename, partial);
             if (! util::is_questionable_string(value))
                 result = value;
         }
@@ -548,6 +564,16 @@ configfile::get_next_variable
  * \param variablename
  *      The "name" of the variable whose value is to be extracted.
  *
+ * \param partial
+ *      If true (the default is false), then an incomplete match is allowed.
+ *      For example, \a variablename = "cfg" would match "cfg-1". Useful
+ *      in numbered lists.
+ *
+ * \param partial
+ *      If true (the default is false), then an incomplete match is allowed.
+ *      For example, \a variablename = "cfg" would match "cfg-1". Useful
+ *      in numbered lists.
+ *
  * \return
  *      If the extracted name matches the \a name parameter, then the value is
  *      returned; it might be empty.  Otherwise, a question mark is returned.
@@ -557,7 +583,8 @@ std::string
 configfile::extract_variable
 (
     const std::string & line,
-    const std::string & variablename
+    const std::string & variablename,
+    bool partial
 )
 {
     std::string result = util::questionable_string();
@@ -569,7 +596,10 @@ configfile::extract_variable
             spos = epos;
 
         std::string vname = line.substr(0, spos);
-        if (vname == variablename)
+        bool ok = partial ?
+            util::strings_match(vname, variablename) : vname == variablename ;
+
+        if (ok)
         {
             bool havequotes = false;                /* Check-point 2        */
             char quotechar[2] = { 'x', 0 };

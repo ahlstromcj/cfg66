@@ -81,7 +81,7 @@ public:
      *  Provides a list of section names found in the session file.
      */
 
-    using sections = std::vector<std::string>;
+    using sections = lib66::tokenization;   /* std::vector<std::string> */
 
     /**
      *  Provides a list of sub-directories to be created in the $home

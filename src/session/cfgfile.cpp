@@ -97,6 +97,18 @@ cfgfile::parse ()
 
             std::string c = parse_comments(file);
             parent().comments_block().set(c);
+
+            lib66::tokenization sects;
+            int count = parse_list(file, "[cfg]", sects, "section");
+            if (count > 0)
+            {
+                parent().section_list().clear();
+                for (const auto & s : sects)
+                {
+                    // std::string item 
+                    // add [] if necessary
+                }
+            }
         }
     }
     return result;

@@ -28,7 +28,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2024-09-12
+ * \updates       2024-09-13
  * \license       GNU GPLv2 or above
  *
  *  This is actually an elegant little parser, and works well as long as one
@@ -412,12 +412,14 @@ protected:
     std::string get_next_variable
     (
         std::ifstream & file,
-        const std::string & variablename
+        const std::string & variablename,
+        bool partial = false
     );
     std::string extract_variable
     (
         const std::string & line,
-        const std::string & variablename
+        const std::string & variablename,
+        bool partial = false
     );
     void write_cfg66_header
     (
