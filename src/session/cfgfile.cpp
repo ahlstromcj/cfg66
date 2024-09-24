@@ -24,7 +24,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2024-09-09
- * \updates       2024-09-11
+ * \updates       2024-09-ww
  * \license       GNU GPLv2 or above
  *
  */
@@ -101,14 +101,11 @@ cfgfile::parse ()
             lib66::tokenization sects;
             int count = parse_list(file, "[cfg]", sects, "section");
             if (count > 0)
-            {
-                parent().section_list().clear();
-                for (const auto & s : sects)
-                {
-                    // std::string item 
-                    // add [] if necessary
-                }
-            }
+                result = parent().section_list_fill(sects);
+            else
+                result = false;     // fatal or okay?
+
+            // more to come
         }
     }
     return result;

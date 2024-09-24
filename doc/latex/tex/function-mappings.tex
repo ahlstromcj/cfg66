@@ -1,0 +1,95 @@
+%-------------------------------------------------------------------------------
+% function-mappings
+%-------------------------------------------------------------------------------
+%
+% \file        function-mappings.tex
+% \library     Documents
+% \author      Chris Ahlstrom
+% \date        2024-09-23
+% \update      2024-09-24
+% \version     $Revision$
+% \license     $XPC_GPL_LICENSE$
+%
+%-------------------------------------------------------------------------------
+
+\section{Function Mappings}
+\label{sec:function_mappings}
+
+\subsection{AppInfo Mappings}
+\label{subsec:appinfo_mappings}
+
+   This table describes the \texttt{cfg::appinfo} class and the free functions
+   that serve as accessors ("setters" and "getters") of the
+   \texttt{cfg::appinfo} static singleton.
+   Note the "(sg)" that stands for "set" and "get".
+   Note that some values provide only a "get" function;
+   these are meant to be hard-wired at build time.
+
+   \begin{table}[htb!]
+      \centering
+      \caption{App Info}
+      \label{table:app_info}
+      \begin{tabular}{l l l l l}
+        \textbf{Variable} & \textbf{Examples}  & \textbf{Accessors}  \\
+            Kind &
+               cli, gui, headless &
+               appinfo() constructor only \\
+            Name &
+               "qseq66" (".exe" dropped) &
+               (sg)\_app\_anme() \\
+            Version &
+               "qseq66 0.99.2" &
+               (sg)\_app\_version() \\
+            Config section name &
+               "[Seq66]" &
+               (sg)\_main\_cfg\_section\_name() \\
+            Home config directory &
+               "~/.config/seq66" &
+               (sg)\_home\_cfg\_directory() \\
+            Home config file &
+               "seq66.rc" or "seq66.session" &
+               (sg)\_home\_file() \\
+            Client name &
+               "seq66" &
+               (sg)\_client\_name() \\
+            App tag &
+               "seq66 0.99.2" &
+               appinfo::initialize(), get\_app\_tag() \\
+            Arg 0 &
+               Path to executable &
+               get\_arg\_0() \\
+            Package name &
+               "SEQ66" or "seq66" &
+               (sg)\_package\_name() \\
+            Icon name &
+               g\_app\_icon\_name() \\
+            Version text &
+               Name + version &
+               g\_app\_version\_text() \\
+            API engine &
+               "JACK", "liblo" & 
+               (sg)\_api\_engine() \\
+            API version &
+               "2.1" &
+               (sg)\_api\_version() \\
+            API sub-directory &
+               "seq66-2.1" (client + version) &
+               get\_api\_subdirectory() \\
+            GUI version &
+               "Qt 5.1" \\
+               (sg)\_gui\_version() \\
+            Client short name &
+               "seq66-0" &
+               s\_client\_name() and get\_client\_short() \\
+            Client name tag &
+               "[seq66]" &
+               set\_client\_name() and get\_client\_tag() \\
+      \end{tabular}
+   \end{table}
+
+\subsection{AppInfo Mappings}
+\label{subsec:appinfo_mappings}
+
+%-------------------------------------------------------------------------------
+% vim: ts=3 sw=3 et ft=tex
+%-------------------------------------------------------------------------------

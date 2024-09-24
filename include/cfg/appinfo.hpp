@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2018-11-24
- * \updates       2024-09-05
+ * \updates       2024-09-24
  * \license       GNU GPLv2 or above
  *
  *    Provides some useful functions for displaying information about the
@@ -88,8 +88,7 @@ public:
 
     /**
      *  Holds the name of the main section in an INI file. It
-     *  defaults to "[Cfg66]". Contains no options that set anything,
-     *  nor are the options saved.
+     *  defaults to "[Cfg66]".
      */
 
     std::string m_main_cfg_section_name;
@@ -143,7 +142,7 @@ public:
 
     /**
      *  Provides the name of the package, obtained from the build system.
-     *  An example is "Seq66".
+     *  An example is "Seq66" or "SEQ66".
      */
 
     std::string m_package_name;
@@ -178,7 +177,7 @@ public:
     std::string m_api_engine;
 
     /**
-     *  Provides the API version of this library.
+     *  Provides the API version of the main API in usage.
      */
 
     std::string m_api_version;
@@ -193,8 +192,7 @@ public:
 
     /**
      *  Provides the bare name of an application where it is a client of some
-     *  kind of engine (such as JACK).  An example is "cfg66". Never has a
-     *  wart appended to it.
+     *  kind of engine (such as JACK).  An example is "cfg66".
      */
 
     std::string m_client_name_short;
@@ -258,6 +256,7 @@ extern void set_gui_version (const std::string & v);
 extern void set_app_build_os (const std::string & abuild_os);
 extern void set_app_build_issue (const std::string & abuild_issue);
 extern void set_api_engine (const std::string & aengine);
+extern void set_api_version (const std::string & aengine);
 extern void set_app_name (const std::string & aname);
 extern void set_app_version (const std::string & version);
 extern void set_app_type (const std::string & atype);
@@ -284,8 +283,9 @@ extern const std::string & get_arg_0 ();
 extern const std::string & get_client_name ();
 extern const std::string & get_client_name_tag ();
 extern const std::string & get_client_short ();
-extern const std::string & get_icon_name ();
+extern const std::string & get_app_icon_name ();
 extern const std::string & get_package_name ();
+extern const std::string & get_api_engine ();
 extern const std::string & get_api_version ();
 extern const std::string & get_api_subdirectory ();
 extern const std::string & get_app_version ();

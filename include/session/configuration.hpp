@@ -28,7 +28,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2020-05-30
- * \updates       2024-09-11
+ * \updates       2024-09-22
  * \license       GNU GPLv2 or above
  *
  *  session::configuration contains and manages the data in a 'session'
@@ -89,7 +89,7 @@ public:
      *  for [session], [log], etc.
      */
 
-    using subdirectories = std::vector<std::string>;
+    using subdirectories = lib66::tokenization;
 
 private:
 
@@ -206,6 +206,8 @@ public:
     {
         return m_section_list;
     }
+
+    bool section_list_fill (const lib66::tokenization & sects);
 
     const subdirectories & data_directories () const
     {

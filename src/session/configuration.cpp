@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2020-03-22
- * \updates       2024-09-11
+ * \updates       2024-09-l1
  * \license       GNU GPLv2 or above
  *
  *  What is a session configuration? It is a setup of the following
@@ -267,6 +267,25 @@ configuration::parse
 }
 
 #endif
+
+bool
+configuration::section_list_fill (const lib66::tokenization & sects)
+{
+    bool result = sects.size() > 0;
+    if (result)
+    {
+        section_list().clear();
+        for (const auto & s : sects)
+        {
+            std::string item = s;
+            if (s.front() != '[' && s.back() != ']')
+                item = "[" + s + "]";
+
+            section_list().push_back(item);
+        }
+    }
+    return result;
+}
 
 }           // namespace session
 

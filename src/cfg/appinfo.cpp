@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2017-03-12
- * \updates       2024-08-26
+ * \updates       2024-09-24
  * \license       GNU GPLv2 or above
  *
  *  The first part of this file defines a couple of global structure
@@ -320,6 +320,12 @@ void
 set_api_engine (const std::string & aengine)
 {
     app_info().m_api_engine = aengine;
+}
+
+void
+set_api_version (const std::string & v)
+{
+    app_info().m_api_version = v;
 }
 
 void
@@ -653,12 +659,6 @@ get_client_tag (lib66::msglevel el)
     }
 }
 
-const std::string &
-get_icon_name ()
-{
-    return app_info().m_app_icon_name;
-}
-
 /**
  *  Returns the name of the package for the application. This is the name of
  *  the product ("Seq66") no matter what executable has been generated.
@@ -800,8 +800,8 @@ get_build_details ()
         << "Tag: " << get_client_name_tag() << "\n"
         ;
 
-    if (! get_icon_name().empty())
-        result << "Icon: " << get_icon_name() << "\n";
+    if (! get_app_icon_name().empty())
+        result << "Icon: " << get_app_icon_name() << "\n";
 
     result
         << "Build OS: " << get_app_build_os() << "\n"

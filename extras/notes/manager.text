@@ -1,0 +1,54 @@
+
+Session manager containment and inheritance
+
+climanager
+
+    : manager
+
+    configuration
+
+        : basesettings (session config)
+
+            comments
+
+        sections = libs66::tokenization = vector<string>        [cfg]
+        subdirectories = libs66::tokenization = vector<string>  [data]
+
+        directories
+
+            entry {section, active, directory, basename, extension}
+            entries = vector<entry>
+            filespecs = map<string, string>
+
+
+
+Application information:
+
+    appinfo:
+
+        -   Kind : cli, gui, etc.
+        -   Name : executable name without "*.exe" as in "qseq66"
+        -   Version : name + version  as in "qseq66 0.99.2"
+        -   Main config section name : as in "[Seq66]"
+        -   Home config directory : "~/.config/appname" --home, -h
+        -   Home config file : appname.session or .rc, --config, -c
+        -   Client name : generic app name as in "seq66".
+        -   Tag : short name + version as in "seq66 0.99.2"
+        -   Arg 0 : Path to the executable
+        -   Package name : as in "SEQ66" or "Seq66"
+        -   Icon name : as in "seq66.ico" etc.
+        -   Version text : constructed from name and version
+        -   API engine : as in "JACK" or "ALSA" for audio/MIDI
+        -   API version : the API's official version number
+        -   GUI (framework) version : as in "Qt 6.1" or "Gtkmm 3.0"
+        -   Client name short : as in "seq66-0"
+        -   Client name tag : as in "[seq66]", in error messages
+
+    basesettings:
+
+        -   File name for a configuration file
+        -   Modified
+        -   Configuration format : as in "INI", "JSON"
+        -   Configuration type : as in "rc", "usr", "session"....
+
+TO DO: Make a set of LaTeX tables.
