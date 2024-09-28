@@ -841,6 +841,28 @@ get_runtime_details ()
     return result.str();
 }
 
+#if defined USE_THIS_CODE
+
+/**
+ *  Looks up a variable such as "$home".
+ */
+
+std::string
+get_app_variable (const std::string & variable)
+{
+    std::string result;
+    if (variable.length() > 1)
+    {
+        if (variable.front() == '$')
+        {
+        }
+    }
+    return result;
+}
+
+
+#endif
+
 }           // namespace cfg
 
 /*

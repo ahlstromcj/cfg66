@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2024-09-13
+ * \updates       2024-09-27
  * \license       GNU GPLv2 or above
  *
  *  std::streamoff is a signed integral type (usually long long) that can
@@ -173,7 +173,7 @@ configfile::parse_section_option
 )
 {
     std::string result;
-    if (line_after(file, secname, 0, false))   /* 1st line w/out strip */
+    if (line_after_section(file, secname, 0, false)) /* 1st line w/out strip */
     {
         do
         {
@@ -419,9 +419,9 @@ configfile::next_data_line (std::ifstream & file, bool strip)
 }
 
 /**
- *  Acts like a combination of line_after() and next_data_line(), but requires
- *  a specific variable-name to be found.  For example, given the following
- *  lines (blank lines are simply ignored):
+ *  Acts like a combination of position_of_section() and next_data_line(), but
+ *  requires a specific variable-name to be found.  For example, given the
+ *  following lines (blank lines are simply ignored):
  *
 \verbatim
         [loop-control]
@@ -442,7 +442,7 @@ configfile::next_data_line (std::ifstream & file, bool strip)
  * \param file
  *      Provides the file-stream that is being read.
  *
- * \param tag
+ * \param s
  *      Provides the section tag (e.g. "[midi-control]") to be found before
  *      the variable name parameter can be processed. If empty, it is assumed
  *      that the tag has been found already.
@@ -454,7 +454,7 @@ configfile::next_data_line (std::ifstream & file, bool strip)
  *      Indicates the position to seek to, which defaults to 0
  *      (std::iso::beg).  A non-default value is useful to speed up parsing in
  *      cases where sections are always ordered or when a number of value lines
- *      are expected..
+ *      are expected.
  *
  * \return
  *      If the "variablename = value" clause is found, then the the value that
@@ -467,7 +467,7 @@ std::string
 configfile::get_variable
 (
     std::ifstream & file,
-    const std::string & tag,
+    const std::string & s,
     const std::string & variablename,
     int position
 )
@@ -475,8 +475,8 @@ configfile::get_variable
     std::string result = util::questionable_string();   /* for missing tag  */
     for
     (
-        bool done = ! line_after(file, tag, position);
-        ! done; done = ! next_data_line(file)
+        bool done = ! line_after_section(file, s, position); ! done;
+        done = ! next_data_line(file)
     )
     {
         if (! line().empty())                           /* any value?       */
@@ -638,13 +638,13 @@ bool
 configfile::get_boolean
 (
     std::ifstream & file,
-    const std::string & tag,
+    const std::string & s,
     const std::string & variablename,
     int position,
     bool defalt
 )
 {
-    std::string value = get_variable(file, tag, variablename, position);
+    std::string value = get_variable(file, s, variablename, position);
     return util::string_to_bool(value, defalt);
 }
 
@@ -750,12 +750,12 @@ int
 configfile::get_integer
 (
     std::ifstream & file,
-    const std::string & tag,
+    const std::string & s,
     const std::string & variablename,
     int position
 )
 {
-    std::string value = get_variable(file, tag, variablename, position);
+    std::string value = get_variable(file, s, variablename, position);
     int result = sm_int_missing;
     if (! util::is_missing_string(value))               /* ! value.empty()  */
     {
@@ -788,12 +788,12 @@ float
 configfile::get_float
 (
     std::ifstream & file,
-    const std::string & tag,
+    const std::string & s,
     const std::string & variablename,
     int position
 )
 {
-    std::string value = get_variable(file, tag, variablename, position);
+    std::string value = get_variable(file, s, variablename, position);
     float result = sm_float_missing;
     if (! util::is_missing_string(value))               /* ! value.empty()  */
     {
@@ -857,13 +857,13 @@ bool
 configfile::get_file_status
 (
     std::ifstream & file,
-    const std::string & tag,
+    const std::string & s,
     std::string & filename,     /* side-effect */
     int position
 )
 {
-    bool result = get_boolean(file, tag, "active", position);
-    filename = util::strip_quotes(get_variable(file, tag, "name", position));
+    bool result = get_boolean(file, s, "active", position);
+    filename = util::strip_quotes(get_variable(file, s, "name", position));
     if (util::is_missing_string(filename))                /* filename.empty()     */
     {
         result = false;
@@ -880,14 +880,14 @@ void
 configfile::write_file_status
 (
     std::ofstream & file,
-    const std::string & tag,
+    const std::string & desc,
     const std::string & filename,
     bool status
 )
 {
     std::string quoted = util::add_quotes(filename);
     file
-        << "\n" << tag << "\n\n"
+        << "\n" << desc << "\n\n"
         << "active = " << util::bool_to_string(status) << "\n"
         << "name = " << quoted << "\n"
         ;
@@ -914,10 +914,10 @@ configfile::write_comment
 }
 
 /**
- *  Looks for the next named section.  Unlike line_after(), it does not
- *  restart from the beginning of the file.  Like next_data_line(), it starts
- *  at the current line in the file.  This makes it useful in parsing files,
- *  such as a playlist, that have multiple sections with the same name.
+ *  Looks for the next named section.  Unlike line_at/after_section(), it does
+ *  not restart from the beginning of the file.  Like next_data_line(), it
+ *  starts at the current line in the file.  This makes it useful in parsing
+ *  files, such as a playlist, that have multiple sections with the same name.
  *
  *  Note one other quirk.  If we are on a line matching the tag, then we do
  *  not search, but instead use that line.  The reason is that the
@@ -931,21 +931,21 @@ configfile::write_comment
  *      However, the caller must either close the file explicitly or open it
  *      on the stack.
  *
- * \param tag
- *      Provides a tag to be found.  Lines are read until a match occurs
- *      with this tag.  Normally, the tag is a section marker, such as
- *      "[user-interface]".  Best to assume an exact match is needed.
+ * \param s
+ *      Provides a section tag to be found.  Lines are read until a match
+ *      occurs with this tag.  Normally, the section tag is a section marker,
+ *      such as "[user-interface]".  Best to assume an exact match is needed.
  *
  * \return
  *      Returns true if the tag was found.  Otherwise, false is returned.
  */
 
 bool
-configfile::next_section (std::ifstream & file, const std::string & tag)
+configfile::next_section (std::ifstream & file, const std::string & s  )
 {
     bool result = false;
     file.clear();
-    if (tag == m_line)
+    if (s   == m_line)
     {
         result = true;
     }
@@ -954,7 +954,7 @@ configfile::next_section (std::ifstream & file, const std::string & tag)
         bool ok = get_line(file);       /* fills in m_line as a side-effect */
         while (ok)                      /* includes the EOF check           */
         {
-            result = util::strncompare(m_line, tag);
+            result = util::strncompare(m_line, s   );
             if (result)
             {
                 break;
@@ -974,8 +974,41 @@ configfile::next_section (std::ifstream & file, const std::string & tag)
     return result;
 }
 
+int
+configfile::position_of_section
+(
+    std::ifstream & file,
+    const std::string & s
+)
+{
+    file.clear();                               /* clear the file flags     */
+    file.seekg(std::streampos(0), std::ios::beg); /* seek to beginning      */
+    m_line_number = 0;                          /* back to beginning        */
+
+    bool ok = section_name_valid(s);            /* must be like "[xyz]"     */
+    if (ok)
+        ok = get_line(file, true);              /* trims spaces/comments    */
+
+    while (ok)                                  /* includes the EOF check   */
+    {
+        ok = util::strncompare(m_line, s);
+        if (ok)
+        {
+            break;
+        }
+        else
+        {
+            if (file.bad())
+                util::error_message("bad file stream reading config file");
+            else
+                ok = get_line(file);            /* trims the white space    */
+        }
+    }
+    return line_position();
+}
+
 /**
- *  This function gets a specific line of text, specified as a tag.
+ *  This function gets a specific line of text, specified as a section tag.
  *  Then it gets the next non-blank line (i.e. data line) after that.
  *  This function is normally used to find major sections enclosed in brackets,
  *  such as "[midi-control]".
@@ -991,10 +1024,15 @@ configfile::next_section (std::ifstream & file, const std::string & tag)
  *      However, the caller must either close the file explicitly or open it
  *      on the stack.
  *
- * \param tag
- *      Provides a tag to be found.  Lines are read until a match occurs
- *      with this tag. Normally, the tag is a section marker, such as
- *      "[user-interface]". Best to assume an exact match is needed.
+ * \param s
+ *      Provides a section tag to be found.  Lines are read until a match
+ *      occurs with this tag. Normally, the tag is a section marker, such as
+ *      "[user-interface]". Assumptions:
+ *
+ *          -   An exact match is needed, both in length and case.
+ *          -   The section name is at the beginning of the line.
+ *              [getline() trims the line at both ends.]
+ *          -   There is nothing after the section name.
  *
  * \param position
  *      Indicates the position to seek to, which defaults to 0
@@ -1007,13 +1045,17 @@ configfile::next_section (std::ifstream & file, const std::string & tag)
  *
  * \return
  *      Returns true if the tag was found. Otherwise, false is returned.
+ *
+ * \sideeffect
+ *      This function also changes the position in the stream. The
+ *      line_position() function can be used to speed things up.
  */
 
 bool
-configfile::line_after
+configfile::line_after_section
 (
     std::ifstream & file,
-    const std::string & tag,
+    const std::string & s,
     int position,
     bool strip
 )
@@ -1023,10 +1065,13 @@ configfile::line_after
     file.seekg(std::streampos(position), std::ios::beg); /* seek to spot    */
     m_line_number = 0;                          /* back to beginning        */
 
-    bool ok = get_line(file, true);             /* trims spaces/comments    */
+    bool ok = section_name_valid(s);            /* must be like "[xyz]"     */
+    if (ok)
+        ok = get_line(file, true);              /* trims spaces/comments    */
+
     while (ok)                                  /* includes the EOF check   */
     {
-        result = util::strncompare(m_line, tag);
+        result = util::strncompare(m_line, s);
         if (result)
         {
             break;
@@ -1046,17 +1091,17 @@ configfile::line_after
 }
 
 /**
- *  Like line_after, finds a tag, but merely marks the position preceding the
- *  tag.  The idea is to find a number of tags that might be ordered by number.
- *  Also useful when changes are made to tag names, to detect legacy names for
- *  section tags.
+ *  Like line_after_section(), finds a tag, but merely marks the position
+ *  preceding the tag.  The idea is to find a number of tags that might be
+ *  ordered by number.  Also useful when changes are made to tag names, to
+ *  detect legacy names for section tags.
  *
  * \param file
  *      Points to the input file stream.
  *
- * \param tag
- *      Provides a tag to be found, which, for this function, is usually a
- *      partial tag, such as "[Drum".  Spaces are signficant!
+ * \param s
+ *      Provides a section tag to be found, which, for this function, is
+ *      usually a partial tag, such as "[Drum".  Spaces are signficant!
  *
  * \return
  *      Returns the position of the line before the tag, converted to an
@@ -1064,7 +1109,7 @@ configfile::line_after
  */
 
 int
-configfile::find_tag (std::ifstream & file, const std::string & tag)
+configfile::find_section (std::ifstream & file, const std::string & s)
 {
     int result = (-1);
     file.clear();                               /* clear the file flags     */
@@ -1074,7 +1119,7 @@ configfile::find_tag (std::ifstream & file, const std::string & tag)
     bool ok = get_line(file, true);             /* trims spaces/comments    */
     while (ok)                                  /* includes the EOF check   */
     {
-        bool match = util::strncompare(m_line, tag);
+        bool match = util::strncompare(m_line, s);
         if (match)
         {
             result = line_position();           /* int(m_line_position)     */
@@ -1098,37 +1143,54 @@ configfile::find_tag (std::ifstream & file, const std::string & tag)
  * \verbatim
  *      [Drum 33]
  * \endverbatim
+ *
+ * \param s
+ *      Provides the partial section tage to be found.
+ *
+ * \return
+ *      Returns the integer represented by the first string of digits
+ *      encountered.
  */
 
 int
-configfile::get_tag_value (const std::string & tag)
+configfile::get_section_value (const std::string & s)
 {
     int result = (-1);
-    auto pos = tag.find_first_of("0123456789");
+    auto pos = s.find_first_of("0123456789");
     if (pos != std::string::npos)
     {
-        std::string buff = tag.substr(pos);     /* "35]" */
+        std::string buff = s.substr(pos);     /* "35]" */
         result = util::string_to_int(buff);
     }
     else
     {
-        std::string msg = tag;
-        msg += " tag has no integer value";
-        util::error_message(tag);
+        std::string msg = s;
+        msg += " section has no integer value";
+        util::error_message(s);
     }
     return result;
 }
 
+/**
+ *  Outputs the data and a description tag string, along with version text.
+ *
+ * \param file
+ *      Provides the output stream.
+ *
+ * \param desc
+ *      Provides the descriptive text.
+ */
+
 void
-configfile::write_date (std::ofstream & file, const std::string & tag)
+configfile::write_date (std::ofstream & file, const std::string & desc)
 {
     std::string ver = get_app_version_text();
     if (ver.empty())
         ver = "an application";
 
     file << "# Cfg66-style configuration file for " << ver << "\n";
-    if (! tag.empty())
-        file << "# " << tag << "\n";
+    if (! desc.empty())
+        file << "# " << desc << "\n";
 
     file
         << "#\n# File: " << file_name() << "\n"
@@ -1204,6 +1266,48 @@ configfile::set_up_ifstream (std::ifstream & instream)
         snprintf(temp, sizeof temp, "Read open fail: %s\n", file_name().c_str());
         result = make_error_message(file_type(), temp);
     }
+    return result;
+}
+
+/**
+ *  Verifies that the string is of the form "[xyz]".
+ */
+
+bool
+configfile::section_name_valid (const std::string & s)
+{
+    bool result = s.length() > 2;
+    if (result)
+        result = s.front() == '[' && s.back() == ']';
+
+    return result;
+}
+
+std::string
+configfile::make_section_name (const std::string & s)
+{
+    std::string result = s;
+    if (! section_name_valid(result))
+    {
+        if (result.front() != '[')
+            result = "[" + s;
+
+        if (result.back() != ']')
+            result += "]";
+    }
+    return result;
+}
+
+std::string
+configfile::strip_section_name (const std::string & s)
+{
+    std::string result = s;
+    if (result.front() == '[')
+        result = result.substr(1);
+
+    if (result.back() == ']')
+        result = result.substr(0, result.length() - 1);
+
     return result;
 }
 

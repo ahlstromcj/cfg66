@@ -25,13 +25,17 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2020-03-22
- * \updates       2024-08-10
+ * \updates       2024-09-27
  * \license       GNU GPLv2 or above
- *
  *
  *  This class provides directories and files for a "session".  In this base
  *  implementation, a "session" is merely a single common location to put
  *  directories and files.
+ *
+ *  The first item needed comes from the "[Cfg66]:home" variable, which might
+ *  be obtained from cfg::appinfo (and is called "$home", and can be modified
+ *  by the "--home" command-line option), or be received from a session
+ *  manager.
  *
  *  Configuration name components:
  *
@@ -102,22 +106,11 @@ namespace session
 {
 
 /**
- *  By default, "rc" and "logs" directories are constructed using the "home"
- *  configuration directory.
- */
-
-static directories::entries s_default_directories
-{
-    { "rc",     true,   "",     "",     ".rc"   },
-    { "logs",   true,   "",     "",     ".log"  }
-};
-
-/**
  *  Default constructor.  Uses functions from the appinfo module.
  */
 
 directories::directories () :
-    m_file_entries          (s_default_directories),
+    m_file_entries          (),
     m_file_specs            (),
     m_home_config_path      (cfg::get_home_cfg_directory()),
     m_session_path          (cfg::get_home_cfg_directory()),
@@ -126,15 +119,38 @@ directories::directories () :
     (void) make_file_specs();
 }
 
+bool
+directories::add_entry (const entry & ent)
+{
+    file_entries().push_back(ent);
+    return ent.ent_active;
+}
+
+bool
+directories::add_entry
+(
+    bool active,
+    const std::string & subdir,
+    const std::string & basename,
+    const std::string & ext
+)
+{
+    bool result = ext.front() == '.';
+    if (result)
+    {
+        entry e;
+        e.ent_section = ext.substr(1);
+        e.ent_active = active;
+        e.ent_directory = subdir;
+        e.ent_basename = basename;
+        e.ent_extension = ext;
+        result = add_entry(e);
+    }
+    return result;
+}
+
 /**
  *  Fills in the parts of the path names.
- *
- * \param fileentries
- *      Provides a list of file entries.
- *
- * \param name
- *      Provides a tag-name for the set of paths/files, mostly for information
- *      for the user.
  *
  * \param sessiondir
  *      The root of all evil.  Provides the application's "home" directory,
@@ -146,24 +162,17 @@ directories::directories () :
  *      -   Empty:  the appinfo function cfg::get_home_cfg_directory() yields
  *          "$HOME/.config/appname"
  *      The m_session_path_override member is set to true if a hardwired path
- *      has been provided.
+ *      has been provided.  the directory immediately under \a sessiondir, such
+ *      as "seq66" is included.
  *
- * \param appsubdir
- *      Provides the name of the directory immediately under \a sessiondir,
- *      such as "seq66" as in "~/.config/seq66/test.rc".  If empty, the
- *      "app name" is retrieved and used.
- *
- * \param cfgbasename
- *      Provides the base-name (e.g. "quirks" in "quirks.rc" of the
- *      configuration file name.  Often this will be the same as the
- *      \a appsubdir paramater, as in "~/.config/seq66/seq66.rc".
- *
+ * \param fileentries
+ *      Provides a list of file entry structures.
  */
 
 directories::directories
 (
-    directories::entries & fileentries,
-    const std::string & sessiondir      // TODO: flag usage by session mgr
+    const std::string & sessiondir,
+    directories::entries & fileentries
 ) :
     m_file_entries          (fileentries),
     m_file_specs            (),
@@ -179,6 +188,28 @@ directories::directories
     (void) make_file_specs();
 }
 
+directories::directories
+(
+    const std::string & sessiondir,
+    const lib66::tokenization & fileentries
+) :
+    m_file_entries          (),
+    m_file_specs            (),
+    m_home_config_path      (cfg::get_home_cfg_directory()),
+    m_session_path          (sessiondir),
+    m_session_path_override (false)
+{
+    for (const auto & f : fileentries)
+    {
+        entry e = split_filename(f);
+        m_file_entries.push_back(e);
+
+        bool ok = make_file_spec(e);
+        if (! ok)
+            break;
+    }
+}
+
 /**
  *  This might be a good place to save the files. Or not.
  */
@@ -189,16 +220,48 @@ directories::~directories ()
 }
 
 /**
+ *  Extracts components of a full path file-specification into an
+ *  active entry (if valid)
+ */
+
+directories::entry
+directories::split_filename (const std::string & fullpath)
+{
+    entry result;
+    std::string path;                           /* can end up empty         */
+    std::string filebare;                       /* will not have extension  */
+    std::string ext;                            /* can end up empty         */
+    bool ok = util::filename_split_ext(fullpath, path, filebare, ext);
+    if (ok)
+    {
+        if (ext.empty())
+        {
+            ok = false;
+        }
+        else
+        {
+            ok = ext.front() == '.';
+            if (ok)
+            {
+                result.ent_section = ext.substr(1);
+                result.ent_extension = ext;
+                result.ent_directory = path;
+                result.ent_basename = filebare;
+                result.ent_extension = ext;
+            }
+        }
+    }
+    result.ent_active = ok;
+    return result;
+}
+
+/**
  *  Adds a directory entry to the list, and optionally creates the
  *  directory as well.
  */
 
 bool
-directories::make_file_spec
-(
-    const directories::entry & dentry,
-    bool makedirectory
-)
+directories::make_file_spec (const directories::entry & dentry)
 {
     bool result = dentry.ent_active;
     if (result)
@@ -221,9 +284,7 @@ directories::make_file_spec
          * make sure it works.
          */
 
-        if (makedirectory)
-            result = util::make_directory_path(directory);
-
+        result = util::make_directory_path(directory);
         if (result)
         {
             if (basename.empty())
@@ -246,12 +307,12 @@ directories::make_file_spec
 }
 
 bool
-directories::make_file_specs (bool makedirectory)
+directories::make_file_specs ()
 {
     bool result = false;
     for (const auto & specentry : m_file_entries)
     {
-        result = make_file_spec(specentry, makedirectory);
+        result = make_file_spec(specentry);
         if (! result)
             break;
     }

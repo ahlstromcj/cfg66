@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2020-03-22
- * \updates       2024-09-l1
+ * \updates       2024-09-27
  * \license       GNU GPLv2 or above
  *
  *  What is a session configuration? It is a setup of the following
@@ -114,7 +114,7 @@ configuration::configuration () :
         "A session specifying only the configuration and log directories.",
         0
     ),
-    m_dir_manager       (),                 /* default rc & log directories */
+    m_dir_manager       (),                 /* empty [cfg] file directories */
     m_section_list      (),                 /* vector of section names      */
     m_data_directories  (),                 /* vector of subdirectory names */
     m_auto_option_save  (false),            /* save rc, usr, etc.           */

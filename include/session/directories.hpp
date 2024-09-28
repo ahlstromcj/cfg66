@@ -28,7 +28,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2020-05-30
- * \updates       2024-01-15
+ * \updates       2024-09-27
  * \license       GNU GPLv2 or above
  *
  *  This class provides directories for a "session".  In this base
@@ -45,6 +45,8 @@
  *  Compare this module to the cfg/appinfo module, which does not support the
  *  concept of a session, but can provide the basic/default configuration
  *  directory expected in the operating system.
+ *
+ *  See the cpp banner for more information.
  */
 
 #include <map>                          /* std::map<>                       */
@@ -177,8 +179,13 @@ public:
     directories ();
     directories
     (
-        entries & fileentries,
-        const std::string & sessiondir = ""
+        const std::string & sessiondir,
+        entries & fileentries
+    );
+    directories
+    (
+        const std::string & sessiondir,
+        const lib66::tokenization & fileentries
     );
     directories (const directories &) = default;
     directories (directories &&) = delete;
@@ -226,14 +233,20 @@ public:
         return m_file_specs;
     }
 
+    bool add_entry (const entry & ent);
+    bool add_entry
+    (
+        bool active,
+        const std::string & subdir,
+        const std::string & basename,
+        const std::string & ext
+    );
+
 protected:
 
-    bool make_file_spec
-    (
-        const directories::entry & dentry,
-        bool makedirectory = true
-    );
-    bool make_file_specs (bool makedirectory = true);
+    entry split_filename (const std::string & fullpath);
+    bool make_file_spec (const directories::entry & dentry);
+    bool make_file_specs ();
 
 protected:
 

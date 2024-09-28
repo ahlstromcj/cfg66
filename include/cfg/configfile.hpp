@@ -28,7 +28,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2024-09-13
+ * \updates       2024-09-27
  * \license       GNU GPLv2 or above
  *
  *  This is actually an elegant little parser, and works well as long as one
@@ -311,6 +311,9 @@ public:
 protected:
 
     bool set_up_ifstream (std::ifstream & instream);
+    bool section_name_valid (const std::string & s);
+    std::string make_section_name (const std::string & s);
+    std::string strip_section_name (const std::string & s);
 
     static void append_error_message (const std::string & msg);
     static bool make_error_message
@@ -386,26 +389,31 @@ protected:
     }
 
     bool get_line (std::ifstream & file, bool strip = true);
-    bool line_after
+    int position_of_section
     (
         std::ifstream & file,
-        const std::string & tag,
+        const std::string & s
+    );
+    bool line_after_section
+    (
+        std::ifstream & file,
+        const std::string & s,
         int position = 0,
         bool strip = true
     );
-    int find_tag (std::ifstream & file, const std::string & tag);
-    int get_tag_value (const std::string & tag);
+    int find_section (std::ifstream & file, const std::string & s);
+    int get_section_value (const std::string & s);
     void write_date
     (
         std::ofstream & file,
-        const std::string & tag = ""
+        const std::string & desc = ""
     );
     bool next_data_line (std::ifstream & file, bool strip = true);
-    bool next_section (std::ifstream & file, const std::string & tag);
+    bool next_section (std::ifstream & file, const std::string & s);
     std::string get_variable
     (
         std::ifstream & file,
-        const std::string & tag,
+        const std::string & s,
         const std::string & variablename,
         int position = 0
     );
@@ -438,7 +446,7 @@ protected:
     bool get_boolean
     (
         std::ifstream & file,
-        const std::string & tag,
+        const std::string & s,
         const std::string & variablename,
         int position = 0,
         bool defalt = false
@@ -452,7 +460,7 @@ protected:
     int get_integer
     (
         std::ifstream & file,
-        const std::string & tag,
+        const std::string & s,
         const std::string & variablename,
         int position = 0
     );
@@ -466,7 +474,7 @@ protected:
     float get_float
     (
         std::ifstream & file,
-        const std::string & tag,
+        const std::string & s,
         const std::string & variablename,
         int position = 0
     );
@@ -486,14 +494,14 @@ protected:
     bool get_file_status
     (
         std::ifstream & file,
-        const std::string & tag,
+        const std::string & s,
         std::string & filename,         /* a side-effect for returning name */
         int position = 0
     );
     void write_file_status
     (
         std::ofstream & file,
-        const std::string & tag,
+        const std::string & s,
         const std::string & filename,
         bool status
     );

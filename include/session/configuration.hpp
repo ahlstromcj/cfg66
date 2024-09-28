@@ -28,7 +28,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2020-05-30
- * \updates       2024-09-22
+ * \updates       2024-09-28
  * \license       GNU GPLv2 or above
  *
  *  session::configuration contains and manages the data in a 'session'
@@ -66,7 +66,7 @@ namespace session
 
 class configuration : public cfg::basesettings
 {
-    friend class cfgfile;
+    friend class configfile;
     friend class manager;
 
 public:
@@ -200,6 +200,22 @@ public:
     const directories::entries & file_entries () const
     {
         return dir_manager().file_entries();
+    }
+
+    bool add_dir_entry (const directories::entry & ent)
+    {
+        return dir_manager().add_entry(ent);
+    }
+
+    bool add_dir_entry
+    (
+        bool active,
+        const std::string & subdir,
+        const std::string & basename,
+        const std::string & ext
+    )
+    {
+        return dir_manager().add_entry(active, subdir, basename, ext);
     }
 
     const sections & section_list () const

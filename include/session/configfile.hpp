@@ -1,5 +1,5 @@
-#if ! defined CFG66_SESSION_CFGFILE_HPP
-#define CFG66_SESSION_CFGFILE_HPP
+#if ! defined CFG66_SESSION_CONFIGFILE_HPP
+#define CFG66_SESSION_CONFIGFILE_HPP
 
 /*
  *  This file is part of cfg66.
@@ -20,7 +20,7 @@
  */
 
 /**
- * \file          cfgfile.hpp
+ * \file          configfile.hpp
  *
  *  This module declares an INI-handling class using cfg::configfile
  *  functions.
@@ -28,10 +28,10 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2024-09-09
- * \updates       2024-09-11
+ * \updates       2024-09-28
  * \license       GNU GPLv2 or above
  *
- *  An cfgfile is a cfg::configfile that overrides the parse() and write()
+ *  An configfile is a cfg::configfile that overrides the parse() and write()
  *  functions.
  */
 
@@ -48,7 +48,7 @@ class configuration;
  *    the "generic" options setup..
  */
 
-class cfgfile : public cfg::configfile
+class configfile : public cfg::configfile
 {
 
 private:
@@ -57,38 +57,44 @@ private:
 
 public:
 
-    cfgfile () = delete;
-    cfgfile
+    configfile () = delete;
+    configfile
     (
         configuration & parent,
         const std::string & filename    = "",
         const std::string & cfgtype     = ""
     );
 
-    cfgfile (cfgfile &&) = delete;
-    cfgfile (const cfgfile &) = delete;
-    cfgfile & operator = (const cfgfile &) = delete;
-    cfgfile & operator = (cfgfile &&) = delete;
-    virtual ~cfgfile() = default;
+    configfile (configfile &&) = delete;
+    configfile (const configfile &) = delete;
+    configfile & operator = (const configfile &) = delete;
+    configfile & operator = (configfile &&) = delete;
+    virtual ~configfile() = default;
 
     virtual bool parse () override;
     virtual bool write () override;
 
 protected:
 
+    directories::entry parse_dir_entry
+    (
+        std::ifstream & file,
+        const std::string & s
+    );
+
     configuration & parent ()
     {
         return m_parent;
     }
 
-};          // class cfgfile
+};          // class configfile
 
 }           // namespace session
 
-#endif      // CFG66_SESSION_CFGFILE_HPP
+#endif      // CFG66_SESSION_CONFIGFILE_HPP
 
 /*
- * cfgfile.hpp
+ * configfile.hpp
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
