@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2018-11-10
- * \updates       2024-04-30
+ * \updates       2024-09-30
  * \license       GNU GPLv2 or above
  *
  *  One of the big features of some of these functions is writing the name
@@ -74,8 +74,21 @@ namespace util
  *  also set these options.
  */
 
+static bool s_is_quiet = false;
 static bool s_is_verbose = false;
 static bool s_is_investigate = false;
+
+void
+set_quiet (bool flag)
+{
+    s_is_quiet = flag;
+}
+
+bool
+quiet ()
+{
+    return s_is_quiet;
+}
 
 void
 set_verbose (bool flag)

@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom and other authors; see documentation
  * \date          2018-11-10
- * \updates       2024-04-30
+ * \updates       2024-09-30
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
@@ -53,8 +53,12 @@ namespace util
 const int c_async_safe_utoa_size = 24;
 
 /*
- * Global functions. There is also a verbose setting in cli::parser.
+ * Global functions. There is also a quiet and a verbose setting in
+ * cli::parser.
  */
+
+extern void set_quiet (bool flag);
+extern bool quiet ();
 
 extern void set_verbose (bool flag);
 extern bool verbose ();

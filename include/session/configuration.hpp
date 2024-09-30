@@ -28,7 +28,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2020-05-30
- * \updates       2024-09-28
+ * \updates       2024-09-30
  * \license       GNU GPLv2 or above
  *
  *  session::configuration contains and manages the data in a 'session'
@@ -39,6 +39,7 @@
 #include <string>                       /* std::string                      */
 #include <vector>                       /* std::vector                      */
 
+#include "cpp_types.hpp"                /* lib66::tokenization              */
 #include "cfg/basesettings.hpp"         /* cfg::basesettings class          */
 #include "session/directories.hpp"      /* session::directories             */
 
@@ -86,7 +87,8 @@ public:
     /**
      *  Provides a list of sub-directories to be created in the $home
      *  directory. These are in addition to any sub-directories specified
-     *  for [session], [log], etc.
+     *  for [session], [log], etc. These are data application data directories
+     *  specified in the "[data]" section.
      */
 
     using subdirectories = lib66::tokenization;

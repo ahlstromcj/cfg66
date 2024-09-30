@@ -54,9 +54,7 @@
 #include <string>                       /* std::string class                */
 #include <vector>                       /* std::vector template class       */
 
-/*
- *  Do not document a namespace; it breaks Doxygen.
- */
+#include "cpp_types.hpp"                /* lib66::tokenization              */
 
 namespace session
 {

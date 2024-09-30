@@ -1,5 +1,7 @@
 # Sample "session" file.
-
+#
+# 2024-09-30
+#
 # session-path represents the desired session directory. If empty, it is
 # simply the application's configuration directory as returned by
 # cfg::get_home_cfg_directory() [e.g. "~/.config/seq66v2"].  The caller can
@@ -23,12 +25,14 @@
 # 'config-type' indicates the expected format of this INI file. It is included
 # in every INI file, and it's essentially the extension ("rc", "usr", ...).
 #
-# 'quiet' disables showing error prompts at application startup.
-#
 # 'home' is the location of the configuration files for the session. If
 # empty, then the default application $home is used.
 #
-# 'verbose' indicates to show additional information during the run.
+# 'quiet' disables showing warning prompts at application startup. It is
+# supported in the cli::parser and util::msgfunctions modules as well.
+#
+# 'verbose' indicates to show additional information during the run. It is
+# supported in the cli::parser and util::msgfunctions modules as well.
 #
 # 'version' indicates the ordinal version of this file, useful in upgrading
 # the session file. This value is included in all configuration files.

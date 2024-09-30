@@ -27,7 +27,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-08
+ * \updates       2024-09-30
  * \license       See above.
  *
  *  Provides for the handling of options specifications.  This module is
@@ -38,6 +38,7 @@
  *
  *      -h, --help
  *      -v, --version
+ *      -Q, --quiet
  *      -V, --verbose
  *      -o, --option log=file.log
  *
@@ -112,6 +113,7 @@ private:
      */
 
     bool m_version_request;
+    bool m_quiet_request;
     bool m_verbose_request;
     bool m_inspect_request;
     bool m_investigate_request;
@@ -390,6 +392,16 @@ public:
         return m_version_request;
     }
 
+    bool quiet () const
+    {
+        return m_quiet_request;
+    }
+
+    bool quiet_request () const
+    {
+        return quiet();
+    }
+
     bool verbose () const
     {
         return m_verbose_request;
@@ -435,6 +447,11 @@ protected:
     void version_request (bool flag)
     {
         m_version_request = flag;
+    }
+
+    void quiet_request (bool flag)
+    {
+        m_quiet_request = flag;
     }
 
     void verbose_request (bool flag)

@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-31
+ * \updates       2024-09-30
  * \license       See above.
  *
  *  The cli::options class provides a way to hold the state of command-line
@@ -1599,7 +1599,7 @@ options::string_to_kind (const std::string & s)
  *
 \verbatim
         0123456789#@AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz
-                                   x                          xx
+                                   x                Q         xx
 \endverbatim
  *
  *  Note that we do not use common codes like 'i' (input) and 'o' (output).
@@ -1670,6 +1670,14 @@ global_options ()
                 options::code_null, options::kind::overflow, options::enabled,
                 "false", "", false, false,
                 "Handles 'overflow' options (no character code).", true
+            }
+        },
+        {
+            "quiet",
+            {
+                'Q', options::kind::boolean, options::enabled,
+                "false", "", false, false,
+                "Hide startup warnings.", true
             }
         },
         {
