@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-01-26
- * \updates       2024-09-05
+ * \updates       2024-10-01
  * \license       See above.
  *
  *  Also includes testing of session::manager.
@@ -36,6 +36,7 @@
 #include "cfg/appinfo.hpp"              /* cfg::appinfo functions           */
 #include "cfg/inimanager.hpp"           /* cfg::inimanager class            */
 #include "session/climanager.hpp"       /* session::climanager class        */
+#include "session/layout.hpp"           /* session::layout class            */
 #include "util/filefunctions.hpp"       /* util::file_write_string()        */
 #include "util/msgfunctions.hpp"        /* util::error_message()            */
 
@@ -76,7 +77,49 @@ cfg::appinfo s_application_info
     ""                                  // m_client_name_tag
 };
 
-/*
+/**
+ *  Default session options for initialization. See the session::configuration
+ *  and session::layout classes.
+ */
+
+session::layout::session_configuration s_session_cfg
+{
+    {                                   // sc_cfg66_main
+        true,                           //      scfg_auto_option_save
+        true,                           //      scfg_auto_data_save
+        "$home",                        //      sfcg_home
+        false,                          //      scfg_quiet
+        true                            //      scfg_verbose
+    },
+    "This session configuration is built from a structure in the manager test.",
+    3,                                  // sc_section_count
+    {                                   // sc_section_list
+        "session",
+        "log",
+        "rc"
+    },
+    1,                                  // sc_subdir_count
+    {                                   // sc_subdirs
+        "data"
+    },
+    {                                   // sc_entry_list
+        {                               //      [session]
+            "session",                  //          (redundant)
+            true,                       //          "active"
+            "cfg",                      //          "directory"
+            "cfg66",                    //          "basename"
+            ".session"                  //          "ext"
+        },
+        {
+            "log", true, "logs", "", ".log"
+        },
+        {
+            "rc", true, "cfg", "", ".rc"
+        }
+    }
+};
+
+/**
  *  Contains additions to the stock command-line options. These are options
  *  that are always present, and not associated with an INI file and INI
  *  section.

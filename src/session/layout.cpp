@@ -24,7 +24,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2024-09-30
- * \updates       2024-09-30
+ * \updates       2024-10-01
  * \license       GNU GPLv2 or above
  *
  */
@@ -57,7 +57,23 @@ layout::layout (const session_configuration & lay) :
 void
 layout::clear ()
 {
+    m_full_layout.sc_cfg66_main.scfg_auto_option_save = false;
+    m_full_layout.sc_cfg66_main.scfg_auto_data_save = false;
+    m_full_layout.sc_cfg66_main.scfg_home = "$home";
+    m_full_layout.sc_cfg66_main.scfg_quiet = false;
+    m_full_layout.sc_cfg66_main.scfg_verbose = false;
+    m_full_layout.sc_comments.clear();
     m_full_layout.sc_section_count = 0;
+    m_full_layout.sc_section_list.clear();
+    m_full_layout.sc_subdir_count = 0;
+    m_full_layout.sc_subdirs.clear();
+
+    /*
+     * This next one is a vector of structs without a count. The count
+     * is sc_section_count.
+     */
+
+    m_full_layout.sc_entry_list.clear();
 }
 
 }           // namespace session

@@ -28,7 +28,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2024-09-29
- * \updates       2024-09-30
+ * \updates       2024-10-01
  * \license       GNU GPLv2 or above
  *
  *  A session layout is a structure that can be used to set up an initial
@@ -66,7 +66,7 @@ public:
     {
         bool scfg_auto_option_save;
         bool scfg_auto_data_save;
-        bool scfg_home;
+        std::string scfg_home;
         bool scfg_quiet;
         bool scfg_verbose;
     };
@@ -74,11 +74,12 @@ public:
     using session_configuration = struct
     {
         sessioncfg66 sc_cfg66_main;
-        int sc_section_count;                       /* size of "[cfg]" section  */
-        configuration::sections sc_section_list;    /* lib66::tokenization vect */
-        int sc_subdir_count;                        /* size of "[data]" section */
-        configuration::subdirectories sc_subdirs;   /* lib66::tokenization vect */
-        directories::entries sc_entry_list;         /* vector of entry structs  */
+        std::string sc_comments;                    /* "[comments]" section */
+        int sc_section_count;                       /* size of "[cfg]"      */
+        configuration::sections sc_section_list;    /* lib66::tokenization  */
+        int sc_subdir_count;                        /* size of "[data]"     */
+        configuration::subdirectories sc_subdirs;   /* lib66::tokenization  */
+        directories::entries sc_entry_list;         /* vector of entry      */
     };
 
 private:

@@ -28,7 +28,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2020-05-30
- * \updates       2024-09-27
+ * \updates       2024-10-01
  * \license       GNU GPLv2 or above
  *
  *  This class provides directories for a "session".  In this base
