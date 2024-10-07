@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2018-11-10
- * \updates       2024-09-30
+ * \updates       2024-10-07
  * \license       GNU GPLv2 or above
  *
  *  One of the big features of some of these functions is writing the name
@@ -46,9 +46,7 @@
 #include <unistd.h>                     /* C::write(2), STDOUT_FILENO, etc  */
 #define S_WRITE     write               /* POSIX write(2)                   */
 
-#else
-
-#if defined PLATFORM_WINDOWS            /* Microsoft platform               */
+#elif defined PLATFORM_WINDOWS            /* Microsoft platform               */
 
 #include <io.h>                         /* C::_write()                      */
 
@@ -59,7 +57,12 @@
 #if defined PLATFORM_MSVC               /* Microsoft compiler vs MingW      */
 #define S_WRITE     _write              /* Microsoft's write()              */
 #endif
-#endif
+
+#else                                   /* Other environments, like Msys2   */
+
+#include <unistd.h>                     /* C::write(2), STDOUT_FILENO, etc  */
+#define S_WRITE     write               /* POSIX write(2)                   */
+
 #endif
 
 /*

@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2017-03-12
- * \updates       2024-09-24
+ * \updates       2024-10-07
  * \license       GNU GPLv2 or above
  *
  *  The first part of this file defines a couple of global structure
@@ -40,16 +40,20 @@
 #include "cfg/appinfo.hpp"              /* application information          */
 
 #if defined PLATFORM_UNIX
-#include <unistd.h>                     /* C::isatty(3), STDOUT_FILENO, etc */
-#endif
 
-#if defined PLATFORM_WINDOWS
+#include <unistd.h>                     /* C::isatty(3), STDOUT_FILENO, etc */
+
+#elif defined PLATFORM_WINDOWS
 
 #include <io.h>                         /* C::_isatty() for Windows         */
 
 #define STDIN_FILENO    0
 #define STDOUT_FILENO   1
 #define STDERR_FILENO   2
+
+#else                                   /* Other, such as the Msys2 environ */
+
+#include <unistd.h>                     /* C::isatty(3), STDOUT_FILENO, etc */
 
 #endif
 
@@ -87,16 +91,12 @@ static std::string s_path_separator     = "/";
  */
 
 #if defined PLATFORM_WINDOWS
-static std::string s_app_build_os    = "Windows 10";    /* FIXME    */
+static std::string s_app_build_os    = "Windows 1x";    /* FIXME    */
 static std::string s_app_build_issue = "Microsoft Windows";
-#endif
-
-#if defined PLATFORM_MACOSX
+#elif defined PLATFORM_MACOSX
 static std::string s_app_build_os    = "MacOSX";        /* FIXME    */
 static std::string s_app_build_issue = "Apple MacOSX";
-#endif
-
-#if defined PLATFORM_UNIX
+#elif defined PLATFORM_UNIX
 #if defined PLATFORM_LINUX
 static std::string s_app_build_os    = "Linux";
 static std::string s_app_build_issue = "Linux";         /* FIXME    */
@@ -107,6 +107,9 @@ static std::string s_app_build_issue = "FreeBSD";       /* FIXME    */
 static std::string s_app_build_os    = "UNIX";
 static std::string s_app_build_issue = "UNIX";          /* FIXME    */
 #endif
+#else
+static std::string s_app_build_os    = "Other platform";
+static std::string s_app_build_issue = "Other platform";
 #endif
 
 /**

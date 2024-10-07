@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2024-07-28
+ * \updates       2024-10-07
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -51,6 +51,12 @@
 #include "util/msgfunctions.hpp"        /* info/error message functions     */
 #include "util/filefunctions.hpp"       /* free functions in util n'space   */
 #include "util/strfunctions.hpp"        /* free functions in util n'space   */
+
+/**
+ *  Temporary kludge for realpath() not readily available in Msys2.
+ */
+
+#undef HAVE_REALPATH_FUNCTION
 
 /**
  *  All file-specifications internal to Seq66 and in its configuration files
@@ -144,6 +150,8 @@ using stat_t = struct stat;
 
 #endif                                  /* PLATFORM_MSVC      */
 
+#define HAVE_REALPATH_FUNCTION
+
 #else                                   /* non-Microsoft stuff follows      */
 
 #include <unistd.h>
@@ -164,7 +172,19 @@ using stat_t = struct stat;
 
 using stat_t = struct stat;
 
+#define HAVE_REALPATH_FUNCTION
+
 #endif                                  /* PLATFORM_WINDOWS           */
+
+#if ! defined HAVE_REALPATH_FUNCTION
+
+char *
+realpath (const char * first, char * /* second */)
+{
+    return first;
+}
+
+#endif
 
 /**
  *  A macro for the error code when a file does not exist.
