@@ -27,7 +27,7 @@
  * \library       Any application or library
  * \author        Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2024-03-11
+ * \updates       2024-10-09
  * \license       GNU GPLv2 or above
  *
  *  Copyright (C) 2013-2024 Chris Ahlstrom <ahlstromcj@gmail.com>
@@ -349,9 +349,14 @@
  * PLATFORM_WIN32_STRICT replaces checks for WIN32 with CYGWIN not defined.
  */
 
-#if defined __CYGWIN__ || __CYGWIN32__
+#if defined __CYGWIN__
+#if defined __CYGWIN32__
 #define PLATFORM_CYGWIN
 #define PLATFORM_WINDOWS_32
+#elif defined __CYGWIN64__
+#endif
+#define PLATFORM_CYGWIN
+#define PLATFORM_WINDOWS_64
 #else
 #if defined PLATFORM_WINDOWS_32
 #define PLATFORM_WIN32_STRICT
