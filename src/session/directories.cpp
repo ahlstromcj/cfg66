@@ -119,36 +119,6 @@ directories::directories () :
     (void) make_file_specs();
 }
 
-bool
-directories::add_entry (const entry & ent)
-{
-    file_entries().push_back(ent);
-    return ent.ent_active;
-}
-
-bool
-directories::add_entry
-(
-    bool active,
-    const std::string & subdir,
-    const std::string & basename,
-    const std::string & ext
-)
-{
-    bool result = ext.front() == '.';
-    if (result)
-    {
-        entry e;
-        e.ent_section = ext.substr(1);
-        e.ent_active = active;
-        e.ent_directory = subdir;
-        e.ent_basename = basename;
-        e.ent_extension = ext;
-        result = add_entry(e);
-    }
-    return result;
-}
-
 /**
  *  Fills in the parts of the path names.
  *
@@ -169,6 +139,8 @@ directories::add_entry
  *      Provides a list of file entry structures.
  */
 
+#if defined USE_DIRECTORIES_ENTRIES_CTOR
+
 directories::directories
 (
     const std::string & sessiondir,
@@ -187,6 +159,8 @@ directories::directories
 
     (void) make_file_specs();
 }
+
+#endif
 
 directories::directories
 (
@@ -217,6 +191,36 @@ directories::directories
 directories::~directories ()
 {
     // no code so far
+}
+
+bool
+directories::add_entry (const entry & ent)
+{
+    file_entries().push_back(ent);
+    return ent.ent_active;
+}
+
+bool
+directories::add_entry
+(
+    bool active,
+    const std::string & subdir,
+    const std::string & basename,
+    const std::string & ext
+)
+{
+    bool result = ext.front() == '.';
+    if (result)
+    {
+        entry e;
+        e.ent_section = ext.substr(1);
+        e.ent_active = active;
+        e.ent_directory = subdir;
+        e.ent_basename = basename;
+        e.ent_extension = ext;
+        result = add_entry(e);
+    }
+    return result;
 }
 
 /**
@@ -256,8 +260,7 @@ directories::split_filename (const std::string & fullpath)
 }
 
 /**
- *  Adds a directory entry to the list, and optionally creates the
- *  directory as well.
+ *  Adds a directory entry to the list, and creates the directory as well.
  */
 
 bool

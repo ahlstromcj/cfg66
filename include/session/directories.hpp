@@ -175,11 +175,15 @@ private:
 public:
 
     directories ();
+
+#if defined USE_DIRECTORIES_ENTRIES_CTOR
     directories
     (
         const std::string & sessiondir,
         entries & fileentries
     );
+#endif
+
     directories
     (
         const std::string & sessiondir,

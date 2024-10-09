@@ -46,9 +46,15 @@
  *
  *  Here are the operations needed for a configuration:
  *
- *      -   Parse a configuration file and parcel the results to various
- *          sub-configurations.
+ *      -   Set up the initial appinfo configuration in code.
+ *      -   Get the "home" configuration directory from the appinfo function
+ *          get_home_cfg_directory().
+ *      -   If running under a session manager, wait for it to send its
+ *          "home" directory. Then use the appinfo function
+ *          set_home_cfg_directory() to set that.
  *      -   Parse a command-line and parcel the results to various
+ *          sub-configurations.
+ *      -   Parse a configuration file and parcel the results to various
  *          sub-configurations.
  *      -   Transfer each value to the appropriate run-time objects.
  *      -   Take changes made to the run-time objects and copy them back
@@ -142,7 +148,7 @@ configuration::configuration
     bool uselogfile
 ) :
     cfg::basesettings   (cfgname, "INI", "session", comtext, version),
-    m_dir_manager       (fileentries),
+    m_dir_manager       (fileentries),      /* default copy constructor     */
     m_section_list      (),                 /* vector of section names      */
     m_data_directories  (),                 /* vector of subdirectory names */
     m_auto_option_save  (false),            /* save rc, usr, etc.           */
@@ -150,7 +156,6 @@ configuration::configuration
     m_quiet             (false),            /* true suppresses startup errs */
     m_verbose           (false),            /* true shows more status       */
     m_home              (),                 /* the base app directory       */
-
     m_use_log_file      (uselogfile),
     m_log_file          ()
 {

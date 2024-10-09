@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2024-10-07
+ * \updates       2024-10-09
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -53,7 +53,9 @@
 #include "util/strfunctions.hpp"        /* free functions in util n'space   */
 
 /**
- *  Temporary kludge for realpath() not readily available in Msys2.
+ *  Kludge for realpath() not readily available in MSYS2, because it is a
+ *  GNU extension. In this case we use the home-grown function in the
+ *  util/realpath.c module.
  */
 
 #undef HAVE_REALPATH_FUNCTION
@@ -178,11 +180,9 @@ using stat_t = struct stat;
 
 #if ! defined HAVE_REALPATH_FUNCTION
 
-char *
-realpath (const char * first, char * /* second */)
-{
-    return first;
-}
+EXTERN_C_DEC
+extern char * realpath (const char * path, char got_path []);
+EXTERN_C_END
 
 #endif
 
