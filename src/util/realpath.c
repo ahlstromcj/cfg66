@@ -32,12 +32,10 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-10-08
- * \updates       2024-10-08
+ * \updates       2024-10-09
  * \version       $Revision$
  *
  *      Returns the canonicalized absolute path name.
- *
- *
  */
 
 #include <errno.h>
@@ -80,7 +78,7 @@ __set_errno (int n)
  */
 
 char *
-realpath (const char * path, char got_path [])
+realpath_cyg (const char * path, char got_path [])
 {
     char copy_path[PATH_MAX];
     char * max_path;

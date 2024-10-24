@@ -58,7 +58,13 @@
  *  util/realpath.c module.
  */
 
-#undef HAVE_REALPATH_FUNCTION
+#if defined PLATFORM_CYGWIN
+
+EXTERN_C_DEC
+extern char * realpath_cyg (const char * path, char got_path []);
+EXTERN_C_END
+
+#endif
 
 /**
  *  All file-specifications internal to Seq66 and in its configuration files
@@ -152,8 +158,6 @@ using stat_t = struct stat;
 
 #endif                                  /* PLATFORM_MSVC      */
 
-#define HAVE_REALPATH_FUNCTION
-
 #else                                   /* non-Microsoft stuff follows      */
 
 #include <unistd.h>
@@ -174,17 +178,7 @@ using stat_t = struct stat;
 
 using stat_t = struct stat;
 
-#define HAVE_REALPATH_FUNCTION
-
 #endif                                  /* PLATFORM_WINDOWS           */
-
-#if ! defined HAVE_REALPATH_FUNCTION
-
-EXTERN_C_DEC
-extern char * realpath (const char * path, char got_path []);
-EXTERN_C_END
-
-#endif
 
 /**
  *  A macro for the error code when a file does not exist.
@@ -1467,7 +1461,11 @@ get_full_path (const std::string & path)
             result = resolved_path;
 #else
         char * resolved_path = NULL;            /* what a relic!            */
+#if defined PLATFORM_CYGWIN
+        resolved_path = realpath_cyg(path.c_str(), NULL);
+#else
         resolved_path = realpath(path.c_str(), NULL);
+#endif
         if (not_NULL(resolved_path))
         {
             result = resolved_path;
