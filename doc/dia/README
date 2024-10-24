@@ -1,0 +1,9 @@
+Dia Directory for the cfg66 library
+Chris Ahlstrom
+2022-06-22 to 2024-10-24
+
+This directory contains some original Dia diagrams to use for the
+LaTeX documentation. However, Dia has issues on some of our systems
+that make it impossible to use, so see the "draw" directory instead.
+
+# vim: sw=4 ts=4 wm=8 et ft=sh

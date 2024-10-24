@@ -27,7 +27,7 @@
  * \library       Any application or library
  * \author        Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2024-03-11
+ * \updates       2024-10-19
  * \license       GNU GPLv2 or above
  *
  *  Copyright (C) 2013-2024 Chris Ahlstrom <ahlstromcj@gmail.com>
@@ -117,6 +117,7 @@
 #undef PLATFORM_LINUX
 #undef PLATFORM_MACOSX
 #undef PLATFORM_MINGW
+#undef PLATFORM_MING_OR_UNIX
 #undef PLATFORM_MING_OR_WINDOWS
 #undef PLATFORM_MSVC
 #undef PLATFORM_POSIX_API
@@ -181,8 +182,7 @@
 
 /**
  *  Provides a "Linux" macro, in case the environment doesn't provide it.
- *  This macro is defined if not already defined and XXXXXX is
- *  encountered.
+ *  This macro is defined if not already defined.
  */
 
 #if defined Linux                      /* defined by nar-maven-plugin       */
@@ -204,7 +204,7 @@
 #define PLATFORM_PTHREADS
 #define PLATFORM_UNIX
 
-#endif                                 /* PLATFORM_LINUX              */
+#endif                                 /* PLATFORM_LINUX                    */
 
 /**
  *  Provides a "MacOSX" macro, in case the environment doesn't provide it.
@@ -349,9 +349,14 @@
  * PLATFORM_WIN32_STRICT replaces checks for WIN32 with CYGWIN not defined.
  */
 
-#if defined __CYGWIN__ || __CYGWIN32__
+#if defined __CYGWIN__
+#if defined __CYGWIN32__
 #define PLATFORM_CYGWIN
 #define PLATFORM_WINDOWS_32
+#elif defined __CYGWIN64__
+#endif
+#define PLATFORM_CYGWIN
+#define PLATFORM_WINDOWS_64
 #else
 #if defined PLATFORM_WINDOWS_32
 #define PLATFORM_WIN32_STRICT
@@ -485,6 +490,114 @@
 
 #if ! defined PLATFORM_DEBUG && ! defined PLATFORM_RELEASE
 #define PLATFORM_RELEASE
+#endif
+
+/**
+ *  Provides a check for error return codes from applications.  It is a
+ *  non-error value for most POSIX-conformant functions.  This macro defines
+ *  the integer value returned by many POSIX functions when they succeed --
+ *  zero (0).
+ *
+ * \note
+ *      Rather than testing this value directory, the macro functions
+ *      is_posix_success() and not_posix_success() should be used.  See the
+ *      descriptions of those macros for more information.
+ */
+
+#if ! defined PLATFORM_POSIX_SUCCESS
+#define PLATFORM_POSIX_SUCCESS              0
+#endif
+
+/**
+ *  PLATFORM_POSIX_ERROR is returned from a string function when it has
+ *  processed an error.  It indicates that an error is in force.  Normally,
+ *  the caller then uses this indicator to set a class-based error message.
+ *  This macro defines the integer value returned by many POSIX functions when
+ *  they fail -- minus one (-1).  The EXIT_FAILURE and
+ *  PLATFORM_POSIX_ERROR macros also have the same value.
+ *
+ * \note
+ *      Rather than testing this value directory, the macro functions
+ *      is_posix_error() and not_posix_error() should be used.  See the
+ *      descriptions of those macros for more information.
+ */
+
+#if ! defined PLATFORM_POSIX_ERROR
+#define PLATFORM_POSIX_ERROR              (-1)
+#endif
+
+/**
+ *    This macro tests the integer value against PLATFORM_POSIX_SUCCESS.
+ *    Other related macros are:
+ *
+ *       -  is_posix_success()
+ *       -  is_posix_error()
+ *       -  not_posix_success()
+ *       -  not_posix_error()
+ *       -  set_posix_success()
+ *       -  set_posix_error()
+ *
+ * \note
+ *      -   Some functions return values other than PLATFORM_POSIX_ERROR
+ *          when an error occurs.
+ *      -   Some functions return values other than
+ *          PLATFORM_POSIX_SUCCESS when the function succeeds.
+ *      -   Please refer to the online documentation for these quixotic
+ *          functions, and decide which macro one want to use for the test, if
+ *          any.
+ *      -   In some case, one might want to use a clearer test.  For example,
+ *          the socket functions return a result that is
+ *          PLATFORM_POSIX_ERROR (-1) if the function fails, but
+ *          non-zero integer values are returned if the function succeeds.
+ *          For these functions, the is_valid_socket() and not_valid_socket()
+ *          macros are much more appropriate to use.
+ *
+ *//*-------------------------------------------------------------------------*/
+
+#if ! defined is_posix_success
+#define is_posix_success(x)      ((x) == PLATFORM_POSIX_SUCCESS)
+#endif
+
+/**
+ *  This macro tests the integer value against PLATFORM_POSIX_ERROR (-1).
+ */
+
+#if ! defined is_posix_error
+#define is_posix_error(x)        ((x) == PLATFORM_POSIX_ERROR)
+#endif
+
+/**
+ *  This macro tests the integer value against PLATFORM_POSIX_SUCCESS (0).
+ */
+
+#if ! defined not_posix_success
+#define not_posix_success(x)     ((x) != PLATFORM_POSIX_SUCCESS)
+#endif
+
+/**
+ *  This macro tests the integer value against PLATFORM_POSIX_ERROR (-1).
+ */
+
+#if ! defined not_posix_error
+#define not_posix_error(x)       ((x) != PLATFORM_POSIX_ERROR)
+#endif
+
+/**
+ *  This macro set the integer value to PLATFORM_POSIX_SUCCESS (0).  The
+ *  parameter must be an lvalue, as the assignment operator is used.
+ */
+
+#if ! defined set_posix_success
+#define set_posix_success(x)     ((x) = PLATFORM_POSIX_SUCCESS)
+#endif
+
+/**
+ *  This macro set the integer value to PLATFORM_POSIX_ERROR (-1).  The
+ *  parameter must be an lvalue, as the assignment operator is used.
+ */
+
+#if ! defined set_posix_error
+#define set_posix_error(x)       ((x) = PLATFORM_POSIX_ERROR)
 #endif
 
 #endif                  /* PLATFORM_MACROS_H */

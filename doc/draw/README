@@ -1,0 +1,9 @@
+Documentation Directory for the cfg66 library
+Chris Ahlstrom
+2022-06-22 to 2024-04-15
+
+This directory contains some LibreOffice "Draw" diagram using the "UML
+Elements" extension. These augment or replace the  Dia diagrams in the
+"dia" directory, as Dia has serious issues on some of our systems.
+
+# vim: sw=4 ts=4 wm=8 et ft=sh
