@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2018-11-10
- * \updates       2024-10-07
+ * \updates       2024-10-28
  * \license       GNU GPLv2 or above
  *
  *  One of the big features of some of these functions is writing the name
@@ -56,6 +56,8 @@
 
 #if defined PLATFORM_MSVC               /* Microsoft compiler vs MingW      */
 #define S_WRITE     _write              /* Microsoft's write()              */
+#else                                   /* probably Cygwin or Mingw         */
+#define S_WRITE     write               /* POSIX write(2)                   */
 #endif
 
 #else                                   /* Other environments, like Msys2   */

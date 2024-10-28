@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2017-03-12
- * \updates       2024-10-07
+ * \updates       2024-10-28
  * \license       GNU GPLv2 or above
  *
  *  The first part of this file defines a couple of global structure
@@ -410,7 +410,7 @@ get_home ()
 #elif defined PLATFORM_WINDOWS
         char * envdrv = std::getenv("HOMEDRIVE");
         char * envpath = std::getenv("HOMEPATH");
-        if (not_nullptr_2(envdr, envpath))
+        if (not_nullptr_2(envdrv, envpath))
         {
             s_got_home = true;
             s_home = envdrv;
