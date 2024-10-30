@@ -1,3 +1,0 @@
-#if ! defined CFG66_CFG_SUPERMAP_HPP
-#define CFG66_CFG_SUPERMAP_HPP
-#endif      // CFG66_CFG_SUPERMAP_HPP

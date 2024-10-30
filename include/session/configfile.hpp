@@ -28,24 +28,23 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2024-09-09
- * \updates       2024-09-28
+ * \updates       2024-10-30
  * \license       GNU GPLv2 or above
  *
  *  An configfile is a cfg::configfile that overrides the parse() and write()
  *  functions.
  */
 
-#include "cfg/configfile.hpp"           /* cfg::configfile class            */
+#include "cfg/configfile.hpp"           /* cfg::configfile base class       */
+#include "session/configuration.hpp"    /* session::configuration class     */
 
 namespace session
 {
 
-class configuration;
-
 /**
  *    A class for handling the INI-style file for the session configuration.
  *    It has a number of items that need to be handled differently from
- *    the "generic" options setup..
+ *    the "generic" options setup.
  */
 
 class configfile : public cfg::configfile

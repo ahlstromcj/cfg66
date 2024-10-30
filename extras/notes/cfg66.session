@@ -1,6 +1,6 @@
 # Sample "session" file.
 #
-# 2024-09-30
+# 2024-09-30 to 2024-10-30
 #
 # session-path represents the desired session directory. If empty, it is
 # simply the application's configuration directory as returned by
@@ -28,21 +28,33 @@
 # 'home' is the location of the configuration files for the session. If
 # empty, then the default application $home is used.
 #
-# 'quiet' disables showing warning prompts at application startup. It is
-# supported in the cli::parser and util::msgfunctions modules as well.
+# Stock options from cfg::options which can override the options below:
 #
-# 'verbose' indicates to show additional information during the run. It is
-# supported in the cli::parser and util::msgfunctions modules as well.
+# 'quiet' (-Q) disables showing warning prompts at application startup.
+# It is supported in the cli::parser and util::msgfunctions modules as well.
+#
+# 'verbose' (-V) indicates to show additional information during the run. It
+# is supported in the cli::parser and util::msgfunctions modules as well.
 #
 # 'version' indicates the ordinal version of this file, useful in upgrading
 # the session file. This value is included in all configuration files.
+# From the command-line, 'version' (-v) merely shows the version as defined
+# below.
+#
+# "log" from the command-line can override the basename in the "[log]"
+# section below. If the name is empty, the log-file is disabled.
+#
+# "description"... might useful to output the [comments] section. TBD.
 
 [Cfg66]
 
 auto-option-save = true                     # save 'rc', 'usr'. etc. files
 auto-save = true                            # save edited data w/out prompt
 config-type = "session"                     # session configuration file
+description = ""                            # TBD
 home = "$home"                              # "/home/user/.config/seq66v2"
+inspect = "false"                           # if true, trouble-shooting
+investigate = "false"                       # similar, but different :-)
 quiet = false                               # disable startup error prompts
 verbose = false                             # show informational messages
 version = 0                                 # configuration file version

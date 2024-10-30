@@ -30,7 +30,6 @@
  */
 
 #include "cfg/appinfo.hpp"              /* cfg::<appinfo functions>         */
-#include "session/configuration.hpp"    /* cfg::configuration class         */
 #include "session/configfile.hpp"       /* session::configfile class        */
 #include "util/msgfunctions.hpp"        /* util::msgfunctions module        */
 

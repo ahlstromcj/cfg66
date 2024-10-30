@@ -1592,14 +1592,9 @@ options::string_to_kind (const std::string & s)
  *  unavailable to other application code if the user allows the addition
  *  of these items.
  *
- *  The following string keeps track of the characters used so far.  An 'x'
- *  means the character is used.  A ':' means it is used and requires an
- *  argument. An 'a' indicates we could repurpose the key with minimal impact.
- *  --option are "overflow" options; those options have no character-code.
- *
 \verbatim
         0123456789#@AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz
-                                   x                Q         xx
+                                   o                o         oo
 \endverbatim
  *
  *  Note that we do not use common codes like 'i' (input) and 'o' (output).

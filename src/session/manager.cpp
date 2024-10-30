@@ -61,17 +61,23 @@ namespace session
  * Additional options
  *------------------------------------------------------------------------*/
 
-/*
- *  The following string keeps track of the characters used so far.  An 'x'
- *  means the character is used.  A ':' means it is used and requires an
- *  argument. An 'a' indicates we could repurpose the key with minimal impact.
- *  An asterisk '*' indicates the option is reserved for overflow options (-o,
- *  --option); those options have no character-code.
+/**
+ *  The following string keeps track of the characters used so far. Make
+ *  a copy; removed the ones you will not use in the application, and mark
+ *  the ones that will be used.
+ *
+ *  -   An 'o' means the character is used.
+ *  -   A ':' means it is used and requires an argument.
+ *  -   An 'a' indicates we could repurpose the key with minimal impact.
+ *  -   An asterisk '*' indicates the option is reserved for overflow options
+ *      (-o, --option); those options have no character-code.
+ *  -   An 'm' indicates the options supported by session::manager.
  *
 \verbatim
+                                           :
         0123456789#@AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz
-                                   x       x     *            xx
-                                           *
+                                   o       m        o         oo
+                                           *     *
 \endverbatim
  *
  *   Name, Code, Kind, Enabled, Default, Value, FromCli, Dirty,

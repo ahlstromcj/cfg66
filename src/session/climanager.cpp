@@ -32,10 +32,6 @@
  *  handles non-session startup as well.
  */
 
-// #include "xpc/daemonize.hpp"         /* xpc::session_setup(), _close()   */
-// #include "xpc/timing.hpp"            /* xpc::millisleep()                */
-// #include "util/strfunctions.hpp"     /* util::contains()                 */
-
 #include "cfg/appinfo.hpp"              /* cfg::get_session_tag()           */
 #include "session/climanager.hpp"       /* session::climanager class        */
 #include "util/msgfunctions.hpp"        /* util::file_message() etc.        */
