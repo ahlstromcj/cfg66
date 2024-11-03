@@ -28,7 +28,7 @@
 # 'home' is the location of the configuration files for the session. If
 # empty, then the default application $home is used.
 #
-# Stock options from cfg::options which can override the options below:
+# * Stock options from cfg::options which can override the options below:
 #
 # 'quiet' (-Q) disables showing warning prompts at application startup.
 # It is supported in the cli::parser and util::msgfunctions modules as well.
@@ -51,13 +51,13 @@
 auto-option-save = true                     # save 'rc', 'usr'. etc. files
 auto-save = true                            # save edited data w/out prompt
 config-type = "session"                     # session configuration file
-description = ""                            # TBD
+description = ""                            # * TBD, a flag only, so far
 home = "$home"                              # "/home/user/.config/seq66v2"
-inspect = "false"                           # if true, trouble-shooting
-investigate = "false"                       # similar, but different :-)
-quiet = false                               # disable startup error prompts
-verbose = false                             # show informational messages
-version = 0                                 # configuration file version
+inspect = "false"                           # * if true, trouble-shooting
+investigate = "false"                       # * similar, but extra code
+quiet = false                               # * disable startup error prompts
+verbose = false                             # * show informational messages
+version = 0                                 # * configuration file version
 
 # [comments] holds user documentation for this file. It is included in
 # every configuration type.
@@ -150,7 +150,7 @@ ext = ".session"                            # always this extension
 
 active = true
 directory = "logs"                          # log files, summaries, etc.
-basename = ""                               # for main log only
+basename = ""                               # * for main log only
 ext = ".log"
 
 [rc]
