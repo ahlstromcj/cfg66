@@ -69,7 +69,7 @@ static cfg::options::container s_test_options
         {
             "loop-count",
             {
-                options::code_null, cfg::options::kind::integer,
+                cfg::options::code_null, cfg::options::kind::integer,
                 cfg::options::enabled,
                 "30", "0-0-99", false, false,
                 "Specifies the number of loops to make.", false
