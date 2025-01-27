@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-07-28
- * \updates       2024-10-30
+ * \updates       2025-01-27
  * \license       See above.
  *
  *  This program is an extension of sorts for the options_test program. Here
@@ -69,7 +69,7 @@ static cfg::options::container s_test_options
         {
             "loop-count",
             {
-                options::code_null, cfg::options::kind::integer,
+                cfg::options::code_null, cfg::options::kind::integer,
                 cfg::options::enabled,
                 "30", "0-0-99", false, false,
                 "Specifies the number of loops to make.", false

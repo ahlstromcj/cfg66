@@ -27,7 +27,7 @@
  *
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2024-04-30
+ * \updates       2025-01-27
  * \version       $Revision$
  *
  *    Also see the filefunctions.cpp module.  The functions here use
@@ -82,8 +82,13 @@ extern bool file_close
 extern bool file_delete (const std::string & filespec);
 extern bool file_copy
 (
-    const std::string & file,
+    const std::string & oldfile,
     const std::string & newfile
+);
+extern bool file_copy_to_path
+(
+    const std::string & sourcefile,
+    const std::string & path
 );
 extern bool file_append_log
 (
@@ -198,6 +203,17 @@ extern std::string find_file
 (
     const lib66::tokenization & dirlist,
     const std::string & filename
+);
+extern bool get_wildcards
+(
+    const std::string & wildpath,
+    lib66::tokenization & filelist,
+    bool append = false
+);
+extern bool file_list_copy
+(
+    const std::string & destpath,
+    const lib66::tokenization & filelist
 );
 
 #endif      // CFG66_UTIL_FILEFUNCTIONS_HPP

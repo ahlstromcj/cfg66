@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2024-10-09
+ * \updates       2025-01-27
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -43,6 +43,7 @@
 #include <cstdlib>                      /* realpath(), _fullpath(), getenv()*/
 #include <cstring>                      /* std::strlen(), strerror_r() etc. */
 #include <ctime>                        /* std::strftime()                  */
+#include <glob.h>                       /* ::glob() to get wildcards        */
 #include <sys/stat.h>
 
 #include "cfg66-config.h"               /* HAVE macros defined by meson     */
@@ -1009,6 +1010,12 @@ file_copy
             }
         }
 
+        /*
+         * The destination file-specification, if the file does not already
+         * exist, will result in a warning in get_full_path() and a
+         * seeming empty string to compare against.
+         */
+
         bool ok = get_full_path(oldfile) != get_full_path(destfilespec);
         if (result && ok)
         {
@@ -1030,6 +1037,65 @@ file_copy
                     okoutput = file_close(output, destfilespec);
                 }
                 okinput = file_close(input, oldfile);
+                result = okinput && okoutput;
+            }
+        }
+    }
+    return result;
+}
+
+/**
+ *  Copies a file to a given directory. Unlike file_copy(), it does not
+ *  split components. It's just a simple copy operation.
+ *
+ * \param sourcefile
+ *      Provides either a file-name in the application's current working
+ *      directory, or a full file specification to an existing file.
+ *
+ * \param path
+ *      Provides the destination directory, which is verified to exist.
+ *
+ * \return
+ *      Returns true if the file copying succeeded.
+ */
+
+bool
+file_copy_to_path
+(
+    const std::string & sourcefile,
+    const std::string & path
+)
+{
+    bool result = file_exists(sourcefile) && file_is_directory(path);
+    if (result)
+    {
+        std::FILE * input = file_open_for_read(sourcefile);
+        if (not_nullptr(input))
+        {
+            bool okinput = false;
+            bool okoutput = false;
+            std::string unusedpath;
+            std::string filebase;
+            bool ok = filename_split(sourcefile, unusedpath, filebase);
+            if (ok)
+            {
+                std::string destfilespec = filename_concatenate
+                (
+                    path, filebase
+                );
+                std::FILE * output = file_create_for_write(destfilespec);
+                if (not_nullptr(output))
+                {
+                    int ci;
+                    while ((ci = fgetc(input)) != EOF)
+                    {
+                        int co = fputc(ci, output);
+                        if (co == EOF)
+                            break;
+                    }
+                    okoutput = file_close(output, destfilespec);
+                }
+                okinput = file_close(input, sourcefile);
                 result = okinput && okoutput;
             }
         }
@@ -2459,6 +2525,90 @@ find_file
         }
     }
     return result;
+}
+
+/**
+ *  This function uses glob(3) to obtain a list of all the files that
+ *  match the wild-path.
+ *
+ * \param wildpath
+ *      Provides a wild-card to search for. A simple one like "*.png"
+ *      will look for all PNG files in the current working directory
+ *      for the application. One with a path
+ *      (e.g. "~/.config/seq66/ *.png) will search in that directory.
+ *
+ * \param [inout] filelist
+ *      Provides a string-vector for storing the results.
+ *
+ * \param append
+ *      Normally false, this value causes the file-list to be cleared
+ *      first.  Use true to accumulate wildcard matches in the list.
+ *
+ * \return
+ *      Returns true if matches were found.
+ */
+
+bool
+get_wildcards
+(
+    const std::string & wildpath,
+    lib66::tokenization & filelist,
+    bool append
+)
+{
+    bool result = ! wildpath.empty();
+    if (result)
+    {
+        int flags = GLOB_ERR;
+#if defined SEQ66_PLATFORM_LINUX
+        flags |= GLOB_TILDE;
+#else
+        // anything?
+#endif
+        glob_t g;
+        int rc = glob(wildpath.c_str(), flags, nullptr, &g);
+        if (rc != 0)
+        {
+            result = false;
+        }
+        else
+        {
+            if (! append)
+                filelist.clear();
+
+            for (std::size_t i = 0; i < g.gl_pathc; ++i)
+                filelist.push_back(g.gl_pathv[i]);
+        }
+        globfree(&g);
+    }
+    return result;
+}
+
+/**
+ *  Copies a list of files to a directory, which must exist.
+ */
+
+bool
+file_list_copy
+(
+    const std::string & destpath,
+    const lib66::tokenization & filelist
+)
+{
+    int count = 0;
+    bool ok = file_exists(destpath);
+    if (ok)
+    {
+        for (auto & f : filelist)
+        {
+            ok = file_copy_to_path(f, destpath);
+            if (ok)
+                ++count;
+            else
+                break;
+        }
+    }
+    return count == int(filelist.size());
 }
 
 }           // namespace util
