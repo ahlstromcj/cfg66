@@ -14,7 +14,6 @@
 #
 #  Here we locate the headers. The root of the header directory is 'include'.
 #
-#
 #-----------------------------------------------------------------------------
 
 libcfg66_headers += files(
