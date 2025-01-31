@@ -6,7 +6,7 @@
 # \library     cfg66
 # \author      Chris Ahlstrom
 # \date        2022-06-22
-# \updates     2024-08-05
+# \updates     2025-01-31
 # \license     $XPC_SUITE_GPL_LICENSE$
 #
 #  This file is part of the "cfg66" library. It was part of the libs66
@@ -37,6 +37,18 @@ project('cfg66',
       'default_library=both'
       ]
    )
+
+#-----------------------------------------------------------------------------
+# Conditional enabling of the Potext translation library.
+#-----------------------------------------------------------------------------
+
+cfg66_use_potext = false
+if get_option('potext')
+
+   cfg66_use_potext = true
+   add_project_arguments('-DCFG66_USE_POTEXT', language : [ 'c', 'cpp' ])
+
+endif
 
 #-----------------------------------------------------------------------------
 # Information for this sub-project.
@@ -154,6 +166,22 @@ cdata = configuration_data()
 cdata.set('limits_h', cc.has_header('limits.h'))
 
 #-----------------------------------------------------------------------------
+# Potential sub-projects
+#-----------------------------------------------------------------------------
+
+if cfg66_use_potext
+
+   libpotext_library_dep = dependency(
+      'libpotext', fallback : [ 'libpotext', 'libpotext_dep' ]
+      )
+
+endif
+
+liblib66_library_dep = dependency(
+   'liblib66', fallback : [ 'liblib66', 'liblib66_dep' ]
+   )
+
+#-----------------------------------------------------------------------------
 # Sub-directories. 'tests' has to be descended into later.
 #-----------------------------------------------------------------------------
 
@@ -190,15 +218,34 @@ empty_depends = [ ]
 #
 #-----------------------------------------------------------------------------
 
-cfg66_library_build = library(
-   cfg66_project_base,
-   libcfg66_sources,
-   install : not cfg66_subproj,
-   install_dir : cfg66_libdir,
-   cpp_args : build_args,
-   dependencies : empty_depends,
-   include_directories : [ libcfg66_includes ]
-   )
+if cfg66_use_potext
+
+   cfg66_library_build = library(
+      cfg66_project_base,
+      libcfg66_sources,
+      install : not cfg66_subproj,
+      install_dir : cfg66_libdir,
+      c_args : build_args,
+      cpp_args : build_args,
+      dependencies : empty_depends,
+      dependencies : [ liblib66_library_dep, libpotext_library_dep ],
+      include_directories : [ libcfg66_includes ]
+      )
+
+else
+
+   cfg66_library_build = library(
+      cfg66_project_base,
+      libcfg66_sources,
+      install : not cfg66_subproj,
+      install_dir : cfg66_libdir,
+      c_args : build_args,
+      cpp_args : build_args,
+      dependencies : [ liblib66_library_dep ],
+      include_directories : [ libcfg66_includes ]
+      )
+
+endif
 
 #-----------------------------------------------------------------------------
 # Make this library usable as a Meson subproject.  This allows a subproject to
