@@ -146,14 +146,12 @@ build_args += [
 #-----------------------------------------------------------------------------
 # Only make public interfaces visible
 #-----------------------------------------------------------------------------
-
-'''
-if target_machine.system() == 'windows' or target_machine.system() == 'cygwin'
-   build_args += '-DLIBPUBLIC="__declspec(dllexport)"'
-else
-   build_args += '-DLIBPUBLIC=__attribute__((visibility("default")))'
-endif
-'''
+#
+# if target_machine.system() == 'windows' or target_machine.system() == 'cygwin'
+#    build_args += '-DLIBPUBLIC="__declspec(dllexport)"'
+# else
+#    build_args += '-DLIBPUBLIC=__attribute__((visibility("default")))'
+# endif
 
 #-----------------------------------------------------------------------------
 # Set up some "HAVE" macros.  By default the header file is generated in the

@@ -48,9 +48,11 @@ DODIST="no"          # --dist. Use Meson "dist" to create a package.
 DOHELP="no"          # --help. Duh!
 DOINSTALL="no"       # --install. Requires the release be built already.
 DOUNINSTALL="no"     # --uninstall. Like --install, requires sudo/root.
+DOUPDATE="no"        # --update. Force a subproject update.
 DOMAKE="yes"         # Default action after creating the build directory.
 DOREMAKE="no"        # currently UNUSED
 DOMAKEPDF="no"       # --pdf. Make the manual, always as a separate step.
+DOPOTEXT="no"
 DOPACK="no"          # --pack. Clean and create a tar-file.
 DORELEASE="no"       # --release. as opposed to debug; also PDF is made.
 DOSTATIC="yes"       # --static
@@ -87,8 +89,18 @@ if test $# -ge 1 ; then
             DOMAKE="no"
             ;;
 
+         --update)
+            DOUPDATE="yes"
+            DOMAKE="no"
+            ;;
+
          --build | --make)
             DOMAKE="yes"
+            ;;
+
+         --potext)
+            DOMAKE="yes"
+            DOPOTEXT="yes"
             ;;
 
          --install)
@@ -178,6 +190,8 @@ and version information.  Only implemented options are shown here; there will
 be more to come. Some options might not work on Windows.
 
  --make or --build   Build the code in 'build'. The default operation.
+ --update            Force an update of the subprojects.
+ --potext            Build with Potext (light gettext) library sypport.
  --release           Build release version (Meson defaults to a debug version).
                      Also builds the PDF documentation.
  --install           Run 'meson install' to install the library and PDF.
@@ -241,6 +255,7 @@ if test $DOCLEAN = "yes" ; then
    rm -f build/compile_commands.json
    rm -rf wipe/
    rm -rf subprojects/liblib66/
+   rm -rf subprojects/potext
    rm -f tests/data/1Bar-out.midi
    rm -f tests/data/fooinout.rc
 
@@ -306,6 +321,10 @@ if test $DOPACK = "yes" ; then
 
 fi
 
+if test "$DOUPDATE" = "yes" ; then
+   meson subprojects update
+fi
+
 if test "$DOMAKE" = "yes" ; then
 
 # TODO: use a separate build directory for Clang.
@@ -313,6 +332,11 @@ if test "$DOMAKE" = "yes" ; then
 # $ CC=clang CXX=clang++ meson setup buildclang
 #
 # https://mesonbuild.com/Running-Meson.html
+
+   POTEXTDEF=""
+   if test "$DOPOTEXT" = "yes" ; then
+   POTEXTDEF="-Dpotext=true"
+   fi
 
    if test "$DOCLANG" = "yes" ; then
       echo "Using the Clang C/C++ compilers..."
@@ -336,23 +360,27 @@ if test "$DOMAKE" = "yes" ; then
    if test "$DOREMAKE" = "yes" ; then
       if test "$NINJA_EXISTS" = "yes" ; then
          echo "$MAKEFILE exists, reconfiguring..."
-         meson --reconfigure . build
+         meson --reconfigure $POTEXTDEF . build
       fi
    fi
 
    if test "$NINJA_EXISTS" = "no" ; then
       echo "New configuration, creating $MAKEFILE, etc...."
       if test "$DODEBUG" = "yes" ; then
-         meson setup --buildtype=debug --default-library=static build/
+         meson setup --buildtype=debug --default-library=static $POTEXTDEF build/
          echo "... for debugging"
       else
-         meson setup --buildtype=release build/
+         meson setup --buildtype=release $POTEXTDEF build/
          echo "... for release"
       fi
    fi
 
    # Could also run "meson compile" here.  The --verbose option is not
    # present on older ninjas, so we use -v here.
+   #
+   # Can't add this at the end, it seems to break ninja's error detection.
+   #
+   # echo "# vim: ft=sh" >> make.log
 
    cd build
    ninja -v > make.log
