@@ -227,7 +227,6 @@ if cfg66_use_potext
       install_dir : cfg66_libdir,
       c_args : build_args,
       cpp_args : build_args,
-      dependencies : empty_depends,
       dependencies : [ liblib66_library_dep, libpotext_library_dep ],
       include_directories : [ libcfg66_includes ]
       )
