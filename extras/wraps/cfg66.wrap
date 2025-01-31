@@ -6,6 +6,8 @@
 #
 #   Cfg66 wrapper for GitHub repository
 #
+#   When finished, replace 'wip' with 'head':
+#
 #----------------------------------------------------------------------------
 
 [wrap-git]
@@ -20,6 +22,6 @@ depth = 1
 # This dependency is declared in cfg66/meson.build.
 #----------------------------------------------------------------------------
 
-libcfg66_library = libcfg66_library_dep
+libcfg66_library = libcfg66_dep
 
 # vim: ft=dosini
