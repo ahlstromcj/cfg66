@@ -33,6 +33,7 @@
  *    project.
  */
 
+#include <algorithm>                    /* std::find_if() function          */
 #include <cctype>                       /* std::toupper() function, etc.    */
 #include <climits>                      /* INT_MAX and its ilk              */
 #include <cmath>                        /* std::floor(), std::pow()         */
@@ -745,6 +746,19 @@ string_to_time_signature (const std::string & s, int & beats, int & width)
     return string_to_int_pair(s, beats, width, "/");
 }
 
+std::string
+time_signature_string (int beats, int width)
+{
+    std::string result;
+    if (beats > 0 && width > 0)         /* could also test for <= 32        */
+    {
+        char temp[32];
+        (void) snprintf(temp, sizeof temp, "%d/%d", beats, width);
+        result = temp;
+    }
+    return result;
+}
+
 /**
  *  Converts a string to a double value.  This function bypasses characters
  *  until it finds a digit (whether part of the number or a "0x" construct),
@@ -800,6 +814,40 @@ string_to_double (const std::string & s, double defalt, int rounding)
         catch (std::invalid_argument const &)
         {
             // no code
+        }
+    }
+    return result;
+}
+
+/**
+ *  Checks a string to see if it could be a floating point value.  This status
+ *  requires nothing but digits plus a comma or a decimal point.  The latter
+ *  are necessary, otherwise the string is an integer.  We trim the left/right
+ *  spaces; any space in between invalidates the check. This is not a robust
+ *  check, requiring some smarts on the caller.
+ */
+
+bool
+is_floating_string (const std::string & value)
+{
+    bool result = false;
+    std::string trimmed = trim(value);
+    if (trimmed.find_first_of(" ") == std::string::npos)
+    {
+        /*
+         * Find the first non-digit character. Then check if a non-digit
+         * character was found.
+         */
+
+        auto it = std::find_if
+        (
+            value.begin(), value.end(),
+            [] (char c) { return ! std::isdigit(c); }
+        );
+        if (it != value.end())
+        {
+            if (*it == ',' || *it == '.')
+                result = true;
         }
     }
     return result;

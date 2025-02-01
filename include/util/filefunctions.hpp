@@ -27,7 +27,7 @@
  *
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2025-01-27
+ * \updates       2025-02-01
  * \version       $Revision$
  *
  *    Also see the filefunctions.cpp module.  The functions here use
@@ -111,6 +111,7 @@ extern std::string os_normalize_path
     const std::string & path,
     bool terminate = false
 );
+extern std::string unix_normalize_path (const std::string & path);
 extern std::string normalize_path
 (
     const std::string & path,

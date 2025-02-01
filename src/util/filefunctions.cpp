@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2025-01-27
+ * \updates       2025-02-01
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -40,7 +40,7 @@
 
 #include <algorithm>                    /* std::replace() function          */
 #include <cctype>                       /* std::toupper() function          */
-#include <cstdlib>                      /* realpath(), _fullpath(), getenv()*/
+#include <cstdlib>                      /* realpath()/_fullpath()/getenv()  */
 #include <cstring>                      /* std::strlen(), strerror_r() etc. */
 #include <ctime>                        /* std::strftime()                  */
 #include <glob.h>                       /* ::glob() to get wildcards        */
@@ -1506,6 +1506,8 @@ get_current_directory ()
  *  It uses the Linux function realpath(3), which returns the canonicalized
  *  absolute path-name.  For Windows, the function _fullpath() is used.
  *
+ * TODO: make sure both Win/Lin calls get the result freed after use.
+ *
  * \param path
  *      Provides the path, which may be relative.
  *
@@ -1537,13 +1539,30 @@ get_full_path (const std::string & path)
             result = resolved_path;
             free(resolved_path);
         }
+        else
+        {
+            /*
+             *  In Linux we could call string_errno(errno ).
+             */
+
+#if defined SEQ66_PLATFORM_POSIX_API
+            errno_t errnum = errno;
+            std::string errmsg = "Warning: ";
+            errmsg += string_errno(errnum);
+            file_message(errmsg, path);
+#else
+            file_message("realpath() error", path);
+#endif
+
+        }
 #endif
     }
     return result;
 }
 
 /**
- *  Returns the UNIX path separator.
+ *  Returns the UNIX path separator, no matter the build platform.
+ *  See os_path_slash() below.
  */
 
 char
@@ -1562,6 +1581,16 @@ char
 os_path_slash ()
 {
     return PATH_SLASH_CHAR;
+}
+
+/**
+ *  Saves some code and improves readability.
+ */
+
+std::string
+unix_normalize_path (const std::string & path)
+{
+    return normalize_path(path, true, true);
 }
 
 /**
@@ -1764,6 +1793,7 @@ append_file
 
 /**
  *  Concatenates paths.  Used by playlist processing only at present.
+ *  Compare this function to pathname_concatenate().
  *
  *  The paths are first trimmed of white-space.  The beginning path retains any
  *  path characters (forward or backward slash it has at the start and end of the
@@ -1815,6 +1845,7 @@ append_path
  *  "base.extension") to it.
  *
  *  This function works solely using UNIX conventions, it is for internal use.
+ *
  *  If desired, it can be converted to Windows conventions using
  *  os_normalize_path().
  */
