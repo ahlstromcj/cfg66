@@ -1,4 +1,4 @@
-# README for Library Cfg66 0.3 2024-08-05
+# README for Library Cfg66 0.3 2025-02-01
 
 __Cfg66__ is a configuration library based on the "cfg" directories
 in the __Seq66__ project, but that is useful in other applications.
@@ -69,6 +69,8 @@ or classes in a namespace of the same name:
 
 ## To Do
 
+    -   Issue: On Windows, we don't have glob.h, so need to add
+        Windows-specific code, or perhaps upgrade MingW somehow.
     *   Beef up testing.
     *   Beef up the LaTeX documentation.
 
