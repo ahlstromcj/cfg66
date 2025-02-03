@@ -27,7 +27,7 @@
  *
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2025-02-01
+ * \updates       2025-02-03
  * \version       $Revision$
  *
  *    Also see the strfunctions.cpp module.
@@ -54,6 +54,23 @@ const std::string CFG66_TRIM_CHARS_QUOTES = " \t\r\n\v\f\"'";
 const std::string CFG66_TRIM_CHARS_PATHS  = " /\\";
 const std::string CFG66_WHITE_CHARS       = " \t\r\n\v\f";
 
+/**
+ *  Inline functions.  Simple tests for std::string::npos. Why? I dunno, less
+ *  typing for the developer.
+ */
+
+inline bool
+not_npos (std::string::size_type p)
+{
+    return p != std::string::npos;
+}
+
+inline bool
+is_npos (std::string::size_type p)
+{
+    return p == std::string::npos;
+}
+
 /*
  * Global (free) string functions.
  */
@@ -78,7 +95,6 @@ extern std::string next_bracketed_string
 );
 extern std::string add_quotes (const std::string & item);
 extern const std::string & double_quotes ();
-extern bool not_npos (std::string::size_type p);
 extern bool strncompare
 (
     const std::string & a, const std::string & b, size_t n = 0

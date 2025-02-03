@@ -6,7 +6,7 @@
 # \library     cfg66
 # \author      Chris Ahlstrom
 # \date        2022-06-22
-# \updates     2025-01-31
+# \updates     2025-02-03
 # \license     $XPC_SUITE_GPL_LICENSE$
 #
 #  This file is part of the "cfg66" library. See the top-level meson.build
@@ -17,9 +17,6 @@
 #-----------------------------------------------------------------------------
 
 libcfg66_headers += files(
-#  'c_macros.h',
-#  'cpp_types.hpp',
-#  'platform_macros.h',
    'cfg66.hpp',
    'cfg/appinfo.hpp',
    'cfg/basesettings.hpp',
@@ -34,7 +31,6 @@ libcfg66_headers += files(
    'cfg/options.hpp',
    'cfg/palette.hpp',
    'cfg/recent.hpp',
-#  'cfg_build_macros.h',
    'cli/cliparser_c.h',
    'cli/multiparser.hpp',
    'cli/parser.hpp',
