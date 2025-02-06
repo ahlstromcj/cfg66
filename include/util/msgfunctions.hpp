@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom and other authors; see documentation
  * \date          2018-11-10
- * \updates       2024-09-30
+ * \updates       2025-02-06
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
@@ -75,21 +75,25 @@ extern bool info_message
     const std::string & msg,
     const std::string & data = ""
 );
+extern bool info_printf (std::string fmt, ...);
 extern bool status_message
 (
     const std::string & msg,
     const std::string & data = ""
 );
+extern bool status_printf (std::string fmt, ...);
 extern bool warn_message
 (
     const std::string & msg,
     const std::string & data = ""
 );
+extern bool warn_printf (std::string fmt, ...);
 extern bool error_message
 (
     const std::string & msg,
     const std::string & data = ""
 );
+extern bool error_printf (std::string fmt, ...);
 extern bool debug_message
 (
     const std::string & msg,
@@ -100,6 +104,7 @@ extern bool session_message
     const std::string & msg,
     const std::string & data = ""
 );
+extern bool session_printf (std::string fmt, ...);
 extern void file_message (const std::string & tag, const std::string & path);
 extern bool file_error (const std::string & tag, const std::string & filename);
 extern void print_client_tag (lib66::msglevel el);

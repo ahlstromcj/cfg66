@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2018-11-10
- * \updates       2024-10-28
+ * \updates       2025-02-04
  * \license       GNU GPLv2 or above
  *
  *  One of the big features of some of these functions is writing the name
@@ -73,6 +73,8 @@
 
 namespace util
 {
+
+static std::string formatted (const std::string & fmt, va_list args);
 
 /**
  *  Functions to allow independence from cli::parser. The parser will
@@ -278,6 +280,27 @@ info_message (const std::string & msg, const std::string & data)
     return true;
 }
 
+/**
+ *  Uses code extracted from msgprintf() to output a message without
+ *  the caller needing to use a lib66::msglevel parameter.
+ */
+
+bool
+info_printf (std::string fmt, ...)
+{
+    if (verbose())
+    {
+        va_list args;                                       /* Step 1       */
+        va_start(args, fmt);
+
+        std::string output = formatted(fmt, args);          /* Steps 2 & 3  */
+        lib66::msglevel lev = lib66::msglevel::info;
+        std::cout << cfg::get_client_tag(lev) << " " << output << std::endl;
+        va_end(args);
+    }
+    return true;
+}
+
 bool
 status_message (const std::string & msg, const std::string & data)
 {
@@ -292,6 +315,19 @@ status_message (const std::string & msg, const std::string & data)
 }
 
 bool
+status_printf (std::string fmt, ...)
+{
+    va_list args;                                           /* Step 1       */
+    va_start(args, fmt);
+
+    std::string output = formatted(fmt, args);              /* Steps 2 & 3  */
+    lib66::msglevel lev = lib66::msglevel::status;
+    std::cout << cfg::get_client_tag(lev) << " " << output << std::endl;
+    va_end(args);
+    return true;
+}
+
+bool
 session_message (const std::string & msg, const std::string & data)
 {
     std::cout << cfg::get_client_tag(lib66::msglevel::session) << " " << msg;
@@ -301,6 +337,19 @@ session_message (const std::string & msg, const std::string & data)
     if (! msg.empty())
         std::cout << std::endl;
 
+    return true;
+}
+
+bool
+session_printf (std::string fmt, ...)
+{
+    va_list args;                                           /* Step 1       */
+    va_start(args, fmt);
+
+    std::string output = formatted(fmt, args);              /* Steps 2 & 3  */
+    lib66::msglevel lev = lib66::msglevel::session;
+    std::cout << cfg::get_client_tag(lev) << " " << output << std::endl;
+    va_end(args);
     return true;
 }
 
@@ -331,6 +380,19 @@ warn_message (const std::string & msg, const std::string & data)
     return true;
 }
 
+bool
+warn_printf (std::string fmt, ...)
+{
+    va_list args;                                           /* Step 1       */
+    va_start(args, fmt);
+
+    std::string output = formatted(fmt, args);              /* Steps 2 & 3  */
+    lib66::msglevel lev = lib66::msglevel::warn;
+    std::cout << cfg::get_client_tag(lev) << " " << output << std::endl;
+    va_end(args);
+    return true;
+}
+
 /**
  *  Common-code for error messages.  Adds markers, and returns false.
  *
@@ -356,6 +418,19 @@ error_message (const std::string & msg, const std::string & data)
         std::cerr << std::endl;
 
     return false;
+}
+
+bool
+error_printf (std::string fmt, ...)
+{
+    va_list args;                                           /* Step 1       */
+    va_start(args, fmt);
+
+    std::string output = formatted(fmt, args);              /* Steps 2 & 3  */
+    lib66::msglevel lev = lib66::msglevel::error;
+    std::cout << cfg::get_client_tag(lev) << " " << output << std::endl;
+    va_end(args);
+    return true;
 }
 
 /**
@@ -398,6 +473,22 @@ debug_message (const std::string & msg, const std::string & data)
             else
                 std::cerr << std::endl;
         }
+    }
+    return true;
+}
+
+bool
+debug_printf (std::string fmt, ...)
+{
+    if (investigate())
+    {
+        va_list args;                                       /* Step 1       */
+        va_start(args, fmt);
+
+        std::string output = formatted(fmt, args);          /* Steps 2 & 3  */
+        lib66::msglevel lev = lib66::msglevel::debug;
+        std::cout << cfg::get_client_tag(lev) << " " << output << std::endl;
+        va_end(args);
     }
     return true;
 }
@@ -560,6 +651,9 @@ toggleprint (const std::string & tag, bool flag)
  *
  * \param fmt
  *      Indicates the desired format for the message.  Use "%s" for strings.
+ *      Clang and cppcheck: Using reference 'fmt' as parameter for va_start()
+ *      results in undefined behaviour.  Also claims we need to add a va_end(),
+ *      so we did.
  *
  * \param ...
  *      Provides the printf() parameters for the format string.  Please note
@@ -572,12 +666,6 @@ msgprintf (lib66::msglevel lev, std::string fmt, ...)
 {
     if (! fmt.empty())
     {
-        /*
-         * cppcheck: Using reference 'fmt' as parameter for va_start() results
-         * in undefined behaviour.  Also claims we need to add a va_end(), so
-         * we did, below, on 2019-04-21.
-         */
-
         va_list args;                                       /* Step 1       */
         va_start(args, fmt);
 
@@ -614,7 +702,7 @@ msgprintf (lib66::msglevel lev, std::string fmt, ...)
                 << cfg::get_client_tag(lev) << " " << output << std::endl;
             break;
         }
-        va_end(args);                                       /* 2019-04-21   */
+        va_end(args);
     }
 }
 

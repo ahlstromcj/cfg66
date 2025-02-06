@@ -27,7 +27,7 @@
  *
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2025-02-03
+ * \updates       2025-02-06
  * \version       $Revision$
  *
  *    Also see the strfunctions.cpp module.
