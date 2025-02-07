@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2025-02-01
+ * \updates       2025-02-07
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -132,6 +132,8 @@ EXTERN_C_END
 #define S_MKDIR     _mkdir              /* Microsoft's mkdir()              */
 #define S_OPEN      _sopen_s            /* Microsoft's safe open()          */
 #define S_RMDIR     _rmdir              /* Microsoft's rmdir()              */
+#define S_FCHMOD    _fchmod             /* Microsoft's fchmod function ?    */
+#define S_FSTAT     _fstat              /* Microsoft's fstat function ?     */
 #define S_STAT      _stat               /* Microsoft's stat function        */
 #define S_UNLINK    _unlink             /* Microsoft file deletion function */
 #define S_MAX_FNAME _MAX_FNAME          /* Microsoft's filename size (260!) */
@@ -150,6 +152,8 @@ using stat_t = struct _stat;
 #define S_MKDIR     mkdir
 #define S_OPEN      _sopen_s            /* Microsoft's safe open()          */
 #define S_RMDIR     rmdir
+#define S_FCHMOD    fchmod              /* Microsoft's fchmod function ?    */
+#define S_FSTAT     fstat
 #define S_STAT      stat
 #define S_UNLINK    _unlink             /* Microsoft file deletion function */
 #define S_MAX_FNAME _MAX_FNAME          /* Microsoft's filename size (260!) */
@@ -172,6 +176,8 @@ using stat_t = struct stat;
 #define S_MKDIR     mkdir               /* ISO/POSIX/BSD mkdir()            */
 #define S_OPEN      open                /* ISO/POSIX/BSD safe open()        */
 #define S_RMDIR     rmdir               /* ISO/POSIX/BSD rmdir()            */
+#define S_FCHMOD    fchmod              /* ISO/POSIX/BSD fchmod function    */
+#define S_FSTAT     fstat               /* ISO/POSIX/BSD fstat function     */
 #define S_STAT      stat                /* ISO/POSIX/BSD stat function      */
 #define S_UNLINK    unlink              /* ISO etc. file deletion function  */
 #define S_MAX_FNAME NAME_MAX            /* ISO/POSIX/BSD stat function      */
@@ -2641,6 +2647,68 @@ file_list_copy
     }
     return count == int(filelist.size());
 }
+
+/*--------------------------------------------------------------------------
+ * Functions that support nsm66. From NSM's file module, "file_" prepended.
+ *--------------------------------------------------------------------------*/
+
+/**
+ *  Returns the modification time of the file as an integer.
+ */
+
+unsigned long
+file_modification_time (const std::string & fname)
+{
+    unsigned long result = 0;
+    if (file_name_good(fname))
+    {
+        stat_t st;
+        result = S_STAT(fname.c_str(), &st) == 0 ? st.st_mtime : 0 ;
+    }
+    return result;
+}
+
+/**
+ *  Returns true if file_1 is newer than file_2, or if file_2 does not
+ *  exist. If neither exists, then false is returned.
+ */
+
+bool
+file_is_newer (const std::string & file_1, const std::string & file_2)
+{
+    return file_modification_time(file_1) > file_modification_time(file_2);
+}
+
+void
+file_descriptor_touch (int fd)
+{
+    stat_t st;
+    if (S_FSTAT(fd, &st) == 0)
+        S_FCHMOD(fd, st.st_mode);
+}
+
+/*
+ * NSM functions replaced by the already-implemented file functions above,
+ * with return parameters slight different in some cases.
+ *
+ *      unsigned long size()                    size_t file_size()
+ *      int exists()                            bool file_exists()
+ *
+ *  Some NSM functions in the file module are now in our strfunctions
+ *  module.
+ *
+ *      char * simple_hash()
+ *
+ *  NSM file functions that are unused and not ported.
+ *
+ *      int backwards_fgetc()
+ *      char * backwards_afgets()
+ *      fsblkcnt_t free_space()
+ *      fsblkcnt_t total_space()
+ *      int percent_used()
+ *      void write_line()
+ *      char * read_line()
+ */
 
 }           // namespace util
 

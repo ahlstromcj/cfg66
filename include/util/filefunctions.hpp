@@ -27,7 +27,7 @@
  *
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2025-02-01
+ * \updates       2025-02-06
  * \version       $Revision$
  *
  *    Also see the filefunctions.cpp module.  The functions here use
@@ -216,6 +216,18 @@ extern bool file_list_copy
     const std::string & destpath,
     const lib66::tokenization & filelist
 );
+
+/*--------------------------------------------------------------------------
+ * Functions that support nsm66. From NSM's file module, "file_" prepended.
+ *--------------------------------------------------------------------------*/
+
+extern unsigned long file_modification_time (const std::string & fname);
+extern bool file_is_newer
+(
+    const std::string & file_1,
+    const std::string & file_2
+);
+extern void file_descriptor_touch (int fd);
 
 #endif      // CFG66_UTIL_FILEFUNCTIONS_HPP
 

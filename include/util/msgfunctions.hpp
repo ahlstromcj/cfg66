@@ -39,9 +39,41 @@
 
 #include "cpp_types.hpp"                /* string, vector, lib66::msglevel  */
 
-/*
- *  Do not document a namespace; it breaks Doxygen.
+#if ! defined CFG66_STRING_FORMAT_FUNCTION
+#define CFG66_STRING_FORMAT_FUNCTION
+
+#include <cstdio>                       /* std::snprintf() function         */
+#include <memory>                       /* std::unique_ptr<> template class */
+
+namespace util
+{
+
+template<typename ... Args>
+std::string string_format (const std::string & format, Args ... args)
+{
+    std::string result;
+    size_t sz = std::snprintf(nullptr, 0, format.c_str(), args ...);
+    if (sz > 0)
+    {
+        std::unique_ptr<char []> buf(new char[sz + 1]);
+        std::snprintf(buf.get(), sz + 1, format.c_str(), args ...);
+        result = std::string(buf.get(), buf.get() + sz);
+    }
+    return result;
+}
+
+}               // namespace util
+
+/**
+ *  Since strings are not POD, Clang will error on them when passed to
+ *  a variadic function. We could use c_str() directly. Sigh. Let's
+ *  make a simple macro for that. We use a macro to avoid multiple definitions
+ *  of this function.
  */
+
+#define V(x) x.c_str()
+
+#endif  // CFG66_STRING_FORMAT_FUNCTION
 
 namespace util
 {

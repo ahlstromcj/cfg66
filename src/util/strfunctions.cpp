@@ -1736,6 +1736,21 @@ target_terminated (const std::string & s, char target)
     return result;
 }
 
+/*--------------------------------------------------------------------------
+ * Functions that support nsm66. From NSM's file module.
+ *--------------------------------------------------------------------------*/
+
+std::string
+simple_hash (const std::string & s)
+{
+    unsigned long hash = 5381;
+    for (auto ch : s)
+        hash = ((hash <<5) + hash) + ch;
+
+    hash %= 65521;
+    return std::to_string(hash);
+}
+
 }           // namespace util
 
 /*

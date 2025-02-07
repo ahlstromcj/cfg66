@@ -27,20 +27,66 @@
  *
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2025-02-06
+ * \updates       2025-02-07
  * \version       $Revision$
  *
  *    Also see the strfunctions.cpp module.
  */
 
-#include <memory>                       /* std::unique_ptr<> template class */
-#include <string>                       /* std::string class                */
+/**
+ *  This function comes, slightly modified to avoid throwing an exception,
+ *  from:
+ *
+ * https://stackoverflow.com/questions/2342162/stdstring-formatting-like-sprintf
+ *
+ *  Extra space for '\0', but it won't be included in the result.
+ *
+ *  It is useful for C++11.  Once C++20 becomes common, the following could be
+ *  used:
+ *
+\verbatim
+ *      #include <format>
+ *      std::string result = std::format("{} {}!", "Hello", "world");
+\endverbatim
+ */
 
 #include "cpp_types.hpp"                /* std::string, tokenization alias  */
 
-/*
- *  Do not document a namespace; it breaks Doxygen.
+#if ! defined CFG66_STRING_FORMAT_FUNCTION
+#define CFG66_STRING_FORMAT_FUNCTION
+
+#include <cstdio>                       /* std::snprintf() function         */
+#include <memory>                       /* std::unique_ptr<> template class */
+
+namespace util
+{
+
+template<typename ... Args>
+std::string string_format (const std::string & format, Args ... args)
+{
+    std::string result;
+    size_t sz = std::snprintf(nullptr, 0, format.c_str(), args ...);
+    if (sz > 0)
+    {
+        std::unique_ptr<char []> buf(new char[sz + 1]);
+        std::snprintf(buf.get(), sz + 1, format.c_str(), args ...);
+        result = std::string(buf.get(), buf.get() + sz);
+    }
+    return result;
+}
+
+}               // namespace util
+
+/**
+ *  Since strings are not POD, Clang will error on them when passed to
+ *  a variadic function. We could use c_str() directly. Sigh. Let's
+ *  make a simple macro for that. We use a macro to avoid multiple definitions
+ *  of this function.
  */
+
+#define V(x) x.c_str()
+
+#endif  // CFG66_STRING_FORMAT_FUNCTION
 
 namespace util
 {
@@ -212,36 +258,11 @@ extern std::string first_sentence
 extern int count_character (const std::string & s, char target = '\n');
 extern bool target_terminated (const std::string & s, char target = '\n');
 
-/**
- *  This function comes, slightly modified to avoid throwing an exception,
- *  from:
- *
- * https://stackoverflow.com/questions/2342162/stdstring-formatting-like-sprintf
- *
- *  Extra space for '\0', but it won't be included in the result.
- *
- *  It is useful for C++11.  Once C++20 becomes common, the following could be
- *  used:
- *
-\verbatim
- *      #include <format>
- *      std::string result = std::format("{} {}!", "Hello", "world");
-\endverbatim
- */
+/*--------------------------------------------------------------------------
+ * Functions that support nsm66. From NSM's file module.
+ *--------------------------------------------------------------------------*/
 
-template<typename ... Args>
-std::string string_format (const std::string & format, Args ... args)
-{
-    std::string result;
-    size_t sz = std::snprintf(nullptr, 0, format.c_str(), args ...);
-    if (sz > 0)
-    {
-        std::unique_ptr<char []> buf(new char[sz + 1]);
-        std::snprintf(buf.get(), sz + 1, format.c_str(), args ...);
-        result = std::string(buf.get(), buf.get() + sz);
-    }
-    return result;
-}
+extern std::string simple_hash (const std::string & s);
 
 }           // namespace util
 
