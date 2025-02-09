@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2018-11-10
- * \updates       2025-02-04
+ * \updates       2025-02-09
  * \license       GNU GPLv2 or above
  *
  *  One of the big features of some of these functions is writing the name
@@ -560,8 +560,8 @@ print_client_tag (lib66::msglevel el)
  *  Takes a format string and a variable-argument list and returns the
  *  formatted string.
  *
- *  Although currently a public function, its usage is meant to be internal
- *  for the msgprintf() function.  See that function's description.
+ *  Currently a static function, its usage is meant to be internal
+ *  for the msgprintf() function. See that function's description.
  *
  *  C++11 is required, due to the use of va_copy().
  *
@@ -588,8 +588,35 @@ formatted (const std::string & fmt, va_list args)
     va_end(args_copy);
     if (ilen > 0)
     {
-        std::vector<char> dest(ilen + 1);                   /* Step 3       */
+        std::vector<char> dest(ilen);                       /* Step 3       */
         std::vsnprintf(dest.data(), dest.size(), szfmt, args);
+        result = std::string(dest.data(), dest.size() - 1);
+    }
+    va_end(args);
+    return result;
+}
+
+/**
+ *  Yet another variation on formatting. Compare to formatted() abouve
+ *  and string_format() in the header file.
+ */
+
+std::string
+string_asprintf (std::string fmt, ...)
+{
+    std::string result;
+    va_list args;
+    va_start(args, fmt);                /* vs fmt.c_str()                   */
+
+    va_list temp_args;
+    va_copy(temp_args, args);
+
+    int sz = std::vsnprintf(nullptr, 0, fmt.c_str(), temp_args) + 1;
+    va_end(temp_args);
+    if (sz > 0)
+    {
+        std::vector<char> dest(sz);
+        (void) std::vsnprintf(dest.data(), dest.size(), fmt.c_str(), args);
         result = std::string(dest.data(), dest.size() - 1);
     }
     va_end(args);

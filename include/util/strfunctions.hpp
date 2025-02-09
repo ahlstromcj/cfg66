@@ -27,7 +27,7 @@
  *
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2025-02-07
+ * \updates       2025-02-09
  * \version       $Revision$
  *
  *    Also see the strfunctions.cpp module.
@@ -60,6 +60,15 @@
 
 namespace util
 {
+
+/*
+ *  Provides a function similar to asprintf(). It first gets the size
+ *  of the result by passing nullptr and 0 as the destination buffer.
+ *  It then allocates a buffer and does the actual writing.
+ *  Compare to string_asnprintf() in the msgfunctions module.
+ *
+ *  Note that the V() macro must wrap std::string arguments.
+ */
 
 template<typename ... Args>
 std::string string_format (const std::string & format, Args ... args)
@@ -116,6 +125,13 @@ is_npos (std::string::size_type p)
 {
     return p == std::string::npos;
 }
+
+/*
+ * This free function is actually defined in msgprintf, but we might
+ * need it without including msgprintf.hpp.
+ */
+
+extern std::string string_asprintf (std::string fmt, ...);
 
 /*
  * Global (free) string functions.

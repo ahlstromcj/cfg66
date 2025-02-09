@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2025-02-07
+ * \updates       2025-02-08
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -1280,6 +1280,9 @@ name_has_extension (const std::string & filename)
  *      Provides the name of the path to create.  The parent directory of the
  *      final directory must already exist.
  *
+ * \param mode
+ *      The mode_t value for file permissions.
+ *
  * \return
  *      Returns true if the path-name exists.
  */
@@ -1289,7 +1292,7 @@ name_has_extension (const std::string & filename)
 #endif
 
 static bool
-make_directory (const std::string & pathname)
+make_directory (const std::string & pathname, int mode)
 {
     bool result = file_name_good(pathname);
     if (result)
@@ -1309,7 +1312,7 @@ make_directory (const std::string & pathname)
 #if defined PLATFORM_WINDOWS
             int rcode = S_MKDIR(pathname.c_str());
 #else
-            int rcode = S_MKDIR(pathname.c_str(), 0755);    /* rwxr-xr-x    */
+            int rcode = S_MKDIR(pathname.c_str(), mode);
 #endif
             result = rcode == 0;
             if (! result)
@@ -1340,13 +1343,13 @@ make_directory (const std::string & pathname)
  *  a null, and seeing if the resulting entity (drive or directory) exists.
  *  If not, the attempt is made to create it.  If it succeeds, the null is
  *  converted back to a '/', and the next subdirectory is worked on, until all
- *  are done.  For absolute UNIX or Windows paths, we do not remove the first
+ *  are done. For absolute UNIX or Windows paths, we do not remove the first
  *  slash.
  *
  * \bug
  *      This uses C calls.
  *
- *  Replaces:
+ *  Replaces and enhances:
  *
  *    -  _mkdir() [Microsoft]
  *    -  mkdir() [GNU].
@@ -1354,16 +1357,19 @@ make_directory (const std::string & pathname)
  * \param directory_name
  *      Provides the name of the directory to create.
  *
+ * \param mode
+ *      The mode_t value for file permissions.
+ *
  * \return
  *      Returns true if the create operation succeeded.  It also returns true
  *      if the directory already exists.
  */
 
 bool
-make_directory_path (const std::string & directory_name)
+make_directory_path (const std::string & directory_name, int mode)
 {
     bool result = file_name_good(directory_name);
-    std::string dirname = os_normalize_path(directory_name);   /* ca 2023-05-11 */
+    std::string dirname = os_normalize_path(directory_name);
     if (result)
     {
         if (file_exists(dirname))               /* directory already exists */
@@ -1407,7 +1413,7 @@ make_directory_path (const std::string & directory_name)
                 *nextptr = 0;                   /* make null terminator     */
                 if (! file_exists(currdir))     /* subdirectory exists?     */
                 {
-                    if (! make_directory(std::string(currdir)))
+                    if (! make_directory(std::string(currdir), mode))
                     {
                         more = result = false;
                         break;
@@ -1425,8 +1431,8 @@ make_directory_path (const std::string & directory_name)
 }
 
 /**
- *  Simply removes the initial path slash. Meant for playlist usage, and is very
- *  simplistic at this time.
+ *  Simply removes the initial path slash. Meant for playlist usage, and is
+ *  very simplistic at this time.
  */
 
 std::string

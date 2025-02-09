@@ -186,7 +186,7 @@ read_test ()
  */
 
 int
-main (int argc, char * argv [])
+main (int /*argc*/, char * argv [])
 {
     int rcode = EXIT_FAILURE;
     bool success = cfg::initialize_appinfo(s_application_info, argv[0]);

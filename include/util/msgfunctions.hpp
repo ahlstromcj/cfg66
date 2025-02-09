@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom and other authors; see documentation
  * \date          2018-11-10
- * \updates       2025-02-06
+ * \updates       2025-02-09
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
@@ -47,6 +47,15 @@
 
 namespace util
 {
+
+/*
+ *  Provides a function similar to asprintf(). It first gets the size
+ *  of the result by passing nullptr and 0 as the destination buffer.
+ *  It then allocates a buffer and does the actual writing.
+ *  Compare to string_asnprintf() in the msgfunctions module.
+ *
+ *  Note that the V() macro must wrap std::string arguments.
+ */
 
 template<typename ... Args>
 std::string string_format (const std::string & format, Args ... args)
@@ -102,6 +111,7 @@ extern bool investigate ();
  *  Free functions in the util namespace.
  */
 
+extern std::string string_asprintf (std::string fmt, ...);
 extern bool info_message
 (
     const std::string & msg,
