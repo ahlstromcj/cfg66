@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2025-02-08
+ * \updates       2025-02-10
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -865,11 +865,38 @@ current_date_time ()
  */
 
 bool
-file_write_string (const std::string & filename, const std::string & text)
+file_append_string (const std::string & filename, const std::string & text)
 {
-    std::FILE * fptr = file_open(filename, "a");    /* "w": now we append   */
+    std::FILE * fptr = file_open(filename, "a");
     bool result = not_nullptr(fptr);
     if (result)
+    {
+        size_t len = text.length();
+        size_t rc = fwrite(text.c_str(), sizeof(char), len, fptr);
+        if (rc < len)
+        {
+            file_error("Append failed", filename);
+            result = false;
+        }
+        (void) file_close(fptr, filename);
+    }
+    return result;
+}
+
+/**
+ *  Appends a string to file along with the filename and date. If it does not
+ *  exist, it is appended to.  Very similar to file_append_log()!
+ */
+
+bool
+file_write_string
+(
+    const std::string & filename,
+    const std::string & text,
+    bool prepend_and_append
+)
+{
+    if (prepend_and_append)
     {
         std::string fulltext = filename;
         fulltext += "\n";
@@ -877,17 +904,46 @@ file_write_string (const std::string & filename, const std::string & text)
         fulltext += "\n";
         fulltext += text;
         fulltext += "\n";
-
-        size_t len = fulltext.length();
-        size_t rc = fwrite(fulltext.c_str(), sizeof(char), len, fptr);
-        if (rc < len)
-        {
-            file_error("Write failed", filename);
-            result = false;
-        }
-        (void) file_close(fptr, filename);
+        return file_append_string(filename, fulltext);
     }
-    return result;
+    else
+    {
+        std::FILE * fptr = file_open(filename, "w");
+        bool result = not_nullptr(fptr);
+        if (result)
+        {
+            size_t len = text.length();
+            size_t rc = fwrite(text.c_str(), sizeof(char), len, fptr);
+            if (rc < len)
+            {
+                file_error("Write failed", filename);
+                result = false;
+            }
+            (void) file_close(fptr, filename);
+        }
+        return result;
+    }
+}
+
+/**
+ *  Each string in the list gets a newline appended to it.
+ */
+
+bool
+file_write_lines
+(
+    const std::string & filename,
+    const lib66::tokenization & textlist,
+    bool prepend_and_append
+)
+{
+    std::string lines;
+    for (const auto & t : textlist)
+    {
+        lines += t;
+        lines += "\n";
+    }
+    return file_write_string(filename, lines, prepend_and_append);
 }
 
 /**

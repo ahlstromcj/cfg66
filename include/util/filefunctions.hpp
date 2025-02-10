@@ -27,7 +27,7 @@
  *
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2025-02-08
+ * \updates       2025-02-10
  * \version       $Revision$
  *
  *    Also see the filefunctions.cpp module.  The functions here use
@@ -68,10 +68,22 @@ extern std::FILE * file_open
 extern std::FILE * file_open_for_read (const std::string & filename);
 extern std::FILE * file_create_for_write (const std::string & filename);
 extern std::string current_date_time ();
-extern bool file_write_string
+extern bool file_append_string
 (
     const std::string & filename,
     const std::string & text
+);
+extern bool file_write_string
+(
+    const std::string & filename,
+    const std::string & text,
+    bool prepend_and_append = false
+);
+extern bool file_write_lines
+(
+    const std::string & filename,
+    const lib66::tokenization & textlist,
+    bool prepend_and_append = false
 );
 extern std::string file_read_string (const std::string & oldfile);
 extern bool file_close

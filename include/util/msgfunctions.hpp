@@ -80,7 +80,8 @@ std::string string_format (const std::string & format, Args ... args)
  *  of this function.
  */
 
-#define V(x) x.c_str()
+#define CSTR(x) x.c_str()
+#define V(x)    x.c_str()
 
 #endif  // CFG66_STRING_FORMAT_FUNCTION
 
