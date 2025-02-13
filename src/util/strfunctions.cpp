@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-24
- * \updates       2025-02-09
+ * \updates       2025-02-11
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -296,6 +296,21 @@ add_quotes (const std::string & item)
         if (! quoted)
             result = "\"" + item + "\"";
     }
+    return result;
+}
+
+/**
+ *  Basically strcmp() for std::string, with only a boolean return
+ *  code.
+ */
+
+bool
+strcompare (const std::string & a, const std::string & b)
+{
+    bool result = ! a.empty() && ! b.empty();
+    if (result)
+        result = a == b;
+
     return result;
 }
 

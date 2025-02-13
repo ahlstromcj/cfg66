@@ -941,7 +941,7 @@ configfile::write_comment
  */
 
 bool
-configfile::next_section (std::ifstream & file, const std::string & s  )
+configfile::next_section (std::ifstream & file, const std::string & s)
 {
     bool result = false;
     file.clear();
@@ -954,7 +954,7 @@ configfile::next_section (std::ifstream & file, const std::string & s  )
         bool ok = get_line(file);       /* fills in m_line as a side-effect */
         while (ok)                      /* includes the EOF check           */
         {
-            result = util::strncompare(m_line, s   );
+            result = util::strncompare(m_line, s);
             if (result)
             {
                 break;

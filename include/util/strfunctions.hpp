@@ -27,7 +27,7 @@
  *
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2025-02-09
+ * \updates       2025-02-13
  * \version       $Revision$
  *
  *    Also see the strfunctions.cpp module.
@@ -159,6 +159,7 @@ extern std::string next_bracketed_string
 );
 extern std::string add_quotes (const std::string & item);
 extern const std::string & double_quotes ();
+extern bool strcompare (const std::string & a, const std::string & b);
 extern bool strncompare
 (
     const std::string & a, const std::string & b, size_t n = 0
