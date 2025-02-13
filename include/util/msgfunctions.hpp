@@ -80,7 +80,7 @@ std::string string_format (const std::string & format, Args ... args)
  *  of this function.
  */
 
-#define STR(x)  reinterpret_cast<char *>(x.c_str())
+#define STR(x)  const_cast<char *>(x.c_str())
 #define CSTR(x) x.c_str()
 #define V(x)    x.c_str()
 
