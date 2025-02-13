@@ -255,7 +255,8 @@ if test $DOCLEAN = "yes" ; then
    rm -f build/compile_commands.json
    rm -rf wipe/
    rm -rf subprojects/liblib66/
-   rm -rf subprojects/potext
+   rm -rf subprojects/potext/
+   rm -f doc/latex/*.log
    rm -f tests/data/1Bar-out.midi
    rm -f tests/data/fooinout.rc
 

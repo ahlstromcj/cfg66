@@ -25,14 +25,14 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2018-11-10
- * \updates       2025-02-09
+ * \updates       2025-02-12
  * \license       GNU GPLv2 or above
  *
  *  One of the big features of some of these functions is writing the name
  *  of the application in color before each message that is put out.
  */
 
-#include <cstring>                      /* std::strlen(3)                   */
+#include <cstring>                      /* std::strlen(3), std::strerror(3) */
 #include <cstdarg>                      /* see "man stdarg(3)"              */
 #include <iostream>
 
