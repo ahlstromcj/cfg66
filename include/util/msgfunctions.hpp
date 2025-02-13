@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom and other authors; see documentation
  * \date          2018-11-10
- * \updates       2025-02-09
+ * \updates       2025-02-13
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
@@ -80,6 +80,7 @@ std::string string_format (const std::string & format, Args ... args)
  *  of this function.
  */
 
+#define STR(x)  reinterpret_cast<char *>(x.c_str())
 #define CSTR(x) x.c_str()
 #define V(x)    x.c_str()
 
