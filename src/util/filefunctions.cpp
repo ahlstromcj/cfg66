@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2025-02-10
+ * \updates       2025-02-22
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -948,6 +948,12 @@ file_write_lines
 
 /**
  *  Reads a file into a string.
+ *
+ * \param file
+ *      Provides the name of the file to read.
+ *
+ * \return
+ *      Returns all of the characters in the file.
  */
 
 std::string
@@ -967,6 +973,69 @@ file_read_string (const std::string & file)
             }
             (void) file_close(input, file);
         }
+    }
+    return result;
+}
+
+/**
+ *  Reads a file into a vector of strings. Each element holds
+ *  one line. Comment lines (lines starting with a "#") and
+ *  empty lines are skipped. Newlines are stripped.
+ *
+ *  This function is most useful in line-oriented files with short lines.
+ *  One minor issue we ignore (for now) is if the lines are longer
+ *  than 256.
+ *
+ * \param file
+ *      Provides the name of the file to read.
+ *
+ * \param lines [out]
+ *      Provides a vector of strings to be populated. It is
+ *      not cleared; the caller should do that, if desired.
+ *
+ * \return
+ *      Returns true if the lines vector is not empty.
+ */
+
+bool
+file_read_lines (const std::string & file, lib66::tokenization & lines)
+{
+    bool result = file_name_good(file);
+    if (result)
+    {
+        std::FILE * input = file_open_for_read(file);
+        if (not_nullptr(input))
+        {
+            size_t maxim = 256;
+            char * destination = new (std::nothrow) char [maxim];
+            if (is_nullptr(destination))
+                return false;
+
+            for (;;)
+            {
+                ssize_t count = getline(&destination, &maxim, input);
+                if (count == 1)                 /* empty line, "\n" only    */
+                    continue;
+                else if (count > 1)
+                {
+                    std::string tmp = destination;
+                    if (tmp[0] == '#')
+                        continue;
+                    else
+                    {
+                        tmp.pop_back();         /* remove the newline       */
+                        lines.push_back(tmp);
+                    }
+                }
+                else
+                    break;                      /* done or EOF              */
+            }
+            (void) file_close(input, file);
+            delete [] destination;;
+            result = ! lines.empty();
+        }
+        else
+            result = false;
     }
     return result;
 }
