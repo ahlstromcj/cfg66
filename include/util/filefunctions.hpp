@@ -52,6 +52,7 @@ namespace util
 
 extern bool file_access (const std::string & targetfile, int mode);
 extern bool file_exists (const std::string & targetfile);
+extern bool file_status (const std::string & targetfile);
 extern bool file_readable (const std::string & targetfile);
 extern bool file_writable (const std::string & targetfile);
 extern bool file_read_writable (const std::string & targetfile);

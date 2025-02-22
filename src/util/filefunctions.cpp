@@ -487,6 +487,18 @@ file_exists (const std::string & filename)
 }
 
 /**
+ *  Kind of a generic check. Used in NSM's jackpatch.
+ */
+
+bool
+file_status (const std::string & filename)
+{
+    stat_t statusbuf;
+    int statresult = S_STAT(filename.c_str(), &statusbuf);
+    return statresult == 0;
+}
+
+/**
  *    Checks a file for readability.
  *
  * \param filename
@@ -984,7 +996,7 @@ file_read_string (const std::string & file)
  *
  *  This function is most useful in line-oriented files with short lines.
  *  One minor issue we ignore (for now) is if the lines are longer
- *  than 256.
+ *  than 512.
  *
  * \param file
  *      Provides the name of the file to read.
@@ -1006,7 +1018,7 @@ file_read_lines (const std::string & file, lib66::tokenization & lines)
         std::FILE * input = file_open_for_read(file);
         if (not_nullptr(input))
         {
-            size_t maxim = 256;
+            size_t maxim = 512;
             char * destination = new (std::nothrow) char [maxim];
             if (is_nullptr(destination))
                 return false;
