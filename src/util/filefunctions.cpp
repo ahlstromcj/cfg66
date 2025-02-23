@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2025-02-22
+ * \updates       2025-02-23
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -938,7 +938,8 @@ file_write_string
 }
 
 /**
- *  Each string in the list gets a newline appended to it.
+ *  Each string in the list gets a newline appended to it, but only if
+ *  one is not already present.
  */
 
 bool
@@ -953,9 +954,45 @@ file_write_lines
     for (const auto & t : textlist)
     {
         lines += t;
-        lines += "\n";
+        if (t.back() != '\n')
+            lines += "\n";
     }
     return file_write_string(filename, lines, prepend_and_append);
+}
+
+/**
+ *  A faster version with no frills.
+ */
+
+bool
+file_write_lines
+(
+    const std::string & filename,
+    const lib66::tokenization & textlist
+)
+{
+    std::FILE * fptr = file_open(filename, "w");
+    bool result = not_nullptr(fptr);
+    if (result)
+    {
+        for (auto & t : textlist)
+        {
+            std::string t2{t};
+            if (t2.back() != '\n')
+                t2 += "\n";
+
+            size_t len = t2.length();
+            size_t rc = fwrite(t2.c_str(), sizeof(char), len, fptr);
+            if (rc < len)
+            {
+                file_error("Write failed", filename);
+                result = false;
+                break;
+            }
+        }
+        (void) file_close(fptr, filename);
+    }
+    return result;
 }
 
 /**

@@ -27,7 +27,7 @@
  *
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2025-02-22
+ * \updates       2025-02-23
  * \version       $Revision$
  *
  *    Also see the filefunctions.cpp module.  The functions here use
@@ -84,7 +84,12 @@ extern bool file_write_lines
 (
     const std::string & filename,
     const lib66::tokenization & textlist,
-    bool prepend_and_append = false
+    bool prepend_and_append
+);
+extern bool file_write_lines
+(
+    const std::string & filename,
+    const lib66::tokenization & textlist
 );
 extern std::string file_read_string (const std::string & oldfile);
 extern bool file_read_lines
