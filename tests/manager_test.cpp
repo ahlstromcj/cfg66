@@ -320,7 +320,7 @@ legacy_main_test (int argc, char * argv [])
 
 #if defined USE_INIMANAGER_PASSALONG_FUNCTIONS
 
-bool
+int
 main_test (int argc, char * argv [])
 {
     cfg::inimanager cfgmgr(s_test_options);    /* add test options */
