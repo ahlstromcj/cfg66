@@ -1,6 +1,6 @@
 # __Cfg66__ Licensing 0.3.0
 
-## Copyright (c) 2024
+## Copyright (c) 2024-2025
 
    * Chris Ahlstrom <ahlstromcj@gmail.com>
 
