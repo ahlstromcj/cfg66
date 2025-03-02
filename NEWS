@@ -1,12 +1,28 @@
 NEWS for Cfg66 0.3
 Chris Ahlstrom
-2024-04-15 to 2024-08-05
+2024-04-15 to 2025-03-02
 
 # Changelog
 
 ## [0.3]
 
-    To do
+### Added
+
+- File functions: file\_status(), file\_read\_lines(),
+  get\_wildcards(), file\_list\_copy().
+- Message functions: xxx\_printf() functions for formatting
+  errors, warnings, status, and other human-readable messages.
+- String functions: Many additions such as is\_npos().
+- Config-file functions: Add function to parse and write
+  list sections and session files.
+- Macros: CSTR() and V() to distinguish usage of
+  std::string::c\_str() in legacy vs. cfg66 functions.
+- Add the potext library as an optional subproject.
+- Added a test of read/write for session configuration.
+
+### Fixed
+
+- Functions: strcompare() declared incorrectly.
 
 ## [0.2] - 2024-08-05
 

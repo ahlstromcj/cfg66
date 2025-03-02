@@ -1,3 +1,267 @@
+2025-02-23  Chris <ahlstromcj@gmail.com>
+
+	* : commit def819959ffb86a77975ce7397f6d0586e03995f Author: Chris
+	<ahlstromcj@gmail.com> Date:   Sun Feb 23 15:23:14 2025 -0500
+	* tests/manager_test.cpp: Fixed minor error in manager_test.
+
+2025-02-22  Chris <ahlstromcj@gmail.com>
+
+	* include/util/filefunctions.hpp, src/util/filefunctions.cpp: Added
+	util::file_status().
+	* include/util/filefunctions.hpp, src/util/filefunctions.cpp,
+	tests/data/lines.txt, tests/util_test.cpp: Added
+	util::file_read_lines().
+
+2025-02-13  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* include/util/msgfunctions.hpp, include/util/strfunctions.hpp: 
+	Fixed the STR() macro, I am a dummy.
+	* include/util/msgfunctions.hpp, include/util/strfunctions.hpp: Add
+	STR() macro.
+	* include/util/strfunctions.hpp, src/cfg/configfile.cpp,
+	src/util/strfunctions.cpp: Fixed strcompare() declared incorrectly.
+	* src/util/msgfunctions.cpp, work.sh: Minor fixups.
+
+2025-02-10  Chris <ahlstromcj@gmail.com>
+
+	* include/util/filefunctions.hpp, include/util/msgfunctions.hpp,
+	include/util/strfunctions.hpp, src/util/filefunctions.cpp,
+	src/util/strfunctions.cpp: More additions for msg, file, and
+	strfunctions.
+
+2025-02-09  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* include/util/filefunctions.hpp, include/util/msgfunctions.hpp,
+	include/util/strfunctions.hpp, src/util/filefunctions.cpp,
+	src/util/msgfunctions.cpp, tests/session_cfg_test.cpp,
+	tests/util_test.cpp: Updated the msg, str, and filefunctions
+	modules.
+
+2025-02-07  Chris <ahlstromcj@gmail.com>
+
+	* include/util/filefunctions.hpp, include/util/msgfunctions.hpp,
+	include/util/strfunctions.hpp, src/util/filefunctions.cpp,
+	src/util/strfunctions.cpp, tests/meson.build: Add V() macro for
+	passing std::string to variadic functions.
+
+2025-02-06  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* include/util/msgfunctions.hpp, include/util/strfunctions.hpp,
+	src/util/msgfunctions.cpp: Added xxx_printf() functions for
+	formatting output.
+
+2025-02-03  Chris <ahlstromcj@gmail.com>
+
+	* include/meson.build, include/util/strfunctions.hpp,
+	src/util/strfunctions.cpp: Added is_npos() inline function to
+	strfunctions.
+
+2025-02-01  ahlstromcj <ahlstromcj@gmail.com>
+
+	* README.md: A note about glob() on Windows mingw 8.
+	* include/util/filefunctions.hpp, include/util/strfunctions.hpp,
+	src/util/filefunctions.cpp, src/util/strfunctions.cpp: Ported new
+	Seq66 str- and file-functions.
+
+2025-01-31  Chris <ahlstromcj@gmail.com>
+
+	* meson.build, subprojects/potext.wrap, work.sh: Add potext as a
+	Meson subproject, improved the work.sh script.
+	* meson.build, tests/meson.build, work.sh: Added the working usage
+	of the lib66 header files.
+
+2025-01-31  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* subprojects/README, subprojects/liblib66.wrap: Added subprojects
+	directory and wrap
+	* : commit 4f4a47fdf8d13ed3692cf3978f0c308bec2b006d Author: Chris
+	Ahlstrom <ahlstromcj@gmail.com> Date:   Fri Jan 31 07:30:03 2025
+	-0500
+
+2025-01-30  Chris <ahlstromcj@gmail.com>
+
+	* extras/wraps/cfg66.wrap, include/meson.build, meson.options: Minor
+	cleaning.
+
+2025-01-27  Chris <ahlstromcj@gmail.com>
+
+	* : commit 63c4cc016637b0bf98f9b242a0caf994a9f9137f Author: Chris
+	<ahlstromcj@gmail.com> Date:   Mon Jan 27 13:16:38 2025 -0500
+
+2024-11-04  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* tests/history_test.cpp: Fixed namespace bug in history_test.
+
+2024-11-03  Chris <ahlstromcj@gmail.com>
+
+	* extras/notes/cfg66.session: Minor session-overview diagram update.
+
+2024-10-30  Chris <ahlstromcj@gmail.com>
+
+	* extras/DIR_COLORS, extras/notes/cfg66.session,
+	include/cfg/supermap.hpp, include/session/configfile.hpp,
+	src/cfg/options.cpp, src/session/climanager.cpp,
+	src/session/configfile.cpp, src/session/manager.cpp,
+	tests/history_test.cpp, tests/meson.build,
+	tests/session_cfg_test.cpp: Adding test of read/write for session
+	configuration.
+
+2024-10-29  Chris <ahlstromcj@gmail.com>
+
+	* : Added some images for documentation.
+
+2024-10-28  ahlstromcj <ahlstromcj@gmail.com>
+
+	* src/cfg/appinfo.cpp, src/util/msgfunctions.cpp: Fixed errors
+	building in mingw on Windows.
+
+2024-10-24  Chris <ahlstromcj@gmail.com>
+
+	* : commit 51ce164618db0e42d382dad42789c0773bcdd35e Author: Chris
+	<ahlstromcj@gmail.com> Date:   Thu Oct 24 13:54:52 2024 -0400
+
+2024-10-09  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* include/platform_macros.h, src/util/filefunctions.cpp,
+	src/util/realpath.c: Got filefunctions module to build under
+	CYGWIN/MSYS2.
+	* include/session/directories.hpp, src/meson.build,
+	src/session/configuration.cpp, src/session/directories.cpp,
+	src/util/filefunctions.cpp, src/util/realpath.c: Added realpath
+	function for CygWin, configuration updates.
+
+2024-10-07  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* src/cfg/appinfo.cpp, src/util/filefunctions.cpp,
+	src/util/msgfunctions.cpp: Working on compiling in Msys2
+	environment.
+
+2024-10-01  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* include/session/directories.hpp, include/session/layout.hpp,
+	src/session/layout.cpp, tests/manager_test.cpp: Added support for
+	testing layout structure.
+
+2024-09-30  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* extras/notes/cfg66.session, include/cli/parser.hpp,
+	include/meson.build, include/session/configuration.hpp,
+	include/session/directories.hpp, include/session/layout.hpp,
+	include/util/msgfunctions.hpp, src/cfg/options.cpp,
+	src/meson.build, src/session/layout.cpp, src/util/msgfunctions.cpp: 
+	Added session layout configuration structures.
+
+2024-09-28  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* include/cfg/configfile.hpp, include/meson.build,
+	include/session/{cfgfile.hpp => configfile.hpp},
+	include/session/configuration.hpp, include/session/directories.hpp,
+	src/cfg/appinfo.cpp, src/cfg/configfile.cpp, src/meson.build,
+	src/session/{cfgfile.cpp => configfile.cpp},
+	src/session/configuration.cpp, src/session/directories.cpp: Work on
+	parsing .session, renamed cfgfile.
+
+2024-09-24  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* doc/latex/tex/function-mappings.tex, extras/notes/manager.text,
+	include/cfg/appinfo.hpp, include/session/configuration.hpp,
+	src/cfg/appinfo.cpp, src/session/cfgfile.cpp,
+	src/session/configuration.cpp: Check-in, documenting/fixing appinfo.
+
+2024-09-17  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* include/cfg/configfile.hpp, include/session/configuration.hpp,
+	src/cfg/configfile.cpp, src/session/cfgfile.cpp: Safety check-in.
+
+2024-09-12  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* include/cfg/configfile.hpp, include/cfg/options.hpp,
+	include/session/configuration.hpp, src/cfg/configfile.cpp,
+	src/session/cfgfile.cpp, src/session/configuration.cpp: Added
+	configfile functions to parse and write list sections.
+
+2024-09-11  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* include/meson.build, include/session/cfgfile.hpp,
+	include/session/configuration.hpp, src/meson.build,
+	src/session/cfgfile.cpp: Fleshing out the cfgfile class.
+
+2024-09-10  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* extras/notes/cfg66.session, include/session/cfgfile.hpp,
+	include/session/configuration.hpp, include/session/directories.hpp,
+	src/session/cfgfile.cpp, src/session/configuration.cpp,
+	src/session/manager.cpp: Adding cfgfile to read session file.
+
+2024-09-05  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* include/cfg/appinfo.hpp, include/cfg/basesettings.hpp,
+	include/cfg/comments.hpp, include/cfg/inimanager.hpp,
+	include/cfg/inisection.hpp, include/cfg/inisections.hpp,
+	include/cfg/memento.hpp, include/cfg/palette.hpp,
+	include/cfg/recent.hpp, include/cli/multiparser.hpp,
+	include/cli/parser.hpp, include/session/climanager.hpp,
+	include/session/configuration.hpp, include/session/directories.hpp,
+	include/session/manager.hpp, include/util/bytevector.hpp,
+	src/cfg/inimanager.cpp, src/cfg/recent.cpp,
+	src/cli/multiparser.cpp, src/cli/parser.cpp,
+	src/session/climanager.cpp, tests/ini_set_test.cpp,
+	tests/manager_test.cpp: Interim check-in, added tmux cheat-sheet.
+
+2024-09-02  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* doc/latex/tex/cfg.tex, doc/latex/tex/session.tex,
+	include/cfg/inimanager.hpp, include/cli/multiparser.hpp,
+	include/meson.build, include/session/climanager.hpp,
+	include/session/manager.hpp, src/cfg/inimanager.cpp,
+	src/meson.build, src/session/climanager.cpp,
+	src/session/manager.cpp, tests/ini_set_test.cpp,
+	tests/manager_test.cpp, tests/session_spec.hpp: Added climanager to
+	the meson.build files, oops.
+
+2024-08-29  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* doc/dia/ini.dia, doc/dia/inimanager.dia,
+	doc/latex/tex/session.tex, extras/notes/cfg66.session,
+	include/session/manager.hpp, src/cfg/inimanager.cpp,
+	src/cfg/options.cpp: Still trying to work out session management.
+
+2024-08-26  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* doc/latex/tex/references.tex, doc/latex/tex/session.tex,
+	extras/notes/cfg66.session, include/cfg/appinfo.hpp,
+	src/cfg/appinfo.cpp, src/cfg/inimanager.cpp, tests/manager_test.cpp: 
+	Another interim check-in.
+
+2024-08-25  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* doc/latex/tex/session.tex, extras/notes/cfg66.session,
+	extras/notes/cfg66.sessions, include/session/directories.hpp,
+	src/session/directories.cpp: Interim check-in, sessions stuff.
+
+2024-08-09  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* extras/notes/cfg66.session, extras/notes/{sessions.rc =>
+	cfg66.sessions}, extras/notes/ini_set_test.session: Tinkering with
+	potential session(s) files.
+
+2024-08-08  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* doc/latex/tex/references.tex, doc/latex/tex/session.tex, extras/{
+	=> notes}/cfg66.session, extras/notes/ini_set_test.session,
+	extras/notes/sessions.rc, tests/ini_set_test.cpp,
+	tests/session_spec.hpp: Trying to work out session directories and
+	files styles.
+
+2024-08-05  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* LICENSE.md, NEWS, README.md, RELNOTES,
+	doc/latex/tex/cfg66-library-guide.tex, meson.build,
+	tests/bytevector_test.cpp, tests/cliparser_test.cpp, work.sh: Wip
+	version bump to 0.3.
+	* doc/latex/make_pdf.sh, work.sh: Tweaks to build scripts.
+	* ChangeLog, NEWS, README.md, RELNOTES: Readying for 0.2 release.
+
 2024-08-04  Chris Ahlstrom <ahlstromcj@gmail.com>
 
 	* : Fixed merge conflicts.
