@@ -47,111 +47,110 @@
  *  has built-in support for std::initializer.
  */
 
-static cfg::options::container s_test_options
+static cfg::options::container s_test_options   /* std::map<string, spec>   */
 {
     /*
-     *   Name, Code,  Kind, Enabled,
-     *   Default, Value, FromCli, Dirty,
-     *   Description, Built-in
+     *  Name
+     *      Code,  Kind, Enabled,
+     *      Default, Value, FromCli, Dirty,
+     *      Description, Built-in
      */
     {
+        "alertable",
         {
-            "alertable",
-            {
-                'a', cfg::options::kind::boolean, cfg::options::enabled,
-                "false", "", false, false,
-                "If specified, the application is alertable.",
-                false
-            }
-        },
+            'a', cfg::options::kind::boolean, cfg::options::enabled,
+            "false", "", false, false,
+            "If specified, the application is alertable.",
+            false
+        }
+    },
+    {
+        "canned-code",
         {
-            "canned-code",
-            {
-                'c', cfg::options::kind::boolean, cfg::options::enabled,
-                "true", "", false, false,
-                "If specified, the application employs canned code.",
-                false
-            }
-        },
+            'c', cfg::options::kind::boolean, cfg::options::enabled,
+            "true", "", false, false,
+            "If specified, the application employs canned code.",
+            false
+        }
+    },
+    {
+        "dead-code",
         {
-            "dead-code",
-            {
-                'd', cfg::options::kind::boolean, cfg::options::enabled,
-                "false", "", false, false,
-                "If specified, detect dead code.",
-                false
-            }
-        },
+            'd', cfg::options::kind::boolean, cfg::options::enabled,
+            "false", "", false, false,
+            "If specified, detect dead code.",
+            false
+        }
+    },
+    {
+        "ethernet",
         {
-            "ethernet",
-            {
-                'e', cfg::options::kind::boolean, cfg::options::enabled,
-                "false", "", false, false,
-                "If specified, use the ethernet adapter.",
-                false
-            }
-        },
+            'e', cfg::options::kind::boolean, cfg::options::enabled,
+            "false", "", false, false,
+            "If specified, use the ethernet adapter.",
+            false
+        }
+    },
+    {
+        "fast-code",
         {
-            "fast-code",
-            {
-                'f', cfg::options::kind::boolean, cfg::options::enabled,
-                "false", "", false, false,
-                "If specified, detect fast code :-D.",
-                false
-            }
-        },
+            'f', cfg::options::kind::boolean, cfg::options::enabled,
+            "false", "", false, false,
+            "If specified, detect fast code :-D.",
+            false
+        }
+    },
+    {
+        "find-me",
         {
-            "find-me",
-            {
-                'F', cfg::options::kind::boolean, cfg::options::enabled,
-                "false", "", false, false,
-                "If specified, detect 'find-me' on the CLI.",
-                false
-            }
-        },
+            'F', cfg::options::kind::boolean, cfg::options::enabled,
+            "false", "", false, false,
+            "If specified, detect 'find-me' on the CLI.",
+            false
+        }
+    },
+    {
+        "disabled",
         {
-            "disabled",
-            {
-                'D', cfg::options::kind::boolean, cfg::options::disabled,
-                "false", "", false, false,
-                "If specified, disable the code.",
-                false
-            }
-        },
+            'D', cfg::options::kind::boolean, cfg::options::disabled,
+            "false", "", false, false,
+            "If specified, disable the code.",
+            false
+        }
+    },
+    {
+        "username",
         {
-            "username",
-            {
-                'u', cfg::options::kind::string, cfg::options::enabled,
-                "Joe Cool", "", false, false,
-                "Specifies the user name (for permissions).",
-                false
-            }
-        },
+            'u', cfg::options::kind::string, cfg::options::enabled,
+            "Joe Cool", "", false, false,
+            "Specifies the user name (for permissions).",
+            false
+        }
+    },
+    {
+        "loop-count",
         {
-            "loop-count",
-            {
-                cfg::options::code_null, cfg::options::kind::integer,
-                cfg::options::enabled,
-                "0<=0<=99", "", false, false,
-                "Specifies the number of loops to make.", false
-            }
-        },
+            cfg::options::code_null, cfg::options::kind::integer,
+            cfg::options::enabled,
+            "0<=0<=99", "", false, false,
+            "Specifies the number of loops to make.", false
+        }
+    },
+    {
+        "flux",
         {
-            "flux",
-            {
-                /*
-                 * If we specify 'f' here, it is a duplicate and
-                 * causes an error.
-                 *
-                 * 'f', "floating", cfg::options::enabled,
-                 */
+            /*
+             * If we specify 'f' here, it is a duplicate and
+             * causes an error.
+             *
+             * 'f', "floating", cfg::options::enabled,
+             */
 
-                cfg::options::code_null, cfg::options::kind::floating,
-                cfg::options::enabled,
-                "0.0<=0.1<=50.0", "", false, false,
-                "Specifies the magnetic flux.",
-                false
-            }
+            cfg::options::code_null, cfg::options::kind::floating,
+            cfg::options::enabled,
+            "0.0<=0.1<=50.0", "", false, false,
+            "Specifies the magnetic flux.",
+            false
         }
     }
 };

@@ -27,7 +27,7 @@
  *
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2025-02-23
+ * \updates       2025-03-02
  * \version       $Revision$
  *
  *    Also see the filefunctions.cpp module.  The functions here use
@@ -255,6 +255,7 @@ extern bool file_is_newer
     const std::string & file_2
 );
 extern void file_descriptor_touch (int fd);
+extern std::string make_xdg_runtime_directory (const std::string & sub = "");
 
 #endif      // CFG66_UTIL_FILEFUNCTIONS_HPP
 

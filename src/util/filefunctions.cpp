@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2025-02-23
+ * \updates       2025-03-02
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -141,7 +141,7 @@ EXTERN_C_END
 
 using stat_t = struct _stat;
 
-#else                                   /* not PLATFORM_MSVC: Mingw   */
+#else                                   /* not PLATFORM_MSVC: Mingw         */
 
 #define S_ACCESS    _access_s           /* Microsoft's safe access()        */
 #define S_CHDIR     chdir
@@ -161,11 +161,11 @@ using stat_t = struct _stat;
 
 using stat_t = struct stat;
 
-#endif                                  /* PLATFORM_MSVC      */
+#endif                                  /* PLATFORM_MSVC                    */
 
 #else                                   /* non-Microsoft stuff follows      */
 
-#include <unistd.h>
+#include <unistd.h>                     /* stuff like geteuid()             */
 
 #define S_ACCESS    access              /* ISO/POSIX/BSD unsafe access()    */
 #define S_CHDIR     chdir               /* ISO/POSIX/BSD chdir()            */
@@ -185,7 +185,7 @@ using stat_t = struct stat;
 
 using stat_t = struct stat;
 
-#endif                                  /* PLATFORM_WINDOWS           */
+#endif                                  /* PLATFORM_WINDOWS                 */
 
 /**
  *  A macro for the error code when a file does not exist.
@@ -1657,9 +1657,9 @@ delete_directory (const std::string & filename)
  *  working directory in the application.
  *
  * \return
- *      The pointer to the string containg the name of the current directory.
- *      This name is the full path name for the directory.  If an error
- *      occurs, then an empty string is returned.
+ *      The pointer to the string containing the name of the current
+ *      directory.  This name is the full path name for the directory.  If an
+ *      error occurs, then an empty string is returned.
  */
 
 std::string
@@ -2777,7 +2777,7 @@ get_wildcards
     if (result)
     {
         int flags = GLOB_ERR;
-#if defined SEQ66_PLATFORM_LINUX
+#if defined PLATFORM_LINUX
         flags |= GLOB_TILDE;
 #else
         // anything?
@@ -2889,6 +2889,107 @@ file_descriptor_touch (int fd)
  *      void write_line()
  *      char * read_line()
  */
+
+#if defined PLATFORM_LINUX
+
+/*
+ *  Get the XDG runtime directory (e.g. for lockfiles). See
+ *
+ * https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
+ *
+ *  Unlike $XDG_DATA_HOME, the runtime environment variable must be set,
+ *  usually to "/run/user/<id>/".
+ *
+ *  If the system is not XDG compliant (var not set) we fall back to
+ *  "/run/user/<id> directly. This is in accordance with
+ *
+ * https://en.wikipedia.org/wiki/Filesystem_Hierarchy_Standard 3.0
+ *
+ *  Adapted from get_xdg_runtime_lock_directory() from the original
+ *  NSM daemon project.
+ *
+ * \param subdirectory
+ *      An optional sub-directory to append to the path. The default
+ *      value is the empty string.
+ *
+ * \return
+ *      Returns the value of the environment variable plus the appended
+ *      sub-directory, or an empty string if the directory does not exist.
+ *
+ *      TODO: adapt for Windows.
+ */
+
+std::string
+make_xdg_runtime_directory (const std::string & subdirectory)
+{
+    std::string result;
+    char * env = std::getenv("XDG_RUNTIME_DIR");
+    if (not_nullptr(env))
+        result = env;
+
+    if (result.empty())                             /* env var is not set   */
+    {
+        uid_t uid_for_rundir = geteuid();
+        result = util::string_asprintf
+        (
+            "/run/user/%d/", uid_for_rundir
+        );
+        util::warn_message
+        (
+            "$XDG_RUNTIME_DIR not set; falling back to", result
+        );
+    }
+
+    /*
+     *  Now we have a directory path and need to test it.
+     */
+
+    if (! util::file_exists(result))
+    {
+        int ec = errno;
+        util::error_printf
+        (
+            "Failed to access FHS run-dir directory %s with error: %s",
+            V(result), std::strerror(ec)
+        );
+        result.clear();
+    }
+    if (! util::file_is_directory(result))
+    {
+        util::error_message
+        (
+            "FHS run-dir is not a directory", result
+        );
+        result.clear();
+    }
+    if (! result.empty())
+    {
+        if (! subdirectory.empty())
+        {
+            result = filename_concatenate(result, subdirectory);
+            if (! util::make_directory_path(result, 0771))
+            {
+                int ec = errno;
+                util::error_printf
+                (
+                    "Failed to create run-time directory %s with error: %s",
+                    V(result), std::strerror(ec)
+                );
+                result.clear();
+            }
+        }
+    }
+    if (! result.empty())
+        util::info_message("Run-time directory", result);
+
+    return result;
+}
+
+#else
+
+#error make_xdg_runtime_directory() is only for Linux at present
+
+#endif      // defined PLATFORM_LINUX
 
 }           // namespace util
 

@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-01-26
- * \updates       2024-10-01
+ * \updates       2025-03-02
  * \license       See above.
  *
  *  Also includes testing of session::manager.
@@ -318,7 +318,7 @@ legacy_main_test (int argc, char * argv [])
     return success;
 }
 
-#if defined USE_INIMANAGER_PASSALONG_FUNCTIONS
+#if defined USE_INIMANAGER_PASSALONG_FUNCTIONS_READY
 
 int
 main_test (int argc, char * argv [])
@@ -408,7 +408,6 @@ main_test (int argc, char * argv [])
     }
     return success;
 }
-
 
 #endif  // defined USE_INIMANAGER_PASSALONG_FUNCTIONS
 
