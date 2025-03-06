@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2025-03-02
+ * \updates       2025-03-06
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -1042,12 +1042,21 @@ file_read_string (const std::string & file)
  *      Provides a vector of strings to be populated. It is
  *      not cleared; the caller should do that, if desired.
  *
+ * \param trimlines
+ *      If true, then white-space is removed at either end of the
+ *      line. The default is false.
+ *
  * \return
  *      Returns true if the lines vector is not empty.
  */
 
 bool
-file_read_lines (const std::string & file, lib66::tokenization & lines)
+file_read_lines
+(
+    const std::string & file,
+    lib66::tokenization & lines,
+    bool trimlines
+)
 {
     bool result = file_name_good(file);
     if (result)
@@ -1073,6 +1082,9 @@ file_read_lines (const std::string & file, lib66::tokenization & lines)
                     else
                     {
                         tmp.pop_back();         /* remove the newline       */
+                        if (trimlines)
+                            tmp = trim(tmp);    /* trim before/after white  */
+
                         lines.push_back(tmp);
                     }
                 }
@@ -1080,7 +1092,7 @@ file_read_lines (const std::string & file, lib66::tokenization & lines)
                     break;                      /* done or EOF              */
             }
             (void) file_close(input, file);
-            delete [] destination;;
+            delete [] destination;
             result = ! lines.empty();
         }
         else

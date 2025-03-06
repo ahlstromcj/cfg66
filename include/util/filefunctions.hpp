@@ -27,7 +27,7 @@
  *
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2025-03-02
+ * \updates       2025-03-06
  * \version       $Revision$
  *
  *    Also see the filefunctions.cpp module.  The functions here use
@@ -95,7 +95,8 @@ extern std::string file_read_string (const std::string & oldfile);
 extern bool file_read_lines
 (
     const std::string & oldfile,
-    lib66::tokenization & lines
+    lib66::tokenization & lines,
+    bool trimlines = false
 );
 extern bool file_close
 (
