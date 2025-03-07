@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2025-03-06
+ * \updates       2025-03-07
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -2992,7 +2992,7 @@ make_xdg_runtime_directory (const std::string & subdirectory)
         }
     }
     if (! result.empty())
-        util::info_message("Run-time directory", result);
+        util::info_message("Run-time (lock) directory", result);
 
     return result;
 }
