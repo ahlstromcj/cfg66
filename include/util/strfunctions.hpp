@@ -129,16 +129,10 @@ is_npos (std::string::size_type p)
 }
 
 /*
- * This free function is actually defined in msgprintf, but we might
- * need it without including msgprintf.hpp.
- */
-
-extern std::string string_asprintf (std::string fmt, ...);
-
-/*
  * Global (free) string functions.
  */
 
+extern std::string string_asprintf (std::string fmt, ...);
 extern bool is_empty_string (const std::string & item);
 extern std::string empty_string ();
 extern bool is_questionable_string (const std::string & item);

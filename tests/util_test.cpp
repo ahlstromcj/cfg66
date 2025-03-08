@@ -65,13 +65,7 @@ main (int /*argc*/, char * /*argv*/ [])
     std::string target{"MSG: This is a message about: variadic functions."};
     std::string output = util::string_format
     (
-        /*
-         * This will error at compile-time (Clang) or run-time (g++):
-         *
-         * "MSG: %s: %s.", msg_1, msg_2
-         */
-
-        "MSG: %s: %s.", V(msg_1), V(msg_2)
+        "MSG: %s: %s.", V(msg_1), V(msg_2)  /* V() is "vararg" to get POD   */
     );
     bool success = output == target;
     if (success)

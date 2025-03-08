@@ -1,17 +1,6 @@
-Release Notes for Cfg66 v. 0.3 2025-03-02
+Release Notes for Cfg66 v. 0.4 2025-03-08
 
-- File functions: file_status(), file_read_lines(),
-  get_wildcards(), file_list_copy().
-- Message functions: xxx_printf() functions for formatting
-  errors, warnings, status, and other human-readable messages.
-- String functions: Many additions such as is_npos().
-- Config-file functions: Add function to parse and write
-  list sections and session files.
-- Macros: CSTR() and V() to distinguish usage of
-  std::string::c_str() in legacy vs. cfg66 functions.
-- Add the potext library as an optional subproject.
-- Added a test of read/write for session configuration.
-- Cleanup, minor improvements of unspecified nature.
+- To do.
 
 See NEWS for many more details, and the ChangeLog.
 

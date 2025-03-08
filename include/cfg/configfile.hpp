@@ -28,7 +28,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2024-09-27
+ * \updates       2025-03-08
  * \license       GNU GPLv2 or above
  *
  *  This is actually an elegant little parser, and works well as long as one
@@ -36,6 +36,7 @@
  */
 
 #include <fstream>                      /* std::streampos                   */
+#include <limits>                       /* std::numeric_limits<>            */
 #include <string>                       /* std::string, the ubiquitous one  */
 
 #include "cpp_types.hpp"                /* std::string, tokenization alias  */
@@ -298,15 +299,8 @@ public:
         return value == sm_int_missing;
     }
 
-    static bool is_default (float value)
-    {
-        return value == sm_float_default;
-    }
-
-    static bool is_missing (float value)
-    {
-        return value == sm_float_missing;
-    }
+    static bool is_default (float value);
+    static bool is_missing (float value);
 
 protected:
 

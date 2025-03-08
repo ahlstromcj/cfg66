@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-24
- * \updates       2025-02-11
+ * \updates       2025-03-08
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -37,6 +37,7 @@
 #include <cctype>                       /* std::toupper() function, etc.    */
 #include <climits>                      /* INT_MAX and its ilk              */
 #include <cmath>                        /* std::floor(), std::pow()         */
+#include <cstdarg>                      /* see "man stdarg(3)"              */
 #include <cstring>                      /* std::memcmp() function           */
 #include <stdexcept>                    /* std::invalid_argument            */
 
@@ -52,6 +53,33 @@
 
 namespace util
 {
+
+/**
+ *  Yet another variation on formatting. Compare to formatted() in
+ *  the msgfunctions module and string_format() in the header file.
+ */
+
+std::string
+string_asprintf (std::string fmt, ...)
+{
+    std::string result;
+    va_list args;
+    va_start(args, fmt);                /* vs fmt.c_str()                   */
+
+    va_list temp_args;
+    va_copy(temp_args, args);
+
+    int sz = std::vsnprintf(nullptr, 0, fmt.c_str(), temp_args) + 1;
+    va_end(temp_args);
+    if (sz > 0)
+    {
+        std::vector<char> dest(sz);
+        (void) std::vsnprintf(dest.data(), dest.size(), fmt.c_str(), args);
+        result = std::string(dest.data(), dest.size() - 1);
+    }
+    va_end(args);
+    return result;
+}
 
 /**
  *  Returns double quotes as a string.

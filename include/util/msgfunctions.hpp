@@ -90,12 +90,6 @@ namespace util
 {
 
 /*
- *  Used in async_safe_utoa().
- */
-
-const int c_async_safe_utoa_size = 24;
-
-/*
  * Global functions. There is also a quiet and a verbose setting in
  * cli::parser.
  */
@@ -113,7 +107,6 @@ extern bool investigate ();
  *  Free functions in the util namespace.
  */
 
-extern std::string string_asprintf (std::string fmt, ...);
 extern bool info_message
 (
     const std::string & msg,

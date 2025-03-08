@@ -224,6 +224,7 @@ async_safe_errprint (const char * msg, bool colorit)
 void
 async_safe_utoa (char * destination, unsigned number, bool spacebefore)
 {
+    const int c_async_safe_utoa_size = 24;
     const unsigned ascii_base = unsigned('0');
     char reversed[c_async_safe_utoa_size];
     int count = 0;
@@ -590,33 +591,6 @@ formatted (const std::string & fmt, va_list args)
     {
         std::vector<char> dest(ilen);                       /* Step 3       */
         std::vsnprintf(dest.data(), dest.size(), szfmt, args);
-        result = std::string(dest.data(), dest.size() - 1);
-    }
-    va_end(args);
-    return result;
-}
-
-/**
- *  Yet another variation on formatting. Compare to formatted() abouve
- *  and string_format() in the header file.
- */
-
-std::string
-string_asprintf (std::string fmt, ...)
-{
-    std::string result;
-    va_list args;
-    va_start(args, fmt);                /* vs fmt.c_str()                   */
-
-    va_list temp_args;
-    va_copy(temp_args, args);
-
-    int sz = std::vsnprintf(nullptr, 0, fmt.c_str(), temp_args) + 1;
-    va_end(temp_args);
-    if (sz > 0)
-    {
-        std::vector<char> dest(sz);
-        (void) std::vsnprintf(dest.data(), dest.size(), fmt.c_str(), args);
         result = std::string(dest.data(), dest.size() - 1);
     }
     va_end(args);

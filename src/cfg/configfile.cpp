@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2024-09-27
+ * \updates       2025-03-08
  * \license       GNU GPLv2 or above
  *
  *  std::streamoff is a signed integral type (usually long long) that can
@@ -87,6 +87,20 @@ lib66::tokenization configfile::sm_file_extensions
     ".session",
     ".usr"
 };
+
+bool
+configfile::is_default (float v)
+{
+    float e = std::numeric_limits<float>::epsilon();
+    return v >= (sm_float_default - e) && v <= (sm_float_default + e);
+}
+
+bool
+configfile::is_missing (float v)
+{
+    float e = std::numeric_limits<float>::epsilon();
+    return v >= (sm_float_missing - e) && v <= (sm_float_missing + e);
+}
 
 /**
  *  Provides the string constructor for a configuration file.
