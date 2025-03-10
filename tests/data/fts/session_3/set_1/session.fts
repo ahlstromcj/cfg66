@@ -1,0 +1,18 @@
+# Cfg66-style configuration file for app v. 0
+#
+# File: tests/data/fts/.../session.fts
+# Written: 2024-07-29 00:00:00
+
+[Cfg66]
+
+config-type = "rc"                      # The type of configuration file.
+version = 1                             # Configuration file version.
+
+[comments]
+
+This file copied in multiple places for a gets of the
+fts_get_file_list() function.
+
+# End of # tests/data/fts/.../session.fts
+#
+# vim: sw=4 ts=4 wm=4 et ft=dosini

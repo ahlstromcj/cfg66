@@ -6,7 +6,7 @@
 # \library     cfg66
 # \author      Chris Ahlstrom
 # \date        2022-06-22
-# \updates     2025-02-07
+# \updates     2025-03-10
 # \license     $XPC_SUITE_GPL_LICENSE$
 #
 #  This file is part of the "cfg66" library. See the top-level meson.build
@@ -79,6 +79,12 @@ util_test_exe = executable(
    dependencies : [ libcfg66_dep, liblib66_library_dep ]
    )
 
+ftswalker_test_exe = executable(
+   'ftswalker_test',
+   sources : [ 'ftswalker_test.cpp' ],
+   dependencies : [ libcfg66_dep, liblib66_library_dep ]
+   )
+
 test('C++ ByteVector Test', bytevector_test_exe)
 test('C Parser Test', cliparser_test_c_exe)
 test('C++ Parser Test', cliparser_test_exe)
@@ -88,6 +94,7 @@ test('C++ Options Test', options_test_exe)
 test('C++ INI Test', ini_test_exe)
 test('C++ INI Set/Map Test', ini_set_test_exe)
 test('C++ Util Test', util_test_exe)
+test('C++ FTS Walker Test', ftswalker_test_exe)
    
 #****************************************************************************
 # meson.build (cfg66/tests)

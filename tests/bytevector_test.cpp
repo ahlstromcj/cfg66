@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-05-17
- * \updates       2024-08-05
+ * \updates       2025-03-10
  * \license       See above.
  *
  */
@@ -226,7 +226,10 @@ main (int argc, char * argv [])
                 success = big_endian_file_io();
         }
         if (success)
+        {
             std::cout << "util::bytevector C++ test succeeded" << std::endl;
+            rcode = EXIT_SUCCESS;
+        }
         else
             std::cerr << "util::bytevector C++ test failed" << std::endl;
     }

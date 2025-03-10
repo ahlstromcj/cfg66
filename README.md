@@ -1,4 +1,4 @@
-# README for Library Cfg66 0.3 2025-03-02
+# README for Library Cfg66 0.4 2025-03-10
 
 __Cfg66__ is a configuration library based on the "cfg" directories
 in the __Seq66__ project, but that is useful in other applications.
@@ -35,6 +35,7 @@ or classes in a namespace of the same name:
                 subdirectories, and application-specific item names.
     *   util:   Contains file functions, message functions, string functions,
                 and other functionality common to all our "66" applications.
+                Also includes provision support for file-tree walking.
     *   tests:  Small test applications are provided to test and illustrate
                 most of the classes.
 

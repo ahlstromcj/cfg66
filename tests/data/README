@@ -1,0 +1,35 @@
+Tests/Data Directory for the cfg66 library
+Chris Ahlstrom
+2025-03-10 to 2025-03-10
+
+This file lists the data associated with each test application.
+
+bytevector_test:
+
+    1Bar.midi
+
+ini_test:
+
+    fooin.rc
+    fooout.rc
+
+ini_set_test:
+
+    ini_set_test.rc
+
+util_test:
+
+    lines.txt
+
+Also see data/README
+
+ftswalker_test:
+
+    fts
+
+To do:
+
+    session.nsm
+    test.jackpatch
+
+# vim: sw=4 ts=4 wm=8 et ft=sh

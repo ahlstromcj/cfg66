@@ -2929,6 +2929,8 @@ file_descriptor_touch (int fd)
  *      sub-directory, or an empty string if the directory does not exist.
  *
  *      TODO: adapt for Windows.
+ *
+ *  NOTE: compare to nsm::make_xdg_runtime_lock_directory()
  */
 
 std::string

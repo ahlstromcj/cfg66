@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-07-28
- * \updates       2025-01-27
+ * \updates       2025-03-10
  * \license       See above.
  *
  *  This program is an extension of sorts for the options_test program. Here
@@ -266,8 +266,8 @@ main (int argc, char * argv [])
     }
     if (success)
     {
-        rcode = EXIT_SUCCESS;
         std::cout << "cfg::history C++ test succeeded" << std::endl;
+        rcode = EXIT_SUCCESS;
     }
     else
         std::cerr << "cfg::history C++ test failed" << std::endl;

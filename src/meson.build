@@ -6,7 +6,7 @@
 # \library     cfg66
 # \author      Chris Ahlstrom
 # \date        2022-06-22
-# \updates     2024-10-09
+# \updates     2025-03-10
 # \license     $XPC_SUITE_GPL_LICENSE$
 #
 #  This file is part of the "cfg66" library. See the top-level meson.build
@@ -45,6 +45,7 @@ libcfg66_sources += files(
    'session/manager.cpp',
    'util/bytevector.cpp',
    'util/filefunctions.cpp',
+   'util/ftswalker.cpp',
    'util/msgfunctions.cpp',
    'util/named_bools.cpp',
    'util/realpath.c',
