@@ -24,7 +24,7 @@
  * \library       ftswalker
  * \author        Chris Ahlstrom
  * \date          2025-03-10
- * \updates       2025-03-10
+ * \updates       2025-03-11
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
@@ -62,9 +62,36 @@ is_regular_file (const FTSENT * entry)
 }
 
 bool
-is_leaving_directory  (const FTSENT * entry)
+is_leaving_directory (const FTSENT * entry)
 {
     return entry->fts_info == FTS_DP;
+}
+
+bool
+is_other_file_type (const FTSENT * entry)
+{
+    return
+    (
+        entry->fts_info == FTS_DEFAULT ||
+        (
+            entry->fts_info != FTS_D &&
+            entry->fts_info != FTS_F &&
+            entry->fts_info != FTS_DP
+        )
+    );
+}
+
+util::ftswalker::FTS
+get_fts_type (const FTSENT * entry)
+{
+    util::ftswalker::FTS result = util::ftswalker::FTS::DEFAULT;
+    switch (entry->fts_info)
+    {
+        case FTS_D:     result = util::ftswalker::FTS::D;         break;
+        case FTS_F:     result = util::ftswalker::FTS::F;         break;
+        case FTS_ERR:   result = util::ftswalker::FTS::ERR;       break;
+    }
+    return result;
 }
 
 }       // namespace
@@ -72,6 +99,189 @@ is_leaving_directory  (const FTSENT * entry)
 namespace util
 {
 
+/**
+ *  Principal constructor.
+ */
+
+ftswalker::ftswalker (const std::string & path) :
+    m_search_directories    (),
+    m_paths                 (nullptr)
+{
+    m_search_directories.push_back(path);
+    make_paths();
+
+    // to do?
+}
+
+ftswalker::ftswalker (const lib66::tokenization & paths) :
+    m_search_directories    (paths),
+    m_paths                 (nullptr)
+{
+    make_paths();
+}
+
+ftswalker::~ftswalker ()
+{
+    delete_paths();
+}
+
+/**
+ *  A generic search to build a list of location for the target file.
+ *
+ *  The "compar()" argument is NULL, therefore the directory traversal order
+ *  is in the order listed in the root paths parameter, and in the order
+ *  listed in the directory for everything else.
+ */
+
+bool
+ftswalker::find_file
+(
+    const std::string & target,
+    lib66::tokenization & destination
+)
+{
+    bool result = not_nullptr(paths()); /* ! m_search_directories.empty();  */
+    if (result)
+    {
+        ::FTS * ftsp = ::fts_open(paths(), FTS_LOGICAL, NULL);
+        if (ftsp == NULL)
+        {
+            util::error_message("fts_open() failed");
+            result = false;
+        }
+        if (result)
+        {
+            util::info_message("Getting file list");
+            for (;;)
+            {
+                ::FTSENT * ent = ::fts_read(ftsp);  /* next file/directory  */
+                if (ent == NULL)
+                {
+                    if (errno == 0)                 /* no more items, done  */
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        util::error_message("fts_read()", "failed");
+                        result = false;
+                        break;
+                    }
+                    if (is_regular_file(ent))
+                    {
+                        std::string base = util::filename_base(ent->fts_path);
+                        if (util::strcompare(target, base))
+                        {
+                            std::string p = ent->fts_path;  /* target path  */
+                            util::info_message("Path", p);
+                            destination.push_back(p);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return result;
+}
+
+/**
+ *  As all the directories and files are traversed, this function calls
+ *  the given ftswalker function.
+ *
+ * \param fn
+ *      Provides the free function or static function to be called for
+ *      every entry. It should at least handle the values in the
+ *      ftswalker::FTS enumeration.
+ *
+ * \param target
+ *      If not empty, then only matching files will be processed.
+ *      The default is empty.
+ *
+ * \return
+ *      If all the calls to \a fn return true, this function returns true.
+ */
+
+bool
+ftswalker::process_files
+(
+    function fn,
+    const std::string & target
+)
+{
+    bool result = not_nullptr(paths()); /* ! m_search_directories.empty();  */
+    if (result)
+    {
+        ::FTS * ftsp = ::fts_open(paths(), FTS_LOGICAL, NULL);
+        if (ftsp == NULL)
+        {
+            util::error_message("fts_open() failed");
+            result = false;
+        }
+        if (result)
+        {
+            util::info_message("Getting file list");
+            for (;;)
+            {
+                ::FTSENT * ent = ::fts_read(ftsp);  /* next file/directory  */
+                if (ent == NULL)
+                {
+                    if (errno == 0)                 /* no more items, done  */
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        util::error_message("fts_read()", "failed");
+                        result = false;
+                        break;
+                    }
+                    if (is_regular_file(ent))
+                    {
+                        std::string base = util::filename_base(ent->fts_path);
+                        if (util::strcompare(target, base))
+                        {
+                            std::string p = ent->fts_path;  /* target path  */
+                            util::info_message("Path", p);
+                            ///// destination.push_back(p);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return result;
+}
+
+void
+ftswalker::make_paths ()
+{
+    int count = int(m_search_directories.size());
+    m_paths = nullptr;
+    if (count > 0)
+    {
+        char ** p = new (std::nothrow) char * [count + 1];  /* with nullptr */
+        m_paths = p;
+        if (not_nullptr(m_paths))
+        {
+            int i = 0;
+            for (const auto & s : m_search_directories)
+                m_paths[i] = STR(s);
+
+            m_paths[count] = nullptr;
+        }
+    }
+}
+
+void
+ftswalker::delete_paths ()
+{
+    if (not_nullptr(m_paths))
+        delete [] m_paths;
+}
+
+/*-------------------------------------------------------------------------
+ * Free functions in the util namespace
+ *-------------------------------------------------------------------------*/
 
 /**
  *  The argument compare_whatever() specifies a user-defined function
@@ -277,6 +487,13 @@ fts_find_file
                  * currententry = ent->fts_parent;
                  */
             }
+        }
+        else if (is_other_file_type(ent))
+        {
+            util::info_message
+            (
+                "Non-directory/file", std::string(ent->fts_path)
+            );
         }
     }
 

@@ -27,7 +27,7 @@
  * \library       ftswalker
  * \author        Chris Ahlstrom
  * \date          2025-03-10
- * \updates       2025-03-10
+ * \updates       2025-03-11
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
@@ -42,8 +42,6 @@
 namespace util
 {
 
-#if defined THIS_CODE_IS_READY
-
 class ftswalker
 {
 
@@ -55,12 +53,12 @@ public:
      *  should handle D and F.
      */
 
-    enum class FTS
+    enum class FTS      /* FTS is already a type in the fts(3) module       */
     {
         D,              /* directory                                        */
-        DEFAULT,        /* one of the other file types                      */
-        ERR,            /* an (unspecified) error occurred; errno is set    */
         F,              /* a regular file                                   */
+        DEFAULT,        /* one of the other file types except FTS_DP        */
+        ERR,            /* an (unspecified) error occurred; errno is set    */
     };
 
     /**
@@ -68,17 +66,55 @@ public:
      *  found.
      */
 
-    using function = bool (ftswalker::*)
-    {
+    using function = bool (*)
+    (
         const std::string &,            /* name of file or directory        */
         FTS                             /* type of file, or an error        */
-    };
+    );
 
-    MORE TO COME
+private:
 
-};          // class ftswalker
+    /**
+     *  The set of directories to search when ever a file needs to be found.
+     */
 
-#endif
+    lib66::tokenization m_search_directories;
+
+    /**
+     *  The same set of directories in pointer format.
+     */
+
+    char ** m_paths;
+
+public:
+
+    ftswalker () = default;
+    ftswalker (const std::string & path);
+    ftswalker (const lib66::tokenization & paths);
+    virtual ~ftswalker ();
+
+    bool find_file
+    (
+        const std::string & target,
+        lib66::tokenization & destination
+    );
+    bool process_files
+    (
+        function fn,
+        const std::string & target = ""
+    );
+
+private:
+
+    void make_paths ();
+    void delete_paths ();
+
+    char * const * paths () const
+    {
+        return m_paths;
+    }
+
+};              // class ftswalker
 
 /*-------------------------------------------------------------------------
  * Free functions in the util namespace
