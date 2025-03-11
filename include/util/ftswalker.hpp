@@ -120,6 +120,11 @@ private:
  * Free functions in the util namespace
  *-------------------------------------------------------------------------*/
 
+extern bool fts_show_targets
+(
+    const std::string & match,
+    util::ftswalker::FTS ft
+);
 extern int compare_files_before_dirs
 (
     const FTSENT ** first,

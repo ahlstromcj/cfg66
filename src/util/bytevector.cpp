@@ -790,7 +790,7 @@ bytevector::set_error_dump (const std::string & msg) const
  * \param msg
  *      The main error message string, without an ending newline character.
  *
- * \param value
+ * \param v
  *      The long value to show as part of the message.
  *
  * \return
@@ -798,16 +798,16 @@ bytevector::set_error_dump (const std::string & msg) const
  */
 
 bool
-bytevector::set_error_dump (const std::string & msg, unsigned long value) const
+bytevector::set_error_dump (const std::string & msg, unsigned long v) const
 {
     char temp[64];
-    snprintf(temp, sizeof temp, "; 0x%lx.", value);
+    snprintf(temp, sizeof temp, "; 0x%lx.", v);
     std::string result = msg;
     result += temp;
     return set_error_dump(result);
 }
 
-}           // namespace seq66
+}           // namespace util
 
 /*
  * bytevector.cpp

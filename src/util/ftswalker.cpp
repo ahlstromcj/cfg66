@@ -94,7 +94,21 @@ get_fts_type (const FTSENT * entry)
     return result;
 }
 
-}       // namespace
+std::string
+get_fts_type (util::ftswalker::FTS typevalue)
+{
+    std::string result;
+    switch (typevalue)
+    {
+        case util::ftswalker::FTS::D:       result = "Directory";       break;
+        case util::ftswalker::FTS::F:       result = "Regular File";    break;
+        case util::ftswalker::FTS::DEFAULT: result = "Default";         break;
+        case util::ftswalker::FTS::ERR:     result = "Error";           break;
+    }
+    return result;
+}
+
+}           // namespace
 
 namespace util
 {
@@ -235,15 +249,29 @@ ftswalker::process_files
                         result = false;
                         break;
                     }
-                    if (is_regular_file(ent))
+                }
+                if (is_regular_file(ent))
+                {
+                    bool process_it = true;
+                    if (! target.empty())
                     {
                         std::string base = util::filename_base(ent->fts_path);
-                        if (util::strcompare(target, base))
-                        {
-                            std::string p = ent->fts_path;  /* target path  */
-                            util::info_message("Path", p);
-                            ///// destination.push_back(p);
-                        }
+                        process_it = util::strcompare(target, base);
+                    }
+                    if (process_it)
+                    {
+                        std::string p = ent->fts_path;  /* target path  */
+                        FTS ft = get_fts_type(ent);
+
+                        /*
+                         * TMI:
+                         *
+                         *  util::info_message("Path", p);
+                         */
+
+                        result = fn(p, ft);
+                        if (! result)
+                            break;
                     }
                 }
             }
@@ -256,7 +284,7 @@ void
 ftswalker::make_paths ()
 {
     int count = int(m_search_directories.size());
-    m_paths = nullptr;
+    delete_paths();
     if (count > 0)
     {
         char ** p = new (std::nothrow) char * [count + 1];  /* with nullptr */
@@ -265,7 +293,7 @@ ftswalker::make_paths ()
         {
             int i = 0;
             for (const auto & s : m_search_directories)
-                m_paths[i] = STR(s);
+                m_paths[i++] = STR(s);
 
             m_paths[count] = nullptr;
         }
@@ -276,12 +304,28 @@ void
 ftswalker::delete_paths ()
 {
     if (not_nullptr(m_paths))
+    {
         delete [] m_paths;
+        m_paths = nullptr;
+    }
 }
 
 /*-------------------------------------------------------------------------
  * Free functions in the util namespace
  *-------------------------------------------------------------------------*/
+
+/**
+ *  Just a test function; see tests/ftswalker_test.
+ */
+
+bool
+fts_show_targets (const std::string & match, util::ftswalker::FTS ft)
+{
+    std::string t = get_fts_type(ft);
+    std::string m = match.empty() ? "---" : match ;
+    util::status_message(t, m);
+    return true;
+}
 
 /**
  *  The argument compare_whatever() specifies a user-defined function
@@ -512,7 +556,7 @@ fts_find_file
     return result;
 }
 
-}           // namespace seq66
+}           // namespace util
 
 /*
  * ftswalker.cpp

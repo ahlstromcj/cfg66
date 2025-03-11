@@ -86,9 +86,18 @@ const std::string s_desc_intro
 bool
 fts_get_file_list_test ()
 {
-    static const std::string rootdir = "tests/data/fts";
-    static const std::string target = "session.fts";
+    const std::string rootdir = "tests/data/fts";
+    const std::string target = "session.fts";
     bool result = util::fts_find_file(rootdir, target);
+    return result;
+}
+
+bool
+fts_callback_test ()
+{
+    const std::string rootdir = "tests/data/fts";
+    util::ftswalker walker(rootdir);
+    bool result = walker.process_files(util::fts_show_targets);
     return result;
 }
 
@@ -134,7 +143,19 @@ main (int argc, char * argv [])
         }
         else
         {
+            /*
+             * Runs one or all of the test of the helpers module.
+             */
+
             success = fts_get_file_list_test();
+            if (success)
+            {
+                /*
+                 * Basic test of the ftswalker callback mechanism.
+                 */
+
+                success = fts_callback_test();
+            }
         }
         if (success)
         {
