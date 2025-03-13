@@ -27,7 +27,7 @@
  *
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2025-02-13
+ * \updates       2025-03-13
  * \version       $Revision$
  *
  *    Also see the strfunctions.cpp module.
@@ -58,6 +58,34 @@
 #include <cstdio>                       /* std::snprintf() function         */
 #include <memory>                       /* std::unique_ptr<> template class */
 
+/**
+ *  Since strings are not POD, Clang will error on them when passed to
+ *  a variadic function. We could use c_str() directly. Sigh. Let's
+ *  make a simple macro for that. We use a macro to avoid multiple function
+ *  definitions.
+ *
+ *      -   V().  "V" is for variadic functions. Merely makes the purpose
+ *          a little more obvious. VARIADIC()? POD()?
+ *      -   CSTR(). Provides a more glaring way to use c_str(); that's all.
+ *      -   CPTR(). Like CSTR(), but if the string is empty, converts it
+ *          to the null pointer required by some C APIs.
+ *      -   STR(). Careful! Converts c_str() by casting away constness.
+ *      -   SPTR(). Like STR(), but if the string is empty, converts it
+ *          to the null pointer required by some C APIs.
+ */
+
+#if defined USE_THESE_MACROS
+
+#define V(x)        x.c_str()
+#define CSTR(x)     x.c_str()
+#define CPTR(x)     (x.empty() ? nullptr : x.c_str())
+#define STR(x)      const_cast<char *>(x.c_str())
+#define SPTR(x)     (x.empty() ? nullptr : const_cast<char *>(x.c_str()))
+
+#else
+
+#endif
+
 namespace util
 {
 
@@ -86,18 +114,37 @@ std::string string_format (const std::string & format, Args ... args)
 
 }               // namespace util
 
-/**
- *  Since strings are not POD, Clang will error on them when passed to
- *  a variadic function. We could use c_str() directly. Sigh. Let's
- *  make a simple macro for that. We use a macro to avoid multiple definitions
- *  of this function.
- */
-
-#define STR(x)  const_cast<char *>(x.c_str())
-#define CSTR(x) x.c_str()
-#define V(x)    x.c_str()
-
 #endif  // CFG66_STRING_FORMAT_FUNCTION
+
+inline const char *
+V (const std::string & x)
+{
+    return x.c_str();
+}
+
+inline const char *
+CSTR (const std::string & x)
+{
+    return x.c_str();
+}
+
+inline const char *
+CPTR (const std::string & x)
+{
+    return x.empty() ? nullptr : x.c_str() ;
+}
+
+inline char *
+STR (const std::string & x)
+{
+    return const_cast<char *>(x.c_str());
+}
+
+inline char *
+SPTR (const std::string & x)
+{
+    return x.empty() ? nullptr : const_cast<char *>(x.c_str()) ;
+}
 
 namespace util
 {

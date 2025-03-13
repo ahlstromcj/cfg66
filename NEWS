@@ -1,14 +1,23 @@
 NEWS for Cfg66 0.4
 Chris Ahlstrom
-2024-04-15 to 2025-03-10
+2024-04-15 to 2025-03-13
 
 # Changelog
 
-## [0.4] - 2025-03-10
+## [0.4] - 2025-03-13
 
 ### Added
 
-- Add the ftswalker module.
+- The ftswalker module and class.
+- The CPTR() function to convert a string to a const pointer, with the
+  added feature that, if the string is empty, the pointer is null.
+  SPTR() is similar, but the return value is non-const.
+- The STR() function, which is like CSTR() but returns a non-const
+  pointer.
+
+### Fixed
+
+- Fixed the util::delete\_directory() function.
 
 ## [0.3] - 2025-03-02
 

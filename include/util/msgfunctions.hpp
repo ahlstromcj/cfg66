@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom and other authors; see documentation
  * \date          2018-11-10
- * \updates       2025-02-13
+ * \updates       2025-03-13
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
@@ -38,53 +38,6 @@
  */
 
 #include "cpp_types.hpp"                /* string, vector, lib66::msglevel  */
-
-#if ! defined CFG66_STRING_FORMAT_FUNCTION
-#define CFG66_STRING_FORMAT_FUNCTION
-
-#include <cstdio>                       /* std::snprintf() function         */
-#include <memory>                       /* std::unique_ptr<> template class */
-
-namespace util
-{
-
-/*
- *  Provides a function similar to asprintf(). It first gets the size
- *  of the result by passing nullptr and 0 as the destination buffer.
- *  It then allocates a buffer and does the actual writing.
- *  Compare to string_asnprintf() in the msgfunctions module.
- *
- *  Note that the V() macro must wrap std::string arguments.
- */
-
-template<typename ... Args>
-std::string string_format (const std::string & format, Args ... args)
-{
-    std::string result;
-    size_t sz = std::snprintf(nullptr, 0, format.c_str(), args ...);
-    if (sz > 0)
-    {
-        std::unique_ptr<char []> buf(new char[sz + 1]);
-        std::snprintf(buf.get(), sz + 1, format.c_str(), args ...);
-        result = std::string(buf.get(), buf.get() + sz);
-    }
-    return result;
-}
-
-}               // namespace util
-
-/**
- *  Since strings are not POD, Clang will error on them when passed to
- *  a variadic function. We could use c_str() directly. Sigh. Let's
- *  make a simple macro for that. We use a macro to avoid multiple definitions
- *  of this function.
- */
-
-#define STR(x)  const_cast<char *>(x.c_str())
-#define CSTR(x) x.c_str()
-#define V(x)    x.c_str()
-
-#endif  // CFG66_STRING_FORMAT_FUNCTION
 
 namespace util
 {

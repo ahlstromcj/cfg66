@@ -1,6 +1,6 @@
 TODOs for the cfg66 library
 Chris Ahlstrom
-2023-07-16 to 2023-08-03
+2023-07-16 to 2025-03-13
 
 This file lists only the high-priority features and fixtures we need
 to do for Cfg66.
@@ -20,5 +20,14 @@ ini_test_cpp:
     -   Test specifying one port on the command line.
     -   Make sure filefunctions rigorously use UNIX path styles
         internally and externally.
+
+ftswalker:
+
+    -   Create a function to show files and directories, not just
+        files as fts_show_target() does.
+    -   May need too add an optional compare-function to
+        ftswalker::process_files().
+    -   Implement a function to delete a directory and all of
+        its files and sub-directories.
 
 # vim: sw=4 ts=4 wm=8 et ft=sh

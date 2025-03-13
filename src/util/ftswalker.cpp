@@ -19,16 +19,19 @@
 /**
  * \file          ftswalker.cpp
  *
- *    This module ...
+ *      This module uses the "fts" functions (in Linux) to traverse a directory
+ *      hierarchy and do a few things with it.
  *
  * \library       ftswalker
  * \author        Chris Ahlstrom
  * \date          2025-03-10
- * \updates       2025-03-11
+ * \updates       2025-03-13
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
- *   To do.
+ *      This module defines the util::ftswalker class to manage some aspects
+ *      of file-tree walking, as well as a few free functions in the util
+ *      and anonymous namespaces.
  */
 
 #include <cerrno>                       /* #include <errno.h>               */
@@ -140,7 +143,7 @@ ftswalker::~ftswalker ()
 }
 
 /**
- *  A generic search to build a list of location for the target file.
+ *  A generic search to build a list of locations for the target file.
  *
  *  The "compar()" argument is NULL, therefore the directory traversal order
  *  is in the order listed in the root paths parameter, and in the order
@@ -280,6 +283,12 @@ ftswalker::process_files
     return result;
 }
 
+/**
+ *  This private function creates the array of character pointers, with the
+ *  last one null, needed by the fts_open() routine. The pointers are
+ *  the c_str() values of the strings in the search-directories tokenization.
+ */
+
 void
 ftswalker::make_paths ()
 {
@@ -300,6 +309,11 @@ ftswalker::make_paths ()
     }
 }
 
+/**
+ *  Removes the array of character pointers (but not the pointers
+ *  themselves :-)
+ */
+
 void
 ftswalker::delete_paths ()
 {
@@ -315,7 +329,8 @@ ftswalker::delete_paths ()
  *-------------------------------------------------------------------------*/
 
 /**
- *  Just a test function; see tests/ftswalker_test.
+ *  Just a test function; see tests/ftswalker_test. Note that
+ *  it currently shows only regular files for some reason.
  */
 
 bool
@@ -326,6 +341,12 @@ fts_show_targets (const std::string & match, util::ftswalker::FTS ft)
     util::status_message(t, m);
     return true;
 }
+
+/**
+ *  This callback removes the files and directories it encounters.
+ *
+ *  TODO:  TESTING!!!!!!!!!!!!!
+ */
 
 /**
  *  The argument compare_whatever() specifies a user-defined function
@@ -555,6 +576,10 @@ fts_find_file
 
     return result;
 }
+
+#if defined THIS_CODE_IS_READY
+
+#endif
 
 }           // namespace util
 

@@ -1653,12 +1653,15 @@ make_path_relative (const std::string & path)
 bool
 delete_directory (const std::string & filename)
 {
-    bool result = file_name_good(filename) && file_exists(filename);
+    bool result = file_name_good(filename);
     if (result)
     {
-        int rcode = S_RMDIR(filename.c_str());
-        if (rcode == (-1))
-            result = s_file_error(filename, __func__, errno);
+        if (file_exists(filename))
+        {
+            int rcode = S_RMDIR(filename.c_str());
+            if (rcode == (-1))
+                result = s_file_error(filename, __func__, errno);
+        }
     }
     return result;
 }
