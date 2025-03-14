@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2025-03-10
- * \updates       2025-03-10
+ * \updates       2025-03-14
  * \license       See above.
  *
  */
@@ -97,7 +97,17 @@ fts_callback_test ()
 {
     const std::string rootdir = "tests/data/fts";
     util::ftswalker walker(rootdir);
+    util::info_message("Default directory traversal....");
+
     bool result = walker.process_files(util::fts_show_targets);
+    if (result)
+    {
+        util::info_message("Compare-files-before-directories traversal....");
+        result = walker.process_files
+        (
+            util::fts_show_targets, "", util::compare_files_before_dirs
+        );
+    }
     return result;
 }
 

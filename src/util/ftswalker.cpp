@@ -25,7 +25,7 @@
  * \library       ftswalker
  * \author        Chris Ahlstrom
  * \date          2025-03-10
- * \updates       2025-03-13
+ * \updates       2025-03-14
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
@@ -37,7 +37,7 @@
 #include <cerrno>                       /* #include <errno.h>               */
 #include <cstring>                      /* std::strerror()                  */
 #include <cstdlib>                      /* std::getenv(), std::rand()       */
-#include <fts.h>                        /* function to traverse directories */
+#include <fts.h>                        /* directory-traversal functions    */
 
 #include "util/ftswalker.hpp"           /* file-tree traversal declarations */
 #include "util/filefunctions.hpp"       /* cfg66: util::file_write_lines()  */
@@ -98,7 +98,7 @@ get_fts_type (const FTSENT * entry)
 }
 
 std::string
-get_fts_type (util::ftswalker::FTS typevalue)
+get_fts_type_name (util::ftswalker::FTS typevalue)
 {
     std::string result;
     switch (typevalue)
@@ -168,7 +168,10 @@ ftswalker::find_file
         }
         if (result)
         {
-            util::info_message("Getting file list");
+            /*
+             * util::info_message("Getting file list"); // TMI!
+             */
+
             for (;;)
             {
                 ::FTSENT * ent = ::fts_read(ftsp);  /* next file/directory  */
@@ -214,6 +217,12 @@ ftswalker::find_file
  *      If not empty, then only matching files will be processed.
  *      The default is empty.
  *
+ * \param cfn
+ *      If not null (the default), this function is used in ordering the
+ *      traversal. By default, the directory traversal order is in the
+ *      order listed in the root paths, and in the order listed in the
+ *      directory for everything else.
+ *
  * \return
  *      If all the calls to \a fn return true, this function returns true.
  */
@@ -222,13 +231,14 @@ bool
 ftswalker::process_files
 (
     function fn,
-    const std::string & target
+    const std::string & target,
+    comparator cfn
 )
 {
     bool result = not_nullptr(paths()); /* ! m_search_directories.empty();  */
     if (result)
     {
-        ::FTS * ftsp = ::fts_open(paths(), FTS_LOGICAL, NULL);
+        ::FTS * ftsp = ::fts_open(paths(), FTS_LOGICAL, cfn);
         if (ftsp == NULL)
         {
             util::error_message("fts_open() failed");
@@ -236,7 +246,10 @@ ftswalker::process_files
         }
         if (result)
         {
-            util::info_message("Getting file list");
+            /*
+             * util::info_message("Getting file list"); // TMI!
+             */
+
             for (;;)
             {
                 ::FTSENT * ent = ::fts_read(ftsp);  /* next file/directory  */
@@ -336,7 +349,7 @@ ftswalker::delete_paths ()
 bool
 fts_show_targets (const std::string & match, util::ftswalker::FTS ft)
 {
-    std::string t = get_fts_type(ft);
+    std::string t = get_fts_type_name(ft);
     std::string m = match.empty() ? "---" : match ;
     util::status_message(t, m);
     return true;
@@ -468,14 +481,17 @@ fts_find_file
     FTS * ftsp = fts_open
     (
         paths, FTS_LOGICAL,
-        compare_files_before_dirs           /* defined above                */
+        compare_files_before_dirs           /* a comparator, defined above  */
     );
     if (ftsp == NULL)
     {
         util::error_message("fts_open() failed");
         return false;
     }
-    util::info_message("Getting file list");
+
+    /*
+     * util::info_message("Getting file list"); // TMI!
+     */
 
     /*
      * The loop will call fts_read() enough times to get each file.

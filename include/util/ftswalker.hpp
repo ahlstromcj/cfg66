@@ -27,7 +27,7 @@
  * \library       ftswalker
  * \author        Chris Ahlstrom
  * \date          2025-03-10
- * \updates       2025-03-11
+ * \updates       2025-03-14
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
@@ -72,6 +72,16 @@ public:
         FTS                             /* type of file, or an error        */
     );
 
+    /**
+     *  The "compar()" function used in the fts_open() function.
+     */
+
+    using comparator = int (*)
+    (
+        const FTSENT ** first,
+        const FTSENT ** second
+    );
+
 private:
 
     /**
@@ -101,7 +111,8 @@ public:
     bool process_files
     (
         function fn,
-        const std::string & target = ""
+        const std::string & target  = "",
+        comparator cfn              = nullptr
     );
 
 private:
@@ -125,7 +136,7 @@ extern bool fts_show_targets
     const std::string & match,
     util::ftswalker::FTS ft
 );
-extern int compare_files_before_dirs
+extern int compare_files_before_dirs            /* ftswalker::comparator    */
 (
     const FTSENT ** first,
     const FTSENT ** second

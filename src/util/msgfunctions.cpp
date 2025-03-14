@@ -589,7 +589,7 @@ formatted (const std::string & fmt, va_list args)
     va_end(args_copy);
     if (ilen > 0)
     {
-        std::vector<char> dest(ilen);                       /* Step 3       */
+        std::vector<char> dest(ilen + 1);                   /* Step 3 fixed */
         std::vsnprintf(dest.data(), dest.size(), szfmt, args);
         result = std::string(dest.data(), dest.size() - 1);
     }
