@@ -25,7 +25,7 @@
  * \library       ftswalker
  * \author        Chris Ahlstrom
  * \date          2025-03-10
- * \updates       2025-03-14
+ * \updates       2025-03-15
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
@@ -73,26 +73,98 @@ is_leaving_directory (const FTSENT * entry)
 bool
 is_other_file_type (const FTSENT * entry)
 {
-    return
-    (
-        entry->fts_info == FTS_DEFAULT ||
-        (
-            entry->fts_info != FTS_D &&
-            entry->fts_info != FTS_F &&
-            entry->fts_info != FTS_DP
-        )
-    );
+    return entry->fts_info == FTS_DEFAULT;
 }
+
+bool
+is_fts_error (const FTSENT * entry)
+{
+    return
+        entry->fts_info == FTS_ERR || entry->fts_info == FTS_DNR ||
+        entry->fts_info == FTS_NS
+        ;
+}
+
+/**
+ *  We need to allow FTS_DP to indicate all subs in the directory
+ *  have been traversed.
+ */
+
+bool
+is_actionable_file (const FTSENT * entry)
+{
+    return ! is_fts_error(entry) &&
+        entry->fts_info != FTS_DOT // &&
+        // entry->fts_info != FTS_DP
+        ;
+}
+
+/**
+ *  This function maps all error returns to FTS::ERR.
+ */
 
 util::ftswalker::FTS
 get_fts_type (const FTSENT * entry)
 {
-    util::ftswalker::FTS result = util::ftswalker::FTS::DEFAULT;
+    util::ftswalker::FTS result;
     switch (entry->fts_info)
     {
-        case FTS_D:     result = util::ftswalker::FTS::D;         break;
-        case FTS_F:     result = util::ftswalker::FTS::F;         break;
-        case FTS_ERR:   result = util::ftswalker::FTS::ERR;       break;
+        case FTS_D:
+
+            result = util::ftswalker::FTS::D;
+            break;
+
+        case FTS_DC:
+
+            result = util::ftswalker::FTS::DC;
+            break;
+
+        case FTS_DEFAULT:
+
+            result = util::ftswalker::FTS::DEFAULT;
+            break;
+
+        case FTS_DOT:
+
+            result = util::ftswalker::FTS::DOT;
+            break;
+
+        case FTS_DP:
+
+            result = util::ftswalker::FTS::DP;
+            break;
+
+        case FTS_DNR:
+        case FTS_ERR:
+        case FTS_NS:
+
+            result = util::ftswalker::FTS::ERR;
+            break;
+
+        case FTS_F:
+
+            result = util::ftswalker::FTS::F;
+            break;
+
+        case FTS_NSOK:
+
+            result = util::ftswalker::FTS::NSOK;
+            break;
+
+        case FTS_SL:
+
+            result = util::ftswalker::FTS::SL;
+            break;
+
+        case FTS_SLNONE:
+
+            result = util::ftswalker::FTS::SLNONE;
+            break;
+
+        default:
+
+            result = util::ftswalker::FTS::UNKNOWN;
+            break;
     }
     return result;
 }
@@ -103,10 +175,70 @@ get_fts_type_name (util::ftswalker::FTS typevalue)
     std::string result;
     switch (typevalue)
     {
-        case util::ftswalker::FTS::D:       result = "Directory";       break;
-        case util::ftswalker::FTS::F:       result = "Regular File";    break;
-        case util::ftswalker::FTS::DEFAULT: result = "Default";         break;
-        case util::ftswalker::FTS::ERR:     result = "Error";           break;
+        case util::ftswalker::FTS::D:
+
+            result = "Directory";
+            break;
+
+        case util::ftswalker::FTS::DC:
+
+            result = "Directory cycle";
+            break;
+
+        case util::ftswalker::FTS::DEFAULT:
+
+            result = "Other file type";
+            break;
+
+        case util::ftswalker::FTS::DOT:
+
+            result = "Dot file";
+            break;
+
+        case util::ftswalker::FTS::DP:
+
+            result = "Postorder directory";
+            break;
+
+        case util::ftswalker::FTS::DNR:
+
+            result = "Directory read error";
+            break;
+
+        case util::ftswalker::FTS::ERR:
+
+            result = "Error";
+            break;
+
+        case util::ftswalker::FTS::NS:
+
+            result = "No-stat error";
+            break;
+
+        case util::ftswalker::FTS::F:
+
+            result = "File";
+            break;
+
+        case util::ftswalker::FTS::NSOK:
+
+            result = "No stat request";
+            break;
+
+        case util::ftswalker::FTS::SL:
+
+            result = "Symbolic link";
+            break;
+
+        case util::ftswalker::FTS::SLNONE:
+
+            result = "Untargeted symbolic link";
+            break;
+
+        default:
+
+            result = "Unknown";
+            break;
     }
     return result;
 }
@@ -187,7 +319,7 @@ ftswalker::find_file
                         result = false;
                         break;
                     }
-                    if (is_regular_file(ent))
+                    if (is_actionable_file(ent))
                     {
                         std::string base = util::filename_base(ent->fts_path);
                         if (util::strcompare(target, base))
@@ -196,6 +328,11 @@ ftswalker::find_file
                             util::info_message("Path", p);
                             destination.push_back(p);
                         }
+                    }
+                    else if (is_fts_error(ent))
+                    {
+                        std::string errmsg = strerror(ent->fts_errno);
+                        util::error_message(errmsg, ent->fts_path);
                     }
                 }
             }
@@ -261,12 +398,15 @@ ftswalker::process_files
                     }
                     else
                     {
-                        util::error_message("fts_read()", "failed");
+                        util::error_message
+                        (
+                            "fts_read() failed", strerror(ent->fts_errno)
+                        );
                         result = false;
                         break;
                     }
                 }
-                if (is_regular_file(ent))
+                if (is_actionable_file(ent))
                 {
                     bool process_it = true;
                     if (! target.empty())
@@ -278,17 +418,15 @@ ftswalker::process_files
                     {
                         std::string p = ent->fts_path;  /* target path  */
                         FTS ft = get_fts_type(ent);
-
-                        /*
-                         * TMI:
-                         *
-                         *  util::info_message("Path", p);
-                         */
-
                         result = fn(p, ft);
                         if (! result)
                             break;
                     }
+                }
+                else if (is_fts_error(ent))
+                {
+                    std::string errmsg = strerror(ent->fts_errno);
+                    util::error_message(errmsg, ent->fts_path);
                 }
             }
         }
@@ -351,6 +489,9 @@ fts_show_targets (const std::string & match, util::ftswalker::FTS ft)
 {
     std::string t = get_fts_type_name(ft);
     std::string m = match.empty() ? "---" : match ;
+    if (t.empty())
+        t = "???????";
+
     util::status_message(t, m);
     return true;
 }

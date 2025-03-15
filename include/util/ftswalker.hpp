@@ -27,7 +27,7 @@
  * \library       ftswalker
  * \author        Chris Ahlstrom
  * \date          2025-03-10
- * \updates       2025-03-14
+ * \updates       2025-03-15
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
@@ -51,14 +51,25 @@ public:
      *  Indicates the types of files that the function callback can
      *  handle. We do not care about the rest. At minimun, the function
      *  should handle D and F.
+     *
+     *  Not include are FTS_INIT, and FTS_W.
      */
 
     enum class FTS      /* FTS is already a type in the fts(3) module       */
     {
         D,              /* directory                                        */
-        F,              /* a regular file                                   */
+        DC,             /* directory that causes a cycle in the tree        */
         DEFAULT,        /* one of the other file types except FTS_DP        */
-        ERR,            /* an (unspecified) error occurred; errno is set    */
+        DNR,            /* directory that cannot be read (an error)         */
+        DOT,            /* the "." or ".." file if not set via fts_open()   */
+        DP,             /* a post-order directory                           */
+        ERR,            /* an error return, fts_errno is set to the error   */
+        F,              /* a regular file                                   */
+        NS,             /* no stat(2) information available (an error)      */
+        NSOK,           /* no stat(2) information requested                 */
+        SL,             /* a symbolic link                                  */
+        SLNONE,         /* a symbolic link with a non-existent target       */
+        UNKNOWN         /* our own code for a bad fts_info field            */
     };
 
     /**
