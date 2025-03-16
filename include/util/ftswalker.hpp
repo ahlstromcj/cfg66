@@ -27,7 +27,7 @@
  * \library       ftswalker
  * \author        Chris Ahlstrom
  * \date          2025-03-10
- * \updates       2025-03-15
+ * \updates       2025-03-16
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
@@ -50,14 +50,15 @@ public:
     /**
      *  Indicates the types of files that the function callback can
      *  handle. We do not care about the rest. At minimun, the function
-     *  should handle D and F.
+     *  should handle D and F.  Not included are FTS_INIT, and FTS_W.
      *
-     *  Not include are FTS_INIT, and FTS_W.
+     *  Why reiterate the values in an enumeration? To avoid callers
+     *  needing to include a C header.
      */
 
     enum class FTS      /* FTS is already a type in the fts(3) module       */
     {
-        D,              /* directory                                        */
+        D,              /* directory (preorder)                             */
         DC,             /* directory that causes a cycle in the tree        */
         DEFAULT,        /* one of the other file types except FTS_DP        */
         DNR,            /* directory that cannot be read (an error)         */
@@ -79,7 +80,19 @@ public:
 
     using function = bool (*)
     (
-        const std::string &,            /* name of file or directory        */
+        const std::string &,            /* name of source file/directory    */
+        FTS                             /* type of file, or an error        */
+    );
+
+    /**
+     *  A function that can be called to process files/directories from
+     *  one folder to another folder.
+     */
+
+    using bifunction = bool (*)
+    (
+        const std::string &,            /* name of source file/directory    */
+        const std::string &,            /* destination directory            */
         FTS                             /* type of file, or an error        */
     );
 
@@ -125,6 +138,12 @@ public:
         const std::string & target  = "",
         comparator cfn              = nullptr
     );
+    bool process_files
+    (
+        bifunction fn,
+        const std::string & target,
+        comparator cfn = nullptr
+    );
 
 private:
 
@@ -138,15 +157,12 @@ private:
 
 };              // class ftswalker
 
-/*-------------------------------------------------------------------------
+/*--------------------------------------------------------------------------
  * Free functions in the util namespace
  *-------------------------------------------------------------------------*/
 
-extern bool fts_show_targets
-(
-    const std::string & match,
-    util::ftswalker::FTS ft
-);
+extern ::FTSENT * fts_read_entry (::FTS * ftsp);
+extern bool fts_delete_directory (const std::string & path);
 extern int compare_files_before_dirs            /* ftswalker::comparator    */
 (
     const FTSENT ** first,
@@ -156,6 +172,16 @@ extern bool fts_find_file
 (
     const std::string & rootdir,
     const std::string & target
+);
+
+/*--------------------------------------------------------------------------
+ * Useful ftswalker callbacks.
+ *-------------------------------------------------------------------------*/
+
+extern bool fts_show_target
+(
+    const std::string & match,
+    util::ftswalker::FTS ft
 );
 
 }               // namespace util
