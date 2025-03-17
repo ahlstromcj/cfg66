@@ -636,7 +636,7 @@ fts_show_target (const std::string & match, util::ftswalker::FTS ft)
 }
 
 /**
- *  Callback for copying a file or directory.
+ *  An ftswalker::bifunction callback for copying a file or directory.
  *
  * \param source
  *      Provides the current file or directory obtained via fts_read().
@@ -660,7 +660,7 @@ fts_item_copy
     bool result = true;                             /* no action is okay    */
     if (ft == util::ftswalker::FTS::D)              /* first directory      */
     {
-        util::info_message("Source directory", source);
+        util::info_message("Entered directory", source);
         result = util::make_directory_path(target);
     }
     else if (ft == util::ftswalker::FTS::F)         /* a regular file       */
@@ -685,7 +685,9 @@ fts_item_copy
 }
 
 /**
- *  Copies a directory hierarchy to another directory.
+ *  Copies a directory hierarchy to another directory. See the
+ *  fts_copy_test() function in the ftswalker_test program
+ *  for more explanation.
  */
 
 bool
@@ -695,13 +697,20 @@ fts_copy_directory (const std::string & source, const std::string & dest)
     if (result)
     {
         util::ftswalker walker(source);
-        result = walker.process_files(fts_item_copy, source);
+        result = walker.process_files
+        (
+            fts_item_copy, dest, util::compare_files_before_dirs
+        );
     }
     return result;
 }
 
 /**
- *  Callback for deleting a file or directory.
+ *  An ftswalker::function callback for deleting a file, directory,
+ *  and directory hierarchy.
+ *
+ *  Note that a directory cannot be deleted until all its children
+ *  are deleted, which is done once the file type is FTS::DP.
  */
 
 bool
@@ -712,7 +721,7 @@ fts_item_delete (const std::string & item, util::ftswalker::FTS ft)
     {
         if (ft == util::ftswalker::FTS::D)              /* first directory  */
         {
-            info_message("Entering directory", item);
+            util::info_message("Entered directory", item);
         }
         else if (ft == util::ftswalker::FTS::DP)        /* last directory   */
         {

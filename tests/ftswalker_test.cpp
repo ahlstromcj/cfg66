@@ -35,6 +35,7 @@
 #include "cfg/appinfo.hpp"              /* cfg::appinfo functions           */
 #include "cli/parser.hpp"               /* cli::parser, etc.                */
 #include "util/ftswalker.hpp"           /* util::ftswalker big-endian code  */
+#include "util/filefunctions.hpp"       /* util::file_exists(), etc.        */
 #include "util/msgfunctions.hpp"        /* util::file_message(), etc.       */
 
 namespace                               /* anonymous namespace              */
@@ -152,18 +153,44 @@ fts_callback_test ()
  * DP: tests/data/fts                             ------
  *
  * Using the second method looks to be a tad more straight-forward.
+ *
+ * Note that this code is essentially the same as the free function
+ * fts_copy_directory() function in the ftswalker module.
  */
 
 bool
 fts_copy_test ()
 {
-    const std::string rootdir = "tests/data/fts";
-    const std::string destdir = "build/tests";
+    const std::string rootdir{"tests/data/fts"};
+    const std::string destdir{"build/tests"};   /* -> "build/tests/fts/..." */
     util::ftswalker walker(rootdir);
     bool result = walker.process_files
     (
         util::fts_item_copy, destdir, util::compare_files_before_dirs
     );
+    if (result)
+        result = util::file_is_directory("build/tests/fts");
+
+    return result;
+}
+
+/**
+ *  A test of deleting the files and directories created in fts_copy_test().
+ */
+
+bool
+fts_delete_test ()
+{
+    const std::string rootdir{"build/tests/fts"};
+    const std::string matcher{};                /* remove all directories   */
+    util::ftswalker walker(rootdir);
+    bool result = walker.process_files
+    (
+        util::fts_item_delete, "", util::compare_files_before_dirs
+    );
+    if (result)
+        result = ! util::file_exists("build/tests/fts");
+
     return result;
 }
 
@@ -224,6 +251,9 @@ main (int argc, char * argv [])
             }
             if (success)
                 success = fts_copy_test();
+
+            if (success)
+                success = fts_delete_test();
         }
         if (success)
         {
