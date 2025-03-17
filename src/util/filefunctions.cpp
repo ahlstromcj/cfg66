@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2025-03-07
+ * \updates       2025-03-17
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -1164,7 +1164,9 @@ file_delete (const std::string & filespec)
  *      of the file.
  *
  * \param newfile
- *      The full path to the destination file.  If there is no base file-name
+ *      The full path to the destination file.
+ *
+ *      WRONG! FIX IN SEQ66 TOO. If there is no base file-name
  *      (e.g. "file.ext") then the base file-name of \a oldfile will be
  *      appended.
  *
@@ -1703,6 +1705,26 @@ get_current_directory ()
 }
 
 /**
+ *  Gets the parent directory of the given path-name. If there is none,
+ *  then an empty string is returned. Note that this works whether the
+ *  leaf is file or a sub-directory.
+ */
+
+std::string
+get_parent_directory (const std::string & pathname)
+{
+    std::string result;
+    if (! pathname.empty())
+    {
+        std::string path;
+        std::string base;
+        if (util::filename_split(pathname, path, base))
+            result = path;
+    }
+    return result;
+}
+
+/**
  *  Given a path, relative or not, this function returns the full path.
  *  It uses the Linux function realpath(3), which returns the canonicalized
  *  absolute path-name.  For Windows, the function _fullpath() is used.
@@ -2100,6 +2122,43 @@ pathname_concatenate (const std::string & path0, const std::string & path1)
         cleanpath1 = cleanpath1.erase(0, 1);
 
     result += cleanpath1;
+    return result;
+}
+
+/**
+ *  Assembles a destination path. Note that util::filename_split()
+ *  will split off the last subdirectory of a path if it does not
+ *  contain an extension marker (a period).
+ *
+ * \param source
+ *      This is a path or file-specification as obtain via fts_read(),
+ *      which must have a path component. Examples: "tests/data/fts/session_2"
+ *      or "tests/data/fts/session_2/session.fts"
+ *
+ * \param target
+ *      Provides the destination directory, such as "build/tests/session_2".
+ *
+ * \return
+ *      Returns the assembled string, such as
+ *      "build/tests/session_2/session.fts". If empty, something was
+ *      amiss.
+ */
+
+std::string
+filename_target
+(
+    const std::string & source,
+    const std::string & target
+)
+{
+    std::string result;
+    if (! source.empty() && ! target.empty())
+    {
+        std::string path;
+        std::string base;
+        if (util::filename_split(source, path, base))
+            result = util::filename_concatenate(target, base);
+    }
     return result;
 }
 

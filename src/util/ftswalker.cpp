@@ -25,7 +25,7 @@
  * \library       ftswalker
  * \author        Chris Ahlstrom
  * \date          2025-03-10
- * \updates       2025-03-16
+ * \updates       2025-03-17
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
@@ -413,7 +413,67 @@ ftswalker::process_files
 }
 
 /**
+ *  Here is how the processing works. The path starts at "tests/data/fts",
+ *  and the target is "build/tests" == $DEST:
  *
+ *      1.  Get the current entry. Four examples are shown:
+ *
+ *          a.  "tests/data/fts"
+ *          b.  "tests/data/fts/session.fts"
+ *          c.  "tests/data/fts/session_2"
+ *          d.  "tests/data/fts/session_2/session.fts"
+ *
+ *      2.  Assemble the destinations as encountered in "compare files
+ *          before directories" order:
+ *
+ *          a.  "$DEST/fts". The source, "tests/data/fts" is a directory.
+ *
+ *              i.  Get the file-name base "fts" from the source by a
+ *                  split with the "no-extension" option.
+ *             ii.  Append it to $DEST.
+ *            iii.  Create the directory.
+ *             iv.  If successful, store "$DEST/fst" as the last-found
+ *                  destination, $LASTDEST. This is done in process_file().
+ *
+ *          b.  "$DEST/fts/session.fts". This will be a file.
+ *
+ *              i. Split out the source path and file-name ("session.fts").
+ *             ii. Verify that the destination directory ($LASTDEST) exists.
+ *            iii.  Copy or process the file to the destination.
+ *
+ *          c.  "$DEST/fts/session_2". The source is a directory,
+ *              "tests/data/fts/session_2".
+ *
+ *              i.  Get the file-name base "session_2" from the source by a
+ *                  split with the "no-extension" option.
+ *             ii.  Append it to $LASTDEST.
+ *            iii.  Create the directory.
+ *             iv.  If successful, store "$DEST/fst/session_2" as $LASTDEST.
+ *
+ *          d.  "$DEST/fts/session_2/session.fts". This will be a file.
+ *
+ *              i.  Split out the path and the filename.
+ *             ii. Verify that the destination directory ($LASTDEST) exists.
+ *            iii.  Copy the file to the destination.
+ *
+ * \param fn
+ *      The function that takes the source file/directory as retrieved
+ *      by fts_read_entry() and the target directory and does some cross
+ *      processing, such as copying. Remember that the source directory
+ *      comes from the paths() accessor.
+ *
+ * \param target
+ *      The destination for the processed file. An example would be
+ *      "build/tests".
+ *
+ * \param cfn
+ *      If not null (the default), this function is used in ordering the
+ *      traversal. By default, the directory traversal order is in the
+ *      order listed in the root paths, and in the order listed in the
+ *      directory for everything else.
+ *
+ * \return
+ *      Returns true if no errors occurred.
  */
 
 bool
@@ -424,7 +484,7 @@ ftswalker::process_files
     comparator cfn
 )
 {
-    bool result = not_nullptr(paths()); /* ! m_search_directories.empty();  */
+    bool result = not_nullptr(paths()) && util::file_is_directory(target);
     if (result)
     {
         ::FTS * ftsp = ::fts_open(paths(), FTS_LOGICAL, cfn);
@@ -435,10 +495,8 @@ ftswalker::process_files
         }
         if (result)
         {
-            /*
-             * util::info_message("Getting file list"); // TMI!
-             */
-
+            bool exited_directory = false;
+            std::string lastdest = target;
             for (;;)
             {
                 ::FTSENT * ent = fts_read_entry(ftsp);  /* next file/dir    */
@@ -447,17 +505,34 @@ ftswalker::process_files
 
                 if (is_actionable_file(ent))
                 {
-                    bool process_it = true;
-                    if (! target.empty())
-                    {
-                        std::string base = util::filename_base(ent->fts_path);
-                        process_it = util::strcompare(target, base);
-                    }
+                    bool process_it = ! target.empty();
                     if (process_it)
                     {
-                        std::string p = ent->fts_path;  /* source path      */
+                        std::string p = ent->fts_path;
                         FTS ft = get_fts_type(ent);
-                        result = fn(p, target, ft);     /* bifunction       */
+                        if (ft == FTS::D)
+                        {
+                            if (exited_directory)
+                            {
+                                exited_directory = false;
+                                lastdest = util::get_parent_directory(lastdest);
+                            }
+                            lastdest = util::filename_target(p, lastdest);
+                            if (lastdest.empty())
+                            {
+                                result = false;
+                                break;
+                            }
+                        }
+                        else if (ft == FTS::F || ft == FTS::SL)
+                        {
+                            // all work done in the fn() bifunction callback
+                        }
+                        else if (ft == FTS::DP)
+                        {
+                            exited_directory = true;
+                        }
+                        result = fn(p, lastdest, ft);    /* bifunction       */
                         if (! result)
                             break;
                     }
@@ -545,8 +620,7 @@ fts_read_entry (::FTS * ftsp)
 }
 
 /**
- *  Just a test function; see tests/ftswalker_test. Note that
- *  it currently shows only regular files for some reason.
+ *  Just a simple test callback function; see tests/ftswalker_test.
  */
 
 bool
@@ -563,40 +637,49 @@ fts_show_target (const std::string & match, util::ftswalker::FTS ft)
 
 /**
  *  Callback for copying a file or directory.
+ *
+ * \param source
+ *      Provides the current file or directory obtained via fts_read().
+ *
+ * \param destination
+ *      Provides the destination for the source file, which can be
+ *      the full file-specification, or just the destination directory.
+ *
+ * \return
+ *      Returns true if the operation succeeded.
  */
 
 bool
 fts_item_copy
 (
-    const std::string & item,
-    const std::string & destination,
+    const std::string & source,
+    const std::string & target,
     util::ftswalker::FTS ft
 )
 {
-    (void) destination; // TODO TODO TODO
-
     bool result = true;                             /* no action is okay    */
     if (ft == util::ftswalker::FTS::D)              /* first directory      */
     {
-        info_message("Entering directory", item);
-    }
-    else if (ft == util::ftswalker::FTS::DP)        /* last directory       */
-    {
-        // util::info_message("Leaving and deleting directory", item);
-        // result = util::delete_directory(item);
+        util::info_message("Source directory", source);
+        result = util::make_directory_path(target);
     }
     else if (ft == util::ftswalker::FTS::F)         /* a regular file       */
     {
-        util::info_message("Copying file", item);
-        // result = util::file_delete(item);
+        util::info_printf("Copying file %s to %s", V(source), V(target));
+        result = util::file_copy_to_path(source, target);
     }
     else if (ft == util::ftswalker::FTS::SL)        /* a symbolic link      */
     {
-        // TODO
+        util::info_printf("Copying file %s to %s", V(source), V(target));
+        result = util::file_copy_to_path(source, target);
     }
     else if (ft == util::ftswalker::FTS::SLNONE)    /* link with no target  */
     {
-        // do nothing
+        util::info_message("Empty soft link", source);
+    }
+    else if (ft == util::ftswalker::FTS::DP)        /* last directory       */
+    {
+        // nothing yet
     }
     return result;
 }
@@ -655,8 +738,8 @@ fts_item_delete (const std::string & item, util::ftswalker::FTS ft)
 }
 
 /**
- *  This callback removes the files and directories it encounters, including
- *  sub-drectories.
+ *  This function removes the files and directories it encounters, including
+ *  sub-directories.
  *
  *  In general, directories are visited two distinguishable times; in
  *  preorder (before any of their descendants are visited) and in

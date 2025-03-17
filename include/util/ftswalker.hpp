@@ -27,7 +27,7 @@
  * \library       ftswalker
  * \author        Chris Ahlstrom
  * \date          2025-03-10
- * \updates       2025-03-16
+ * \updates       2025-03-17
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
@@ -159,28 +159,50 @@ private:
 
 /*--------------------------------------------------------------------------
  * Free functions in the util namespace
- *-------------------------------------------------------------------------*/
+ *--------------------------------------------------------------------------*/
 
 extern ::FTSENT * fts_read_entry (::FTS * ftsp);
 extern bool fts_delete_directory (const std::string & path);
-extern int compare_files_before_dirs            /* ftswalker::comparator    */
-(
-    const FTSENT ** first,
-    const FTSENT ** second
-);
 extern bool fts_find_file
 (
     const std::string & rootdir,
     const std::string & target
 );
+extern bool fts_copy_directory
+(
+    const std::string & source,
+    const std::string & dest
+);
+extern bool fts_delete_directory (const std::string & path);
+
+/*--------------------------------------------------------------------------
+ * Free "compare" functions
+ *-------------------------------------------------------------------------*/
+
+extern int compare_files_before_dirs            /* ftswalker::comparator    */
+(
+    const FTSENT ** first,
+    const FTSENT ** second
+);
 
 /*--------------------------------------------------------------------------
  * Useful ftswalker callbacks.
- *-------------------------------------------------------------------------*/
+ *--------------------------------------------------------------------------*/
 
-extern bool fts_show_target
+extern bool fts_show_target             /* provides a very simple test      */
 (
     const std::string & match,
+    util::ftswalker::FTS ft
+);
+extern bool fts_item_copy               /* makes directories, copies files  */
+(
+    const std::string & source,
+    const std::string & destination,
+    util::ftswalker::FTS ft
+);
+extern bool fts_item_delete
+(
+    const std::string & item,
     util::ftswalker::FTS ft
 );
 

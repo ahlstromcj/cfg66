@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2025-03-10
- * \updates       2025-03-14
+ * \updates       2025-03-17
  * \license       See above.
  *
  */
@@ -111,6 +111,62 @@ fts_callback_test ()
     return result;
 }
 
+/**
+ *  A test of copying a directory hierarchy, which we need to recreate the test
+ *  data inside the build directory.  There are two stratagies for directory
+ *  traversal. Here is the ordering of each; for brevity, D == directory,
+ *  F = File, and DP = Postorder:
+ *
+ * Copying tests/data/fts to DEST (a path) to result in DEST/fts/....:
+ *
+ * [fts] Default directory traversal....
+ * D:  tests/data/fts                             Make DEST/fts directory
+ * D:  tests/data/fts/session_2                   Make DEST/fts/session_2 directory
+ * F:  tests/data/fts/session_2/session.fts       Copy session.fts to DEST/fts/session_2
+ * DP: tests/data/fts/session_2                   ------
+ * D:  tests/data/fts/session_3                   Make DEST/fts/session_3 directory
+ * D:  tests/data/fts/session_3/set_1             Make DEST/fts/session_3/set_1 directory
+ * F:  tests/data/fts/session_3/set_1/session.fts Copy session.fts to DEST/fts/session_3/set_1
+ * DP: tests/data/fts/session_3/set_1             ------
+ * D:  tests/data/fts/session_3/set_2             Make DEST/fts/session_3/set_2 directory
+ * F:  tests/data/fts/session_3/set_2/session.fts Copy session.fts to DEST/fts/session_3/set_2
+ * DP: tests/data/fts/session_3/set_2             ------
+ * DP: tests/data/fts/session_3                   ------
+ * F:  tests/data/fts/session.fts                 Copy session.fts to DEST/fts
+ * DP: tests/data/fts                             ------
+ *
+ * [fts] Compare-files-before-directories traversal....
+ * D:  tests/data/fts                             Make DEST/fts directory
+ * F:  tests/data/fts/session.fts                 Copy session.fts to DEST/fts
+ * D:  tests/data/fts/session_2                   Make DEST/fts/session_2 directory
+ * F:  tests/data/fts/session_2/session.fts       Copy session.fts to DEST/fts/session_2
+ * DP: tests/data/fts/session_2                   ------
+ * D:  tests/data/fts/session_3                   Make DEST/fts/session_3 directory
+ * D:  tests/data/fts/session_3/set_1             Make DEST/fts/session_3/set_1 directory
+ * F:  tests/data/fts/session_3/set_1/session.fts Copy session.fts to DEST/fts/session_3/set_1
+ * DP: tests/data/fts/session_3/set_1             ------
+ * D:  tests/data/fts/session_3/set_2             Make DEST/fts/session_3/set_2 directory
+ * F:  tests/data/fts/session_3/set_2/session.fts Copy session.fts to DEST/fts/session_3/set_2
+ * DP: tests/data/fts/session_3/set_2             ------
+ * DP: tests/data/fts/session_3                   ------
+ * DP: tests/data/fts                             ------
+ *
+ * Using the second method looks to be a tad more straight-forward.
+ */
+
+bool
+fts_copy_test ()
+{
+    const std::string rootdir = "tests/data/fts";
+    const std::string destdir = "build/tests";
+    util::ftswalker walker(rootdir);
+    bool result = walker.process_files
+    (
+        util::fts_item_copy, destdir, util::compare_files_before_dirs
+    );
+    return result;
+}
+
 }       // namespace anonymous
 
 /*
@@ -166,6 +222,8 @@ main (int argc, char * argv [])
 
                 success = fts_callback_test();
             }
+            if (success)
+                success = fts_copy_test();
         }
         if (success)
         {
@@ -181,6 +239,6 @@ main (int argc, char * argv [])
 /*
  * ftswalker_test.cpp
  *
- * vim: sw=4 ts=4 wm=4 et ft=cpp
+ * vim: sw=4 ts=4 wm=4 et ft=cpp nowrap
  */
 

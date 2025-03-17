@@ -27,7 +27,7 @@
  *
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2025-03-06
+ * \updates       2025-03-17
  * \version       $Revision$
  *
  *    Also see the filefunctions.cpp module.  The functions here use
@@ -131,6 +131,7 @@ extern std::string make_path_relative (const std::string & path);
 extern bool delete_directory (const std::string & filename);
 extern bool set_current_directory (const std::string & path);
 extern std::string get_current_directory ();
+extern std::string get_parent_directory (const std::string & path);
 extern std::string get_full_path (const std::string & path);
 extern char path_slash ();
 extern char os_path_slash ();
@@ -176,6 +177,11 @@ extern std::string pathname_concatenate
 (
     const std::string & path0,
     const std::string & path1
+);
+extern std::string filename_target
+(
+    const std::string & source,
+    const std::string & target
 );
 extern bool filename_split
 (
