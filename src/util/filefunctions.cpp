@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2025-03-17
+ * \updates       2025-03-21
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -39,7 +39,6 @@
  */
 
 #include <algorithm>                    /* std::replace() function          */
-#include <cctype>                       /* std::toupper() function          */
 #include <cstdlib>                      /* realpath()/_fullpath()/getenv()  */
 #include <cstring>                      /* std::strlen(), strerror_r() etc. */
 #include <ctime>                        /* std::strftime()                  */
