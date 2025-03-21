@@ -58,30 +58,28 @@
 static cfg::options::container s_test_options
 {
     {
+        "alertable",
         {
-            "alertable",
-            {
-                'a', cfg::options::kind::boolean, cfg::options::enabled,
-                "false", "false", false, false,
-                "If specified, the application is alertable.", false
-            }
-        },
+            'a', cfg::options::kind::boolean, cfg::options::enabled,
+            "false", "false", false, false,
+            "If specified, the application is alertable.", false
+        }
+    },
+    {
+        "loop-count",
         {
-            "loop-count",
-            {
-                cfg::options::code_null, cfg::options::kind::integer,
-                cfg::options::enabled,
-                "30", "0-0-99", false, false,
-                "Specifies the number of loops to make.", false
-            }
-        },
+            cfg::options::code_null, cfg::options::kind::integer,
+            cfg::options::enabled,
+            "30", "0-0-99", false, false,
+            "Specifies the number of loops to make.", false
+        }
+    },
+    {
+        "flux",
         {
-            "flux",
-            {
-                'f', cfg::options::kind::floating, cfg::options::enabled,
-                "22.3", "0.0", false, false,
-                "Specifies the number of loops to make.", false
-            }
+            'f', cfg::options::kind::floating, cfg::options::enabled,
+            "22.3", "0.0", false, false,
+            "Specifies the number of loops to make.", false
         }
     }
 };
