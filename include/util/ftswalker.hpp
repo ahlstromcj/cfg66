@@ -27,7 +27,7 @@
  * \library       ftswalker
  * \author        Chris Ahlstrom
  * \date          2025-03-10
- * \updates       2025-03-17
+ * \updates       2025-03-25
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
@@ -132,6 +132,7 @@ public:
         const std::string & target,
         lib66::tokenization & destination
     );
+    bool find_regular_files (lib66::tokenization & destination);
     bool process_files
     (
         function fn,

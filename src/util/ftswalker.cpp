@@ -25,7 +25,7 @@
  * \library       ftswalker
  * \author        Chris Ahlstrom
  * \date          2025-03-10
- * \updates       2025-03-17
+ * \updates       2025-03-25
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
@@ -277,10 +277,24 @@ ftswalker::~ftswalker ()
 
 /**
  *  A generic search to build a list of locations for the target file.
+ *  This function searches the path(s) provided during the construction
+ *  of this object.
  *
  *  The "compar()" argument is NULL, therefore the directory traversal order
  *  is in the order listed in the root paths parameter, and in the order
  *  listed in the directory for everything else.
+ *
+ * \param target
+ *      Provides the name of the file for which we're searching.
+ *
+ * \param [out] destination
+ *      A vector of strings to hold the full path names of the files
+ *      found that matched the target. This item is not cleared,
+ *      so one theoretically do a number of searches.
+ *
+ * \return
+ *      Returns true if no error occurred and any files were found.
+ *      That is, the destination results can be used.
  */
 
 bool
@@ -301,9 +315,10 @@ ftswalker::find_file
         }
         else
         {
+            result = false;                             /* tentative        */
             for (;;)
             {
-                ::FTSENT * ent = fts_read_entry(ftsp);  /* next file/directory  */
+                ::FTSENT * ent = fts_read_entry(ftsp);  /* next file/dir    */
                 if (ent == NULL)
                     break;
 
@@ -315,7 +330,65 @@ ftswalker::find_file
                         std::string p = ent->fts_path;  /* target path  */
                         util::info_message("Path", p);
                         destination.push_back(p);
+                        result = true;
                     }
+                }
+                else if (is_fts_error(ent))
+                {
+                    std::string errmsg = strerror(ent->fts_errno);
+                    util::error_message(errmsg, ent->fts_path);
+                }
+            }
+            if (::fts_close(ftsp) == (-1))
+                util::error_message("fts_close() failed");
+        }
+    }
+    return result;
+}
+
+/**
+ *  This function searches the path(s) provided during the construction
+ *  of this object. Unlike find_file() above, it does not look for a
+ *  specific and collect the occurrences; instead it gets all the regular
+ *  files in the directory and collects them.
+ *
+ * \param [out] destination
+ *      A vector of strings to hold the full path names of the files
+ *      found that matched the target. This item is not cleared,
+ *      so one theoretically do a number of searches.
+ *
+ * \return
+ *      Returns true if no error occurred and any files were found.
+ *      That is, the destination results can be used.
+ */
+
+bool
+ftswalker::find_regular_files (lib66::tokenization & destination)
+{
+    bool result = not_nullptr(paths());
+    if (result)
+    {
+        ::FTS * ftsp = ::fts_open(paths(), FTS_LOGICAL, NULL);
+        if (ftsp == NULL)
+        {
+            util::error_message("fts_open() failed");
+            result = false;
+        }
+        else
+        {
+            result = false;                             /* tentative        */
+            for (;;)
+            {
+                ::FTSENT * ent = fts_read_entry(ftsp);  /* next file/dir    */
+                if (ent == NULL)
+                    break;
+
+                if (is_regular_file(ent))
+                {
+                    std::string p = ent->fts_path;      /* target path      */
+                    util::info_message("File", p);
+                    destination.push_back(p);
+                    result = true;
                 }
                 else if (is_fts_error(ent))
                 {

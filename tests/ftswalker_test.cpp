@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2025-03-10
- * \updates       2025-03-17
+ * \updates       2025-03-25
  * \license       See above.
  *
  */
@@ -87,8 +87,8 @@ const std::string s_desc_intro
 bool
 fts_get_file_list_test ()
 {
-    const std::string rootdir = "tests/data/fts";
-    const std::string target = "session.fts";
+    const std::string rootdir { "tests/data/fts" };
+    const std::string target { "session.fts" };
     bool result = util::fts_find_file(rootdir, target);
     return result;
 }
@@ -96,7 +96,7 @@ fts_get_file_list_test ()
 bool
 fts_callback_test ()
 {
-    const std::string rootdir = "tests/data/fts";
+    const std::string rootdir { "tests/data/fts" };
     util::ftswalker walker(rootdir);
     util::info_message("Default directory traversal....");
 
@@ -161,8 +161,8 @@ fts_callback_test ()
 bool
 fts_copy_test ()
 {
-    const std::string rootdir{"tests/data/fts"};
-    const std::string destdir{"build/tests"};   /* -> "build/tests/fts/..." */
+    const std::string rootdir { "tests/data/fts" };
+    const std::string destdir { "build/tests" };   /* -> "build/tests/fts/..." */
     util::ftswalker walker(rootdir);
     bool result = walker.process_files
     (
@@ -181,8 +181,8 @@ fts_copy_test ()
 bool
 fts_delete_test ()
 {
-    const std::string rootdir{"build/tests/fts"};
-    const std::string matcher{};                /* remove all directories   */
+    const std::string rootdir{ "build/tests/fts" };
+    const std::string matcher{ };               /* remove all directories   */
     util::ftswalker walker(rootdir);
     bool result = walker.process_files
     (
@@ -254,6 +254,18 @@ main (int argc, char * argv [])
 
             if (success)
                 success = fts_delete_test();
+
+            if (success)
+            {
+                /*
+                 * This test works only with nsmd running.
+                 */
+
+                const std::string rootdir{"/run/user/1000/nsm"};
+                util::ftswalker walker(rootdir);
+                lib66::tokenization results;
+                (void) walker.find_regular_files(results);
+            }
         }
         if (success)
         {

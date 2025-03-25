@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2025-03-21
+ * \updates       2025-03-25
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -2965,7 +2965,73 @@ file_descriptor_touch (int fd)
 
 #if defined PLATFORM_LINUX
 
-/*
+/**
+ *  Gets the name of the run-time directory, and verifies its existence,
+ *  but does not create the sub-directory. See the explanation for
+ *  make_xdg_runtime_directory() below.
+ *
+ *  One or two additional optional subdirectories can be provided.
+ *  They are appended to "/run/user/1000". Examples would be
+ *  "/run/user/1000/nsm" and "/run/user/1000/nsm/d".
+ */
+
+std::string
+get_xdg_runtime_directory
+(
+    const std::string & sub1,
+    const std::string & sub2
+)
+{
+    std::string result;
+    char * env = std::getenv("XDG_RUNTIME_DIR");
+    if (not_nullptr(env))
+        result = env;
+
+    if (result.empty())                             /* env var is not set   */
+    {
+        uid_t uid_for_rundir = geteuid();
+        result = util::string_asprintf
+        (
+            "/run/user/%d/", uid_for_rundir
+        );
+        util::warn_message
+        (
+            "$XDG_RUNTIME_DIR not set; falling back to", result
+        );
+    }
+    if (! util::file_exists(result))
+    {
+        int ec = errno;
+        util::error_printf
+        (
+            "Failed to access FHS run-dir directory %s with error: %s",
+            V(result), std::strerror(ec)
+        );
+        result.clear();
+    }
+    if (! util::file_is_directory(result))
+    {
+        util::error_message
+        (
+            "FHS run-dir is not a directory", result
+        );
+        result.clear();
+    }
+    if (! result.empty())
+    {
+        if (! sub1.empty())
+            result = filename_concatenate(result, sub1);
+
+        if (! sub2.empty())
+            result = filename_concatenate(result, sub2);
+    }
+    if (! result.empty())
+        util::info_message("Run-time/lock directory", result);
+
+    return result;
+}
+
+/**
  *  Get the XDG runtime directory (e.g. for lockfiles). See
  *
  * https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
@@ -2997,61 +3063,18 @@ file_descriptor_touch (int fd)
 std::string
 make_xdg_runtime_directory (const std::string & subdirectory)
 {
-    std::string result;
-    char * env = std::getenv("XDG_RUNTIME_DIR");
-    if (not_nullptr(env))
-        result = env;
-
-    if (result.empty())                             /* env var is not set   */
-    {
-        uid_t uid_for_rundir = geteuid();
-        result = util::string_asprintf
-        (
-            "/run/user/%d/", uid_for_rundir
-        );
-        util::warn_message
-        (
-            "$XDG_RUNTIME_DIR not set; falling back to", result
-        );
-    }
-
-    /*
-     *  Now we have a directory path and need to test it.
-     */
-
-    if (! util::file_exists(result))
-    {
-        int ec = errno;
-        util::error_printf
-        (
-            "Failed to access FHS run-dir directory %s with error: %s",
-            V(result), std::strerror(ec)
-        );
-        result.clear();
-    }
-    if (! util::file_is_directory(result))
-    {
-        util::error_message
-        (
-            "FHS run-dir is not a directory", result
-        );
-        result.clear();
-    }
+    std::string result = get_xdg_runtime_directory(subdirectory);;
     if (! result.empty())
     {
-        if (! subdirectory.empty())
+        if (! util::make_directory_path(result, 0771))
         {
-            result = filename_concatenate(result, subdirectory);
-            if (! util::make_directory_path(result, 0771))
-            {
-                int ec = errno;
-                util::error_printf
-                (
-                    "Failed to create run-time directory %s with error: %s",
-                    V(result), std::strerror(ec)
-                );
-                result.clear();
-            }
+            int ec = errno;
+            util::error_printf
+            (
+                "Failed to create run-time directory %s with error: %s",
+                V(result), std::strerror(ec)
+            );
+            result.clear();
         }
     }
     if (! result.empty())

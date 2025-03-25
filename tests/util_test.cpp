@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2025-02-07
- * \updates       2025-02-22
+ * \updates       2025-03-25
  * \license       See above.
  *
  *  We generally test only newly-added functions here; others were
@@ -38,6 +38,8 @@
 #include <cstdlib>                      /* EXIT_SUCCESS, EXIT_FAILURE       */
 #include <iostream>                     /* std::cout, set::cerr             */
 
+#include "cfg/appinfo.hpp"              /* cfg::get_xxx_details() functions */
+#include "cli/parser.hpp"               /* cli::parser, etc.                */
 #include "util/filefunctions.hpp"       /* util::file_read_lines()          */
 #include "util/msgfunctions.hpp"        /* util::string_format(), V()       */
 #include "util/strfunctions.hpp"        /* util::string_format(), V()       */
@@ -57,51 +59,90 @@
  */
 
 int
-main (int /*argc*/, char * /*argv*/ [])
+main (int argc, char * argv [])
 {
     int rcode = EXIT_FAILURE;
-    std::string msg_1{"This is a message about"};
-    std::string msg_2{"variadic functions"};
-    std::string target{"MSG: This is a message about: variadic functions."};
-    std::string output = util::string_format
-    (
-        "MSG: %s: %s.", V(msg_1), V(msg_2)  /* V() is "vararg" to get POD   */
-    );
-    bool success = output == target;
+    cli::parser clip;                   /* provides global/stock options    */
+    bool canrun = false;
+    bool success = clip.parse(argc, argv);
     if (success)
     {
-        output = util::string_asprintf("MSG: %s: %s.", V(msg_1), V(msg_2));
-        success = output == target;
-    }
-    if (success)
-    {
-        std::string file{"tests/data/lines.txt"};
-        lib66::tokenization lines;
-        success = util::file_read_lines(file, lines);
-        if (success)
+        if (clip.show_information_only())
         {
-            for (const auto & s : lines)
+            if (clip.help_request())
             {
-                std::cout << s << std::endl;
+                std::cout << "No additional help." << std::endl;
+            }
+            if (clip.description_request())
+            {
+                std::cout
+                    << "Build details: \n\n" << cfg::get_build_details()
+                    << "Run-time details: \n\n" << cfg::get_runtime_details()
+                    ;
+            }
+            if (clip.version_request())
+            {
+                std::cout
+                    << "There is still more to do in this app." << std::endl
+                    ;
             }
         }
         else
-        {
-            std::cerr
-                << "Could not read lines from '"
-                << file << "'"
-                << std::endl
-                ;
-        }
+            canrun = true;
     }
-    if (success)
+    if (canrun)
     {
-        std::cout << "util C++ test succeeded" << std::endl;
-        rcode = EXIT_SUCCESS;
-    }
-    else
-        std::cerr << "util C++ test failed" << std::endl;
+        /*
+         * First test
+         */
 
+        std::string msg_1{"This is a message about"};
+        std::string msg_2{"variadic functions"};
+        std::string target{"MSG: This is a message about: variadic functions."};
+        std::string output = util::string_format
+        (
+            "MSG: %s: %s.", V(msg_1), V(msg_2)  /* V() is "vararg" to get POD   */
+        );
+        bool success = output == target;
+        if (success)
+        {
+            output = util::string_asprintf("MSG: %s: %s.", V(msg_1), V(msg_2));
+            success = output == target;
+        }
+        if (success)
+        {
+            std::string file{"tests/data/lines.txt"};
+            lib66::tokenization lines;
+            success = util::file_read_lines(file, lines);
+            if (success)
+            {
+                for (const auto & s : lines)
+                {
+                    std::cout << s << std::endl;
+                }
+            }
+            else
+            {
+                std::cerr
+                    << "Could not read lines from '"
+                    << file << "'"
+                    << std::endl
+                    ;
+            }
+        }
+        if (success)
+        {
+            std::string daemondir = util::get_xdg_runtime_directory("nsm", "d");
+            success = ! daemondir.empty();
+        }
+        if (success)
+        {
+            std::cout << "util C++ test succeeded" << std::endl;
+            rcode = EXIT_SUCCESS;
+        }
+        else
+            std::cerr << "util C++ test failed" << std::endl;
+    }
     return rcode;
 }
 
