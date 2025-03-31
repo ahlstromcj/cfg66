@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-24
- * \updates       2025-03-08
+ * \updates       2025-03-31
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -770,6 +770,42 @@ string_to_int_pair
                 v1 = string_to_int(numbers[0]);
                 v2 = string_to_int(numbers[1]);
             }
+        }
+    }
+    return result;
+}
+
+bool
+extract_api_numbers
+(
+    const std::string & s,
+    int & major, int & minor, int & patch,
+    const std::string & delimiter
+)
+{
+    bool result = s.find_first_of(delimiter) != std::string::npos;
+    if (result)
+    {
+        lib66::tokenization numbers = tokenize(s, delimiter);
+        if (numbers.size() >= 2)
+        {
+            major = string_to_int(numbers[0]);
+            minor = string_to_int(numbers[1]);
+        }
+        if (numbers.size() == 3)
+            patch = string_to_int(numbers[2]);
+        else
+            patch = 0;
+    }
+    else
+    {
+        int i = string_to_int(s, 99999);
+        result = i < 99999;
+        if (result)
+        {
+            major = i;
+            minor = 0;
+            patch = 0;
         }
     }
     return result;
@@ -1786,12 +1822,16 @@ target_terminated (const std::string & s, char target)
  * Functions that support nsm66. From NSM's file module.
  *--------------------------------------------------------------------------*/
 
+/**
+ *  This function calculates a djb2 hash modulo 65521.
+ */
+
 std::string
 simple_hash (const std::string & s)
 {
     unsigned long hash = 5381;
     for (auto ch : s)
-        hash = ((hash <<5) + hash) + ch;
+        hash = ((hash << 5) + hash) + ch;
 
     hash %= 65521;
     return std::to_string(hash);

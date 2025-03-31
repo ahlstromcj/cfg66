@@ -27,7 +27,7 @@
  *
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2025-03-13
+ * \updates       2025-03-31
  * \version       $Revision$
  *
  *    Also see the strfunctions.cpp module.
@@ -243,6 +243,12 @@ extern bool string_to_int_pair
 (
     const std::string & s,
     int & v1, int & v2,
+    const std::string & delimiter = " "
+);
+extern bool extract_api_numbers
+(
+    const std::string & s,
+    int & major, int & minor, int & patch,
     const std::string & delimiter = " "
 );
 extern double string_to_double
