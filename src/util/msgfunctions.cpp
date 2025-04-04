@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2018-11-10
- * \updates       2025-02-12
+ * \updates       2025-04-04
  * \license       GNU GPLv2 or above
  *
  *  One of the big features of some of these functions is writing the name
@@ -275,8 +275,7 @@ info_message (const std::string & msg, const std::string & data)
         if (! data.empty())
             std::cout << ": " << data;
 
-        if (! msg.empty())
-            std::cout << std::endl;
+        std::cout << std::endl;
     }
     return true;
 }
@@ -309,9 +308,7 @@ status_message (const std::string & msg, const std::string & data)
     if (! data.empty())
         std::cout << ": " << data;
 
-    if (! msg.empty())
-        std::cout << std::endl;
-
+    std::cout << std::endl;
     return true;
 }
 
@@ -335,9 +332,7 @@ session_message (const std::string & msg, const std::string & data)
     if (! data.empty())
         std::cout << ": " << data;
 
-    if (! msg.empty())
-        std::cout << std::endl;
-
+    std::cout << std::endl;
     return true;
 }
 
@@ -375,9 +370,7 @@ warn_message (const std::string & msg, const std::string & data)
     if (! data.empty())
         std::cerr << ": " << data;
 
-    if (! msg.empty())
-        std::cerr << std::endl;
-
+    std::cerr << std::endl;
     return true;
 }
 
@@ -415,9 +408,7 @@ error_message (const std::string & msg, const std::string & data)
     if (! data.empty())
         std::cerr << ": " << data;
 
-    if (! msg.empty())
-        std::cerr << std::endl;
-
+    std::cerr << std::endl;
     return false;
 }
 
@@ -467,13 +458,10 @@ debug_message (const std::string & msg, const std::string & data)
         if (! data.empty())
             std::cerr << ": " << data;
 
-        if (! msg.empty())
-        {
-            if (cfg::is_a_tty(STDERR_FILENO))
-                std::cerr << s_normal << std::endl;
-            else
-                std::cerr << std::endl;
-        }
+        if (cfg::is_a_tty(STDERR_FILENO))
+            std::cerr << s_normal << std::endl;
+        else
+            std::cerr << std::endl;
     }
     return true;
 }
