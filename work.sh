@@ -8,7 +8,7 @@
 # \library        cfg66
 # \author         Chris Ahlstrom
 # \date           2024-02-06
-# \update         2025-01-31
+# \update         2025-04-06
 # \version        $Revision$
 # \license        $XPC_SUITE_GPL_LICENSE$
 #
@@ -30,7 +30,7 @@ LANG=C
 export LANG
 CYGWIN=binmode
 export CYGWIN
-export CFG66_SCRIPT_EDIT_DATE="2025-01-31"
+export CFG66_SCRIPT_EDIT_DATE="2025-04-06"
 export CFG66_LIBRARY_API_VERSION="0.3"
 export CFG66_LIBRARY_VERSION="$CFG66_LIBRARY_API_VERSION.0"
 export CFG66="cfg66"
@@ -244,6 +244,7 @@ if test $DOCLEAN = "yes" ; then
    rm -rf build/src/
    rm -rf build/subprojects/
    rm -rf build/tests/
+   rm -rf build/uninstall/
    rm -rf build/meson*
    rm -rf build/lib*
    rm -f build/.ninja_deps

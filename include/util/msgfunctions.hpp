@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom and other authors; see documentation
  * \date          2018-11-10
- * \updates       2025-03-13
+ * \updates       2025-04-06
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
@@ -89,6 +89,7 @@ extern bool debug_message
     const std::string & msg,
     const std::string & data = ""
 );
+extern bool debug_printf (std::string fmt, ...);
 extern bool session_message
 (
     const std::string & msg,
