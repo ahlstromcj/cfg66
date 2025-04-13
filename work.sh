@@ -8,7 +8,7 @@
 # \library        cfg66
 # \author         Chris Ahlstrom
 # \date           2024-02-06
-# \update         2025-04-06
+# \update         2025-04-09
 # \version        $Revision$
 # \license        $XPC_SUITE_GPL_LICENSE$
 #
@@ -30,7 +30,7 @@ LANG=C
 export LANG
 CYGWIN=binmode
 export CYGWIN
-export CFG66_SCRIPT_EDIT_DATE="2025-04-06"
+export CFG66_SCRIPT_EDIT_DATE="2025-04-09"
 export CFG66_LIBRARY_API_VERSION="0.3"
 export CFG66_LIBRARY_VERSION="$CFG66_LIBRARY_API_VERSION.0"
 export CFG66="cfg66"
@@ -95,6 +95,12 @@ if test $# -ge 1 ; then
             ;;
 
          --build | --make)
+            DOMAKE="yes"
+            ;;
+
+         --rebuild | --remake)
+            DOREMAKE="yes"
+            DOCLEAN="yes"
             DOMAKE="yes"
             ;;
 
@@ -203,6 +209,7 @@ be more to come. Some options might not work on Windows.
  --pdf               Build just the PDF documentation and exit.
  --clean             Delete the usual derived files from the project. Also
                      do "git checkout doc/cfg66-library-guide.pdf"
+ --rebuild           Clean the project and build from scratch.
  --pack [ tag ]      A simple quick packaging of the code; the tag goes
                      into the tarball name.
  --help              Show this help text.
@@ -262,6 +269,7 @@ if test $DOCLEAN = "yes" ; then
    rm -f tests/data/fooinout.rc
 
 # Problematic when making a release. Just remember to do it.
+#
 #  rm -f doc/latex/*.log
 #  echo "Build products removed from the cfg66/build directory."
 #  git checkout doc/cfg66-library-guide.pdf tests/data/fooout.rc
@@ -359,12 +367,12 @@ if test "$DOMAKE" = "yes" ; then
       NINJA_EXISTS="yes"
    fi
 
-   if test "$DOREMAKE" = "yes" ; then
-      if test "$NINJA_EXISTS" = "yes" ; then
-         echo "$MAKEFILE exists, reconfiguring..."
-         meson --reconfigure $POTEXTDEF . build
-      fi
-   fi
+#  if test "$DOREMAKE" = "yes" ; then
+#     if test "$NINJA_EXISTS" = "yes" ; then
+#        echo "$MAKEFILE exists, reconfiguring..."
+#        meson --reconfigure $POTEXTDEF . build
+#     fi
+#  fi
 
    if test "$NINJA_EXISTS" = "no" ; then
       echo "New configuration, creating $MAKEFILE, etc...."

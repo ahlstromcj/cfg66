@@ -25,7 +25,7 @@
  * \library       ftswalker
  * \author        Chris Ahlstrom
  * \date          2025-03-10
- * \updates       2025-03-25
+ * \updates       2025-04-13
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
@@ -794,11 +794,13 @@ fts_item_delete (const std::string & item, util::ftswalker::FTS ft)
     {
         if (ft == util::ftswalker::FTS::D)              /* first directory  */
         {
-            util::info_message("Entered directory", item);
+            /*
+             * TMI: util::info_message("Entered directory", item);
+             */
         }
         else if (ft == util::ftswalker::FTS::DP)        /* last directory   */
         {
-            util::info_message("Leaving and deleting directory", item);
+            util::info_message("Deleting directory", item);
             result = util::delete_directory(item);
         }
         else if (ft == util::ftswalker::FTS::F)         /* a regular file   */
