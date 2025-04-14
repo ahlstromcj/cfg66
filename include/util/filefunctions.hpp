@@ -39,10 +39,6 @@
 
 #include "cpp_types.hpp"                /* std::string, tokenization alias  */
 
-/*
- *  Do not document a namespace; it breaks Doxygen.
- */
-
 namespace util
 {
 

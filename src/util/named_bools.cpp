@@ -35,10 +35,6 @@
 
 #include "util/named_bools.hpp"         /* util::named_bools class          */
 
-/*
- *  Do not document a namespace; it breaks Doxygen.
- */
-
 namespace util
 {
     /*

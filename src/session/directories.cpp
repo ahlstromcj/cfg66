@@ -98,10 +98,6 @@
 #include "util/msgfunctions.hpp"        /* util::msgprintf()                */
 #include "util/filefunctions.hpp"       /* util::file_readable() etc.       */
 
-/*
- *  Do not document a namespace; it breaks Doxygen.
- */
-
 namespace session
 {
 

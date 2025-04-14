@@ -42,10 +42,6 @@
 #include "cpp_types.hpp"                /* std::string, tokenization alias  */
 #include "util/strfunctions.hpp"        /* util::string_to_int()           */
 
-/*
- *  Do not document a namespace; it breaks Doxygen.
- */
-
 namespace cfg
 {
 

@@ -40,10 +40,6 @@
 
 #define CFG66_ORDINAL_VERSION           0
 
-/*
- *  Do not document a namespace; it breaks Doxygen.
- */
-
 namespace cfg
 {
 

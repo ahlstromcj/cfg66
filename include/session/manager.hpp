@@ -41,10 +41,6 @@
 #include "session/configuration.hpp"    /* session::configuration basics    */
 #include "session/directories.hpp"      /* session::directories, a helper   */
 
-/*
- *  Do not document a namespace; it breaks Doxygen.
- */
-
 namespace session
 {
 

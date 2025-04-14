@@ -52,10 +52,6 @@
 #include "util/msgfunctions.hpp"        /* util::set_verbose() etc.         */
 #include "util/strfunctions.hpp"        /* util::tokenize()                 */
 
-/*
- * Do not document the namespace; it breaks Doxygen.
- */
-
 namespace cli
 {
 

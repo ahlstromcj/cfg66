@@ -106,10 +106,6 @@
 #include "cfg/appinfo.hpp"              /* cfg::get_home_cfg_directory()    */
 #include "session/configuration.hpp"    /* sessions::configuration class    */
 
-/*
- *  Do not document a namespace; it breaks Doxygen.
- */
-
 namespace session
 {
 

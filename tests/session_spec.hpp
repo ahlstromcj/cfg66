@@ -63,10 +63,6 @@
 
 #include "cfg/inisections.hpp"          /* cfg::inisections class           */
 
-/*
- * Do not document the namespace; it breaks Doxygen.
- */
-
 namespace cfg
 {
 

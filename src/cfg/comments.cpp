@@ -32,10 +32,6 @@
 
 #include "cfg/comments.hpp"             /* cfg::comments class              */
 
-/*
- *  Do not document a namespace; it breaks Doxygen.
- */
-
 namespace cfg
 {
 

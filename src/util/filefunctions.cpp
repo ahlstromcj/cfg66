@@ -198,10 +198,6 @@ using stat_t = struct stat;
 
 using errno_t = int;
 
-/*
- *  Do not document a namespace; it breaks Doxygen.
- */
-
 namespace util
 {
 

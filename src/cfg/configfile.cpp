@@ -55,10 +55,6 @@
 #include "util/filefunctions.hpp"       /* util::filename_base() etc.       */
 #include "util/msgfunctions.hpp"        /* util::error_message() etc.       */
 
-/*
- *  Do not document a namespace; it breaks Doxygen.
- */
-
 namespace cfg
 {
 

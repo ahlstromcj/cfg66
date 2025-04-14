@@ -35,10 +35,6 @@
 
 #include "cfg/palette.hpp"              /* cfg::palette template class      */
 
-/*
- *  Do not document a namespace; it breaks Doxygen.
- */
-
 namespace cfg
 {
     /*

@@ -43,10 +43,6 @@
 #include "cfg/basesettings.hpp"         /* cfg::basesettings class          */
 #include "session/directories.hpp"      /* session::directories             */
 
-/*
- *  Do not document a namespace; it breaks Doxygen.
- */
-
 namespace session
 {
 

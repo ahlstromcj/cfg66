@@ -50,10 +50,6 @@
 #include "util/msgfunctions.hpp"        /* util::file_message() etc.        */
 #include "util/filefunctions.hpp"       /* util::file_readable() etc.       */
 
-/*
- *  Do not document a namespace; it breaks Doxygen.
- */
-
 namespace session
 {
 

@@ -35,10 +35,6 @@
 
 #include <string>                       /* std::string character class      */
 
-/*
- *  Do not document a namespace; it breaks Doxygen.
- */
-
 namespace cfg
 {
 
