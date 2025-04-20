@@ -27,7 +27,7 @@
  *
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2025-03-25
+ * \updates       2025-04-20
  * \version       $Revision$
  *
  *    Also see the filefunctions.cpp module.  The functions here use
@@ -227,6 +227,7 @@ extern std::string installed_data_path
     const std::string & pkgname,
     const std::string & subdir = ""
 );
+extern std::string get_env (const std::string & v);
 extern std::string user_home (const std::string & appfolder = "");
 extern std::string user_config (const std::string & appfolder = "");
 extern std::string user_session (const std::string & appfolder = "");

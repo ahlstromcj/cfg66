@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2025-03-25
+ * \updates       2025-04-20
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -2627,6 +2627,30 @@ installed_data_path
 }
 
 /**
+ *  A C++ wrapper for std::getenv().
+ *
+ * \param v
+ *      Provides the name of the environment variable to look up.
+ *
+ * \return
+ *      Returns the value of the environment, or an empty string
+ *      if the variable was not found, or was set to an empty value.
+ */
+
+std::string
+get_env (const std::string & v)
+{
+    std::string result;
+    if (! v.empty())
+    {
+        char * env = std::getenv(CSTR(v));
+        if (not_nullptr(env))
+            result = std::string(env);
+    }
+    return result;
+}
+
+/**
  *  Gets the user's $HOME (Linux) or $LOCALAPPDAT (Windows) directory from the
  *  current environment.
  *
@@ -2667,9 +2691,7 @@ user_home (const std::string & appfolder)
         }
     }
 #else
-    char * env = std::getenv(ENV_HOME);
-    if (not_nullptr(env))
-        result = std::string(env);      /* "/home/username"                 */
+    result = get_env(ENV_HOME);
 #endif
     if (result.empty())
     {
