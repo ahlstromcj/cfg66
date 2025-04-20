@@ -1,19 +1,19 @@
 NEWS for Cfg66 0.4
 Chris Ahlstrom
-2024-04-15 to 2025-03-25
+2024-04-15 to 2025-04-20
 
 # Changelog
 
-## [0.4] - 2025-03-25
+## [0.4] - 2025-04-20
 
 ### Added
 
 - The ftswalker module, class, and tests. Also includes useful samples
   of ftswalker memeber and callback functions for finding, copying,
   and deleting files.
-- Added filename\_target(), get\_parent\_directory() and
-  get\_xdg\_runtime_\directory().
-  filefunctions module.
+- Added filename\_target(), get\_parent\_directory(),
+  get\_xdg\_runtime_\directory(), and get\_env() to the filefunctions
+  module.
 - The CPTR() function to convert a string to a const pointer, with the
   added feature that, if the string is empty, the pointer is null.
   SPTR() is similar, but the return value is non-const.
