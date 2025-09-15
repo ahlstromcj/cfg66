@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-05-17
- * \updates       2025-03-10
+ * \updates       2025-09-15
  * \license       See above.
  *
  */
@@ -41,7 +41,10 @@
  * Application information.
  */
 
-static cfg::appinfo s_application_info
+namespace
+{
+
+cfg::appinfo s_application_info
 {
     cfg::appkind::test,                 // "test"
     "bytevector_test",                  // _app_name (mandatory!)
@@ -67,7 +70,7 @@ static cfg::appinfo s_application_info
  * Explanation text.
  */
 
-static const std::string s_help_intro
+const std::string s_help_intro
 {
     "Not all of the above options are fully supported.\n\n"
     "This test program illustrates/tests the util::bytevector class.\n"
@@ -87,7 +90,7 @@ static const std::string s_desc_intro
  *  String I/O test.
  */
 
-static bool
+bool
 basic_string_io ()
 {
     std::string fname{"tests/data/1Bar.midi"};
@@ -113,13 +116,13 @@ basic_string_io ()
     return result;
 }
 
-/*
+/**
  *  File I/O test using a MIDI file. MIDI files, like network data, are
  *  big-endian. (Intel processors are little endian, Motorola processors are
  *  big-endian).
  */
 
-static bool
+bool
 big_endian_file_io ()
 {
     static const util::ulong c_mthd_tag  = 0x4D546864;  /* magic no. 'MThd' */
@@ -181,6 +184,40 @@ big_endian_file_io ()
     return result;
 }
 
+/**
+ *  Tests a file that was given us issues in another project.
+ */
+
+bool
+midi_file_test_2 ()
+{
+    static const util::ulong c_mthd_tag  = 0x4D546864;  /* magic no. 'MThd' */
+    static const util::ulong c_mtrk_tag  = 0x4D54726B;  /* magic no. 'MTrk' */
+    std::string fname{"tests/data/MIDI_sample-480.mid"};
+    util::bytevector bv0;
+    bool result = bv0.read(fname);
+    if (result)
+    {
+        util::file_message("Read", fname);
+        util::ulong ID = bv0.get_long();                /* hdr chunk        */
+        util::ulong hdrlength = bv0.get_long();         /* MThd length      */
+        util::ushort format;
+        util::ushort trackcount;
+        util::ushort fppqn;
+        result = ID == c_mthd_tag && hdrlength == 6;
+        if (result)
+        {
+            format = bv0.get_short();
+            trackcount = bv0.get_short();
+            fppqn = bv0.get_short();
+            result = format == 1 && trackcount == 6 && fppqn == 480;
+        }
+    }
+    return result;
+}
+
+}       // namespace anonymous
+
 /*
  *  main() routine. Rather than call cfg::set_client_name(),
  *  cfg::set_app_version(), etc., we use a structure to set the application
@@ -224,6 +261,9 @@ main (int argc, char * argv [])
             success = basic_string_io();
             if (success)
                 success = big_endian_file_io();
+
+            if (success)
+                success = midi_file_test_2();
         }
         if (success)
         {
