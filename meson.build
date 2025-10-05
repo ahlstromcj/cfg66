@@ -6,7 +6,7 @@
 # \library     cfg66
 # \author      Chris Ahlstrom
 # \date        2022-06-22
-# \updates     2025-03-08
+# \updates     2025-10-05
 # \license     $XPC_SUITE_GPL_LICENSE$
 #
 #  This file is part of the "cfg66" library. It was part of the libs66
@@ -171,12 +171,14 @@ cdata.set('limits_h', cc.has_header('limits.h'))
 
 if cfg66_use_potext
 
+   libpotext_dep = subproject('libpotext').get_variable('libpotext_dep')
    libpotext_library_dep = dependency(
       'libpotext', fallback : [ 'libpotext', 'libpotext_dep' ]
       )
 
 endif
 
+liblib66_dep = subproject('liblib66').get_variable('liblib66_dep')
 liblib66_library_dep = dependency(
    'liblib66', fallback : [ 'liblib66', 'liblib66_dep' ]
    )
