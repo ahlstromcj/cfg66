@@ -8,7 +8,7 @@
 # \library        cfg66
 # \author         Chris Ahlstrom
 # \date           2024-02-06
-# \update         2025-04-09
+# \update         2025-10-06
 # \version        $Revision$
 # \license        $XPC_SUITE_GPL_LICENSE$
 #
@@ -30,7 +30,7 @@ LANG=C
 export LANG
 CYGWIN=binmode
 export CYGWIN
-export CFG66_SCRIPT_EDIT_DATE="2025-04-09"
+export CFG66_SCRIPT_EDIT_DATE="2025-10-06"
 export CFG66_LIBRARY_API_VERSION="0.3"
 export CFG66_LIBRARY_VERSION="$CFG66_LIBRARY_API_VERSION.0"
 export CFG66="cfg66"
@@ -262,11 +262,17 @@ if test $DOCLEAN = "yes" ; then
    rm -f $MAKEFILE
    rm -f build/compile_commands.json
    rm -rf wipe/
+   rm -f doc/dox/*.log
+   rm -f doc/latex/*.log
+   rm -rf build/subprojects/
+   echo "Build products removed from the rtl66/build directory."
    rm -rf subprojects/liblib66/
    rm -rf subprojects/potext/
-   rm -f doc/latex/*.log
+   echo "Subproject products removed from the subprojects directory."
    rm -f tests/data/1Bar-out.midi
    rm -f tests/data/fooinout.rc
+#  git checkout doc/rtl66-dev-manual.pdf
+#  echo "Previous version of developer guide restored."
 
 # Problematic when making a release. Just remember to do it.
 #
