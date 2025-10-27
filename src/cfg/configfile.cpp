@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2025-03-08
+ * \updates       2025-10-27
  * \license       GNU GPLv2 or above
  *
  *  std::streamoff is a signed integral type (usually long long) that can
@@ -1253,7 +1253,7 @@ configfile::set_up_ifstream (std::ifstream & instream)
             char temp[128];
             snprintf
             (
-                temp, sizeof temp, "Version not found: %s\n", file_name().c_str()
+                temp, sizeof temp, "Version not found: %s\n", V(file_name())
             );
             result = make_error_message(file_type(), temp);
         }
@@ -1273,7 +1273,7 @@ configfile::set_up_ifstream (std::ifstream & instream)
     else
     {
         char temp[128];
-        snprintf(temp, sizeof temp, "Read open fail: %s\n", file_name().c_str());
+        snprintf(temp, sizeof temp, "Read open fail: %s\n", V(file_name()));
         result = make_error_message(file_type(), temp);
     }
     return result;

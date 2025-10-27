@@ -25,13 +25,14 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-15
+ * \updates       2025-10-27
  * \license       See above.
  *
  */
 
 #include <cstdio>
 
+#include "cpp_types.hpp"                /* V() from lib66                   */
 #include "cli/parser.hpp"               /* cfg::options, cli::parser        */
 #include "cli/cliparser_c.h"            /* cliparser_c functions            */
 
@@ -152,7 +153,7 @@ value (const char * name, char * value, size_t szvalue)
     if (ok)
     {
         std::string v = parser().value(name);
-        int count = std::snprintf(value, szvalue, "%s", v.c_str());
+        int count = std::snprintf(value, szvalue, "%s", V(v));
         result = size_t(count) <= szvalue;
     }
     return result;
@@ -167,7 +168,7 @@ const char *
 help_text (void)
 {
     static std::string s_help_text = parser().help_text();
-    return s_help_text.c_str();
+    return CSTR(s_help_text);
 }
 
 /**
@@ -182,7 +183,7 @@ debug_text (void)
     if (parser().debug_text() != s_debug_text)
         s_debug_text = parser().debug_text();
 
-    return s_debug_text.c_str();
+    return CSTR(s_debug_text);
 }
 
 bool

@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2018-11-10
- * \updates       2025-04-04
+ * \updates       2025-10-27
  * \license       GNU GPLv2 or above
  *
  *  One of the big features of some of these functions is writing the name
@@ -164,7 +164,7 @@ async_safe_strprint (const char * msg, bool colorit)
             }
             else
             {
-                const char * label = cfg::get_client_name().c_str();
+                const char * label = CSTR(cfg::get_client_name());
                 size_t szlabel = cfg::get_client_name().size() + 2; // "[xxx]"
                 write_msg(STDOUT_FILENO, label, szlabel);
                 write_msg(STDOUT_FILENO, msg, count);
@@ -190,7 +190,7 @@ async_safe_errprint (const char * msg, bool colorit)
             }
             else
             {
-                const char * label = cfg::get_client_name().c_str();
+                const char * label = CSTR(cfg::get_client_name());
                 size_t szlabel = cfg::get_client_name().size() + 2; // "[xxx]"
                 write_msg(STDERR_FILENO, label, szlabel);
                 write_msg(STDERR_FILENO, msg, count);
@@ -568,7 +568,7 @@ formatted (const std::string & fmt, va_list args)
     va_list args_copy;                                      /* Step 2       */
     va_copy(args_copy, args);
 
-    const char * const szfmt = fmt.c_str();
+    const char * const szfmt = V(fmt);
     int ilen = std::vsnprintf(NULL, 0, szfmt, args_copy);
     va_end(args_copy);
     if (ilen > 0)
@@ -643,7 +643,8 @@ toggleprint (const std::string & tag, bool flag)
  * \param ...
  *      Provides the printf() parameters for the format string.  Please note
  *      that C++ strings cannot be used directly... std::string::c_str() must
- *      be used.
+ *      be used. The lib66/include/cpp_types.hpp header file defines
+ *      the inline function V() for more visibility.
  */
 
 void
@@ -701,7 +702,8 @@ msgprintf (lib66::msglevel lev, std::string fmt, ...)
  * \param ...
  *      Provides the printf() parameters for the format string.  Please note
  *      that C++ strings cannot be used directly... std::string::c_str() must
- *      be used.
+ *      be used. The lib66/include/cpp_types.hpp header file defines
+ *      the inline function V() for more visibility.
  */
 
 std::string

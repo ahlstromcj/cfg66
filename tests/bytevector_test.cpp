@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-05-17
- * \updates       2025-09-15
+ * \updates       2025-10-27
  * \license       See above.
  *
  */
@@ -192,7 +192,9 @@ bool
 midi_file_test_2 ()
 {
     static const util::ulong c_mthd_tag  = 0x4D546864;  /* magic no. 'MThd' */
+#if defined THIS_CODE_IS_USED
     static const util::ulong c_mtrk_tag  = 0x4D54726B;  /* magic no. 'MTrk' */
+#endif
     std::string fname{"tests/data/MIDI_sample-480.mid"};
     util::bytevector bv0;
     bool result = bv0.read(fname);

@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2020-03-22
- * \updates       2024-09-27
+ * \updates       2025-10-27
  * \license       GNU GPLv2 or above
  *
  *  What is a session configuration? It is a setup of the following
@@ -230,7 +230,7 @@ configuration::parse_command_line
             (void) snprintf
             (
                 temp, sizeof temp,
-                "MIDI file not readable: '%s'", fname.c_str()
+                "MIDI file not readable: '%s'", V(fname)
             );
 //          append_error_message(temp);     /* raises the message   */
         }

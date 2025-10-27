@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-05-16
- * \updates       2024-05-21
+ * \updates       2025-10-27
  * \license       GNU GPLv2 or above
  *
  *  The bytevector class is meant to handle big-endian data in a byte-by-byte
@@ -701,7 +701,7 @@ bytevector::write (const std::string & outfilename)
     {
         std::ofstream file
         (
-            outfilename.c_str(),
+            CSTR(outfilename),
             std::ios::out | std::ios::binary | std::ios::trunc
         );
         if (file.is_open())
@@ -747,7 +747,7 @@ bool
 bytevector::set_error (const std::string & msg) const
 {
     m_error_message = msg;
-    errprint(msg.c_str());
+    errprint(CSTR(msg));
     m_error_is_fatal = true;
     m_disable_reported = true;
     return false;
@@ -779,7 +779,7 @@ bytevector::set_error_dump (const std::string & msg) const
     );
     std::string result = temp;
     result += msg;
-    util::msgprintf(lib66::msglevel::error, "%s", result.c_str());
+    util::msgprintf(lib66::msglevel::error, "%s", V(result));
     return set_error(result);
 }
 

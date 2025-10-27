@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2025-04-20
+ * \updates       2025-10-27
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -453,11 +453,11 @@ file_access (const std::string & filename, int mode)
         }
         else
         {
-            int errnum = S_ACCESS(filename.c_str(), mode);
+            int errnum = S_ACCESS(CSTR(filename), mode);
             result = errnum == 0;
         }
 #else
-        int errnum = S_ACCESS(filename.c_str(), mode);
+        int errnum = S_ACCESS(CSTR(filename), mode);
         result = errnum == 0;
 #endif
     }
@@ -489,7 +489,7 @@ bool
 file_status (const std::string & filename)
 {
     stat_t statusbuf;
-    int statresult = S_STAT(filename.c_str(), &statusbuf);
+    int statresult = S_STAT(CSTR(filename), &statusbuf);
     return statresult == 0;
 }
 
@@ -566,7 +566,7 @@ file_executable (const std::string & filename)
     if (result)
     {
         stat_t statusbuf;
-        int statresult = S_STAT(filename.c_str(), &statusbuf);
+        int statresult = S_STAT(CSTR(filename), &statusbuf);
         if (statresult == 0)                          /* a good file handle? */
         {
 #if defined PLATFORM_MSVC
@@ -604,7 +604,7 @@ file_is_directory (const std::string & filename)
     if (result)
     {
         stat_t statusbuf;
-        int statresult = S_STAT(filename.c_str(), &statusbuf);
+        int statresult = S_STAT(CSTR(filename), &statusbuf);
         if (statresult == 0)                           // a good file handle?
         {
 #if defined PLATFORM_MSVC
@@ -648,7 +648,7 @@ file_size (const std::string & filename)
     if (file_name_good(filename))
     {
         stat_t statusbuf;
-        int statresult = S_STAT(filename.c_str(), &statusbuf);
+        int statresult = S_STAT(CSTR(filename), &statusbuf);
         if (statresult == 0)                           // a good file handle?
             result = statusbuf.st_size;
     }
@@ -782,12 +782,12 @@ file_open (const std::string & filename, const std::string & mode)
     if (file_name_good(filename) && ! mode.empty())
     {
 #if defined PLATFORM_WINDOWS      /* MSVC undefined in Qt on Windows  */
-        int errnum = (int) S_FOPEN(&filehandle, filename.c_str(), mode.c_str());
+        int errnum = (int) S_FOPEN(&filehandle, CSTR(filename), CSTR(mode));
         if (errnum != 0)
             filehandle = nullptr;
 #else
         int errnum = 0;
-        filehandle = S_FOPEN(filename.c_str(), mode.c_str());
+        filehandle = S_FOPEN(CSTR(filename), CSTR(mode));
         if (is_nullptr(filehandle))
             errnum = errno;
 #endif
@@ -879,7 +879,7 @@ file_append_string (const std::string & filename, const std::string & text)
     if (result)
     {
         size_t len = text.length();
-        size_t rc = fwrite(text.c_str(), sizeof(char), len, fptr);
+        size_t rc = fwrite(CSTR(text), sizeof(char), len, fptr);
         if (rc < len)
         {
             file_error("Append failed", filename);
@@ -920,7 +920,7 @@ file_write_string
         if (result)
         {
             size_t len = text.length();
-            size_t rc = fwrite(text.c_str(), sizeof(char), len, fptr);
+            size_t rc = fwrite(CSTR(text), sizeof(char), len, fptr);
             if (rc < len)
             {
                 file_error("Write failed", filename);
@@ -972,12 +972,12 @@ file_write_lines
     {
         for (auto & t : textlist)
         {
-            std::string t2{t};
+            std::string t2 { t };
             if (t2.back() != '\n')
                 t2 += "\n";
 
             size_t len = t2.length();
-            size_t rc = fwrite(t2.c_str(), sizeof(char), len, fptr);
+            size_t rc = fwrite(CSTR(t2), sizeof(char), len, fptr);
             if (rc < len)
             {
                 file_error("Write failed", filename);
@@ -1136,7 +1136,7 @@ file_delete (const std::string & filespec)
     bool result = ! filespec.empty();
     if (result)
     {
-        int rc = unlink(filespec.c_str());
+        int rc = unlink(CSTR(filespec));
         result = rc != (-1);
         if (! result)
             file_error("Delete failed", filespec);
@@ -1490,12 +1490,12 @@ make_directory (const std::string & pathname, int mode)
 #endif
         };
 #endif
-        if (S_STAT(pathname.c_str(), &st) == -1)
+        if (S_STAT(CSTR(pathname), &st) == -1)
         {
 #if defined PLATFORM_WINDOWS
-            int rcode = S_MKDIR(pathname.c_str());
+            int rcode = S_MKDIR(CSTR(pathname));
 #else
-            int rcode = S_MKDIR(pathname.c_str(), mode);
+            int rcode = S_MKDIR(CSTR(pathname), mode);
 #endif
             result = rcode == 0;
             if (! result)
@@ -1570,7 +1570,7 @@ make_directory_path (const std::string & directory_name, int mode)
         bool more = true;
         int slash = '/';
         char * nextptr;                         /* just what it says!       */
-        (void) std::strncpy(currdir, dirname.c_str(), sizeof currdir - 1);
+        (void) std::strncpy(currdir, CSTR(dirname), sizeof currdir - 1);
 
         char * endptr = &currdir[0];            /* start at the beginning   */
         char * ending = strchr(endptr, '\0');
@@ -1655,7 +1655,7 @@ delete_directory (const std::string & filename)
     {
         if (file_exists(filename))
         {
-            int rcode = S_RMDIR(filename.c_str());
+            int rcode = S_RMDIR(CSTR(filename));
             if (rcode == (-1))
                 result = s_file_error(filename, __func__, errno);
         }
@@ -1742,15 +1742,15 @@ get_full_path (const std::string & path)
 #if defined PLATFORM_WINDOWS              /* _MSVC not defined in Qt  */
         char * resolved_path = NULL;            /* what a relic!            */
         char temp[256];
-        resolved_path = _fullpath(temp, path.c_str(), 256);
+        resolved_path = _fullpath(temp, CSTR(path), 256);
         if (not_NULL(resolved_path))
             result = resolved_path;
 #else
         char * resolved_path = NULL;            /* what a relic!            */
 #if defined PLATFORM_CYGWIN
-        resolved_path = realpath_cyg(path.c_str(), NULL);
+        resolved_path = realpath_cyg(CSTR(path), NULL);
 #else
-        resolved_path = realpath(path.c_str(), NULL);
+        resolved_path = realpath(CSTR(path), NULL);
 #endif
         if (not_NULL(resolved_path))
         {
@@ -2455,7 +2455,7 @@ set_current_directory (const std::string & path)
     bool result = false;
     if (! path.empty())
     {
-        int rcode = S_CHDIR(path.c_str());
+        int rcode = S_CHDIR(CSTR(path));
         result = is_posix_success(rcode);
         if (! result)
             file_error("chdir() failed", path);
@@ -2874,7 +2874,7 @@ get_wildcards
         // anything?
 #endif
         glob_t g;
-        int rc = glob(wildpath.c_str(), flags, nullptr, &g);
+        int rc = glob(CSTR(wildpath), flags, nullptr, &g);
         if (rc != 0)
         {
             result = false;
@@ -2934,7 +2934,7 @@ file_modification_time (const std::string & fname)
     if (file_name_good(fname))
     {
         stat_t st;
-        result = S_STAT(fname.c_str(), &st) == 0 ? st.st_mtime : 0 ;
+        result = S_STAT(CSTR(fname), &st) == 0 ? st.st_mtime : 0 ;
     }
     return result;
 }

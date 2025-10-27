@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-09-30
+ * \updates       2025-10-27
  * \license       See above.
  *
  *  The cli::options class provides a way to hold the state of command-line
@@ -738,7 +738,7 @@ options::find_match (const std::string & name) const
         printf
         (
             "No options in the option container (context: '%s')\n",
-            name.c_str()
+            V(name)
         );
     }
 #endif
@@ -1286,7 +1286,7 @@ options::value (const std::string & name, const std::string & value)
     if (! ok)
     {
 #if defined PLATFORM_DEBUG
-        printf("Could not change option '%s'\n", name.c_str());
+        printf("Could not change option '%s'\n", V(name));
 #endif
     }
 }
@@ -1310,7 +1310,7 @@ options::boolean_value (const std::string & name, bool value)
     if (! ok)
     {
 #if defined PLATFORM_DEBUG
-        printf("Could not change option '%s'\n", name.c_str());
+        printf("Could not change option '%s'\n", V(name));
 #endif
     }
 }
@@ -1334,7 +1334,7 @@ options::integer_value (const std::string & name, int value)
     if (! ok)
     {
 #if defined PLATFORM_DEBUG
-        printf("Could not change option '%s'\n", name.c_str());
+        printf("Could not change option '%s'\n", V(name));
 #endif
     }
 }
@@ -1358,7 +1358,7 @@ options::floating_value (const std::string & name, float value)
     if (! ok)
     {
 #if defined PLATFORM_DEBUG
-        printf("Could not change option '%s'\n", name.c_str());
+        printf("Could not change option '%s'\n", V(name));
 #endif
     }
 }

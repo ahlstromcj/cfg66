@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-24
- * \updates       2025-03-31
+ * \updates       2025-10-27
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -65,12 +65,12 @@ string_asprintf (std::string fmt, ...)
     va_list temp_args;
     va_copy(temp_args, args);
 
-    int sz = std::vsnprintf(nullptr, 0, fmt.c_str(), temp_args) + 1;
+    int sz = std::vsnprintf(nullptr, 0, V(fmt), temp_args) + 1;
     va_end(temp_args);
     if (sz > 0)
     {
         std::vector<char> dest(sz);
-        (void) std::vsnprintf(dest.data(), dest.size(), fmt.c_str(), args);
+        (void) std::vsnprintf(dest.data(), dest.size(), V(fmt), args);
         result = std::string(dest.data(), dest.size() - 1);
     }
     va_end(args);
@@ -1533,12 +1533,12 @@ widen_string (const std::string & source)
 #if defined CFG66_PLATFORM_WINDOWS
     size_t required_length = ::MultiByteToWideChar
     (
-        CP_UTF8, 0, source.c_str(), int(source.length()), 0, 0
+        CP_UTF8, 0, CSTR(source), int(source.length()), 0, 0
     );
     std::wstring result(required_length, L'\0');
     ::MultiByteToWideChar
     (
-        CP_UTF8, 0, source.c_str(), int(source.length()),
+        CP_UTF8, 0, CSTR(source), int(source.length()),
         &result[0], int(result.length())
     );
     return result;

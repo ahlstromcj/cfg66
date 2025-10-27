@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-24
- * \updates       2024-07-27
+ * \updates       2025-10-27
  * \license       See above.
  *
  *      The limitations of command-line options as implemented in cli::parser
@@ -176,7 +176,7 @@ multiparser::cli_mappings_add
                     if (r.second)
                     {
 #if defined PLATFORM_DEBUG_TMI
-                        printf("Inserted <'%c','%s'>\n", code, name.c_str());
+                        printf("Inserted <'%c','%s'>\n", code, CSTR(name);
 #endif
                     }
                     else
@@ -185,7 +185,7 @@ multiparser::cli_mappings_add
                         snprintf
                         (
                             tmp, sizeof tmp, "Could not insert <'%c','%s'>",
-                            code, name.c_str()
+                            code, CSTR(name)
                         );
                         util::warn_message(tmp);
                     }
@@ -200,8 +200,8 @@ multiparser::cli_mappings_add
                     printf
                     (
                         "Inserted option <'%s',('%s',%s)>\n",
-                        name.c_str(), configtype.c_str(),
-                        configsection.c_str()
+                        CSTR(name), CSTR(configtype),
+                        CSTR(configsection)
                     );
 #endif
                 }
@@ -212,8 +212,8 @@ multiparser::cli_mappings_add
                     (
                         tmp, sizeof tmp,
                         "Couldn't insert <%s,(%s,%s)>",
-                        name.c_str(), configtype.c_str(),
-                        configsection.c_str()
+                        CSTR(name), CSTR(configtype),
+                        CSTR(configsection)
                     );
                     util::warn_message(tmp, "Change option to a unique name");
                 }
