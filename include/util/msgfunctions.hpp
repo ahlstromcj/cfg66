@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom and other authors; see documentation
  * \date          2018-11-10
- * \updates       2025-04-06
+ * \updates       2025-12-28
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
@@ -41,6 +41,11 @@
 
 namespace util
 {
+/*
+ * Used for character-array allocation.
+ */
+
+const int c_async_safe_utoa_size { 24 };
 
 /*
  * Global functions. There is also a quiet and a verbose setting in

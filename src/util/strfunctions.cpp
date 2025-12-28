@@ -1245,13 +1245,13 @@ bool_to_char (bool x)
     return x ? s_true : s_false ;
 }
 
+/**
+ *  Converts a pointer to a string.
+ */
+
 std::string
 pointer_to_string (void * ptr)
 {
-    /*
-     * long long int value = reinterpret_cast<ptr>;
-     */
-
     char temp[32];
     snprintf(temp, sizeof temp, "0x%p", ptr);
     return std::string(temp);

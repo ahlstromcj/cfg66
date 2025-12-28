@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2018-11-10
- * \updates       2025-10-27
+ * \updates       2025-12-28
  * \license       GNU GPLv2 or above
  *
  *  One of the big features of some of these functions is writing the name
@@ -220,7 +220,6 @@ async_safe_errprint (const char * msg, bool colorit)
 void
 async_safe_utoa (char * destination, unsigned number, bool spacebefore)
 {
-    const int c_async_safe_utoa_size = 24;
     const unsigned ascii_base = unsigned('0');
     char reversed[c_async_safe_utoa_size];
     int count = 0;
