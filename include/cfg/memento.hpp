@@ -58,7 +58,7 @@ namespace cfg
  *  TYPE must have:
  *
  *      -   Default constructor
- *      -   Copy construction
+ *      -   Copy constructor
  *      -   Principal assignment operator
  */
 
@@ -66,6 +66,10 @@ template <typename TYPE>
 class memento
 {
     /*
+     * An orginator creates a memento containing a snapshot of its
+     * internal state, and uses the memento to restore it internal
+     * state. See the history template class.
+     *
      * friend class originator;
      */
 
@@ -75,7 +79,7 @@ private:
      *  Provides a copy of a state.  We obviously can't use references, and
      *  pointers are a pain.  We will assume that each memento state is
      *  relatively small.  We will also limit the number of mementos.
-     *  See the history class.
+     *  See the history template class.
      */
 
     TYPE m_state;
@@ -85,6 +89,11 @@ public:                                     /* narrow public interface      */
     virtual ~memento () = default;
 
 public:                                     /* originator's wide interface  */
+
+    /*
+     * This interface should be private, but we want to use this class
+     * with multiple originators, such as cfg::history<TYPE>.
+     */
 
     memento () : m_state ()                 /* an empty state; useful?      */
     {

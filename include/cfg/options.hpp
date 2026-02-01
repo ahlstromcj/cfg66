@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-27
+ * \updates       2026-02-01
  * \license       See above.
  *
  *  Supports variables of the following types:
@@ -113,9 +113,9 @@ namespace cfg
  *  util::questionable_string().
  */
 
-static std::string global{""};
-static std::string lookup{"?"};
-static std::string bad{"?"};
+static std::string global { "" };
+static std::string lookup { "?" };
+static std::string bad { "?" };
 
 /**
  *  Accessor function class.
@@ -138,17 +138,17 @@ public:
      *  The "global" boolean corresponds to the "global" string defined above.
      */
 
-    static const bool disabled{false};
-    static const bool enabled{true};
-    static const bool stock{true};      /* used in reset() & debug_text()   */
-    static const bool nostock{false};
+    static const bool disabled { false };
+    static const bool enabled { true };
+    static const bool stock { true };   /* used in reset() & debug_text()   */
+    static const bool nostock { false };
 
     /**
      *  More searchable versions of specific booleans and a null option
      *  code character.
      */
 
-    static const char code_null{0};
+    static const char code_null { 0 };
 
     /**
      *  Control of the output for a terminal. We don't try to determine
@@ -157,9 +157,9 @@ public:
      *  longer than about 78.
      */
 
-    static const size_t hanging_width{25};                      /* tricky   */
-    static const size_t field_width{40};
-    static const size_t terminal_width{78};
+    static const size_t hanging_width { 25 };                   /* tricky   */
+    static const size_t field_width { 40 };
+    static const size_t terminal_width { 78 };
 
     /**
      *  The kinds of options supported, mostly representing various
@@ -234,6 +234,8 @@ public:
         );
         spec (const spec &) = default;
         spec & operator = (const spec &) = default;
+        spec (spec &&) = default;
+        spec & operator = (spec &&) = default;
 
 #endif
 

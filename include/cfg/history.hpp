@@ -27,7 +27,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-01-06
- * \updates       2024-06-18
+ * \updates       2026-02-01
  * \license       GNU GPLv2 or above
  *
  *  Documented in the cpp file.
@@ -38,9 +38,12 @@
 #include "cpp_types.hpp"                /* string, vector, opt, msglevel... */
 #include "cfg/memento.hpp"              /* cfg::memento template class      */
 
-/*
- * Do not attempt to Doxygenate the documentation here; it breaks Doxygen.
+/**
+ *  Provides a safety limit for the number of undo operations.
+ *  A constructor is provided to allow a different value.
  */
+
+const int c_default_undo_history_limit { 128 };
 
 namespace cfg
 {
@@ -66,7 +69,14 @@ class history
 private:
 
     /**
-     *  Provides a copy of a state.  We obviously can't use references.
+     *  Provides copies of the states of a TYPE. We obviously can't use
+     *  references or pointers; we must keep history items around.
+     *
+     *  Note that a deque is a double-ended queue. It can generalize both
+     *  stacks (LIFO) and queues (FIFO).
+     *
+     *  We could consider using std::stack(), but that would not support
+     *  the redo() operation.
      */
 
     std::deque<memento<TYPE>> m_history_list;
@@ -101,7 +111,7 @@ public:
     bool active () const
     {
         return m_history_list.size() > 0;
-  }
+    }
 
     size_t max_size () const
     {
@@ -137,8 +147,13 @@ public:
         return push(m);
     }
 
-    bool reset ();
+    bool remove ()
+    {
+        memento<TYPE> & m;
+        return pop(m);
+    }
 
+    bool reset ();
     const TYPE & undo ();
     const TYPE & redo ();
 
@@ -146,13 +161,17 @@ protected:
 
     bool impl_undo (memento<TYPE> & m);
     bool impl_redo (memento<TYPE> & m);
-    bool push (const memento<TYPE> & m);
-    bool pop ();
 
-    bool remove ()
-    {
-        return pop;
-    }
+    /*
+     * The push() function is like add(), but the result can be tested.
+     * The pop() function is like remove(), but the result can be tested
+     * and the popped value is returned in the parameter.
+     *
+     * Not useful at this time.
+     */
+
+    bool push (const memento<TYPE> & m);
+    bool pop (memento<TYPE> & m);
 
 };          // class history
 
@@ -163,7 +182,7 @@ protected:
 template<typename TYPE>
 history<TYPE>::history () :
     m_history_list  (),
-    m_max_size      (32),
+    m_max_size      (c_default_undo_history_limit),
     m_present       (0)
 {
     // no other code
@@ -200,11 +219,8 @@ template<typename TYPE>
 bool
 history<TYPE>::push (const memento<TYPE> & m)
 {
-    bool result = m_history_list.size() < m_max_size;
-    if (! result)
-        result = ! pop();               /* should never be false, though    */
-
-    if (active())                       /* tricky code;gnore first push     */
+    bool result { m_history_list.size() < m_max_size };
+    if (active())                       /* tricky code; ignore first push   */
         ++m_present;                    /* int would have been nice, but... */
 
     m_history_list.push_back(m);        /* copy m and add it to the deque   */
@@ -218,11 +234,12 @@ history<TYPE>::push (const memento<TYPE> & m)
 
 template<typename TYPE>
 bool
-history<TYPE>::pop ()
+history<TYPE>::pop (memento<TYPE> & m)
 {
-    bool result = active();
+    bool result { active() };
     if (result)
     {
+        m = m_history_list[m_present];
         m_history_list.pop_front();
         --m_present;
     }
@@ -248,7 +265,7 @@ template<typename TYPE>
 bool
 history<TYPE>::impl_undo (memento<TYPE> & m)
 {
-    bool result = undoable();
+    bool result { undoable() };
     if (result)
     {
         --m_present;
@@ -266,7 +283,7 @@ template<typename TYPE>
 bool
 history<TYPE>::impl_redo (memento<TYPE> & m)
 {
-    bool result = redoable();
+    bool result { redoable() };
     if (result)
     {
         ++m_present;
@@ -303,7 +320,7 @@ template<typename TYPE>
 bool
 history<TYPE>::reset ()
 {
-    bool result = active();
+    bool result { active() };
     if (result)
     {
         m_history_list.clear();
@@ -319,10 +336,10 @@ history<TYPE>::get (size_t index) const
     static TYPE s_dummy;
     if (active())
     {
-        bool ok = index < m_history_list.size();
+        bool ok { index < m_history_list.size() };
         if (ok)
         {
-            const memento<TYPE> & m = m_history_list[index];
+            const memento<TYPE> & m { m_history_list[index] };
             return m.get_state();
         }
         else

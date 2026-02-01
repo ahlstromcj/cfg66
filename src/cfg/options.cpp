@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2025-10-27
+ * \updates       2026-02-01
  * \license       See above.
  *
  *  The cli::options class provides a way to hold the state of command-line
@@ -291,7 +291,7 @@ options::init_container (container & pairs)
 {
     for (auto & specs : pairs)
     {
-        spec & sp = specs.second;
+        spec & sp { specs.second };
         sp.option_value = sp.option_default;
         sp.option_read_from_cli = sp.option_modified = false;
     }
@@ -305,7 +305,7 @@ options::init_container (container & pairs)
 bool
 options::add (const option & op)
 {
-    auto r = option_pairs().insert(op);
+    auto r { option_pairs().insert(op) };
     return r.second;
 }
 
@@ -322,12 +322,12 @@ options::add (const option & op)
 bool
 options::add (const container & optlist)
 {
-    bool result = ! optlist.empty();
+    bool result { ! optlist.empty() };
     if (result)
     {
         for (const auto & sp : optlist)
         {
-            bool ok = add(sp);
+            bool ok { add(sp) };
             if (! ok)
             {
                 result = false;
@@ -350,14 +350,14 @@ options::add (const container & optlist)
 bool
 options::verify () const
 {
-    bool result = true;
+    bool result { true };
     m_code_list.clear();
     for (const auto & op : option_pairs())
     {
-        char c = char(op.second.option_code);
+        char c { char(op.second.option_code) };
         if (c > 0)
         {
-            std::string::size_type pos = m_code_list.find_first_of(c);
+            std::string::size_type pos { m_code_list.find_first_of(c) };
             if (pos == std::string::npos)
             {
                 m_code_list += c;
@@ -396,11 +396,11 @@ options::check_range
     float value, float minimum, float maximum
 ) const
 {
-    bool result = value >= minimum && value <= maximum;
+    bool result { value >= minimum && value <= maximum };
     if (! result)
     {
-        bool adding = m_has_error;
-        std::string msg = "Option '";
+        bool adding { m_has_error };
+        std::string msg { "Option '" };
         msg += name;
         msg += "=";
         msg += util::double_to_string(value);
@@ -451,20 +451,20 @@ options::set_value
     const std::string & value
 )
 {
-    bool result = ! name.empty();
+    bool result { ! name.empty() };
     if (result)
     {
-        auto opt = find_match(name);
+        auto opt { find_match(name) };
         result = option_exists(opt);
         if (result)
         {
-            spec & ncop = const_cast<spec &>(opt->second);
+            spec & ncop { const_cast<spec &>(opt->second) };
             result = value != ncop.option_value;
             if (result)
             {
                 if (option_is_boolean(ncop))
                 {
-                    std::string newvalue = "true";
+                    std::string newvalue { "true" };
                     if (value != "true")
                         newvalue = "false";
 
@@ -474,14 +474,14 @@ options::set_value
                 {
                     int minimum;
                     int maximum;
-                    int defalt = integer_value_range(name, minimum, maximum);
+                    int defalt { integer_value_range(name, minimum, maximum) };
                     if (value.empty())
                     {
                         ncop.option_value = std::to_string(defalt);
                     }
                     else
                     {
-                        int iv = util::string_to_int(value);
+                        int iv { util::string_to_int(value) };
                         result = check_range
                         (
                             name, float(iv), float(minimum), float(maximum)
@@ -494,14 +494,17 @@ options::set_value
                 {
                     float minimum;
                     float maximum;
-                    float defalt = floating_value_range(name, minimum, maximum);
+                    float defalt
+                    {
+                        floating_value_range(name, minimum, maximum)
+                    };
                     if (value.empty())
                     {
                         ncop.option_value = std::to_string(defalt);
                     }
                     else
                     {
-                        float iv = float(util::string_to_double(value));
+                        float iv { float(util::string_to_double(value)) };
                         result = check_range(name, iv, minimum, maximum);
                         if (result)
                             ncop.option_value = value;
@@ -543,11 +546,11 @@ options::change_value
     bool fromcli
 )
 {
-    bool result = set_value(name, value);
+    bool result { set_value(name, value) };
     if (result)
     {
-        auto opt = find_match(name);                /* always succeeds here */
-        spec & ncop = const_cast<spec &>(opt->second);
+        auto opt { find_match(name) };              /* always succeeds here */
+        spec & ncop { const_cast<spec &>(opt->second) };
         ncop.option_modified = true;
         if (fromcli)
             ncop.option_read_from_cli = true;
@@ -558,7 +561,7 @@ options::change_value
 bool
 options::modified () const
 {
-    bool result = false;
+    bool result { false };
     for (const auto & op : option_pairs())
     {
         if (op.second.option_modified)
@@ -579,8 +582,8 @@ options::modified () const
 bool
 options::was_read_from_cli (const std::string & name) const
 {
-    auto opt = find_match(name);
-    bool result = option_exists(opt);
+    auto opt { find_match(name) };
+    bool result { option_exists(opt) };
     if (result)
         result = opt->second.option_read_from_cli;
 
@@ -595,10 +598,10 @@ options::was_read_from_cli (const std::string & name) const
 void
 options::set_read_from_cli (const std::string & name, bool flag)
 {
-    auto opt = find_match(name);
+    auto opt { find_match(name) };
     if (option_exists(opt))
     {
-        spec & ncop = const_cast<spec &>(opt->second);
+        spec & ncop { const_cast<spec &>(opt->second) };
         ncop.option_read_from_cli = flag;
         ncop.option_modified = false;
     }
@@ -611,10 +614,10 @@ options::set_read_from_cli (const std::string & name, bool flag)
 void
 options::unmodify (const std::string & name)
 {
-    auto opt = find_match(name);
+    auto opt { find_match(name) };
     if (option_exists(opt))
     {
-        spec & ncop = const_cast<spec &>(opt->second);
+        spec & ncop { const_cast<spec &>(opt->second) };
         ncop.option_modified = false;
     }
 }
@@ -667,7 +670,7 @@ options::long_name (const std::string & code) const
     std::string result;
     if (code.length() == 1)
     {
-        char uc = code[0];
+        char uc { code[0] };
         result = long_name(uc);
     }
     else
@@ -689,7 +692,7 @@ options::find_spec (const std::string & name) const
     static spec s_inactive_spec;            /* do not load global options   */
     if (! name.empty())
     {
-        const auto opt = find_match(name);
+        const auto opt { find_match(name) };
         if (option_exists(opt))
             return opt->second;
     }
@@ -730,7 +733,7 @@ options::find_spec (const std::string & name)
 options::container::const_iterator
 options::find_match (const std::string & name) const
 {
-    std::string longname = long_name(name);
+    std::string longname { long_name(name) };
 
 #if defined PLATFORM_DEBUG
     if (option_pairs().empty())
@@ -755,11 +758,11 @@ options::find_match (const std::string & name) const
 bool
 options::option_exists (const std::string & name) const
 {
-    std::string longname = long_name(name);
-    bool result = ! longname.empty();
+    std::string longname { long_name(name) };
+    bool result { ! longname.empty() };
     if (result)
     {
-        container::const_iterator valueptr = option_pairs().find(longname);
+        container::const_iterator valueptr { option_pairs().find(longname) };
         result = valueptr != option_pairs().end();
     }
     return result;
@@ -768,8 +771,8 @@ options::option_exists (const std::string & name) const
 bool
 options::option_is_boolean (const std::string & name) const
 {
-    bool result = false;
-    auto opt = find_match(name);
+    bool result { false };
+    auto opt { find_match(name) };
     if (option_exists(opt))
         result = opt->second.option_kind == kind::boolean;
 
@@ -788,11 +791,11 @@ options::help_line (const option & opt) const
     std::string result;
     if (opt.second.option_cli_enabled)
     {
-        const spec & op = opt.second;
+        const spec & op { opt.second };
         std::ostringstream ost;
-        char code = op.option_code;
-        std::string name = opt.first;
-        int count = 18;
+        char code { op.option_code };
+        std::string name { opt.first };
+        int count { 18 };
         if (code == 0)
         {
             code = ' ';
@@ -810,7 +813,7 @@ options::help_line (const option & opt) const
         }
         ost << " --" << std::setw(count) << std::left << name;
 
-        std::string desc = op.option_desc;
+        std::string desc { op.option_desc };
         if (code != 'h' && code != 'v')
         {
             if (op.option_value != op.option_default)
@@ -846,11 +849,11 @@ options::color_help_line (const option & opt) const
     std::string result;
     if (opt.second.option_cli_enabled)
     {
-        const spec & op = opt.second;
+        const spec & op { opt.second };
         std::ostringstream ost;
-        char code = op.option_code;
-        std::string name = opt.first;
-        int count = 18;
+        char code { op.option_code };
+        std::string name { opt.first };
+        int count { 18 };
         if (code == 0)
         {
             code = ' ';
@@ -877,7 +880,7 @@ options::color_help_line (const option & opt) const
             << level_color(0)
             ;
 
-        std::string desc = op.option_desc;
+        std::string desc { op.option_desc };
         if (code != 'h' && code != 'v')
         {
             desc += " [";
@@ -900,7 +903,7 @@ std::string
 options::help_line (const std::string & name) const
 {
     std::string result;
-    auto opt = find_match(name);
+    auto opt { find_match(name) };
     if (option_exists(opt))
         result = help_line(*opt);
 
@@ -918,15 +921,16 @@ options::cli_help_text () const
     std::string result;
     if (! option_pairs().empty())
     {
-        bool finish = false;                    /* at least 1 cli-enabled?  */
+        bool finish { false };                  /* at least 1 cli-enabled?  */
         for (const auto & op : option_pairs())
         {
             if (op.second.option_cli_enabled)
             {
-                bool showcolor = is_a_tty();
-                std::string h = showcolor ?
-                    color_help_line(op) : help_line(op) ;
-
+                bool showcolor { is_a_tty() };
+                std::string h
+                {
+                    showcolor ?  color_help_line(op) : help_line(op)
+                };
                 if (! h.empty())
                 {
                     result += h;
@@ -953,7 +957,7 @@ options::help_text () const
     {
         for (const auto & op : option_pairs())
         {
-            std::string h = help_line(op);
+            std::string h { help_line(op) };
             if (! h.empty())
             {
                 result += h;
@@ -1012,7 +1016,7 @@ std::string
 options::setting_line (const option & opt) const
 {
     std::string result;
-    const spec & op = opt.second;
+    const spec & op { opt.second };
     if (option_exists(op))
     {
         if (option_is_section(op))
@@ -1021,8 +1025,8 @@ options::setting_line (const option & opt) const
         }
         else
         {
-            size_t width = options::field_width;        /* 40 characters    */
-            std::string value = opt.first;  /* the key (the option's name   */
+            size_t width { options::field_width };      /* 40 characters    */
+            std::string value { opt.first };    /* key (the option's name   */
             value += " = ";
             if (option_is_quotable(op))
                 value += "\"";
@@ -1035,8 +1039,8 @@ options::setting_line (const option & opt) const
             bool show_description = ! op.option_desc.empty();
             if (show_description)
             {
-                size_t vlen = value.length();
-                size_t dlen = op.option_desc.length();
+                size_t vlen { value.length() };
+                size_t dlen { op.option_desc.length() };
                 show_description = vlen <= width && dlen <= width;
                 if (show_description)
                 {
@@ -1073,14 +1077,14 @@ std::string
 options::debug_line (const option & opt) const
 {
     std::string result;
-    const spec & op = opt.second;
+    const spec & op { opt.second };
     if (option_exists(op))
     {
         std::string value;
         std::ostringstream ost;
         if (op.option_value.length() > 18)
         {
-            std::string sub = op.option_value.substr(0, 14);
+            std::string sub { op.option_value.substr(0, 14) };
             value = "\"" + sub;
             value += "...\"";
         }
@@ -1122,14 +1126,18 @@ options::debug_line (const option & opt) const
 std::string
 options::debug_text (bool show_builtins) const
 {
-    std::string result;
+    std::string result { "Empty option pairs\n" };
     if (! option_pairs().empty())
     {
+        result =
+           "   Name                   Value               "
+           "Default              CLI (mod?)\n"
+           ;
         for (const auto & opt : option_pairs())
         {
             if (show_builtins || ! opt.second.option_global)
             {
-                std::string s = debug_line(opt);
+                std::string s { debug_line(opt) };
                 if (! s.empty())
                 {
                     result += s;
@@ -1138,9 +1146,6 @@ options::debug_text (bool show_builtins) const
             }
         }
     }
-    else
-        result = "Empty\n";
-
     return result;
 }
 
@@ -1161,7 +1166,7 @@ std::string
 options::description (const std::string & name) const
 {
     std::string result;
-    auto opt = find_match(name);
+    auto opt { find_match(name) };
     if (option_exists(opt))
     {
         result = opt->first;
@@ -1182,7 +1187,7 @@ options::description () const
     std::string result;
     for (const auto & op : option_pairs())
     {
-        std::string h = op.second.option_desc;
+        std::string h { op.second.option_desc };
         if (h.empty())
             h = "No description!";
 
@@ -1203,9 +1208,9 @@ std::string
 options::long_description (const option & opt) const
 {
     std::string result;
-    const spec & op = opt.second;
-    std::string value = "\"" + op.option_value + "\"";
-    std::string kindstr = kind_to_string(op.option_kind);
+    const spec & op { opt.second };
+    std::string value { "\"" + op.option_value + "\"" };
+    std::string kindstr { kind_to_string(op.option_kind) };
     std::ostringstream ost;
     ost
         << std::setw(16) << std::left << opt.first
@@ -1240,7 +1245,7 @@ std::string
 options::default_value (const std::string & name) const
 {
     std::string result;
-    auto opt = find_match(name);
+    auto opt { find_match(name) };
     if (option_exists(opt))
         result = opt->second.option_default;
 
@@ -1264,7 +1269,7 @@ std::string
 options::value (const std::string & name) const
 {
     std::string result;
-    auto opt = find_match(name);
+    auto opt { find_match(name) };
     if (option_exists(opt))
         result = opt->second.option_value;
 
@@ -1282,7 +1287,7 @@ options::value (const std::string & name) const
 void
 options::value (const std::string & name, const std::string & value)
 {
-    bool ok = change_value(name, value);
+    bool ok { change_value(name, value) };
     if (! ok)
     {
 #if defined PLATFORM_DEBUG
@@ -1305,7 +1310,7 @@ options::boolean_value (const std::string & name) const
 void
 options::boolean_value (const std::string & name, bool value)
 {
-    std::string bvalue = value ? "true" : "false" ;
+    std::string bvalue { value ? "true" : "false" };
     bool ok = change_value(name, bvalue);
     if (! ok)
     {
@@ -1329,8 +1334,8 @@ options::integer_value (const std::string & name) const
 void
 options::integer_value (const std::string & name, int value)
 {
-    std::string ivalue = util::int_to_string(value);
-    bool ok = change_value(name, ivalue);
+    std::string ivalue { util::int_to_string(value) };
+    bool ok { change_value(name, ivalue) };
     if (! ok)
     {
 #if defined PLATFORM_DEBUG
@@ -1353,8 +1358,8 @@ options::floating_value (const std::string & name) const
 void
 options::floating_value (const std::string & name, float value)
 {
-    std::string dvalue = util::double_to_string(value);
-    bool ok = change_value(name, dvalue);
+    std::string dvalue { util::double_to_string(value) };
+    bool ok { change_value(name, dvalue) };
     if (! ok)
     {
 #if defined PLATFORM_DEBUG
@@ -1436,13 +1441,13 @@ options::integer_value_range
     int & maximum
 ) const
 {
-    std::string defstring = default_value(name);
-    lib66::tokenization range = range_tokens(defstring);
-    int result = -99999;
+    std::string defstring { default_value(name) };
+    lib66::tokenization range { range_tokens(defstring) };
+    int result { -99999 };
     if (range.size() == 3)
     {
-        bool equals_min = range[1][0] == '=';
-        bool equals_max = range[2][0] == '=';
+        bool equals_min { range[1][0] == '=' };
+        bool equals_max { range[2][0] == '=' };
         minimum = util::string_to_int(range[0]);
         if (equals_min)
         {
@@ -1486,14 +1491,14 @@ options::floating_value_range
     float & maximum
 ) const
 {
-    std::string defstring = default_value(name);
-    lib66::tokenization range = range_tokens(defstring);
-    float result = -99999.0;
+    std::string defstring { default_value(name) };
+    lib66::tokenization range { range_tokens(defstring) };
+    float result { -99999.0 };
     if (range.size() == 3)
     {
-        bool equals_min = range[1][0] == '=';
-        bool equals_max = range[2][0] == '=';
-        float e = std::numeric_limits<float>::epsilon();
+        bool equals_min { range[1][0] == '=' };
+        bool equals_max { range[2][0] == '=' };
+        float e { std::numeric_limits<float>::epsilon() };
         minimum = util::string_to_float(range[0]);
         if (equals_min)
         {
@@ -1552,7 +1557,7 @@ options::kind_to_string (kind k)
 options::kind
 options::string_to_kind (const std::string & s)
 {
-    options::kind result = kind::boolean;
+    options::kind result { kind::boolean };
     if (s == "filename")
         result = kind::filename;
     else if (s == "integer")
@@ -1616,7 +1621,7 @@ options::string_to_kind (const std::string & s)
 options::container &
 global_options ()
 {
-    static options::container s_default_options =
+    static options::container s_default_options
     {
         {
             "description",
@@ -1728,13 +1733,13 @@ bool
 almost_equal (float ftarget, float fsource, int ulp)
 {
 #if defined STD_FABSF_AVAILABLE             /* not in g++ v. 9, bug? */
-    float diff = std::fabsf(fsource - ftarget);
-    float total = std::fabsf(fsource + ftarget);
+    float diff { float(std::fabsf(fsource - ftarget)) };
+    float total { float(std::fabsf(fsource + ftarget)) };
 #else
-    float diff = std::fabs(double(fsource - ftarget));
-    float total = std::fabs(double(fsource + ftarget));
+    float diff { float(std::fabs(double(fsource - ftarget))) };
+    float total { float(std::fabs(double(fsource + ftarget))) };
 #endif
-    float max = std::numeric_limits<float>::epsilon() * total * ulp;
+    float max { std::numeric_limits<float>::epsilon() * total * ulp };
     return diff <= max || diff < std::numeric_limits<float>::min();
 }
 
@@ -1766,11 +1771,11 @@ bool
 approximates (float ftarget, float fsource, float precision)
 {
 #if defined STD_FABSF_AVAILABLE             /* not in g++ v. 9, bug? */
-    float diff = std::fabsf(fsource - ftarget);
+    float diff { float(std::fabsf(fsource - ftarget)) };
     if (precision == 0.0)
         precision = 0.001 * std::fmaxf(1.0, std::fabsf(ftarget));
 #else
-    float diff = std::fabs(double(fsource - ftarget));
+    float diff { float(std::fabs(double(fsource - ftarget))) };
     if (precision == 0.0)
         precision = 0.001 * std::fmaxf(1.0, std::fabs(ftarget));
 #endif

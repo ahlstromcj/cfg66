@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-07-28
- * \updates       2025-03-10
+ * \updates       2026-02-01
  * \license       See above.
  *
  *  This program is an extension of sorts for the options_test program. Here
@@ -35,6 +35,48 @@
  *  inisection objects, but the options they contain are the only thing that
  *  changes during a run.
  *
+ *  Here's how the process works, ignoring test-option overhead:
+ *
+ *      1.  Choose the item to hold the data. Call it "DATUM". It must have:
+ *
+ *          a.  Default constructor.
+ *          b.  Copy constructor.
+ *          c.  Principal assignment operator.
+ *
+ *      2.  Use one of the following constructors:
+ *
+ *          a.  cfg::history<DATUM>(). This default constructor sets up
+ *              a history-list with a default maximum of 128 items.
+ *          b.  cfg::history<DATUM>(max_items). This constructor
+ *              allows up to "max_items" items to be stored.
+ *          c.  cfg::history<DATUM>(max_items, const DATUM & first_one).
+ *              This constructor automatically add the first item to
+ *              the history.
+ *
+ *      3,  Let's call the history list "H", and the DATUM item "D".
+ *
+ *          a.  H.add(D). Add the first item. This is D1.
+ *          b.  Make a change to D.
+ *          c.  H.add(D). This is D2.
+ *          d.  D = H.get_present(). D should equal D2.
+ *          e.  D = H.undo(). D should equal D1.
+ *          f.  D = H.redo(). D should equal D2.
+ *
+ * Quick summary of some history<> functions.
+ *
+ *  -   add(D) makes a memento for D and pushes it.
+ *  -   remove() pops the latest memento and throws it away.
+ *  -   undo() back-tracks to get the previous memento.
+ *  -   redo() moves forward to get the next memento.
+ *  -   reset() clears all history.
+ *  -   get(i) gets memento i or a dummy value if i is out-of-range.
+ *  -   get_present() gets the current memento or a dummy value if
+ *      there are none.
+ *  -   Functions that can also be used internally.
+ *      -   undoable() checks if there is an item to undo.
+ *      -   redoable() checks if there is an item to redo.
+ *      -   active() returns true if the history object has a memento.
+ *      -   present() returns the index to the current memento.
  */
 
 #include <cstdlib>                      /* EXIT_SUCCESS, EXIT_FAILURE       */
@@ -151,7 +193,8 @@ main (int argc, char * argv [])
                     if (success)
                     {
                         std::cout
-                            << "[2]. Alertable set to true\n\n"
+                            << "[2]. Alertable changed to true, "
+                               "added to history\n\n"
                             << opts.debug_text() << std::endl
                             ;
 
@@ -168,7 +211,8 @@ main (int argc, char * argv [])
                     if (success)
                     {
                         std::cout
-                            << "[3]. Loop-count set to 99\n\n"
+                            << "[3]. Loop-count changed to 99, "
+                               "added to history\n\n"
                             << opts.debug_text() << std::endl
                             ;
 
@@ -178,21 +222,21 @@ main (int argc, char * argv [])
                             std::string hstr = options_history(h1);
                             std::cout << hstr << std::endl;
                         }
+                        opts = h1.undo();
                         std::cout
-                            << "[4]. Loop-count set to original\n\n"
+                            << "[4]. Loop-count undo to original (30)\n\n"
                             << opts.debug_text() << std::endl
                             ;
-                        opts = h1.undo();
                         if (show_history_list)
                         {
                             std::string hstr = options_history(h1);
                             std::cout << hstr << std::endl;
                         }
+                        opts = h1.redo();
                         std::cout
-                            << "[5]. Loop-count change redone\n\n"
+                            << "[5]. Loop-count change redone to 99\n\n"
                             << opts.debug_text() << std::endl
                             ;
-                        opts = h1.redo();
                         if (show_history_list)
                         {
                             std::string hstr = options_history(h1);
@@ -234,7 +278,7 @@ main (int argc, char * argv [])
                         if (success)
                         {
                             std::cout
-                                << "[7]. Flux set to 2.7182818, pop-front!\n\n"
+                                << "[7]. Flux set to 2.7182818\n\n"
                                 << opts.debug_text() << std::endl
                                 ;
 
