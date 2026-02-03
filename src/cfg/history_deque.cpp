@@ -17,14 +17,14 @@
  */
 
 /**
- * \file          history.cpp
+ * \file          history_deque.cpp
  *
  *  This module summarizes or defines an undo/redo mechanism.
  *
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-01-06
- * \updates       2023-07-29
+ * \updates       2026-02-03
  * \license       GNU GPLv2 or above
  *
  *  See the "Design Patterns" book by Gamma et al., starting on page
@@ -41,6 +41,9 @@
  *          state.
  *      -   A deque. This data structure supports undo and redo in one
  *          object, unlike implementations using two vectors or two stacks.
+ *          HOWEVER, if a number of undo operations have occurred,
+ *          then it is not really possible to backtrack to that previous
+ *          state after the addition of a state to the deque.
  *
  *  Event sequence:
  *
@@ -104,7 +107,7 @@
 
 #include <sstream>                      /* std::ostringstream for testing   */
 
-#include "cfg/history.hpp"              /* cfg::history<> template class    */
+#include "cfg/history_deque.hpp"        /* cfg::history_deque<> template    */
 #include "cfg/options.hpp"              /* cfg::options for testing         */
 
 namespace cfg
@@ -115,7 +118,7 @@ namespace cfg
  */
 
 std::string
-options_history (const history<options> & h)
+options_history (const history_deque<options> & h)
 {
     std::string result;
     if (h.active())
@@ -147,7 +150,7 @@ options_history (const history<options> & h)
 }           // namespace cfg
 
 /*
- * history.cpp
+ * history_deque.cpp
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */

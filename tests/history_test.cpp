@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-07-28
- * \updates       2026-02-01
+ * \updates       2026-02-03
  * \license       See above.
  *
  *  This program is an extension of sorts for the options_test program. Here
@@ -55,16 +55,16 @@
  *
  *      3,  Let's call the history list "H", and the DATUM item "D".
  *
- *          a.  H.add(D). Add the first item. This is D1.
+ *          a.  H.push_undo(D). Add the first item. This is D1.
  *          b.  Make a change to D.
- *          c.  H.add(D). This is D2.
+ *          c.  H.push_undo(D). This is D2.
  *          d.  D = H.get_present(). D should equal D2.
  *          e.  D = H.undo(). D should equal D1.
  *          f.  D = H.redo(). D should equal D2.
  *
  * Quick summary of some history<> functions.
  *
- *  -   add(D) makes a memento for D and pushes it.
+ *  -   push_undo(D) makes a memento for D and pushes it.
  *  -   remove() pops the latest memento and throws it away.
  *  -   undo() back-tracks to get the previous memento.
  *  -   redo() moves forward to get the next memento.
@@ -170,7 +170,7 @@ main (int argc, char * argv [])
                  */
 
                 cfg::options & opts = clip.option_set();
-                cfg::history<cfg::options> h1{4, opts};
+                cfg::history<cfg::options> h1 { 4, opts };
                 success = h1.active();
                 if (success)
                 {
@@ -198,7 +198,7 @@ main (int argc, char * argv [])
                             << opts.debug_text() << std::endl
                             ;
 
-                        h1.add(opts);                   /* push a new value */
+                        h1.push_undo(opts);                   /* push a new value */
                         if (show_history_list)
                         {
                             std::string hstr = options_history(h1);
@@ -216,31 +216,37 @@ main (int argc, char * argv [])
                             << opts.debug_text() << std::endl
                             ;
 
-                        h1.add(opts);                   /* push a new value */
+                        h1.push_undo(opts);                   /* push a new value */
                         if (show_history_list)
                         {
                             std::string hstr = options_history(h1);
                             std::cout << hstr << std::endl;
                         }
-                        opts = h1.undo();
-                        std::cout
-                            << "[4]. Loop-count undo to original (30)\n\n"
-                            << opts.debug_text() << std::endl
-                            ;
-                        if (show_history_list)
+                        success = h1.undo(opts);
+                        if (success)
                         {
-                            std::string hstr = options_history(h1);
-                            std::cout << hstr << std::endl;
+                            std::cout
+                                << "[4]. Loop-count undo to original (30)\n\n"
+                                << opts.debug_text() << std::endl
+                                ;
+                            if (show_history_list)
+                            {
+                                std::string hstr = options_history(h1);
+                                std::cout << hstr << std::endl;
+                            }
                         }
-                        opts = h1.redo();
-                        std::cout
-                            << "[5]. Loop-count change redone to 99\n\n"
-                            << opts.debug_text() << std::endl
-                            ;
-                        if (show_history_list)
+                        if (success)
                         {
-                            std::string hstr = options_history(h1);
-                            std::cout << hstr << std::endl;
+                            success = h1.redo(opts);
+                            std::cout
+                                << "[5]. Loop-count change redone to 99\n\n"
+                                << opts.debug_text() << std::endl
+                                ;
+                            if (show_history_list)
+                            {
+                                std::string hstr = options_history(h1);
+                                std::cout << hstr << std::endl;
+                            }
                         }
                     }
                     if (success)
@@ -253,7 +259,7 @@ main (int argc, char * argv [])
                             << opts.debug_text() << std::endl
                             ;
 
-                        h1.add(opts);                   /* push a new value */
+                        h1.push_undo(opts);                   /* push a new value */
                         if (show_history_list)
                         {
                             std::string hstr = options_history(h1);
@@ -282,7 +288,7 @@ main (int argc, char * argv [])
                                 << opts.debug_text() << std::endl
                                 ;
 
-                            h1.add(opts);               /* push a new value */
+                            h1.push_undo(opts);               /* push a new value */
                             if (show_history_list)
                             {
                                 std::string hstr = options_history(h1);

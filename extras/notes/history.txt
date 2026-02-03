@@ -1,0 +1,357 @@
+Description of History Implementations
+Chris Ahlstrom
+2026-02-03 to 2026-02-03
+
+Redo is the complement of undo and it should perform the same operation that
+the undo operation just removed.
+
+Stacks implementation:
+
+See history.cpp.
+
+Two stacks and three functions are used. "s" represents the present state
+of an application item.
+
+    -   push_undo(s).
+
+        1. Push s onto the undo stack.
+        2. Implement the edit action to result in a new s.
+
+    -   s = pop_undo().
+
+        1. Push s onto the redo stack.
+        2. Copy the top() undo value into s.
+        3. Pop the top() undo value.
+
+    -   s = pop_redo().
+
+        1. Push s onto the undo stack.
+        2. Copy the top() redo value into s.
+        3. Pop the top() redo value.
+
+ Note that the "Edit" operation is anything that changes the state:
+ Modify, Add, Delete.
+
+                            Current          Undo            Redo
+
+ 0. Initial state. Undo/Redo both empty:
+
+                             ----            ----            ----
+                            | s0 |          | -- |          | -- |
+                             ----            ----            ----
+
+ 1. Edit: Push the initial state s0 to the undo stack.
+    Implement the edit to get s1.
+
+                             ----            ----            ----
+                            | s1 |          | s0 |          | -- |
+                             ----            ----            ----
+
+ 2. Edit: Push the current state s1.
+    Implement the edit to get s2.
+
+                             ----            ----
+                            | s2 |          | s1 |
+                             ----            ----            ----
+                                            | s0 |          | -- |
+                                             ----            ----
+
+ 3. Edit: Push the current state s2.
+    Implement the edit to get s3.
+
+                             ----            ----
+                            | s3 |          | s2 |
+                             ----            ----
+                                            | s1 |
+                                             ----            ----
+                                            | s0 |          | -- |
+                                             ----            ----
+
+ 4. Edit: Push the current state s3.
+    Implement the edit to get s4.
+
+                             ----            ----
+                            | s4 |          | s3 |
+                             ----            ----
+                                            | s2 |
+                                             ----
+                                            | s1 |
+                                             ----            ----
+                                            | s0 |          | -- |
+                                             ----            ----
+
+ 4. Undo: push s4 onto the redo stack.
+    Pop s3 from the undo stack.
+
+                             ----            ----
+                            | s3 |          | s2 |
+                             ----            ----
+                                            | s1 |
+                                             ----            ----
+                                            | s0 |          | s4 |
+                                             ----            ----
+
+ 5. Undo: push s3 onto the redo stack.
+    Pop s2 from the undo stack.
+
+                             ----            ----            ----
+                            | s2 |          | s1 |          | s3 |
+                             ----            ----            ----
+                                            | s0 |          | s4 |
+                                             ----            ----
+
+ 6. Redo: push s2 onto the undo stack.
+    Pop s3 from the redo stack.
+
+                             ----            ----
+                            | s3 |          | s2 |
+                             ----            ----
+                                            | s1 |
+                                             ----            ----
+                                            | s0 |          | s4 |
+                                             ----            ----
+
+ 7. Edit: Push s3 onto the undo stack
+    Implement the edit to get s5.
+
+                             ----            ----
+                            | s5 |          | s3 |
+                             ----            ----
+                                            | s2 |
+                                             ----
+                                            | s1 |
+                                             ----            ----
+                                            | s0 |          | s4 |
+                                             ----            ----
+
+ 8. Undo: Push s5 onto the redo stack.
+    Pop s3 from the undo stack.
+
+                             ----            ----
+                            | s3 |          | s2 |
+                             ----            ----            ----
+                                            | s1 |          | s5 |
+                                             ----            ----
+                                            | s0 |          | s4 |
+                                             ----            ----
+
+ 9. Redo: Push s3 onto the undo stack.
+    Pop s5 from the undo stack.
+
+                             ----            ----
+                            | s5 |          | s3 |
+                             ----            ----
+                                            | s2 |
+                                             ----
+                                            | s1 |
+                                             ----            ----
+                                            | s0 |          | s4 |
+                                             ----            ----
+
+10. Redo: Push s5 onto the undo stack.
+    Pop s4 from the undo stack.
+
+                             ----            ----
+                            | s4 |          | s5 |
+                             ----            ----
+                                            | s3 |
+                                             ----
+                                            | s2 |
+                                             ----
+                                            | s1 |
+                                             ----            ----
+                                            | s0 |          | -- |
+                                             ----            ----
+
+----------------------------------------------------------------------------
+
+Deque implementation:
+
+See history_deque.cpp.
+
+In this implementation, one deque is used. Like the stacks implementation,
+there are 3 functions (see the top of this document). The difference is
+in how the functions work. The deque continually grows. A pointer (index)
+points to the current location. Also, the current slot pointed to has the same
+value as the application's variable.
+
+Let p point to the current (i.e. present) value, as shown n the first column.
+Then undo is simply decrementing p, while redo is incrementing p...
+in most cases.
+
+                            Current          Undo/Redo Deque
+
+ 0. Initial state.
+
+                             ----            ----
+                            | s0 |          | -- | <--- p == null
+                             ----            ----
+
+ 1.a. Push the initial state s0 to the stack.
+
+                             ----            ----
+                            | s0 |          | s0 | <--- p = 0
+                             ----            ----
+
+ 1.b. Implement the edit to get s1.
+      Push s1 and point to it.
+
+                             ----            ----
+                            | s1 |          | s1 | <--- p = 1
+                             ----            ----
+                                            | s0 |
+                                             ----
+
+ 2. Implement the edit to get s2.
+    Push s2 and point to it.
+
+                             ----            ----
+                            | s2 |          | s2 | <--- p = 2
+                             ----            ----
+                                            | s1 |
+                                             ----
+                                            | s0 |
+                                             ----
+
+ 3. Implement the edit to get s3.
+    Push s3 and point to it.
+
+                             ----            ----
+                            | s3 |          | s3 | <--- p = 3
+                             ----            ----
+                                            | s2 |
+                                             ----
+                                            | s1 |
+                                             ----
+                                            | s0 |
+                                             ----
+
+ 4. Implement the edit to get s4.
+    Push s4 and point to it.
+
+                             ----            ----
+                            | s4 |          | s4 | <--- p = 4
+                             ----            ----
+                                            | s3 |
+                                             ----
+                                            | s2 |
+                                             ----
+                                            | s1 |
+                                             ----
+                                            | s0 |
+                                             ----
+
+ 4. Undo: Move the pointer down by 1.
+    Copy the indicated value s3 to "Current".
+
+                             ----            ----
+                            | s3 |          | s4 |
+                             ----            ----
+                                            | s3 | <--- p = 3
+                                             ----
+                                            | s2 |
+                                             ----
+                                            | s1 |
+                                             ----
+                                            | s0 |
+                                             ----
+
+ 5. Undo: Move the pointer down by 1.
+    Copy the indicated value s2 to "Current".
+
+                             ----            ----
+                            | s2 |          | s4 |
+                             ----            ----
+                                            | s3 |
+                                             ----
+                                            | s2 | <--- p = 2
+                                             ----
+                                            | s1 |
+                                             ----
+                                            | s0 |
+                                             ----
+
+ 6. Redo: Move the pointer up by 1.
+    Copy the indicated value to "Current".
+
+                             ----            ----
+                            | s3 |          | s4 |
+                             ----            ----
+                                            | s3 | <--- p = 1
+                                             ----
+                                            | s2 |
+                                             ----
+                                            | s1 |
+                                             ----
+                                            | s0 |
+                                             ----
+
+ 7. Implement the edit to get s5.
+    Option: copy p to q.
+    Push it and point to it.
+
+                             ----            ----
+                            | s5 |          | s5 | <--- p = 5
+                             ----            ----
+                                            | s4 |
+                                             ----
+                                            | s3 | <--- q = 3
+                                             ----
+                                            | s2 |
+                                             ----
+                                            | s1 |
+                                             ----
+                                            | s0 |
+                                             ----
+
+
+ 8. Undo: Here, we have some choices:
+
+    a. Set p = q and copy the value to "Current".
+    b. Swap p and q and copy the p value to "Current".
+    c. Move p down by one and copy the value to "Current".
+
+                             ----            ----
+                            | s3 |          | s5 | <--- q = 5
+                             ----            ----
+                                            | s4 |
+                                             ----
+                                            | s3 | <--- p = 3
+                                             ----
+                                            | s2 |
+                                             ----
+                                            | s1 |
+                                             ----
+                                            | s0 |
+                                             ----
+
+
+ 9. Redo: Push s3 onto the undo stack.
+    Pop s5 from the undo stack.
+
+                             ----            ----
+                            | s5 |          | s3 |
+                             ----            ----
+                                            | s2 |
+                                             ----
+                                            | s1 |
+                                             ----            ----
+                                            | s0 |          | s4 |
+                                             ----            ----
+
+10. Redo: Push s5 onto the undo stack.
+    Pop s4 from the undo stack.
+
+                             ----            ----
+                            | s4 |          | s5 |
+                             ----            ----
+                                            | s3 |
+                                             ----
+                                            | s2 |
+                                             ----
+                                            | s1 |
+                                             ----            ----
+                                            | s0 |          | -- |
+                                             ----            ----
+
+# vim: sw=4 ts=4 wm=8 et ft=sh

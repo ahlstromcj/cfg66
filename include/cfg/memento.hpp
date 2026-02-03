@@ -32,8 +32,6 @@
  *
  *  Documented in the cpp file. Also note the type alias, option_memento,
  *  defined at the bottom of this module.
- *
- *
  */
 
 #include "cpp_types.hpp"                /* string, vector, msglevel         */
@@ -70,7 +68,10 @@ class memento
      * internal state, and uses the memento to restore it internal
      * state. See the history template class.
      *
-     * friend class originator;
+     * No can do:
+     *
+     *      template<typename TYPE>
+     *      friend class history<TYPE>;
      */
 
 private:

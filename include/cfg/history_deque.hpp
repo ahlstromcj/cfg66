@@ -1,5 +1,5 @@
-#if ! defined CFG66_CFG_HISTORY_HPP
-#define CFG66_CFG_HISTORY_HPP
+#if ! defined CFG66_CFG_HISTORY_DEQUE_HPP
+#define CFG66_CFG_HISTORY_DEQUE_HPP
 
 /*
  *  This file is part of cfg66.
@@ -20,17 +20,20 @@
  */
 
 /**
- * \file          history.hpp
+ * \file          history_deque.hpp
  *
  *  This module summarizes or defines an undo/redo mechanism.
  *
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-01-06
- * \updates       2026-02-01
+ * \updates       2026-02-03
  * \license       GNU GPLv2 or above
  *
  *  Documented in the cpp file.
+ *
+ *  DEPRECATED: It has some issues when additions are made after
+ *              undoes and redoes.
  */
 
 #include <deque>                        /* std::deque<> template class      */
@@ -365,10 +368,10 @@ extern std::string options_history (const history<options> & h);
 
 }           // namespace cfg
 
-#endif      // CFG66_CFG_HISTORY_HPP
+#endif      // CFG66_CFG_HISTORY_DEQUE_HPP
 
 /*
- * history.hpp
+ * history_deque.hpp
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
