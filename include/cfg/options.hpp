@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2026-02-01
+ * \updates       2026-02-04
  * \license       See above.
  *
  *  Supports variables of the following types:
@@ -400,6 +400,11 @@ public:
         const std::string & name,
         const std::string & value,
         bool fromcli = false
+    );
+    bool check_value
+    (
+        const std::string & name,
+        const std::string & target
     );
     bool modified () const;
     bool was_read_from_cli (const std::string & name) const;

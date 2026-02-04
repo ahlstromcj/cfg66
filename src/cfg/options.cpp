@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2026-02-01
+ * \updates       2026-02-04
  * \license       See above.
  *
  *  The cli::options class provides a way to hold the state of command-line
@@ -571,6 +571,21 @@ options::modified () const
         }
     }
     return result;
+}
+
+/**
+ *  Useful in test or verification.
+ */
+
+bool
+options::check_value
+(
+    const std::string & name,
+    const std::string & target
+)
+{
+    std::string v { options::value(name) };
+    return v == target;
 }
 
 /**
@@ -1256,6 +1271,8 @@ options::default_value (const std::string & name) const
  *  Looks up the long name in this options object.  If found, then
  *  the corresponding option value is returned.  Otherwise, an empty
  *  string is returned.
+ *
+ *  The complement to the set_value() functions.
  *
  * \param name
  *      Provides the long name for the option.  However, the code name for the

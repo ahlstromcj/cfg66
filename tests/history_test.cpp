@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-07-28
- * \updates       2026-02-03
+ * \updates       2026-02-04
  * \license       See above.
  *
  *  This program is an extension of sorts for the options_test program. Here
@@ -86,6 +86,9 @@
 #include "cfg/options.hpp"              /* cfg::options class               */
 #include "cli/parser.hpp"               /* cli::parser class                */
 
+namespace   // anonymous
+{
+
 /**
  *  Test options.
  *
@@ -97,7 +100,7 @@
 \endverbatim
  */
 
-static cfg::options::container s_test_options
+cfg::options::container s_test_options
 {
     {
         "alertable",
@@ -130,11 +133,40 @@ static cfg::options::container s_test_options
  * Explanation text.
  */
 
-static const std::string s_help_intro
+const std::string s_help_intro
 {
     "This test program illustrates/tests the history/memento of\n"
     "the cfg66 library.  The options available are as follows:\n\n"
 };
+
+bool
+checked_change
+(
+    cfg::history<cfg::options> & historylist,
+    cfg::options & opts,
+    const std::string & name,
+    const std::string & value
+)
+{
+    bool result { historylist.push_undo(opts) };        /* push old values  */
+    if (result)
+    {
+        result =
+            opts.change_value(name, value) &&
+            opts.check_value(name, value)
+            ;
+    };
+    if (! result)
+    {
+        std::cerr
+            << "Error: failed to change " << name
+            << " to " << value << std::endl
+            ;
+    }
+    return result;
+}
+
+}           // namespace anonymous
 
 /*
  * main() routine
@@ -162,7 +194,7 @@ main (int argc, char * argv [])
         {
             bool show_history_list = clip.verbose_request();
             cfg::history<cfg::options> h0;
-            success = ! h0.active();
+            success = h0.active();
             if (success)
             {
                 /*
@@ -170,7 +202,7 @@ main (int argc, char * argv [])
                  */
 
                 cfg::options & opts = clip.option_set();
-                cfg::history<cfg::options> h1 { 4, opts };
+                cfg::history<cfg::options> h1 { 8, opts };  // 4 fails
                 success = h1.active();
                 if (success)
                 {
@@ -189,7 +221,7 @@ main (int argc, char * argv [])
                         std::string hstr = options_history(h1);
                         std::cout << hstr << std::endl;
                     }
-                    success = opts.change_value("alertable", "true");
+                    success = checked_change(h1, opts, "alertable", "true");
                     if (success)
                     {
                         std::cout
@@ -198,7 +230,6 @@ main (int argc, char * argv [])
                             << opts.debug_text() << std::endl
                             ;
 
-                        h1.push_undo(opts);                   /* push a new value */
                         if (show_history_list)
                         {
                             std::string hstr = options_history(h1);
@@ -206,7 +237,7 @@ main (int argc, char * argv [])
                         }
                     }
                     if (success)
-                        success = opts.change_value("loop-count", "99");
+                        success = checked_change(h1, opts, "loop-count", "99");
 
                     if (success)
                     {
@@ -216,13 +247,15 @@ main (int argc, char * argv [])
                             << opts.debug_text() << std::endl
                             ;
 
-                        h1.push_undo(opts);                   /* push a new value */
                         if (show_history_list)
                         {
                             std::string hstr = options_history(h1);
                             std::cout << hstr << std::endl;
                         }
                         success = h1.undo(opts);
+                        if (success)
+                            success = opts.check_value("loop-count", "30");
+
                         if (success)
                         {
                             std::cout
@@ -238,10 +271,20 @@ main (int argc, char * argv [])
                         if (success)
                         {
                             success = h1.redo(opts);
-                            std::cout
-                                << "[5]. Loop-count change redone to 99\n\n"
-                                << opts.debug_text() << std::endl
-                                ;
+                            if (success)
+                            {
+                                success = opts.check_value
+                                (
+                                    "loop-count", "99"
+                                );
+                            }
+                            if (success)
+                            {
+                                std::cout
+                                    << "[5]. Loop-count change redone to 99\n\n"
+                                    << opts.debug_text() << std::endl
+                                    ;
+                            }
                             if (show_history_list)
                             {
                                 std::string hstr = options_history(h1);
@@ -250,7 +293,7 @@ main (int argc, char * argv [])
                         }
                     }
                     if (success)
-                        success = opts.change_value("flux", "3.14159");
+                        success = checked_change(h1, opts, "flux", "3.14159");
 
                     if (success)
                     {
@@ -259,7 +302,6 @@ main (int argc, char * argv [])
                             << opts.debug_text() << std::endl
                             ;
 
-                        h1.push_undo(opts);                   /* push a new value */
                         if (show_history_list)
                         {
                             std::string hstr = options_history(h1);
@@ -279,8 +321,12 @@ main (int argc, char * argv [])
                     if (success)
                     {
                         if (success)
-                            success = opts.change_value("flux", "2.7182818");
-
+                        {
+                            success = checked_change
+                            (
+                                h1, opts, "flux", "2.7182818"
+                            );
+                        }
                         if (success)
                         {
                             std::cout
@@ -288,7 +334,6 @@ main (int argc, char * argv [])
                                 << opts.debug_text() << std::endl
                                 ;
 
-                            h1.push_undo(opts);               /* push a new value */
                             if (show_history_list)
                             {
                                 std::string hstr = options_history(h1);
