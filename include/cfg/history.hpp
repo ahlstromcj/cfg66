@@ -27,7 +27,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-01-06
- * \updates       2026-02-03
+ * \updates       2026-02-04
  * \license       GNU GPLv2 or above
  *
  *  Documented in the cpp file.
@@ -94,10 +94,11 @@ private:
     /**
      *  To avoid unintentional bloat, we limit the number of elements in the
      *  stacks.  When a push-back would increase the size beyond this value,
-     *  then the earliest item is pop-fronted.
+     *  then the earliest item is pop-fronted. It's effectively a constant
+     *  but making it so messes up the default assignment operator.
      */
 
-    const size_t m_max_size;
+    /* const */ size_t m_max_size;
 
     /**
      *  Keeps track of the number of undo and redo operations. For your
