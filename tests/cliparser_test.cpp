@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-08-05
+ * \updates       2026-02-09
  * \license       See above.
  *
  */
@@ -64,22 +64,22 @@ static const std::string s_desc_intro
 int
 main (int argc, char * argv [])
 {
-    int rcode = EXIT_FAILURE;
+    int rcode { EXIT_FAILURE };
     cfg::set_client_name("cli");                    /* for error_message()  */
-    cfg::set_app_version("0.3.0");
+    cfg::set_app_version("0.4.0");
     cli::parser clip{s_test_options};               /* see test_spec.hpp    */
-    bool success = clip.parse(argc, argv);
+    bool success { clip.parse(argc, argv) };
     if (success)
     {
-        std::string msg = "Option codes: " + clip.code_list();
+        std::string msg { "Option codes: " + clip.code_list() };
 #if defined USE_STD_COUT_CERR
         std::cout << msg << std::endl;
 #else
         util::status_message(msg);                  /* (info needs verbose) */
 #endif
 
-        bool show_results = true;
-        bool findme_active = clip.check_option(argc, argv, "find-me", false);
+        bool show_results { true };
+        bool findme_active { clip.check_option(argc, argv, "find-me", false) };
 #if defined USE_STD_COUT_CERR
         if (findme_active)
             std::cout << "--find-me option found." << std::endl;
@@ -154,15 +154,16 @@ main (int argc, char * argv [])
         }
         if (success && show_results)
         {
+            cfg::options & optset { clip.option_set() };
             if (argc > 1)
             {
                 if (findme_active)
                 {
                     std::cout << "Looking for '--find-me'... ";
-                    bool found = clip.check_option
-                    (
-                        argc, argv, "--find-me", false
-                    );
+                    bool found
+                    {
+                        clip.check_option(argc, argv, "--find-me", false)
+                    };
                     if (found)
                     {
                         std::cout << "found." << std::endl;
@@ -176,7 +177,10 @@ main (int argc, char * argv [])
                 }
                 else
                 {
-                    std::string dbgtxt = clip.debug_text(cfg::options::stock);
+                    std::string dbgtxt
+                    {
+                        clip.debug_text(cfg::options::stock)
+                    };
                     std::cout
                         << "Verify that setting(s) were effective. "
                            "Changed options are 'modified'.\n"
@@ -194,14 +198,59 @@ main (int argc, char * argv [])
             }
             else
             {
-                success = clip.change_value("alertable", "true");
+                /*
+                 * This would work because cli::parser has this
+                 * as a pass-through function to cfg::options.
+                 *
+                 *      success = clip.change_value("alertable", "true");
+                 *
+                 * This would also work, but we can use the option set
+                 * function that deals with boolean values instead of
+                 * string values.
+                 *
+                 *      success = optset.change_value("alertable", "true");
+                 *
+                 * The version below has a void return.
+                 */
+
+                optset.boolean_value("alertable", true);
                 if (success)
                 {
+                    /*
+                     * Type-specific value pass-throughs are currently
+                     * not provided. Also, there are other functions
+                     * that need direct access to the option set.
+                     *
+                     *      bool a { clip.boolean_value("alertable") };
+                     */
+
+                    bool a { optset.boolean_value("alertable") };
+                    success = a == true;
+                }
+                if (success)
+                {
+                    /*
+                     * Could also use this pass-through directly and
+                     * then check that the value changed.
+                     *
+                     *  optset.string_value("username", "C. Ahlstrom");
+                     */
+
                     success = clip.change_value("username", "C. Ahlstrom");
                     if (success)
                     {
-                        std::string name = clip.value("u");
+                        std::string name { clip.value("u") };
                         success = name == "C. Ahlstrom";
+                        if (success)
+                        {
+                            name = clip.value("username");
+                            success = name == "C. Ahlstrom";
+                        }
+                        if (success)
+                        {
+                            name = optset.string_value("username");
+                            success = name == "C. Ahlstrom";
+                        }
                     }
                 }
                 if (success)
@@ -215,7 +264,10 @@ main (int argc, char * argv [])
                 }
                 if (success)
                 {
-                    std::string dbgtxt = clip.debug_text(cfg::options::stock);
+                    std::string dbgtxt
+                    {
+                        clip.debug_text(cfg::options::stock)
+                    };
                     std::cout << dbgtxt << std::endl;
                 }
             }
@@ -251,7 +303,7 @@ main (int argc, char * argv [])
     }
     else
     {
-        std::string errmsg = "Setup or parsing error: ";
+        std::string errmsg { "Setup or parsing error: " };
         errmsg += clip.error_msg();
 #if defined USE_STD_COUT_CERR
         std::cerr << errmsg << std::endl;
@@ -267,4 +319,3 @@ main (int argc, char * argv [])
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-

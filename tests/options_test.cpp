@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-01-12
- * \updates       2023-08-03
+ * \updates       2026-02-09
  * \license       See above.
  *
  */
@@ -58,9 +58,9 @@ static const std::string s_help_intro
 int
 main (int argc, char * argv [])
 {
-    int rcode = EXIT_FAILURE;
+    int rcode { EXIT_FAILURE };
     cli::parser clip(s_test_options, "", "");
-    bool success = clip.parse(argc, argv);
+    bool success { clip.parse(argc, argv) };
     if (success)
     {
         rcode = EXIT_SUCCESS;
@@ -134,14 +134,17 @@ main (int argc, char * argv [])
 
         if (success)
         {
-            cfg::options & opts = clip.option_set();
+            cfg::options & opts { clip.option_set() };
             int mini, maxi;
-            int defalti = opts.integer_value_range("loop-count", mini, maxi);
+            int defalti { opts.integer_value_range("loop-count", mini, maxi) };
             success = defalti == 0 && mini == 0 && maxi == 99;
             if (success)
             {
                 float minf, maxf;
-                float defaltf = opts.floating_value_range("flux", minf, maxf);
+                float defaltf
+                {
+                    opts.floating_value_range("flux", minf, maxf)
+                };
                 success =
                 (
                     cfg::approximates(defaltf, 0.1) &&
@@ -175,4 +178,3 @@ main (int argc, char * argv [])
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-

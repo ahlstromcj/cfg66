@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-24
- * \updates       2025-10-27
+ * \updates       2026-02-09
  * \license       See above.
  *
  *      The limitations of command-line options as implemented in cli::parser
@@ -100,8 +100,8 @@ multiparser::help_text () const
 bool
 multiparser::cli_mappings_add (cfg::inisections::specification & spec)
 {
-    std::string configtype = spec.file_extension;
-    bool result = ! configtype.empty();
+    std::string configtype { spec.file_extension };
+    bool result { ! configtype.empty() };
     if (result)
     {
         /*
@@ -112,8 +112,8 @@ multiparser::cli_mappings_add (cfg::inisections::specification & spec)
 
         for (const auto & sec : spec.file_sections)
         {
-            const cfg::inisection::specification & isectspec = sec.get();
-            std::string configsection = isectspec.sec_name;
+            const cfg::inisection::specification & isectspec { sec.get() };
+            std::string configsection { isectspec.sec_name };
 
             /*
              * sec_optionlist is a cfg::options::container, i.e. a
@@ -159,24 +159,32 @@ multiparser::cli_mappings_add
     const std::string & configsection
 )
 {
-    bool result = opts.size() > 0;
+    bool result { opts.size() > 0 };
     if (result)
     {
         for (const auto & opt : opts)
         {
-            bool allowcli = opt.second.option_cli_enabled;
+            bool allowcli { opt.second.option_cli_enabled };
             if (allowcli)
             {
-                char code = opt.second.option_code;
-                std::string name = opt.first;
+                char code { opt.second.option_code };
+                std::string name { opt.first };
+                if (code < ' ')
+                    code = ' ';
+
                 if (code > ' ')
                 {
-                    auto p = std::make_pair(code, name);
-                    auto r = code_mappings().insert(p);
+                    auto p { std::make_pair(code, name) };
+                    auto r { code_mappings().insert(p) };
                     if (r.second)
                     {
-#if defined PLATFORM_DEBUG_TMI
-                        printf("Inserted <'%c','%s'>\n", code, CSTR(name);
+#if defined PLATFORM_DEBUG  // _TMI
+                        printf
+                        (
+                            "Code map: added '%s' %s -%c --%s\n",
+                            CSTR(configtype), CSTR(configsection),
+                            code, CSTR(name)
+                        );
 #endif
                     }
                     else
@@ -184,24 +192,26 @@ multiparser::cli_mappings_add
                         char tmp[64];
                         snprintf
                         (
-                            tmp, sizeof tmp, "Could not insert <'%c','%s'>",
+                            tmp, sizeof tmp,
+                            "Code map: couldn't add '%s' %s -%c --%s",
+                            CSTR(configtype), CSTR(configsection),
                             code, CSTR(name)
                         );
                         util::warn_message(tmp);
                     }
                 }
 
-                duo d{configtype, configsection};
-                auto p = std::make_pair(name, d);
-                auto r = cli_mappings().insert(p);
+                duo d { configtype, configsection };
+                auto p { std::make_pair(name, d) };
+                auto r { cli_mappings().insert(p) };
                 if (r.second)
                 {
-#if defined PLATFORM_DEBUG_TMI
+#if defined PLATFORM_DEBUG // _TMI
                     printf
                     (
-                        "Inserted option <'%s',('%s',%s)>\n",
-                        CSTR(name), CSTR(configtype),
-                        CSTR(configsection)
+                        " CLI map: added '%s' %s -%c --%s\n",
+                        CSTR(configtype), CSTR(configsection),
+                        code, CSTR(name)
                     );
 #endif
                 }
@@ -211,9 +221,9 @@ multiparser::cli_mappings_add
                     snprintf
                     (
                         tmp, sizeof tmp,
-                        "Couldn't insert <%s,(%s,%s)>",
-                        CSTR(name), CSTR(configtype),
-                        CSTR(configsection)
+                        " CLI map: couldn't add '%s' %s -%c --%s",
+                        CSTR(configtype), CSTR(configsection),
+                        code, CSTR(name)
                     );
                     util::warn_message(tmp, "Change option to a unique name");
                 }
@@ -259,13 +269,13 @@ multiparser::find_option_set
 ) const
 {
     static cfg::options s_empty_options;
-    const cfg::inisection & ini = m_ini_manager.find_inisection
-    (
-        configtype, configsection
-    );
+    const cfg::inisection & ini
+    {
+        m_ini_manager.find_inisection(configtype, configsection)
+    };
     if (ini.active())
     {
-        const cfg::options & opts = ini.option_set();
+        const cfg::options & opts { ini.option_set() };
         return opts;
     }
     return s_empty_options;
@@ -300,12 +310,12 @@ multiparser::find_option_set
 bool
 multiparser::parse (int argc, char * argv [])
 {
-    bool result = not_nullptr(argv) && ! has_error();
+    bool result { not_nullptr(argv) && ! has_error() };
     if (result && argc > 1)
     {
         for (int i = 1; i < argc; ++i)      /* token 0 might be app name    */
         {
-            std::string token = argv[i];
+            std::string token { argv[i] };
             if (token == "--")              /* GNU end-of-options marker    */
                 break;
 
@@ -322,8 +332,8 @@ multiparser::parse (int argc, char * argv [])
             std::string longname;
             if (token.length() == 2)        /* format of a code: "-x"       */
             {
-                char code = token[1];
-                auto it = code_mappings().find(code);
+                char code { token[1] };
+                auto it { code_mappings().find(code) };
                 if (it != code_mappings().end())
                     longname = it->second;
             }
@@ -347,11 +357,11 @@ multiparser::parse (int argc, char * argv [])
 
             std::string value;
             /* bool has_value = */ extract_value(longname, value);
-            auto dit = cli_mappings().find(longname);
+            auto dit { cli_mappings().find(longname) };
             if (dit != cli_mappings().end())
             {
-                std::string configtype = dit->second.config_type;
-                std::string configsection = dit->second.config_section;
+                std::string configtype { dit->second.config_type };
+                std::string configsection { dit->second.config_section };
 
                 /*
                  *  3.  Get the option-set from the INI section.
@@ -412,21 +422,21 @@ multiparser::lookup_names
     std::string & configsection
 )
 {
-    bool result = ! clioptname.empty() && clioptname[0] != '-';
+    bool result { ! clioptname.empty() && clioptname[0] != '-' };
     if (result)
     {
-        std::string truename = clioptname;
+        std::string truename { clioptname };
         if (truename.length() == 1)
         {
-            const auto nip = code_mappings().find(truename[0]);
+            const auto nip { code_mappings().find(truename[0]) };
             if (nip != code_mappings().end())
                 truename = nip->second;
         }
-        const auto nip = cli_mappings().find(truename);
+        const auto nip { cli_mappings().find(truename) };
         result = nip != cli_mappings().end();
         if (result)
         {
-            auto d = nip->second;
+            auto d { nip->second };
             configtype = d.config_type;
             configsection = d.config_section;
         }

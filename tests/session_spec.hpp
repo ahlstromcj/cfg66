@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-07-22
- * \updates       2024-08-08
+ * \updates       2026-02-09
  * \license       See above.
  *
  *  This is the first of a set of test/demo header files to set up a large
@@ -88,12 +88,12 @@ namespace cfg
  *      [comments]      Universally useful for documentation.
  */
 
-const std::string session_extension{"session"};
-
 inisection::specification session_cfg66_data
 {
     "[Cfg66]",              /* can replace via set_main_cfg_section_name()  */
     {
+"'description' is a deliberate duplicate of the built-in option, no code.\n"
+"\n"
 "'version' is used by the application to detect older configuration files,\n"
 "which are upgraded to the new version when saved.\n"
 "\n"
@@ -123,6 +123,14 @@ inisection::specification session_cfg66_data
             }
         },
         {
+            "description",
+            {
+                options::code_null, options::kind::string, options::disabled,
+                "Description here!", "", false, false,
+                "Configuration file description.", false
+            }
+        },
+        {
             "version",
             {
                 options::code_null, options::kind::integer, options::disabled,
@@ -136,7 +144,7 @@ inisection::specification session_cfg66_data
                 options::code_null, options::kind::boolean, options::enabled,
                 "false", "", false, false,
                 "Disable startup error prompts.", false
-            }
+           }
         },
         {
             "verbose",
@@ -507,7 +515,7 @@ inisection::specification session_playlist_file_data
  * All sections of the 'session' configuration
  *------------------------------------------------------------------------*/
 
-inisection::specification session_comments = stock_comment_data();
+inisection::specification session_comments { stock_comment_data() };
 
 inisections::specification session_data
 {

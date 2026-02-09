@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-07-25
- * \updates       2024-07-31
+ * \updates       2026-02-09
  * \license       See above.
  *
  *  Rationale:
@@ -264,7 +264,8 @@ static cfg::inisection::specification s_section_spec
             "value",
             {
                 cfg::options::code_null,
-                cfg::options::kind::section, cfg::options::disabled, /* non-CLI op */
+                cfg::options::kind::section,
+                cfg::options::disabled, /* non-CLI op */
                 "This is actually a multi-line '[section]' value.\n"
                 "This is the second line of the [section] value.\n"
                 "Normally, this is the ONLY value in an [section] option."
@@ -278,8 +279,8 @@ static cfg::inisection::specification s_section_spec
     }
 };
 
-cfg::inisection::specification exp_cfg_data = cfg::stock_cfg66_data();
-cfg::inisection::specification exp_comments = cfg::stock_comment_data();
+cfg::inisection::specification exp_cfg_data { cfg::stock_cfg66_data() };
+cfg::inisection::specification exp_comments { cfg::stock_comment_data() };
 
 /**
  *  Provides the following items:
@@ -392,7 +393,7 @@ static const std::string s_help_intro
 int
 main (int argc, char * argv [])
 {
-    int rcode = EXIT_FAILURE;
+    int rcode { EXIT_FAILURE };
     /*
      * Add the stock options.
      * cfg::options optionset(s_test_options, "no-file", "[none]");
@@ -402,8 +403,8 @@ main (int argc, char * argv [])
     cli::parser clip(optionset.option_pairs());
     cfg::set_client_name("ini");                /* shown as [ini] in msgs   */
 
-    bool canrun = true;
-    bool success = clip.parse(argc, argv);
+    bool canrun { true };
+    bool success { clip.parse(argc, argv) };
     if (success)
     {
         rcode = EXIT_SUCCESS;

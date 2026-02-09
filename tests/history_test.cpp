@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-07-28
- * \updates       2026-02-04
+ * \updates       2026-02-09
  * \license       See above.
  *
  *  This program is an extension of sorts for the options_test program. Here
@@ -175,10 +175,10 @@ checked_change
 int
 main (int argc, char * argv [])
 {
-    int rcode = EXIT_FAILURE;
+    int rcode { EXIT_FAILURE };
     cfg::options optionset(s_test_options);
     cli::parser clip(optionset.option_pairs());
-    bool success = clip.parse(argc, argv);
+    bool success { clip.parse(argc, argv) };
     if (success)
     {
         /*
@@ -192,16 +192,18 @@ main (int argc, char * argv [])
         }
         else
         {
-            bool show_history_list = clip.verbose_request();
+            bool show_history_list { clip.verbose_request() };
             cfg::history<cfg::options> h0;
             success = h0.active();
             if (success)
             {
                 /*
-                 * See history.cpp comments.
+                 * See history.cpp comments. Also note that we get the
+                 * cfg::options from the cli::parser rather than
+                 * rely on the pass-through function.
                  */
 
-                cfg::options & opts = clip.option_set();
+                cfg::options & opts { clip.option_set() };
                 cfg::history<cfg::options> h1 { 8, opts };  // 4 fails
                 success = h1.active();
                 if (success)
@@ -218,7 +220,7 @@ main (int argc, char * argv [])
 
                     if (show_history_list)
                     {
-                        std::string hstr = options_history(h1);
+                        std::string hstr { options_history(h1) };
                         std::cout << hstr << std::endl;
                     }
                     success = checked_change(h1, opts, "alertable", "true");
@@ -232,7 +234,7 @@ main (int argc, char * argv [])
 
                         if (show_history_list)
                         {
-                            std::string hstr = options_history(h1);
+                            std::string hstr { options_history(h1) };
                             std::cout << hstr << std::endl;
                         }
                     }
@@ -249,7 +251,7 @@ main (int argc, char * argv [])
 
                         if (show_history_list)
                         {
-                            std::string hstr = options_history(h1);
+                            std::string hstr { options_history(h1) };
                             std::cout << hstr << std::endl;
                         }
                         success = h1.undo(opts);
@@ -264,7 +266,7 @@ main (int argc, char * argv [])
                                 ;
                             if (show_history_list)
                             {
-                                std::string hstr = options_history(h1);
+                                std::string hstr { options_history(h1) };
                                 std::cout << hstr << std::endl;
                             }
                         }
@@ -272,12 +274,8 @@ main (int argc, char * argv [])
                         {
                             success = h1.redo(opts);
                             if (success)
-                            {
-                                success = opts.check_value
-                                (
-                                    "loop-count", "99"
-                                );
-                            }
+                                success = opts.check_value("loop-count", "99");
+
                             if (success)
                             {
                                 std::cout
@@ -287,7 +285,7 @@ main (int argc, char * argv [])
                             }
                             if (show_history_list)
                             {
-                                std::string hstr = options_history(h1);
+                                std::string hstr { options_history(h1) };
                                 std::cout << hstr << std::endl;
                             }
                         }
@@ -304,14 +302,14 @@ main (int argc, char * argv [])
 
                         if (show_history_list)
                         {
-                            std::string hstr = options_history(h1);
+                            std::string hstr { options_history(h1) };
                             std::cout << hstr << std::endl;
                         }
                     }
 
-                    bool alertable = opts.boolean_value ("alertable");
-                    int loopcount = opts.integer_value("loop-count");
-                    double flux = opts.floating_value("flux");
+                    bool alertable { opts.boolean_value ("alertable") };
+                    int loopcount { opts.integer_value("loop-count") };
+                    double flux { opts.floating_value("flux") };
                     success =
                     (
                         alertable == true &&
@@ -336,7 +334,7 @@ main (int argc, char * argv [])
 
                             if (show_history_list)
                             {
-                                std::string hstr = options_history(h1);
+                                std::string hstr { options_history(h1) };
                                 std::cout << hstr << std::endl;
                             }
 

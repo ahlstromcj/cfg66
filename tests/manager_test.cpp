@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-01-26
- * \updates       2025-03-02
+ * \updates       2026-02-09
  * \license       See above.
  *
  *  Also includes testing of session::manager.
@@ -204,8 +204,8 @@ list_sections
     const std::string & log_file
 )
 {
-    std::string dbgtext = ccfg.debug_text();
-    bool result = ! dbgtext.empty();
+    std::string dbgtext { ccfg.debug_text() };
+    bool result { ! dbgtext.empty() };
     if (use_log_file)
     {
         util::file_message("Appending list text to the log file", log_file);
@@ -233,12 +233,12 @@ bool
 legacy_main_test (int argc, char * argv [])
 {
     cfg::inimanager cfgmgr(s_test_options);    /* add test options */
-    bool success = cfgmgr.add_inisections(s_sections_data);
+    bool success { cfgmgr.add_inisections(s_sections_data) };
     if (success)
     {
         session::directories dirs{};            /* TEMPORARY */
         session::climanager{dirs, cfgmgr};
-        cli::multiparser & clip = cfgmgr.multi_parser();
+        cli::multiparser & clip { cfgmgr.multi_parser() };
         success = clip.parse(argc, argv);
         if (clip.use_log_file())
         {
@@ -259,10 +259,10 @@ legacy_main_test (int argc, char * argv [])
         }
         else
         {
-            bool do_list = cfgmgr.boolean_value("list");
-            bool do_read = ! cfgmgr.value("read").empty();
-            bool do_write = ! cfgmgr.value("write").empty();
-            bool do_list_only = ! do_read && ! do_write;
+            bool do_list { cfgmgr.boolean_value("list") };
+            bool do_read { ! cfgmgr.value("read").empty() };
+            bool do_write { ! cfgmgr.value("write").empty() };
+            bool do_list_only { ! do_read && ! do_write };
             if (do_list_only)
             {
                 success = list_sections
@@ -303,7 +303,7 @@ legacy_main_test (int argc, char * argv [])
             }
             else if (do_write)
             {
-                std::string fname{cfgmgr.value("write")};
+                std::string fname { cfgmgr.value("write") };
                 success = cfgmgr.write_sections(fname, "rc");
                 /*
                 if (success)
@@ -324,12 +324,12 @@ int
 main_test (int argc, char * argv [])
 {
     cfg::inimanager cfgmgr(s_test_options);    /* add test options */
-    bool success = cfgmgr.add_inisections(s_sections_data);
+    bool success { cfgmgr.add_inisections(s_sections_data) ;
     if (success)
     {
         session::directories dirs{};            /* TEMPORARY */
         session::climanager{dirs, cfgmgr};
-        cli::multiparser & clip = cfgmgr.multi_parser();
+        cli::multiparser & clip { cfgmgr.multi_parser() };
         success = clip.parse(argc, argv);
         if (clip.use_log_file())
         {
@@ -350,10 +350,10 @@ main_test (int argc, char * argv [])
         }
         else
         {
-            bool do_list = cfgmgr.boolean_value("list");
-            bool do_read = ! cfgmgr.value("read").empty();
-            bool do_write = ! cfgmgr.value("write").empty();
-            bool do_list_only = ! do_read && ! do_write;
+            bool do_list { cfgmgr.boolean_value("list") };
+            bool do_read { ! cfgmgr.value("read").empty() };
+            bool do_write { ! cfgmgr.value("write").empty() };
+            bool do_list_only { ! do_read && ! do_write };
             if (do_list_only)
             {
                 success = list_sections
@@ -420,8 +420,8 @@ main_test (int argc, char * argv [])
 int
 main (int argc, char * argv [])
 {
-    int rcode = EXIT_FAILURE;
-    bool success = cfg::initialize_appinfo(s_application_info, argv[0]);
+    int rcode { EXIT_FAILURE };
+    bool success { cfg::initialize_appinfo(s_application_info, argv[0]) };
     if (success)
     {
         success = simple_smoke_test();
@@ -468,4 +468,3 @@ main (int argc, char * argv [])
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-

@@ -426,17 +426,28 @@ public:
     std::string default_value (const std::string & name) const;
 
     /*
-     *  Value setters and getters.
+     *  Value getters and setters.
      */
 
     std::string value (const std::string & name) const;
-    void value (const std::string & name, const std::string & value);
     bool boolean_value (const std::string & name) const;
-    void boolean_value (const std::string & name, bool value);
     int integer_value (const std::string & name) const;
-    void integer_value (const std::string & name, int value);
     float floating_value (const std::string & name) const;
+
+    std::string string_value (const std::string & name) const
+    {
+        return value(name);
+    }
+
+    void value (const std::string & name, const std::string & value);
+    void boolean_value (const std::string & name, bool value);
+    void integer_value (const std::string & name, int value);
     void floating_value (const std::string & name, float value);
+
+    void string_value (const std::string & name, const std::string & v)
+    {
+        value(name, v);
+    }
 
 public:
 

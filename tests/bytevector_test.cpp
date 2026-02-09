@@ -41,7 +41,7 @@
  * Application information.
  */
 
-namespace
+namespace           // anonymous
 {
 
 cfg::appinfo s_application_info
@@ -229,9 +229,9 @@ midi_file_test_2 ()
 int
 main (int argc, char * argv [])
 {
-    int rcode = EXIT_FAILURE;
+    int rcode { EXIT_FAILURE };
     cli::parser clip;                   /* provides global/stock options    */
-    bool success = clip.parse(argc, argv);
+    bool success { clip.parse(argc, argv) };
     if (success)
         success = cfg::initialize_appinfo(s_application_info, argv[0]);
 
@@ -283,4 +283,3 @@ main (int argc, char * argv [])
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-

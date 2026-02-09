@@ -19,12 +19,12 @@
 /**
  * \file          ini_set_test.cpp
  *
- *      A test-file for the INI-related tests, except for inimanager.
+ *      A test-file for the INI-related tests, including inimanager.
  *
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-27
- * \updates       2024-08-08
+ * \updates       2026-02-09
  * \license       See above.
  *
  *  See the ini_test module for information. This module goes beyond that
@@ -53,6 +53,7 @@
 #include "rc_spec.hpp"                  /* chunk of data for an 'rc' file   */
 #include "small_spec.hpp"               /* small for easier debugging       */
 #include "session_spec.hpp"             /* for evaluation of this method    */
+#include "usr_spec.hpp"                 /* chunk of data for a 'usr' file   */
 
 #undef  USE_ALT_TEST                    /* define for quick experiments     */
 
@@ -62,7 +63,6 @@
 #include "mutes_spec.hpp"
 #include "palette_spec.hpp"
 #include "playlist_spec.hpp"
-#include "usr_spec.hpp"
 #endif
 
 /*
@@ -141,8 +141,8 @@ list_sections
     const std::string & log_file
 )
 {
-    std::string dbgtext = ccfg.debug_text();
-    bool result = ! dbgtext.empty();
+    std::string dbgtext { ccfg.debug_text() };
+    bool result { ! dbgtext.empty() };
     if (use_log_file)
     {
         util::file_message("Appending list text to the log file", log_file);
@@ -162,9 +162,9 @@ list_sections
 static bool
 write_sections (const cfg::inimanager & ccfg, const std::string & cfgtype)
 {
-    const cfg::inisections & rcs = ccfg.find_inisections(cfgtype);
-    std::string fname = ccfg.value("write");
-    bool result = rcs.active() && ! fname.empty();
+    const cfg::inisections & rcs { ccfg.find_inisections(cfgtype) };
+    std::string fname { ccfg.value("write") };
+    bool result { rcs.active() && ! fname.empty() };
     if (result)
     {
         cfg::inifile f_out(rcs, fname, cfgtype);
@@ -238,25 +238,28 @@ write_sections (const cfg::inimanager & ccfg, const std::string & cfgtype)
 int
 main (int argc, char * argv [])
 {
-    int rcode = EXIT_FAILURE;
+    int rcode { EXIT_FAILURE };
     cfg::inimanager cfg_set(s_test_options);    /* add the test options     */
     cfg::set_client_name("iniset");
 
-    bool success = cfg_set.add_inisections(cfg::small_data); /* small_spec  */
+    bool success { cfg_set.add_inisections(cfg::small_data) }; /* small_spec */
     if (success)
         success = cfg_set.add_inisections(cfg::rc_data);
 
     if (success)
         success = cfg_set.add_inisections(cfg::session_data);
 
+    if (success)
+        success = cfg_set.add_inisections(cfg::usr_data);
+
 #if defined USE_ALT_TEST                        /* normally undefined       */
-    std::string clihelp = cfg_set.cli_help_text();
+    std::string clihelp ={cfg_set.cli_help_text() };
     std::cout << clihelp << std::endl;
     return EXIT_SUCCESS;
 #else
     if (success)
     {
-        cli::multiparser & clip = cfg_set.multi_parser();
+        cli::multiparser & clip { cfg_set.multi_parser() };
         success = clip.parse(argc, argv);
         if (success)
         {
@@ -279,11 +282,11 @@ main (int argc, char * argv [])
             }
             else
             {
-                bool do_test = cfg_set.boolean_value("test");
-                bool do_list = cfg_set.boolean_value("list");
-                bool do_read = ! cfg_set.value("read").empty();
-                bool do_write = ! cfg_set.value("write").empty();
-                bool do_list_only = ! do_read && ! do_write;
+                bool do_test { cfg_set.boolean_value("test") };
+                bool do_list { cfg_set.boolean_value("list") };
+                bool do_read { ! cfg_set.value("read").empty() };
+                bool do_write { ! cfg_set.value("write").empty() };
+                bool do_list_only { ! do_read && ! do_write };
                 if (do_list_only)
                 {
                     success = list_sections
@@ -307,8 +310,11 @@ main (int argc, char * argv [])
                      */
 
                     std::string fname;
-                    const cfg::inimanager & ccfg = cfg_set;
-                    const cfg::inisections & rcs = ccfg.find_inisections("rc");
+                    const cfg::inimanager & ccfg { cfg_set };
+                    const cfg::inisections & rcs
+                    {
+                        ccfg.find_inisections("rc")
+                    };
                     if (rcs.active())
                     {
                         fname = cfg_set.value("read");
@@ -350,7 +356,7 @@ main (int argc, char * argv [])
                      * Compare to the writing done in ini_test.cpp.
                      */
 
-                    const cfg::inimanager & ccfg = cfg_set;
+                    const cfg::inimanager & ccfg { cfg_set };
                     success = write_sections(ccfg, "rc");
                     if (success)
                         success = write_sections(ccfg, "small");
@@ -400,4 +406,3 @@ main (int argc, char * argv [])
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-

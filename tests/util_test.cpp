@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2025-02-07
- * \updates       2025-03-25
+ * \updates       2026-02-09
  * \license       See above.
  *
  *  We generally test only newly-added functions here; others were
@@ -61,10 +61,10 @@
 int
 main (int argc, char * argv [])
 {
-    int rcode = EXIT_FAILURE;
+    int rcode { EXIT_FAILURE };
     cli::parser clip;                   /* provides global/stock options    */
-    bool canrun = false;
-    bool success = clip.parse(argc, argv);
+    bool canrun { false };
+    bool success { clip.parse(argc, argv) };
     if (success)
     {
         if (clip.show_information_only())
@@ -96,14 +96,20 @@ main (int argc, char * argv [])
          * First test
          */
 
-        std::string msg_1{"This is a message about"};
-        std::string msg_2{"variadic functions"};
-        std::string target{"MSG: This is a message about: variadic functions."};
-        std::string output = util::string_format
-        (
-            "MSG: %s: %s.", V(msg_1), V(msg_2)  /* V() is "vararg" to get POD   */
-        );
-        bool success = output == target;
+        std::string msg_1 { "This is a message about" };
+        std::string msg_2 { "variadic functions" };
+        std::string target
+        {
+            "MSG: This is a message about: variadic functions."
+        };
+        std::string output
+        {
+            util::string_format             /* V() is "vararg" to get POD   */
+            (
+                "MSG: %s: %s.", V(msg_1), V(msg_2)
+            )
+        };
+        bool success { output == target };
         if (success)
         {
             output = util::string_asprintf("MSG: %s: %s.", V(msg_1), V(msg_2));
@@ -132,7 +138,10 @@ main (int argc, char * argv [])
         }
         if (success)
         {
-            std::string daemondir = util::get_xdg_runtime_directory("nsm", "d");
+            std::string daemondir
+            {
+                util::get_xdg_runtime_directory("nsm", "d")
+            };
             success = ! daemondir.empty();
         }
         if (success)
@@ -151,4 +160,3 @@ main (int argc, char * argv [])
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-

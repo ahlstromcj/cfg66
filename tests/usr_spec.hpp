@@ -27,7 +27,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-08-04
- * \updates       2024-07-15
+ * \updates       2026-02-08
  * \license       See above.
  *
  *
@@ -41,11 +41,45 @@
 namespace cfg
 {
 
-const std::string usr_extension{"usr"};
-
 /*------------------------------------------------------------------------
  * 'usr' file
  *------------------------------------------------------------------------*/
+
+inisection::specification usr_cfg66_data
+{
+    "[Cfg66]",              /* can replace via set_main_cfg_section_name()  */
+    {
+"'version' is used by the application to detect older configuration files,\n"
+"which are upgraded to the new version when saved.\n"
+
+        /*
+         * TODO: Should we move session-manager information to here?
+         *       We should do the same for the log-files!!!
+         */
+    },
+    {
+        /*
+         * Name, Name, Code, Kind, Enabled, Default, Value,
+         * FromCli, Dirty, Description, Built-in
+         */
+        {
+            "config-type",
+            {
+                options::code_null, options::kind::string, options::disabled,
+                "usr", "", false, false,
+                "User configuration file.", false
+            }
+        },
+        {
+            "version",
+            {
+                options::code_null, options::kind::integer, options::disabled,
+                "0", "", false, false,
+                "Configuration file version.", false
+            }
+        },
+    }
+};
 
 inisection::specification usr_interface_data
 {
@@ -657,7 +691,7 @@ inisection::specification usr_pattern_data
  * All sections of the 'usr' configuration
  *------------------------------------------------------------------------*/
 
-inisection::specification usr_comments = inifile_comment_data;
+inisection::specification usr_comments { stock_comment_data() };
 
 inisections::specification usr_data
 {
@@ -668,7 +702,7 @@ inisections::specification usr_data
     "each MIDI bus/port, channel, and control code."
     ,
     {
-        std::ref(inifile_cfg66_data),       // std::ref(usr_cfg66_data)
+        std::ref(usr_cfg66_data),
         std::ref(usr_comments),
         std::ref(usr_interface_data),
         std::ref(usr_ppqn_data),
