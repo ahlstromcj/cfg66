@@ -1,7 +1,7 @@
 # Cfg66-style configuration file for app v. 0
 #
 # File: ./tests/data/fooout.rc
-# Written: 2024-07-31 06:57:34
+# Written: 2026-02-11 06:15:58
 
 [Cfg66]
 
@@ -11,6 +11,7 @@
 # 'config-type' can be used to make sure the right kind of file is in use.
 # 'version' helps the application to detect older configuration files. See
 # the 'session' specification for the common 'quiet' and 'verbose' options.
+# 
 
 config-type = "session"                 # The type of configuration file.
 version = 0                             # Configuration file version.
@@ -21,6 +22,7 @@ version = 0                             # Configuration file version.
 # empty, hash-commented, or tag (section) line ends the comment.
 #  
 # Use a space for line breaks as done in the line above.
+# 
 
 Add your comment block here. Comments are a 'section' option. For 'section'
 options, there are no 'variable = value' lines, just lines that are read
@@ -39,6 +41,7 @@ except for a single space.
 # can be dumped to a configuration file to save the settings. Lastly, note
 # that, by default, options are output ordered alphabetically by their long
 # option name.
+# 
 
 boolean-value = false
 count = 0
@@ -52,6 +55,7 @@ string-value = "I am a string."
 
 # This "section" option shows how only one bald string is contained
 # in a section option.
+# 
 
 This is actually a multi-line '[section]' value.
 This is the second line of the [section] value.

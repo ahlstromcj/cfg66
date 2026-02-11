@@ -189,9 +189,13 @@ inisection::cli_help_text () const
 #else
                 std::string line = util::first_sentence(section_description());
                 if (havenames)
-                    result += " ";
+                    result += "\n\n";
 
-                result += line;
+                std::string formatted = util::hanging_word_wrap
+                (
+                    line, 0, options::terminal_width
+                );
+                result += formatted;
                 result += "\n\n";
 #endif
             }

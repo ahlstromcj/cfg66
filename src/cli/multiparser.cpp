@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-24
- * \updates       2026-02-09
+ * \updates       2026-02-10
  * \license       See above.
  *
  *      The limitations of command-line options as implemented in cli::parser
@@ -178,7 +178,7 @@ multiparser::cli_mappings_add
                     auto r { code_mappings().insert(p) };
                     if (r.second)
                     {
-#if defined PLATFORM_DEBUG  // _TMI
+#if defined PLATFORM_DEBUG_TMI
                         printf
                         (
                             "Code map: added '%s' %s -%c --%s\n",
@@ -206,7 +206,7 @@ multiparser::cli_mappings_add
                 auto r { cli_mappings().insert(p) };
                 if (r.second)
                 {
-#if defined PLATFORM_DEBUG // _TMI
+#if defined PLATFORM_DEBUG_TMI
                     printf
                     (
                         " CLI map: added '%s' %s -%c --%s\n",

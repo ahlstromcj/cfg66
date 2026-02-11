@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2026-02-04
+ * \updates       2026-02-10
  * \license       See above.
  *
  *  Supports variables of the following types:
@@ -87,7 +87,8 @@
 #undef USER_CONSTRUCTOR_FOR_OPTIONS_SPEC
 
 /**
- *  Experimental. Improve the --help output on screen.
+ *  Improves the readability of the --help output on screen. Allows use
+ *  of the level_color() function from the appinfo module.
  */
 
 #define USE_COLOR_CLI_HELP_TEXT
@@ -610,6 +611,11 @@ extern options::option make_option
 (
     const std::string & name,
     const options::spec & s
+);
+extern std::string build_help_line
+(
+    const std::string & opt,
+    const std::string & desc
 );
 
 }           // namespace cfg

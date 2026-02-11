@@ -396,10 +396,11 @@ main (int argc, char * argv [])
     int rcode { EXIT_FAILURE };
     /*
      * Add the stock options.
-     * cfg::options optionset(s_test_options, "no-file", "[none]");
+     *
+     *      cfg::options optionset(s_test_options, "no-file", "[none]");
      */
 
-    cfg::options optionset(s_test_options);     /* makes stock options      */
+    cfg::options optionset(s_test_options);     /* adds one option          */
     cli::parser clip(optionset.option_pairs());
     cfg::set_client_name("ini");                /* shown as [ini] in msgs   */
 
@@ -415,7 +416,7 @@ main (int argc, char * argv [])
          *  newer function clip.show_information_only().
          */
 
-        if (clip.show_information_only())
+        if (clip.show_information_only())       /* handles info output      */
         {
             canrun = false;
             if (clip.help_request())

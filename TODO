@@ -1,6 +1,6 @@
 TODOs for the cfg66 library
 Chris Ahlstrom
-2023-07-16 to 2025-03-13
+2023-07-16 to 2026-02-10
 
 This file lists only the high-priority features and fixtures we need
 to do for Cfg66.
@@ -20,6 +20,7 @@ ini_test_cpp:
     -   Test specifying one port on the command line.
     -   Make sure filefunctions rigorously use UNIX path styles
         internally and externally.
+    -   In using --help, long description lines are not indented.
 
 ftswalker:
 

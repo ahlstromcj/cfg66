@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2026-02-04
+ * \updates       2026-02-11
  * \license       See above.
  *
  *  The cli::options class provides a way to hold the state of command-line
@@ -156,11 +156,10 @@
 #include <sstream>                      /* std::ostringstream               */
 
 #include "c_macros.h"                   /* not_nullptr()                    */
-#include "cfg/appinfo.hpp"              /* cfg::level_color()               */
 #include "cfg/options.hpp"              /* cfg::options class               */
 #include "util/strfunctions.hpp"        /* util::string_to_int() etc.       */
 
-#if defined USE_COLOR_CLI_HELP_TEXT
+#if defined USE_COLOR_CLI_HELP_TEXT     /* defined in options.hpp           */
 #include "cfg/appinfo.hpp"              /* cfg::level_color()               */
 #endif
 
@@ -251,9 +250,6 @@ options::options
  *  Empties the options container completely. It then (optionally) adds
  *  in stock help and version information. This function must be called
  *  if one wants to support the default options.
- *
- * \param add_stock
- *      If true, add the default options.
  */
 
 void
@@ -385,7 +381,7 @@ options::verify () const
 }
 
 /**
- *  Checks an integer or float against a range, and sets an error messag e
+ *  Checks an integer or float against a range, and sets an error message
  *  if necessary.
  */
 
@@ -707,7 +703,7 @@ options::find_spec (const std::string & name) const
     static spec s_inactive_spec;            /* do not load global options   */
     if (! name.empty())
     {
-        const auto opt { find_match(name) };
+        const auto & opt { find_match(name) };
         if (option_exists(opt))
             return opt->second;
     }
@@ -761,8 +757,10 @@ options::find_match (const std::string & name) const
     }
 #endif
 
-    return longname.empty() ?
-        option_pairs().end() : option_pairs().find(longname) ;
+    if (longname.empty())
+        return option_pairs().end();
+    else
+        return option_pairs().find(longname);
 }
 
 /**
@@ -911,6 +909,48 @@ options::color_help_line (const option & opt) const
         ost << std::left << desc;
         result = ost.str();
     }
+    return result;
+}
+
+/**
+ *  Provides a way to format (and color) an ad hoc help option
+ *  for an application.
+ *
+ *  This is a "free" function.
+ *
+ * \param opt
+ *      The full name for the option, including the "-" or "--".
+ *
+ * \param desc
+ *      The description of the option. Right now it should be
+ *      fairly short. Might fix that later.
+ *
+ * \return
+ *      Returns the full help line with (optional) color coding.
+ */
+
+std::string
+build_help_line
+(
+    const std::string & opt,
+    const std::string & desc
+)
+{
+    const size_t leftsz { 25 };
+    std::string result { " " };
+    size_t optsz { opt.size() };
+    size_t spacesz { optsz < leftsz ? ( leftsz - optsz ) : 0 };
+#if defined USE_COLOR_CLI_HELP_TEXT     /* defined in options.hpp           */
+    result += level_color(4);           /* blue                             */
+#endif
+    result += opt;
+#if defined USE_COLOR_CLI_HELP_TEXT
+    result += level_color(0);           /* no color                         */
+#endif
+    for (size_t p = 0; p < spacesz; ++p)
+        result += " ";
+
+    result += desc;                     /* hope it's not too long now       */
     return result;
 }
 
@@ -1286,7 +1326,7 @@ std::string
 options::value (const std::string & name) const
 {
     std::string result;
-    auto opt { find_match(name) };
+    const auto & opt { find_match(name) };
     if (option_exists(opt))
         result = opt->second.option_value;
 
@@ -1732,6 +1772,9 @@ global_options ()
  *  and multiplied by the desired precision in ULPs (units in the last place)
  *  unless the result is subnormal.
  *
+ *  The almost_equal() function doesn't work for comparing values close
+ *  to 0.1; the max is oddly small, use the approximates() function instead.
+ *
  * \param ftarget
  *      Provides the first number.
  *
@@ -1766,19 +1809,27 @@ almost_equal (float ftarget, float fsource, int ulp)
  *
  *  Very simplistic.
  *
+ *  Compare to the almost_equal() function above.
+ *
+ *  This is a "free" function.
+ *
  * \param ftarget
- *      Provides the first number.
+ *      Provides the first number. The order of the parameters does not
+ *      matter, since fabs() or fabsf() are used.
  *
  * \param fsource
  *      Provides the second number.
  *
  * \param precision
- *      Defines the maximum allowable difference. The caller must
- *      have some knowledge of the magnitude of the source and target
- *      numbers.  For example, decimal fractions on the order of 0.1
- *      should differ by, say 0.001. If set to 0.0, then the precision
- *      is set to 0.001 times the magnitude of the target, unless the target
- *      is less than 1..
+ *      Defines the maximum allowable difference for "target approximates
+ *      "source".  If set to 0.0 [the default], then the precision is set
+ *      to 0.001 times the magnitude of the target, unless the target is
+ *      less than 1.
+ *
+ *      Otherwise, the caller must have some knowledge of the magnitude
+ *      of the source and target numbers in order to choose a reasonable
+ *      difference value.  For example, decimal fractions on the order of
+ *      0.1 should differ by, say 0.001.
  *
  * \return
  *      Returns true if the arguments, as floats, are equal enough.
@@ -1788,13 +1839,17 @@ bool
 approximates (float ftarget, float fsource, float precision)
 {
 #if defined STD_FABSF_AVAILABLE             /* not in g++ v. 9, bug? */
+
     float diff { float(std::fabsf(fsource - ftarget)) };
     if (precision == 0.0)
         precision = 0.001 * std::fmaxf(1.0, std::fabsf(ftarget));
+
 #else
+
     float diff { float(std::fabs(double(fsource - ftarget))) };
     if (precision == 0.0)
         precision = 0.001 * std::fmaxf(1.0, std::fabs(ftarget));
+
 #endif
 
     return diff < precision;

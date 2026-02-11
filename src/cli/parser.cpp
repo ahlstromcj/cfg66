@@ -182,6 +182,7 @@ parser::parse (int argc, char * argv [])
         help_request(option_set().boolean_value("help"));
         version_request(option_set().boolean_value("version"));
         inspect_request(option_set().boolean_value("inspect"));
+        quiet_request(option_set().boolean_value("quiet"));
         verbose_request(option_set().boolean_value("verbose"));
         util::set_verbose(verbose_request());           /* see msgfunctions */
         investigate_request(option_set().boolean_value("investigate"));

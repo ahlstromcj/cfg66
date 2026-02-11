@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-07-28
- * \updates       2026-02-09
+ * \updates       2026-02-10
  * \license       See above.
  *
  *  This program is an extension of sorts for the options_test program. Here
@@ -186,9 +186,16 @@ main (int argc, char * argv [])
          *  options, which are always present.
          */
 
-        if (clip.help_request())
+        if (clip.show_information_only())       /* handles info output      */
         {
-            std::cout << s_help_intro << clip.help_text();
+            if (clip.help_request())
+            {
+                /*
+                 * std::cout << s_help_intro << clip.help_text();
+                 *
+                 * No other output needed for this app.
+                 */
+            }
         }
         else
         {

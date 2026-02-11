@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-24
- * \updates       2025-10-27
+ * \updates       2026-02-10
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -65,7 +65,7 @@ string_asprintf (std::string fmt, ...)
     va_list temp_args;
     va_copy(temp_args, args);
 
-    int sz = std::vsnprintf(nullptr, 0, V(fmt), temp_args) + 1;
+    int sz { std::vsnprintf(nullptr, 0, V(fmt), temp_args) + 1 };
     va_end(temp_args);
     if (sz > 0)
     {
@@ -84,7 +84,7 @@ string_asprintf (std::string fmt, ...)
 const std::string &
 double_quotes ()
 {
-    static const std::string s_double_quotes = std::string("\"\"");
+    static const std::string s_double_quotes { std::string("\"\"") };
     return s_double_quotes;
 }
 
@@ -114,7 +114,7 @@ is_empty_string (const std::string & item)
 const std::string &
 questionable_string ()
 {
-    static const std::string s_question_mark = std::string("?");
+    static const std::string s_question_mark { "?" };
     return s_question_mark;
 }
 
@@ -138,14 +138,14 @@ is_missing_string (const std::string & item)
 bool
 contains (const std::string & original, const std::string & target)
 {
-    auto pos = original.find(target);
+    auto pos { original.find(target) };
     return pos != std::string::npos;
 }
 
 bool
 contains (const std::string & original, char c)
 {
-    auto pos = original.find(c);
+    auto pos { original.find(c) };
     return pos != std::string::npos;
 }
 
@@ -166,15 +166,15 @@ contains (const std::string & original, char c)
 std::string
 strip_comments (const std::string & item)
 {
-    std::string result = item;
-    auto hashpos = result.find_first_of("#");
-    auto qpos = result.find_first_of("\"'");
+    std::string result { item };
+    auto hashpos { result.find_first_of("#") };
+    auto qpos { result.find_first_of("\"'") };
     if (qpos != std::string::npos)
     {
-        char quotechar[2] = { 'x', 0 };
+        char quotechar[2] { 'x', 0 };
         quotechar[0] = result[qpos];
 
-        auto qpos2 = result.find_first_of(quotechar, qpos + 1);
+        auto qpos2 { result.find_first_of(quotechar, qpos + 1) };
         if (qpos2 != std::string::npos)
         {
             if (hashpos > qpos2)
@@ -200,13 +200,13 @@ std::string
 next_quoted_string (const std::string & source, std::string::size_type pos)
 {
     std::string result;
-    auto lpos = source.find_first_of(double_quotes(), pos);
+    auto lpos { source.find_first_of(double_quotes(), pos) };
     if (lpos != std::string::npos)
     {
-        auto rpos = source.find_first_of(double_quotes(), lpos + 1);
+        auto rpos { source.find_first_of(double_quotes(), lpos + 1) };
         if (rpos != std::string::npos)
         {
-            size_t len = size_t(rpos - lpos - 1);
+            size_t len { size_t(rpos - lpos - 1) };
             if (len > 0)
                 result = source.substr(lpos + 1, len);
         }
@@ -227,17 +227,15 @@ next_bracketed_string
 )
 {
     std::string result;
-    auto lpos = source.find_first_of("[", pos);
+    auto lpos { source.find_first_of("[", pos) };
     if (lpos != std::string::npos)
     {
-        auto rpos = source.find_first_of("]", lpos + 1);
+        auto rpos { source.find_first_of("]", lpos + 1) };
         if (rpos != std::string::npos)
         {
-            size_t len = size_t(rpos - lpos - 1);
+            size_t len { size_t(rpos - lpos - 1) };
             if (len > 0)
-            {
                 result = trim(source.substr(lpos + 1, len));
-            }
         }
     }
     return result;
@@ -263,11 +261,11 @@ strip_quotes (const std::string & item)
     if (! item.empty())
     {
         result = item;
-        auto fpos = result.find_first_of("\"");
+        auto fpos { result.find_first_of("\"") };
         if (fpos == 0)
         {
-            auto lpos = result.find_last_of("\"");
-            auto end_index = result.length() - 1;
+            auto lpos { result.find_last_of("\"") };
+            auto end_index { result.length() - 1 };
             if (lpos != std::string::npos && lpos == end_index)
                 result = result.substr(1, end_index - 1);
         }
@@ -276,8 +274,8 @@ strip_quotes (const std::string & item)
             fpos = result.find_first_of("'");
             if (fpos == 0)
             {
-                auto lpos = result.find_last_of("'");
-                auto end_index = result.length() - 1;
+                auto lpos { result.find_last_of("'") };
+                auto end_index { result.length() - 1 };
                 if (lpos != std::string::npos && lpos == end_index)
                     result = result.substr(1, end_index - 1);
             }
@@ -302,16 +300,16 @@ strip_quotes (const std::string & item)
 std::string
 add_quotes (const std::string & item)
 {
-    std::string result = item;
+    std::string result { item };
     if (result.empty())
     {
         result = double_quotes();
     }
     else
     {
-        bool quoted = false;
-        auto pos0 = result.find_first_of("\"");
-        auto pos1 = result.find_last_of("\"");
+        bool quoted { false };
+        auto pos0 { result.find_first_of("\"") };
+        auto pos1 { result.find_last_of("\"") };
         if (pos0 != std::string::npos && pos1 != std::string::npos)
         {
             if (pos1 != pos0)
@@ -331,7 +329,7 @@ add_quotes (const std::string & item)
 bool
 strcompare (const std::string & a, const std::string & b)
 {
-    bool result = ! a.empty() && ! b.empty();
+    bool result { ! a.empty() && ! b.empty() };
     if (result)
         result = a == b;
 
@@ -371,7 +369,7 @@ strcompare (const std::string & a, const std::string & b)
 bool
 strncompare (const std::string & a, const std::string & b, size_t n)
 {
-    bool result = ! a.empty() && ! b.empty();
+    bool result { ! a.empty() && ! b.empty() };
     if (result)
     {
         if (n == 0)
@@ -503,7 +501,7 @@ rtrim (std::string & str, const std::string & chars)
 std::string
 trim (const std::string & str, const std::string & chars)
 {
-    std::string result = str;
+    std::string result { str };
     (void) ltrim(rtrim(result, chars), chars);
     return result;
 }
@@ -539,9 +537,9 @@ string_replace
     int n
 )
 {
-    std::string result = source;
-    auto targetsize = target.size();
-    auto targetloc = result.find(target);
+    std::string result { source };
+    auto targetsize { target.size() };
+    auto targetloc { result.find(target) };
     while (targetloc != std::string::npos)
     {
         (void) result.replace(targetloc, targetsize, replacement);
@@ -561,10 +559,10 @@ string_replace
 static bool
 has_digit (const std::string & s, bool floating = false)
 {
-    bool result = false;
+    bool result { false };
     if (! s.empty())
     {
-        int count = 0;
+        int count { 0 };
         for (const auto c : s)
         {
             if (c == '-' || c == '+')
@@ -615,9 +613,9 @@ has_digit (const std::string & s, bool floating = false)
 int
 hex_digit (char c)
 {
-    static std::string s_hex_digits = "0123456789abcdef";
-    int result = (-1);
-    auto pos = s_hex_digits.find_first_of(c);
+    static std::string s_hex_digits { "0123456789abcdef" };
+    int result { -1 };
+    auto pos { s_hex_digits.find_first_of(c) };
     if (pos != std::string::npos)
         result = int(pos);
 
@@ -643,17 +641,17 @@ hex_digit (char c)
 std::string
 string_to_midi_bytes (const std::string & s, size_t limit)
 {
-    int maximum = limit == 0 ? INT_MAX : int(limit) ;
+    int maximum { limit == 0 ? INT_MAX : int(limit) };
     std::string result;
     for (const auto c : s)
     {
-        unsigned char b = (unsigned char) (c);      /* if bigger than 127   */
+        unsigned char b { (unsigned char) (c) };    /* if bigger than 127   */
         if (b > 127)
         {
             if (maximum >= 3)
             {
                 char tmp[4];
-                int count = snprintf(tmp, sizeof tmp, "\\%02x", b);
+                int count { snprintf(tmp, sizeof tmp, "\\%02x", b) };
                 maximum -= count;
                 result += tmp;
             }
@@ -673,22 +671,22 @@ string_to_midi_bytes (const std::string & s, size_t limit)
 std::string
 midi_bytes_to_string (const std::string & s)
 {
-    auto bslashpos = s.find_first_of("\\");
+    auto bslashpos { s.find_first_of("\\") };
     if (bslashpos != std::string::npos)
     {
         std::string result;
-        bool slashed = false;
+        bool slashed { false };
 
         /*
          * int sum = 0;
          */
 
-        int hexcount = 0;
+        int hexcount { 0 };
         for (const auto c : s)
         {
             if (slashed)
             {
-                int value = hex_digit(c);
+                int value { hex_digit(c) };
                 if (value >= 0)
                 {
                     ++hexcount;
@@ -757,10 +755,10 @@ string_to_int_pair
     const std::string & delimiter
 )
 {
-    bool result = s.find_first_of(delimiter) != std::string::npos;
+    bool result { s.find_first_of(delimiter) != std::string::npos };
     if (result)
     {
-        lib66::tokenization numbers = tokenize(s, delimiter);
+        lib66::tokenization numbers { tokenize(s, delimiter) };
         result = numbers.size() == 2;
         if (result)
         {
@@ -783,10 +781,10 @@ extract_api_numbers
     const std::string & delimiter
 )
 {
-    bool result = s.find_first_of(delimiter) != std::string::npos;
+    bool result { s.find_first_of(delimiter) != std::string::npos };
     if (result)
     {
-        lib66::tokenization numbers = tokenize(s, delimiter);
+        lib66::tokenization numbers { tokenize(s, delimiter) };
         if (numbers.size() >= 2)
         {
             major = string_to_int(numbers[0]);
@@ -860,17 +858,17 @@ time_signature_string (int beats, int width)
 double
 string_to_double (const std::string & s, double defalt, int rounding)
 {
-    double result = defalt;
+    double result { defalt };
     if (! s.empty())
     {
         try
         {
             int beats, width;
-            bool is_time_sig = string_to_time_signature(s, beats, width);
+            bool is_time_sig { string_to_time_signature(s, beats, width) };
             if (is_time_sig)
             {
-                double numerator = double(beats);
-                double denominator = double(width);
+                double numerator { double(beats) };
+                double denominator { double(width) };
                 result = numerator / denominator;
             }
             else
@@ -878,7 +876,7 @@ string_to_double (const std::string & s, double defalt, int rounding)
 
             if (rounding > 0)
             {
-                double power = std::pow(10.0, rounding);
+                double power { std::pow(10.0, rounding) };
                 result = std::floor(result * power) / power;
             }
         }
@@ -901,8 +899,8 @@ string_to_double (const std::string & s, double defalt, int rounding)
 bool
 is_floating_string (const std::string & value)
 {
-    bool result = false;
-    std::string trimmed = trim(value);
+    bool result { false };
+    std::string trimmed { trim(value) };
     if (trimmed.find_first_of(" ") == std::string::npos)
     {
         /*
@@ -910,11 +908,14 @@ is_floating_string (const std::string & value)
          * character was found.
          */
 
-        auto it = std::find_if
-        (
-            value.begin(), value.end(),
-            [] (char c) { return ! std::isdigit(c); }
-        );
+        auto it
+        {
+            std::find_if
+            (
+                value.begin(), value.end(),
+                [] (char c) { return ! std::isdigit(c); }
+            )
+        };
         if (it != value.end())
         {
             if (*it == ',' || *it == '.')
@@ -983,7 +984,7 @@ string_to_float (const std::string & s, float defalt, int rounding)
 long
 string_to_long (const std::string & s, long defalt)
 {
-    long result = defalt;
+    long result { defalt };
     if (! s.empty())
     {
         try
@@ -1013,7 +1014,7 @@ long_to_string (long value)
 unsigned long
 string_to_unsigned_long (const std::string & s, unsigned long defalt)
 {
-    double result = defalt;
+    unsigned long result { defalt };
     try
     {
         result = std::stoul(s, nullptr, 0);
@@ -1076,7 +1077,7 @@ int_to_string (int value)
 bool
 string_not_void (const std::string & s)
 {
-   bool result = false;
+   bool result { false };
    if (! s.empty())
    {
       for (int i = 0; i < int(s.length()); ++i)
@@ -1111,7 +1112,7 @@ string_not_void (const std::string & s)
 bool
 string_is_void (const std::string & s)
 {
-   bool result = s.empty();
+   bool result { s.empty() };
    if (! result)
       result = ! string_not_void(s);
 
@@ -1144,7 +1145,7 @@ string_is_void (const std::string & s)
 bool
 strings_match (const std::string & target, const std::string & x)
 {
-    bool result = ! target.empty();
+    bool result { ! target.empty() };
     if (result)
     {
         result = x.length() <= target.length();
@@ -1173,7 +1174,7 @@ tolower (const std::string & source)
     std::string result;
     for (auto c : source)
     {
-        char c2 = std::tolower(c);
+        char c2 { char(std::tolower(c)) };
         result += c2;
     }
     return result;
@@ -1189,7 +1190,7 @@ toupper (const std::string & source)
     std::string result;
     for (auto c : source)
     {
-        char c2 = std::toupper(c);
+        char c2 { char(std::toupper(c)) };
         result += c2;
     }
     return result;
@@ -1203,10 +1204,10 @@ std::string
 capitalize (const std::string & source)
 {
     std::string result;
-    int count = 0;
+    int count { 0 };
     for (auto c : source)
     {
-        char c2 = count++ == 0 ? std::toupper(c) : c ;
+        char c2 { count++ == 0 ? char(std::toupper(c)) : c };
         result += c2;
     }
     return result;
@@ -1296,10 +1297,10 @@ tokenize_stanzas
     const std::string & brackets
 )
 {
-    static std::string s_delims = CFG66_TRIM_CHARS;
-    std::string BL = "[";
-    std::string BR = "]";
-    char CBR = ']';
+    static std::string s_delims { CFG66_TRIM_CHARS };
+    std::string BL { "[" };
+    std::string BR { "]" };
+    char CBR { ']' };
     if (brackets.size() >= 2)
     {
         BL = brackets[0];
@@ -1310,7 +1311,7 @@ tokenize_stanzas
     bleft = source.find_first_of(BL, bleft);
     if (bleft != std::string::npos)
     {
-        auto bright = source.find_first_of(BR, bleft + 1);
+        auto bright { source.find_first_of(BR, bleft + 1) };
         if (bright != std::string::npos && bright > bleft)
         {
             tokens.push_back(BL);
@@ -1322,7 +1323,7 @@ tokenize_stanzas
             {
                 for (;;)
                 {
-                    auto last = source.find_first_of(s_delims, bleft);
+                    auto last { source.find_first_of(s_delims, bleft) };
                     if (last == std::string::npos)
                     {
                         if (bright > bleft)
@@ -1378,19 +1379,22 @@ tokenize
 )
 {
     lib66::tokenization result;
-    std::size_t previous = source.find_first_not_of(delimiters);
+    std::size_t previous { source.find_first_not_of(delimiters) };
     while (previous != std::string::npos)
     {
-        std::size_t current = source.find_first_of(delimiters, previous);
+        std::size_t current { source.find_first_of(delimiters, previous) };
         if (current == std::string::npos)
         {
-            std::string temp = trim(source.substr(previous));
+            std::string temp { trim(source.substr(previous)) };
             result.push_back(temp);
             break;
         }
         else
         {
-            std::string temp = trim(source.substr(previous, current-previous));
+            std::string temp
+            {
+                trim(source.substr(previous, current-previous))
+            };
             result.push_back(temp);
             previous = source.find_first_not_of(delimiters, current);
         }
@@ -1409,10 +1413,10 @@ lib66::tokenization
 tokenize_quoted (const std::string & source)
 {
     lib66::tokenization result;
-    lib66::tokenization temp = tokenize(source);
+    lib66::tokenization temp { tokenize(source) };
     if (! temp.empty())
     {
-        bool quotes = false;
+        bool quotes { false };
         std::string quoted;
         for (const auto & token : temp)
         {
@@ -1478,18 +1482,18 @@ std::string
 simplify (const std::string & source)
 {
     std::string result;
-    lib66::tokenization tokens = tokenize(source);
+    lib66::tokenization tokens { tokenize(source) };
     if (tokens.empty())
     {
         result = source;
     }
     else
     {
-        static std::string s_special = "[:]()";
-        bool first_one = false;
+        static std::string s_special { "[:]()" };
+        bool first_one { false };
         for (const auto & t : tokens)
         {
-            bool ok = std::isalpha(t[0]);
+            bool ok { bool(std::isalpha(t[0])) };
             if (! ok)
                 ok = t.find_first_of(s_special) == std::string::npos;
 
@@ -1531,10 +1535,13 @@ widen_string (const std::string & source)
         return std::wstring();          /* trivial case of empty string     */
 
 #if defined CFG66_PLATFORM_WINDOWS
-    size_t required_length = ::MultiByteToWideChar
-    (
-        CP_UTF8, 0, CSTR(source), int(source.length()), 0, 0
-    );
+    size_t required_length
+    {
+        ::MultiByteToWideChar
+        (
+            CP_UTF8, 0, CSTR(source), int(source.length()), 0, 0
+        )
+    };
     std::wstring result(required_length, L'\0');
     ::MultiByteToWideChar
     (
@@ -1587,13 +1594,13 @@ word_wrap (const std::string & source, size_t margin, char commentchar)
     std::string result;
     if (! source.empty())
     {
-        std::string commenting{"  "};
-        size_t linelen = 0;
-        lib66::tokenization words = tokenize(source, CFG66_WHITE_CHARS);
+        std::string commenting { "  " };
+        size_t linelen { 0 };
+        lib66::tokenization words { tokenize(source, CFG66_WHITE_CHARS) };
         commenting[0] = commentchar;
         for (auto w : words)
         {
-            bool room = (linelen + w.length()) < margin;
+            bool room { (linelen + w.length()) < margin };
             if (linelen == 0 || ! room)
             {
                 if (commentchar != 0)
@@ -1659,12 +1666,12 @@ hanging_word_wrap
          * int line = 0;                       // the first line   //
          */
 
-        size_t linelen = leftmargin;
+        size_t linelen { leftmargin };
         std::string padding(leftmargin, ' ');
-        lib66::tokenization words = tokenize(source, CFG66_WHITE_CHARS);
+        lib66::tokenization words { tokenize(source, CFG66_WHITE_CHARS) };
         for (auto w : words)
         {
-            bool room = (linelen + w.length()) < rightmargin;
+            bool room { (linelen + w.length()) < rightmargin };
             if (! room)
             {
                 result += "\n";
@@ -1698,8 +1705,8 @@ line_comments (const std::string & source, char commentchar)
     if (! source.empty())
     {
         std::string commenting;
-        std::string::size_type start = 0;
         std::string::size_type nlpos;
+        std::string::size_type start { 0 };
         if (commentchar != 0)
         {
             commenting = "  ";
@@ -1709,10 +1716,12 @@ line_comments (const std::string & source, char commentchar)
         {
             nlpos = source.find_first_of("\n", start);
 
-            size_t count = nlpos != std::string::npos ?
-                nlpos - start + 1 : std::string::npos ;
-
-            std::string line = source.substr(start, count);
+            size_t count
+            {
+                nlpos != std::string::npos ?
+                    nlpos - start + 1 : std::string::npos
+            };
+            std::string line { source.substr(start, count) };
             if (! target_terminated(line))
                 line += "\n";
 
@@ -1754,8 +1763,8 @@ first_sentence
 )
 {
     std::string result;
-    auto pos = source.find(ender);
-    bool addellipse = false;
+    auto pos { source.find(ender) };
+    bool addellipse { false };
     if (pos != std::string::npos)
     {
         if (pos >= limit)
@@ -1766,10 +1775,10 @@ first_sentence
     }
     else
     {
-        pos = limit;
+        pos = limit - 1;
         addellipse = source.length() > pos;
     }
-    result = source.substr(0, pos);
+    result = source.substr(0, pos + 1);
     if (addellipse)
         result += "...";
 
@@ -1784,10 +1793,10 @@ first_sentence
 int
 count_character (const std::string & s, char target)
 {
-    int result = s.empty() ? (-1) : 0 ;
+    int result { s.empty() ? (-1) : 0 };
     if (result == 0)
     {
-        std::string::size_type nlpos = 0;
+        std::string::size_type nlpos { 0 };
         for (;;)
         {
             nlpos = s.find_first_of(target, nlpos);
@@ -1811,7 +1820,7 @@ count_character (const std::string & s, char target)
 bool
 target_terminated (const std::string & s, char target)
 {
-    bool result = false;
+    bool result { false };
     if (! s.empty())
         result = s.back() == target;
 
@@ -1829,7 +1838,7 @@ target_terminated (const std::string & s, char target)
 std::string
 simple_hash (const std::string & s)
 {
-    unsigned long hash = 5381;
+    unsigned long hash { 5381 };
     for (auto ch : s)
         hash = ((hash << 5) + hash) + ch;
 

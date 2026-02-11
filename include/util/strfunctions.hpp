@@ -27,7 +27,7 @@
  *
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2025-10-27
+ * \updates       2026-02-10
  * \version       $Revision$
  *
  *    Also see the strfunctions.cpp module.
@@ -74,7 +74,7 @@ template<typename ... Args>
 std::string string_format (const std::string & format, Args ... args)
 {
     std::string result;
-    size_t sz = std::snprintf(nullptr, 0, format.c_str(), args ...);
+    size_t sz { std::snprintf(nullptr, 0, format.c_str(), args ...) };
     if (sz > 0)
     {
         std::unique_ptr<char []> buf(new char[sz + 1]);
@@ -95,10 +95,10 @@ namespace util
  *  Lists of characters to trim from strings.
  */
 
-const std::string CFG66_TRIM_CHARS        = " \t\r\n\v\f";
-const std::string CFG66_TRIM_CHARS_QUOTES = " \t\r\n\v\f\"'";
-const std::string CFG66_TRIM_CHARS_PATHS  = " /\\";
-const std::string CFG66_WHITE_CHARS       = " \t\r\n\v\f";
+const std::string CFG66_TRIM_CHARS        { " \t\r\n\v\f" };
+const std::string CFG66_TRIM_CHARS_QUOTES { " \t\r\n\v\f\"'" };
+const std::string CFG66_TRIM_CHARS_PATHS  { " /\\" };
+const std::string CFG66_WHITE_CHARS       { " \t\r\n\v\f" };
 
 /**
  *  Inline functions.  Simple tests for std::string::npos. Why? I dunno, less

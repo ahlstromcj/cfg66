@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-01-12
- * \updates       2026-02-09
+ * \updates       2026-02-11
  * \license       See above.
  *
  */
@@ -37,9 +37,40 @@
 #include "test_spec.hpp"                /* s_test_options container         */
 
 /**
+ *  The options in s_test_options are stored in a simple
+ *  cfg::options::container. The option names are:
+ *
+ *      alertable         boolean
+ *      canned-code       boolean
+ *      dead-code         boolean
+ *      disabled          boolean
+ *      ethernet          boolean
+ *      fast-code         boolean
+ *      find-me           boolean
+ *      flux              floating
+ *      loop-count        integer
+ *      username          string
+ *
+ *  The global (all apps) or "stock" options are:
+ *
+ *      description       boolean
+ *      help              boolean
+ *      inspect           boolean
+ *      investigate       boolean
+ *      log               string
+ *      option            overflow
+ *      quiet             boolean
+ *      verbose           boolean
+ *      version           boolean
+ *
  *  A more extensive list of options is tested in the ini_test program.
+ *
+ *  Note that there are three ways to change a variable on the command-line:
+ *
+ *      --loop-count 1
+ *      --loop-count:1
+ *      --loop-count=1
  */
-
 
 /*
  * Explanation text.
@@ -59,7 +90,7 @@ int
 main (int argc, char * argv [])
 {
     int rcode { EXIT_FAILURE };
-    cli::parser clip(s_test_options, "", "");
+    cli::parser clip(s_test_options, "", "");  /* no config file or section */
     bool success { clip.parse(argc, argv) };
     if (success)
     {
@@ -68,15 +99,44 @@ main (int argc, char * argv [])
         /*
          *  The application can substitute its own code for the common
          *  options, which are always present.
+         *
+         *  Note that parser::show_information_only() handles (more
+         *  completely) help_request(), description_request(), and
+         *  version_request(). Here we just want to valid detection
+         *  of the options.
          */
 
+        if (clip.description_request())
+        {
+            std::cout << "Description:\n" << clip.description_text();
+        }
         if (clip.help_request())
         {
             std::cout << s_help_intro << clip.help_text();
         }
-        if (clip.version_request())
+        if (clip.inspect_request())
         {
-            std::cout << "Version 0.0.0" << std::endl;  /* TODO! */
+            std::cout << "The '--inspect' option was supplied." << std::endl;
+        }
+        if (clip.investigate_request())
+        {
+            std::cout
+                << "The '--investigate' option was supplied." << std::endl;
+        }
+        if (clip.use_log_file())
+        {
+            std::cout
+                << "Using log file '" << clip.log_file() << "'" << std::endl
+                ;
+        }
+
+        /*
+         * TODO: test overflow options (--option)
+         */
+
+        if (clip.quiet_request())
+        {
+            std::cout << "The '--quiet' option was supplied." << std::endl;
         }
         if (clip.verbose_request())
         {
@@ -85,17 +145,32 @@ main (int argc, char * argv [])
                 << clip.help_text()
                 ;
         }
-        if (clip.description_request())
-        {
-            std::cout << "Description:\n" << clip.description_text();
-        }
-        if (clip.use_log_file())
+        if (clip.verbose_request())
         {
             std::cout
-                << "Using log file '" << clip.log_file() << "'" << std::endl
+                << "Verbose operation. Let's show the option list.\n"
+                << clip.help_text()
                 ;
         }
+        if (clip.version_request())
+        {
+            std::cout << "Version 0.0.0" << std::endl;  /* TODO! */
+        }
+
+        /*
+         * For checking, we directly access the option set using the
+         * functions for a specific type, and we also check
+         * string values. BEWARE! Spelling counts!  :-D
+         */
+
+        cfg::options & optset { clip.option_set() };
         success = clip.change_value("alertable", "true");
+        if (success)
+        {
+            success = optset.boolean_value("alertable") == true;
+            if (success)
+                success = clip.value("alertable") == "true";
+        }
         if (success)
         {
             /*
@@ -106,12 +181,50 @@ main (int argc, char * argv [])
             success = ! clip.change_value("user-name", "C. Ahlstrom");
             if (success)
             {
+                std::string v { clip.value("loop-count") };
+                std::cout << "loop-count = " << v << std::endl;
                 success = clip.change_value("loop-count", "28");
                 if (success)
                 {
-                    success = clip.change_value("flux", "3.14");
+                    success = optset.integer_value("loop-count") == 28;
+                    if (success)
+                    {
+                        v = clip.value("loop-count");
+                        std::cout << "loop-count = " << v << std::endl;
+                        success = v == "28";
+                    }
+
                     if (! success)
-                        std::cerr << "Parsing float option failed" << std::endl;
+                        std::cerr
+                            << "Parsing integer option failed" << std::endl;
+                }
+                if (success)
+                {
+                    v = clip.value("flux");
+                    std::cout << "flux = " << v << std::endl;
+                    success = clip.change_value("flux", "3.14");
+                    if (success)
+                    {
+                        /*
+                         * Here, the conversion of the string "3.14" yields
+                         * a value of 3.1400001. In general, floating
+                         * values will be off a bit, so we use the
+                         * approximates() function defined in the options
+                         * module. The 3rd parameter defaults to 0.001
+                         * times the first parameter.
+                         */
+
+                        float f { optset.floating_value("flux") };
+                        success = cfg::approximates(f, 3.14F);
+                        v = clip.value("flux");
+                        std::cout << "flux = " << v << std::endl;
+                    }
+                    if (success)
+                        success = clip.value("flux") == "3.14";
+
+                    if (! success)
+                        std::cerr
+                            << "Parsing floating option failed" << std::endl;
                 }
             }
             else

@@ -51,7 +51,7 @@ inisection::specification small_misc_data
 {
     "[misc]",
     {
-"Miscellaneous options."
+        "Miscellaneous options."
     },
     {
         {
@@ -79,7 +79,7 @@ inisection::specification small_interaction_data
 {
     "[interaction-method]",
     {
-"Sets mouse usage for drawing/editing patterns."
+        "Sets mouse usage for drawing/editing patterns."
     },
     {
         {

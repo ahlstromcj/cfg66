@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-27
- * \updates       2026-02-09
+ * \updates       2026-02-11
  * \license       See above.
  *
  *  See the ini_test module for information. This module goes beyond that
@@ -55,8 +55,6 @@
 #include "session_spec.hpp"             /* for evaluation of this method    */
 #include "usr_spec.hpp"                 /* chunk of data for a 'usr' file   */
 
-#undef  USE_ALT_TEST                    /* define for quick experiments     */
-
 #if 0
 #include "ctrl_spec.hpp"
 #include "drums_spec.hpp"
@@ -64,6 +62,112 @@
 #include "palette_spec.hpp"
 #include "playlist_spec.hpp"
 #endif
+
+namespace           // anonymous
+{
+
+/*------------------------------------------------------------------------
+ * 'testdata' file
+ *------------------------------------------------------------------------*/
+
+cfg::inisection::specification testdata_cfg66_data
+{
+    "[ini-test-data]",      /* can replace via set_main_cfg_section_name()  */
+    {
+        "Configuration items specific to this application.\n"
+    },
+    {
+        /*
+         * Name, Name, Code, Kind, Enabled, Default, Value,
+         * FromCli, Dirty, Description, Built-in
+         */
+        {
+            "config-type",
+            {
+                cfg::options::code_null, cfg::options::kind::string,
+                cfg::options::disabled,
+                "testdata", "", false, false,
+                "User configuration file.", false
+            }
+        },
+        {
+            "version",
+            {
+                cfg::options::code_null, cfg::options::kind::integer,
+                cfg::options::disabled,
+                "0", "", false, false,
+                "Configuration file version.", false
+            }
+        },
+        {
+            "usr-only",                     /* see main()   */
+            {
+                cfg::options::code_null, cfg::options::kind::boolean,
+                cfg::options::enabled,
+                "false", "", false, false,
+                "Load only the 'usr' options.", false
+            },
+        },
+        {
+            "list",
+            {
+                'l', cfg::options::kind::boolean,
+                cfg::options::enabled,
+                "false", "", false, false,
+                "List all options and their values.", false
+            }
+        },
+        {
+            "read",
+            {
+                'r', cfg::options::kind::filename,
+                cfg::options::enabled,
+                "", "", false, false,
+                "Read options from an 'xx' file.", false
+            }
+        },
+        {
+            "test",
+            {
+                't', cfg::options::kind::boolean,
+                cfg::options::enabled,
+                "false", "", false, false,
+                "If specified, testing!", false
+            }
+        },
+        {
+            "write",
+            {
+                'w', cfg::options::kind::filename,
+                cfg::options::enabled,
+                "", "", false, false,
+                "Write options to an 'xx' file.", false
+            }
+        }
+    }
+};
+
+/*------------------------------------------------------------------------
+ * All sections of the 'testdata' configuration
+ *------------------------------------------------------------------------*/
+
+cfg::inisection::specification testdata_comments
+{
+    cfg::stock_comment_data()
+};
+
+cfg::inisections::specification testdata_data
+{
+    "testdata",     /* the file extension for any 'usr' file.               */
+    "",             /* use value from appinfo's get_home_cfg_directory()    */
+    "",             /* use value derived from appinfo's get_home_cfg_file() */
+    "'testdata' file. Edit it and put it in ~/.config.\n"
+    ,
+    {
+        std::ref(testdata_comments),
+        std::ref(testdata_cfg66_data)
+    }
+};
 
 /*
  *  Contains additions to the stock command-line options. These are options
@@ -73,52 +177,31 @@
  *  These options represent stuff we want to do with this test application.
  */
 
-static cfg::options::container s_test_options
-{
     /*
+     * The --usr-only option controls the loading of other options.
+     * Therefore we must call
+     *
+     *      cli::parser::check_option(argc, argv, "usr-only", false)
+     *
+     * before calling:
+     *
+     *      success = cli::parser::parse(argc, argv);
+     *
      * option_code, option_kind, option_cli_enabled,
      * option_default, option_value, option_read_from_cli, option_modified,
      * option_desc, option_built_in
      */
-    {
-        "list",
-        {
-            'l', cfg::options::kind::boolean, cfg::options::enabled,
-            "false", "", false, false,
-            "List all options and their values.", false
-        }
-    },
-    {
-        "read",
-        {
-            'r', cfg::options::kind::filename, cfg::options::enabled,
-            "", "", false, false,
-            "Read options from an 'xx' file.", false
-        }
-    },
-    {
-        "test",
-        {
-            't', cfg::options::kind::boolean, cfg::options::enabled,
-            "false", "", false, false,
-            "If specified, testing!", false
-        }
-    },
-    {
-        "write",
-        {
-            'w', cfg::options::kind::filename, cfg::options::enabled,
-            "", "", false, false,
-            "Write options to an 'xx' file.", false
-        }
-    }
+
+cfg::options::container s_test_options
+{
+    // moved to testdata_cdg66_data
 };
 
 /**
  *  Handle the non-global options.
  */
 
-static bool
+bool
 handle_section_options ()
 {
     return false;           // TODO
@@ -133,7 +216,7 @@ handle_section_options ()
  *      -   'small' options.
  */
 
-static bool
+bool
 list_sections
 (
     const cfg::inimanager & ccfg,
@@ -159,7 +242,7 @@ list_sections
  *  and we replace the extension with the configuration type (e.g. "rc").
  */
 
-static bool
+bool
 write_sections (const cfg::inimanager & ccfg, const std::string & cfgtype)
 {
     const cfg::inisections & rcs { ccfg.find_inisections(cfgtype) };
@@ -186,6 +269,8 @@ write_sections (const cfg::inimanager & ccfg, const std::string & cfgtype)
     }
     return result;
 }
+
+}           // namespace anonymoust
 
 /*
  * Process:
@@ -241,163 +326,192 @@ main (int argc, char * argv [])
     int rcode { EXIT_FAILURE };
     cfg::inimanager cfg_set(s_test_options);    /* add the test options     */
     cfg::set_client_name("iniset");
+    cli::multiparser & clip { cfg_set.multi_parser() };
 
-    bool success { cfg_set.add_inisections(cfg::small_data) }; /* small_spec */
-    if (success)
-        success = cfg_set.add_inisections(cfg::rc_data);
+    /*
+     * Here, we have not yet loaded our options. But we're checking for
+     * a test-option "--usr-only", to load only the usr specification
+     * for purposing of testing of another library (rtl66). So
+     * we pass false to indicate the option doesn't have to be loaded,
+     * but can simply appear on the command-line.
+     */
 
-    if (success)
-        success = cfg_set.add_inisections(cfg::session_data);
-
+    bool success { cfg_set.add_inisections(testdata_data) };
+    bool usronly
+    {
+        clip.check_option(argc, argv, "usr-only", false)
+    };
     if (success)
         success = cfg_set.add_inisections(cfg::usr_data);
 
-#if defined USE_ALT_TEST                        /* normally undefined       */
-    std::string clihelp ={cfg_set.cli_help_text() };
-    std::cout << clihelp << std::endl;
-    return EXIT_SUCCESS;
-#else
+    if (success && ! usronly)
+    {
+        success = cfg_set.add_inisections(cfg::small_data);
+        if (success)
+            success = cfg_set.add_inisections(cfg::rc_data);
+
+        if (success)
+            success = cfg_set.add_inisections(cfg::session_data);
+    }
+
+    /*
+     * Now parse for the loaded options.
+     */
+
+    if (success)
+        success = clip.parse(argc, argv);
+
+    if (clip.show_information_only())
+    {
+        if (clip.help_request())
+        {
+            std::string line
+            {
+                cfg::build_help_line
+                (
+                    "--usr-only",
+                    "Load only the 'usr' options."
+                )
+            };
+            std::cout << line << std::endl;
+        }
+        return EXIT_SUCCESS;
+    }
     if (success)
     {
-        cli::multiparser & clip { cfg_set.multi_parser() };
-        success = clip.parse(argc, argv);
-        if (success)
+        if (clip.use_log_file())
         {
-            if (clip.use_log_file())
+            std::string msg
             {
-                std::string msg
-                {
 "This file is the result of writing to this log file from the manager_test\n"
 "program. This is a test log file, written to directly...\n"
-                };
+            };
+            std::cout
+                << "Using log file '" << clip.log_file() << "'"
+                << std::endl
+                ;
+            success = util::file_write_string(clip.log_file(), msg);
+        }
+        if (clip.show_information_only())
+        {
+            rcode = EXIT_SUCCESS;
+        }
+        else
+        {
+            bool do_test { cfg_set.boolean_value("test") };
+            bool do_list { cfg_set.boolean_value("list") };
+            bool do_read { ! cfg_set.value("read").empty() };
+            bool do_write { ! cfg_set.value("write").empty() };
+            bool do_list_only { ! do_read && ! do_write };
+            if (do_list_only)
+            {
+                success = list_sections
+                (
+                    cfg_set, clip.use_log_file(), clip.log_file()
+                );
+            }
+            if (do_test)
+            {
                 std::cout
-                    << "Using log file '" << clip.log_file() << "'"
+                    << "--test selected, more to come"
                     << std::endl
                     ;
-                success = util::file_write_string(clip.log_file(), msg);
             }
-            if (clip.show_information_only())
+            if (do_read)
             {
-                rcode = EXIT_SUCCESS;
+                /*
+                 * For a decent test, read tests/data/ini_set_test.rc,
+                 * redirect --list to a log file, and verify the results
+                 * of parsing.
+                 */
+
+                std::string fname;
+                const cfg::inimanager & ccfg { cfg_set };
+                const cfg::inisections & rcs
+                {
+                    ccfg.find_inisections("rc")
+                };
+                if (rcs.active())
+                {
+                    fname = cfg_set.value("read");
+
+                    cfg::inifile f_in(rcs, fname, "rc");
+                    success = f_in.parse();
+                    if (success)
+                    {
+                        if (do_list)            /* --list --read=file   */
+                        {
+                            success = list_sections
+                            (
+                                cfg_set, clip.use_log_file(),
+                                clip.log_file()
+                            );
+                        }
+                        if (success && do_write)
+                        {
+                            success = write_sections(ccfg, "rc");
+
+                            /*
+                             * if (success)
+                             *     success = write_sections(ccfg, "small");
+                             */
+                        }
+                    }
+                    else
+                        util::error_message("Read failed", fname);
+                }
+                else
+                {
+                    util::error_message("No options to parse", fname);
+                    success = false;
+                }
+            }
+            else if (do_write)
+            {
+                /*
+                 * Compare to the writing done in ini_test.cpp.
+                 */
+
+                const cfg::inimanager & ccfg { cfg_set };
+                success = write_sections(ccfg, "rc");
+                if (success)
+                    success = write_sections(ccfg, "small");
+
+                if (success)
+                    success = write_sections(ccfg, "session");
+            }
+            else if (handle_section_options())
+            {
+                // anything useful?
             }
             else
             {
-                bool do_test { cfg_set.boolean_value("test") };
-                bool do_list { cfg_set.boolean_value("list") };
-                bool do_read { ! cfg_set.value("read").empty() };
-                bool do_write { ! cfg_set.value("write").empty() };
-                bool do_list_only { ! do_read && ! do_write };
-                if (do_list_only)
+                /*****
+                if ( ! clip.use_log_file())
                 {
-                    success = list_sections
-                    (
-                        cfg_set, clip.use_log_file(), clip.log_file()
-                    );
-                }
-                if (do_test)
-                {
-                    std::cout
-                        << "--test selected, more to come"
+                    std::cerr
+                        << "No action specified; see --help"
                         << std::endl
                         ;
+                    success = false;
                 }
-                if (do_read)
-                {
-                    /*
-                     * For a decent test, read tests/data/ini_set_test.rc,
-                     * redirect --list to a log file, and verify the results
-                     * of parsing.
-                     */
-
-                    std::string fname;
-                    const cfg::inimanager & ccfg { cfg_set };
-                    const cfg::inisections & rcs
-                    {
-                        ccfg.find_inisections("rc")
-                    };
-                    if (rcs.active())
-                    {
-                        fname = cfg_set.value("read");
-
-                        cfg::inifile f_in(rcs, fname, "rc");
-                        success = f_in.parse();
-                        if (success)
-                        {
-                            if (do_list)            /* --list --read=file   */
-                            {
-                                success = list_sections
-                                (
-                                    cfg_set, clip.use_log_file(),
-                                    clip.log_file()
-                                );
-                            }
-                            if (success && do_write)
-                            {
-                                success = write_sections(ccfg, "rc");
-
-                                /*
-                                 * if (success)
-                                 *     success = write_sections(ccfg, "small");
-                                 */
-                            }
-                        }
-                        else
-                            util::error_message("Read failed", fname);
-                    }
-                    else
-                    {
-                        util::error_message("No options to parse", fname);
-                        success = false;
-                    }
-                }
-                else if (do_write)
-                {
-                    /*
-                     * Compare to the writing done in ini_test.cpp.
-                     */
-
-                    const cfg::inimanager & ccfg { cfg_set };
-                    success = write_sections(ccfg, "rc");
-                    if (success)
-                        success = write_sections(ccfg, "small");
-
-                    if (success)
-                        success = write_sections(ccfg, "session");
-                }
-                else if (handle_section_options())
-                {
-                    // anything usful?
-                }
-                else
-                {
-                    /*****
-                    if ( ! clip.use_log_file())
-                    {
-                        std::cerr
-                            << "No action specified; see --help"
-                            << std::endl
-                            ;
-                        success = false;
-                    }
-                     *****/
-                }
-                rcode = success ? EXIT_SUCCESS : EXIT_FAILURE ;
+                 *****/
+            }
+            rcode = success ? EXIT_SUCCESS : EXIT_FAILURE ;
 
 #if defined USE_STD_COUT_CERR
-                if (success)
-                    std::cout << "cfg::inimanager C++ test passed" << std::endl;
-                else
-                    std::cerr << "cfg::inimanager C++ test failed" << std::endl;
+            if (success)
+                std::cout << "cfg::inimanager C++ test passed" << std::endl;
+            else
+                std::cerr << "cfg::inimanager C++ test failed" << std::endl;
 #else
-                if (success)
-                    util::status_message("cfg::inimanager C++ test passed");
-                else
-                    util::error_message("cfg::inimanager C++ test failed");
+            if (success)
+                util::status_message("cfg::inimanager C++ test passed");
+            else
+                util::error_message("cfg::inimanager C++ test failed");
 #endif
-            }
         }
     }
-#endif
     return rcode;
 }
 
