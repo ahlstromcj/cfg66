@@ -24,7 +24,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2024-08-04
+ * \updates       2026-02-12
  * \license       GNU GPLv2 or above
  *
  */
@@ -76,7 +76,7 @@ bool
 inifile::parse ()
 {
     std::ifstream file(file_name(), std::ios::in | std::ios::ate);
-    bool result = set_up_ifstream(file);
+    bool result { set_up_ifstream(file) };
     if (result)
     {
         /*
@@ -86,7 +86,7 @@ inifile::parse ()
          */
 
         util::file_message("Parse", file_name());
-        std::string s = parse_version(file);
+        std::string s { parse_version(file) };
         if (s.empty() || file_version_old(file))
         {
             /*
@@ -124,19 +124,19 @@ inifile::parse_section
     inisection & section
 )
 {
-    options & opset = section.option_set();
-    options::container opspecs = opset.option_pairs();
+    options & opset { section.option_set() };
+    options::container opspecs { opset.option_pairs() };
     for (auto & opt : opspecs)
     {
-        const std::string & name = opt.first;
+        const std::string & name { opt.first };
         if (opset.option_is_section(opt.second))
         {
-            std::string value = parse_section_option(file, section.name());
+            std::string value { parse_section_option(file, section.name()) };
             (void) opset.set_value(name, value);
         }
         else
         {
-            std::string value = get_variable(file, section.name(), name);
+            std::string value { get_variable(file, section.name(), name) };
             (void) opset.set_value(name, value);
         }
     }
@@ -150,7 +150,7 @@ bool
 inifile::write ()
 {
     std::ofstream file(file_name(), std::ios::out | std::ios::trunc);
-    bool result = file.is_open();
+    bool result { file.is_open() };
     if (result)
     {
         /*
@@ -174,8 +174,10 @@ inifile::write ()
          * Write the rest of the sections.
          */
 
-        const inisections::sectionlist & sections =
-            m_ini_sections.section_list();
+        const inisections::sectionlist & sections
+        {
+            m_ini_sections.section_list()
+        };
 
         for (const auto & section : sections)
             write_section(file, section);
@@ -222,15 +224,15 @@ inifile::write_section
         file << section.description_commented();    /*  << "\n"             */
     }
 
-    const options & opset = section.option_set();
-    options::container opspecs = opset.option_pairs();
+    const options & opset { section.option_set() };
+    options::container opspecs { opset.option_pairs() };
     for (const auto & opt : opspecs)
     {
         /* TODO: fix setting line to handle multiple lines (e.g. for
          * comments/section values.
          */
 
-        const std::string & name = opt.first;
+        const std::string & name { opt.first };
         file << opset.setting_line(name);           /*  << "\n";            */
     }
 }
@@ -242,4 +244,3 @@ inifile::write_section
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-

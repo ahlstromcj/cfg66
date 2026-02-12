@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-09-03
+ * \updates       2026-02-12
  * \license       See above.
  *
  *  In an application, we want to access options via the triplet of
@@ -86,16 +86,14 @@ inimanager::inimanager () :
     m_sections_map  ()
 {
     inisections sec;
-    auto p = std::make_pair("", sec);               /* does it make a copy? */
-    auto r = sections_map().insert(p);              /* another copy         */
-    bool ok = r.second;
+    auto p { std::make_pair("", sec) };             /* does it make a copy? */
+    auto r { sections_map().insert(p) };            /* another copy         */
+    bool ok { r.second };
     if (ok)
     {
-        const options & opts = sec.find_options();  /* find stock options   */
+        const options & opts { sec.find_options() }; /* find stock options  */
         if (opts.active())
-        {
             (void) multi_parser().cli_mappings_add(opts.option_pairs());
-        }
     }
 }
 
@@ -109,7 +107,7 @@ inimanager::inimanager (const options::container & additional) :
     m_sections_map  ()
 {
     inisections sec;
-    bool ok = sec.add_options(additional);
+    bool ok { sec.add_options(additional) };
     if (! ok)
     {
         util::error_message
@@ -118,21 +116,17 @@ inimanager::inimanager (const options::container & additional) :
         );
     }
 
-    auto p = std::make_pair(global, sec);           /* does it make a copy? */
-    auto r = sections_map().insert(p);              /* another copy         */
+    auto p { std::make_pair(global, sec) };         /* does it make a copy? */
+    auto r { sections_map().insert(p) };            /* another copy         */
     ok = r.second;
     if (ok)
     {
-        const options & opts = sec.find_options();  /* find global options  */
+        const options & opts { sec.find_options() }; /* find global options */
         if (opts.active())
-        {
             (void) multi_parser().cli_mappings_add(opts.option_pairs());
-        }
     }
     else
-    {
         util::error_message("Failed to add inisection", "inimanager");
-    }
 }
 
 /**
@@ -142,8 +136,8 @@ inimanager::inimanager (const options::container & additional) :
  *
  *  We first make an inisections object and add it to the sections map. Next,
  *  we loop through the inisection::specifications in the
- *  inisections::specification, and add each of them to the multiparser,
- *  which will help in looking up command-line options in every INI file
+ *  inisections::specification, and add each of them to the multiparser, which
+ *  will help in looking up command-line options in every INI file
  *  (inisections) used by the application.
  *
  *  What about [comments] and [Cfg66] though? They are basically read-only and
@@ -157,18 +151,16 @@ inimanager::inimanager (const options::container & additional) :
 bool
 inimanager::add_inisections (inisections::specification & spec)
 {
-    std::string cfgtype = spec.file_extension;      /* configuration type   */
-    bool result = ! cfgtype.empty();
+    std::string cfgtype { spec.file_extension };    /* configuration type   */
+    bool result { ! cfgtype.empty() };
     if (result)
     {
-        inisections sec{spec, cfgtype};
-        auto p = std::make_pair(cfgtype, sec);      /* does it make a copy? */
-        auto r = sections_map().insert(p);          /* another copy         */
+        inisections sec { spec, cfgtype };
+        auto p { std::make_pair(cfgtype, sec) };    /* does it make a copy? */
+        auto r { sections_map().insert(p) };        /* another copy         */
         result = r.second;
         if (result)
-        {
             result = multi_parser().cli_mappings_add(spec);
-        }
         else
             util::error_message("Unable to insert sections", cfgtype);
     }
@@ -178,7 +170,7 @@ inimanager::add_inisections (inisections::specification & spec)
 bool
 inimanager::add_inisections (inimanager::sections_specs & ops)
 {
-    bool result = true;
+    bool result { true };
     for (auto & secptr : ops)
     {
         result = add_inisections(*secptr);
@@ -244,8 +236,8 @@ inimanager::read_sections
     const std::string & cfgtype     /* could be found in fname, perhaps */
 )
 {
-    const cfg::inisections & rcs = find_inisections(cfgtype);
-    bool result = rcs.active() && ! fname.empty();
+    const cfg::inisections & rcs { find_inisections(cfgtype) };
+    bool result { rcs.active() && ! fname.empty() };
     if (result)
     {
         cfg::inifile f_in(rcs, fname, cfgtype);
@@ -254,10 +246,8 @@ inimanager::read_sections
             util::error_message("Read failed", fname);
     }
     else
-    {
         util::error_message("No options to read", fname);
-        result = false;
-    }
+
     return result;
 }
 
@@ -268,8 +258,8 @@ inimanager::write_sections
     const std::string & cfgtype     /* could be found in fname, perhaps */
 )
 {
-    const cfg::inisections & rcs = find_inisections(cfgtype);
-    bool result = rcs.active() && ! fname.empty();
+    const cfg::inisections & rcs { find_inisections(cfgtype) };
+    bool result { rcs.active() && ! fname.empty() };
     if (result)
     {
         cfg::inifile f_out(rcs, fname, cfgtype);
@@ -278,10 +268,8 @@ inimanager::write_sections
             util::error_message("Write failed", fname);
     }
     else
-    {
         util::error_message("No options to write", fname);
-        result = false;
-    }
+
     return result;
 }
 
@@ -297,7 +285,7 @@ inimanager::find_inisection
 ) const
 {
     static inisection s_inactive_inisection;
-    const inisections & sects = find_inisections(cfgtype);
+    const inisections & sects { find_inisections(cfgtype) };
     if (sects.active())
         return sects.find_inisection(sectionname);
     else
@@ -332,7 +320,7 @@ inimanager::find_options
 ) const
 {
     static options s_inactive_options;
-    const inisections & sects = find_inisections(cfgtype);
+    const inisections & sects { find_inisections(cfgtype) };
     if (sects.active())
         return sects.find_options(sectionname);
     else
@@ -368,7 +356,7 @@ inimanager::find_options_spec
 ) const
 {
     static options::spec s_inactive_spec;
-    const inisection & sect = find_inisection(cfgtype, sectionname);
+    const inisection & sect { find_inisection(cfgtype, sectionname) };
     if (sect.active())
         return sect.find_option_spec(optionname);
     else
@@ -439,7 +427,7 @@ inimanager::value
 ) const
 {
     const std::string s_dummy;
-    const options & opts = find_options(cfgtype, sectionname);
+    const options & opts { find_options(cfgtype, sectionname) };
     if (opts.active())
         return opts.value(name);
     else
@@ -455,7 +443,7 @@ inimanager::value
     const std::string & sectionname
 )
 {
-    options & opts = find_options(cfgtype, sectionname);
+    options & opts { find_options(cfgtype, sectionname) };
     if (opts.active())
         opts.value(name, value);
 }
@@ -468,7 +456,7 @@ inimanager::boolean_value
     const std::string & sectionname
 ) const
 {
-    const options & opts = find_options(cfgtype, sectionname);
+    const options & opts { find_options(cfgtype, sectionname) };
     if (opts.active())
         return opts.boolean_value(name);
     else
@@ -484,7 +472,7 @@ inimanager::boolean_value
     const std::string & sectionname
 )
 {
-    options & opts = find_options(cfgtype, sectionname);
+    options & opts { find_options(cfgtype, sectionname) };
     if (opts.active())
         opts.boolean_value(name, value);
 }
@@ -497,7 +485,7 @@ inimanager::integer_value
     const std::string & sectionname
 ) const
 {
-    const options & opts = find_options(cfgtype, sectionname);
+    const options & opts { find_options(cfgtype, sectionname) };
     if (opts.active())
         return opts.integer_value(name);
     else
@@ -513,7 +501,7 @@ inimanager::integer_value
     const std::string & sectionname
 )
 {
-    options & opts = find_options(cfgtype, sectionname);
+    options & opts { find_options(cfgtype, sectionname) };
     if (opts.active())
         opts.integer_value(name, value);
 }
@@ -526,7 +514,7 @@ inimanager::floating_value
     const std::string & sectionname
 ) const
 {
-    const options & opts = find_options(cfgtype, sectionname);
+    const options & opts { find_options(cfgtype, sectionname) };
     if (opts.active())
         return opts.floating_value(name);
     else
@@ -542,7 +530,7 @@ inimanager::floating_value
     const std::string & sectionname
 )
 {
-    options & opts = find_options(cfgtype, sectionname);
+    options & opts { find_options(cfgtype, sectionname) };
     if (opts.active())
         opts.floating_value(name, value);
 }

@@ -38,7 +38,7 @@
 namespace cfg
 {
 
-const std::string ctrl_extension{"ctrl"};
+const std::string ctrl_extension { "ctrl" };
 
 /*------------------------------------------------------------------------
  * 'ctrl' file
@@ -389,12 +389,14 @@ inisection::specification ctrl_macro_data
  * All sections of the 'ctrl' inisection
  *------------------------------------------------------------------------*/
 
-inisection::specification ctrl_comments = inifile_comment_data;
-const std::string ctrl_intro =
+inisection::specification ctrl_comments { inifile_comment_data };
+
+const std::string ctrl_intro
+{
     "Sets up MIDI I/O control. Set it active in 'ctrl' [midi-control-file]\n"
     "section. It adds loop, mute, & automation buttons, MIDI display, new\n"
     "settings, and macros."
-    ;
+};
 
 inisections::specification ctrl_data
 {
@@ -419,8 +421,7 @@ inisections::specification ctrl_data
 #endif      // CFG66_CFG_CTRL_SPEC_HPP
 
 /*
-* ctrl_spec.hpp
-*
-* vim: sw=4 ts=4 wm=4 et ft=cpp
-*/
-
+ * ctrl_spec.hpp
+ *
+ * vim: sw=4 ts=4 wm=4 et ft=cpp
+ */

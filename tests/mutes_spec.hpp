@@ -37,7 +37,7 @@
 namespace cfg
 {
 
-const std::string mutes_extension{"mutes"};
+const std::string mutes_extension { "mutes" };
 
 /*------------------------------------------------------------------------
  * 'mutes' file
@@ -164,7 +164,7 @@ inisection::specification mutes_groups_data
  * All sections of the 'mutes' configuration
  *------------------------------------------------------------------------*/
 
-inisection::specification mutes_comments = inifile_comment_data;
+inisection::specification mutes_comments { inifile_comment_data };
 
 inisections::specification mutes_data
 {
@@ -188,8 +188,7 @@ inisections::specification mutes_data
 #endif      // CFG66_CFG_MUTES_SPEC_HPP
 
 /*
-* mutes_spec.hpp
-*
-* vim: sw=4 ts=4 wm=4 et ft=cpp
-*/
-
+ * mutes_spec.hpp
+ *
+ * vim: sw=4 ts=4 wm=4 et ft=cpp
+ */

@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2026-02-03
- * \updates       2026-02-03
+ * \updates       2026-02-12
  * \license       GNU GPLv2 or above
  *
  *  See the "Design Patterns" book by Gamma et al., starting on page
@@ -49,14 +49,13 @@ namespace cfg
 std::string
 options_history (const history<options> & h)
 {
-    std::string result;
+    std::string result { "Empty" };
     if (h.active())
     {
         std::ostringstream ost;
         ost
             << "Size: " << std::to_string(h.max_size()) << "; "
             << "Count: " << std::to_string(h.change_count()) << " changes; "
-//          << "Present = " << std::to_string(h.present()) << "; "
             << "Max. size = " << std::to_string(h.max_size())
             << std::endl
             ;
@@ -74,9 +73,6 @@ options_history (const history<options> & h)
 
         result = ost.str();
     }
-    else
-        result = "Empty";
-
     return result;
 }
 
@@ -87,4 +83,3 @@ options_history (const history<options> & h)
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-

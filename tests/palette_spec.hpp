@@ -37,7 +37,7 @@
 namespace cfg
 {
 
-const std::string palette_extension{"palette"};
+const std::string palette_extension { "palette" };
 
 /*------------------------------------------------------------------------
  * 'palette' file
@@ -150,7 +150,7 @@ inisection::specification palette_brush_data
  * All sections of the 'palette' configuration
  *------------------------------------------------------------------------*/
 
-inisection::specification palette_comments = inifile_comment_data;
+inisection::specification palette_comments { inifile_comment_data };
 
 inisections::specification palette_data
 {
@@ -178,8 +178,7 @@ inisections::specification palette_data
 #endif      // CFG66_CFG_PALETTE_SPEC_HPP
 
 /*
-* palette_spec.hpp
-*
-* vim: sw=4 ts=4 wm=4 et ft=cpp
-*/
-
+ * palette_spec.hpp
+ *
+ * vim: sw=4 ts=4 wm=4 et ft=cpp
+ */

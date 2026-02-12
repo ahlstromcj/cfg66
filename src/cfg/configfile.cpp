@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2025-10-27
+ * \updates       2026-02-11
  * \license       GNU GPLv2 or above
  *
  *  std::streamoff is a signed integral type (usually long long) that can
@@ -63,12 +63,12 @@ namespace cfg
  *  errors from all the configuration files can be displayed at once.
  */
 
-std::string configfile::sm_error_message;
-bool configfile::sm_is_error        = false;
-int configfile::sm_int_missing      = -9998;
-int configfile::sm_int_default      = -9999;
-float configfile::sm_float_missing  = -9998.0f;
-float configfile::sm_float_default  = -9999.0f;
+std::string configfile::sm_error_message    { };
+bool configfile::sm_is_error                { false };
+int configfile::sm_int_missing              { -9998 };
+int configfile::sm_int_default              { -9999 };
+float configfile::sm_float_missing          { -9998.0f };
+float configfile::sm_float_default          { -9999.0f };
 
 lib66::tokenization configfile::sm_file_extensions
 {
@@ -87,14 +87,14 @@ lib66::tokenization configfile::sm_file_extensions
 bool
 configfile::is_default (float v)
 {
-    float e = std::numeric_limits<float>::epsilon();
+    float e { std::numeric_limits<float>::epsilon() };
     return v >= (sm_float_default - e) && v <= (sm_float_default + e);
 }
 
 bool
 configfile::is_missing (float v)
 {
-    float e = std::numeric_limits<float>::epsilon();
+    float e { std::numeric_limits<float>::epsilon() };
     return v >= (sm_float_missing - e) && v <= (sm_float_missing + e);
 }
 
@@ -122,7 +122,7 @@ configfile::configfile
     m_file_version  ("0"),
     m_line          (),
     m_line_number   (0),
-    m_line_position      (0)
+    m_line_position (0)
 {
     if (! util::name_has_extension(filename))
     {
@@ -144,19 +144,19 @@ configfile::configfile
 std::string
 configfile::trimline () const
 {
-    std::string result = line();
+    std::string result { line() };
     result = util::trim(result);
 
-    auto bpos = result.find_first_of("\"");
+    auto bpos { result.find_first_of("\"") };
     if (bpos != std::string::npos)
     {
-        auto epos = result.find_last_of("\"");
-        int len;
-        if (epos != std::string::npos)
-            len = int(epos - bpos - 1);
-        else
-            len = int(result.length() - 1 - bpos);
-
+        auto epos { result.find_last_of("\"") };
+        int len
+        {
+            epos != std::string::npos ?
+                int(epos - bpos - 1) :
+                int(result.length() - 1 - bpos)
+        };
         result = result.substr(bpos + 1, len);
     }
     return result;
@@ -231,9 +231,9 @@ configfile::parse_list
     const std::string & valuetag
 )
 {
-    int result = 0;
-    int position = 0;
-    int count = get_integer(file, section, "count", position);
+    int result { 0 };
+    int position { 0 };
+    int count { get_integer(file, section, "count", position) };
     items.clear();
     if (count == configfile::sm_int_missing)                   /* -9998    */
     {
@@ -256,7 +256,7 @@ configfile::parse_list
             }
             else
             {
-                std::string value = get_next_variable(file, valuetag, true);
+                std::string value { get_next_variable(file, valuetag, true) };
                 if (! util::is_missing_string(value))
                 {
                     items.push_back(line());
@@ -275,8 +275,8 @@ configfile::parse_list
 std::string
 configfile::parse_version (std::ifstream & file)
 {
-    std::string maincfg = get_main_cfg_section_name();
-    std::string result = get_variable(file, maincfg, "version");
+    std::string maincfg { get_main_cfg_section_name() };
+    std::string result { get_variable(file, maincfg, "version") };
     file_version(result);
     return result;
 }
@@ -284,9 +284,9 @@ configfile::parse_version (std::ifstream & file)
 bool
 configfile::file_version_old (std::ifstream & file)
 {
-    std::string file_version_string = parse_version(file);
-    int file_version = util::string_to_int(file_version_string);
-    int code_version = version_number();
+    std::string file_version_string { parse_version(file) };
+    int file_version { util::string_to_int(file_version_string) };
+    int code_version { version_number() };
     return file_version < code_version;
 }
 
@@ -311,7 +311,7 @@ configfile::make_error_message
     const std::string & additional
 )
 {
-    std::string msg = sectionname;
+    std::string msg { sectionname };
     msg += ": ";
     if (! additional.empty())
         msg += additional;
@@ -324,7 +324,7 @@ configfile::make_error_message
 bool
 configfile::version_error_message (const std::string & configtype, int vnumber)
 {
-    std::string msg = "'";
+    std::string msg { "'" };
     msg += configtype;
     msg += "' file version ";
     msg += std::to_string(vnumber);
@@ -364,7 +364,7 @@ configfile::get_line (std::ifstream & file, bool strip)
         m_line = util::strip_comments(m_line);
     }
 
-    bool result = file.good();
+    bool result { file.good() };
     if (result)
         ++m_line_number;
 
@@ -401,10 +401,10 @@ configfile::get_line (std::ifstream & file, bool strip)
 bool
 configfile::next_data_line (std::ifstream & file, bool strip)
 {
-    bool result = get_line(file, strip);        /* optional white zappage   */
+    bool result { get_line(file, strip) };      /* optional white zappage   */
     if (result)
     {
-        char ch = m_line[0];
+        char ch { m_line[0] };
         while ((ch == '#' || ch == ';' || ch == '[' || ch == 0) && ! file.eof())
         {
             if (m_line[0] == '[')               /* we hit the next section  */
@@ -482,7 +482,7 @@ configfile::get_variable
     int position
 )
 {
-    std::string result = util::questionable_string();   /* for missing tag  */
+    std::string result { util::questionable_string() }; /* for missing tag  */
     for
     (
         bool done = ! line_after_section(file, s, position); ! done;
@@ -491,7 +491,7 @@ configfile::get_variable
     {
         if (! line().empty())                           /* any value?       */
         {
-            std::string value = extract_variable(line(), variablename);
+            std::string value { extract_variable(line(), variablename) };
             if (! util::is_questionable_string(value))
             {
                 result = value;
@@ -531,12 +531,15 @@ configfile::get_next_variable
     bool partial
 )
 {
-    std::string result = util::questionable_string();   /* for missing tag  */
+    std::string result { util::questionable_string() }; /* for missing tag  */
     if (next_data_line(file))
     {
         if (! line().empty())                           /* any value?       */
         {
-            std::string value = extract_variable(line(), variablename, partial);
+            std::string value
+            {
+                extract_variable(line(), variablename, partial)
+            };
             if (! util::is_questionable_string(value))
                 result = value;
         }
@@ -597,24 +600,27 @@ configfile::extract_variable
     bool partial
 )
 {
-    std::string result = util::questionable_string();
-    auto epos = line.find_first_of("=");
+    std::string result { util::questionable_string() };
+    auto epos { line.find_first_of("=") };
     if (epos != std::string::npos)
     {
-        auto spos = line.find_first_of(" ");        /* Check-point 1        */
+        auto spos { line.find_first_of(" ") };      /* Check-point 1        */
         if (spos > epos)
             spos = epos;
 
-        std::string vname = line.substr(0, spos);
-        bool ok = partial ?
-            util::strings_match(vname, variablename) : vname == variablename ;
+        std::string vname { line.substr(0, spos) };
+        bool ok
+        {
+            partial ?  util::strings_match(vname, variablename) :
+                vname == variablename
+        };
 
         if (ok)
         {
-            bool havequotes = false;                /* Check-point 2        */
-            char quotechar[2] = { 'x', 0 };
-            auto qpos = line.find_first_of("\"", epos + 1);
-            auto qpos2 = std::string::npos;
+            bool havequotes { false };              /* Check-point 2        */
+            char quotechar[2] { 'x', 0 };
+            auto qpos { line.find_first_of("\"", epos + 1) };
+            auto qpos2 { std::string::npos };
             if (qpos != std::string::npos)
             {
                 quotechar[0] = line[qpos];
@@ -654,7 +660,7 @@ configfile::get_boolean
     bool defalt
 )
 {
-    std::string value = get_variable(file, s, variablename, position);
+    std::string value { get_variable(file, s, variablename, position) };
     return util::string_to_bool(value, defalt);
 }
 
@@ -672,7 +678,7 @@ configfile::write_cfg66_header
     const std::string & ver
 )
 {
-    std::string maincfg = get_main_cfg_section_name();
+    std::string maincfg { get_main_cfg_section_name() };
     file <<
         "\n" << maincfg << "\n\nconfig-type = \"" << configtype << "\"\n"
         "version = " << ver << "\n"
@@ -719,8 +725,8 @@ configfile::write_list
     const std::string & valuetag
 )
 {
-    int result = 0;
-    int count = int(items.size());
+    int result { 0 };
+    int count { int(items.size()) };
     if (count > 0)
     {
         file
@@ -765,8 +771,8 @@ configfile::get_integer
     int position
 )
 {
-    std::string value = get_variable(file, s, variablename, position);
-    int result = sm_int_missing;
+    std::string value { get_variable(file, s, variablename, position) };
+    int result { sm_int_missing };
     if (! util::is_missing_string(value))               /* ! value.empty()  */
     {
         result = value == "default" ?
@@ -803,8 +809,8 @@ configfile::get_float
     int position
 )
 {
-    std::string value = get_variable(file, s, variablename, position);
-    float result = sm_float_missing;
+    std::string value { get_variable(file, s, variablename, position) };
+    float result { sm_float_missing };
     if (! util::is_missing_string(value))               /* ! value.empty()  */
     {
         result = value == "default" ?
@@ -839,7 +845,7 @@ configfile::write_string
     bool quote_it
 )
 {
-    bool add_equals = true;
+    bool add_equals { true };
     if (util::is_empty_string(name))        /* standalone, no-name string   */
         add_equals = false;
 
@@ -872,7 +878,7 @@ configfile::get_file_status
     int position
 )
 {
-    bool result = get_boolean(file, s, "active", position);
+    bool result { get_boolean(file, s, "active", position) };
     filename = util::strip_quotes(get_variable(file, s, "name", position));
     if (util::is_missing_string(filename))                /* filename.empty()     */
     {
@@ -895,7 +901,7 @@ configfile::write_file_status
     bool status
 )
 {
-    std::string quoted = util::add_quotes(filename);
+    std::string quoted { util::add_quotes(filename) };
     file
         << "\n" << desc << "\n\n"
         << "active = " << util::bool_to_string(status) << "\n"
@@ -953,7 +959,7 @@ configfile::write_comment
 bool
 configfile::next_section (std::ifstream & file, const std::string & s)
 {
-    bool result = false;
+    bool result { false };
     file.clear();
     if (s   == m_line)
     {
@@ -961,7 +967,7 @@ configfile::next_section (std::ifstream & file, const std::string & s)
     }
     else
     {
-        bool ok = get_line(file);       /* fills in m_line as a side-effect */
+        bool ok { get_line(file) };     /* fills in m_line as a side-effect */
         while (ok)                      /* includes the EOF check           */
         {
             result = util::strncompare(m_line, s);
@@ -995,7 +1001,7 @@ configfile::position_of_section
     file.seekg(std::streampos(0), std::ios::beg); /* seek to beginning      */
     m_line_number = 0;                          /* back to beginning        */
 
-    bool ok = section_name_valid(s);            /* must be like "[xyz]"     */
+    bool ok { section_name_valid(s) };          /* must be like "[xyz]"     */
     if (ok)
         ok = get_line(file, true);              /* trims spaces/comments    */
 
@@ -1070,12 +1076,12 @@ configfile::line_after_section
     bool strip
 )
 {
-    bool result = false;
+    bool result { false };
     file.clear();                               /* clear the file flags     */
     file.seekg(std::streampos(position), std::ios::beg); /* seek to spot    */
     m_line_number = 0;                          /* back to beginning        */
 
-    bool ok = section_name_valid(s);            /* must be like "[xyz]"     */
+    bool ok { section_name_valid(s) };          /* must be like "[xyz]"     */
     if (ok)
         ok = get_line(file, true);              /* trims spaces/comments    */
 
@@ -1121,15 +1127,15 @@ configfile::line_after_section
 int
 configfile::find_section (std::ifstream & file, const std::string & s)
 {
-    int result = (-1);
+    int result { -1 };
     file.clear();                               /* clear the file flags     */
     file.seekg(0, std::ios::beg);               /* seek to the beginning    */
     m_line_number = 0;                          /* back to beginning        */
 
-    bool ok = get_line(file, true);             /* trims spaces/comments    */
+    bool ok { get_line(file, true) };           /* trims spaces/comments    */
     while (ok)                                  /* includes the EOF check   */
     {
-        bool match = util::strncompare(m_line, s);
+        bool match { util::strncompare(m_line, s) };
         if (match)
         {
             result = line_position();           /* int(m_line_position)     */
@@ -1165,16 +1171,16 @@ configfile::find_section (std::ifstream & file, const std::string & s)
 int
 configfile::get_section_value (const std::string & s)
 {
-    int result = (-1);
-    auto pos = s.find_first_of("0123456789");
+    int result { -1 };
+    auto pos { s.find_first_of("0123456789") };
     if (pos != std::string::npos)
     {
-        std::string buff = s.substr(pos);     /* "35]" */
+        std::string buff { s.substr(pos) };     /* "35]" */
         result = util::string_to_int(buff);
     }
     else
     {
-        std::string msg = s;
+        std::string msg { s };
         msg += " section has no integer value";
         util::error_message(s);
     }
@@ -1194,7 +1200,7 @@ configfile::get_section_value (const std::string & s)
 void
 configfile::write_date (std::ofstream & file, const std::string & desc)
 {
-    std::string ver = get_app_version_text();
+    std::string ver { get_app_version_text() };
     if (ver.empty())
         ver = "an application";
 
@@ -1241,13 +1247,13 @@ configfile::append_error_message (const std::string & msg)
 bool
 configfile::set_up_ifstream (std::ifstream & instream)
 {
-    bool result = instream.is_open();
+    bool result { instream.is_open() };
     if (result)
     {
         instream.seekg(0, std::ios::beg);                   /* seek to start */
 
-        std::string maincfg = get_main_cfg_section_name();
-        std::string s = get_variable(instream, maincfg, "version");
+        std::string maincfg { get_main_cfg_section_name() };
+        std::string s { get_variable(instream, maincfg, "version") };
         if (s.empty())
         {
             char temp[128];
@@ -1286,7 +1292,7 @@ configfile::set_up_ifstream (std::ifstream & instream)
 bool
 configfile::section_name_valid (const std::string & s)
 {
-    bool result = s.length() > 2;
+    bool result { s.length() > 2 };
     if (result)
         result = s.front() == '[' && s.back() == ']';
 
@@ -1311,7 +1317,7 @@ configfile::make_section_name (const std::string & s)
 std::string
 configfile::strip_section_name (const std::string & s)
 {
-    std::string result = s;
+    std::string result { s };
     if (result.front() == '[')
         result = result.substr(1);
 
@@ -1328,15 +1334,15 @@ configfile::strip_section_name (const std::string & s)
 bool
 delete_configuration (const std::string & path, const std::string & basename)
 {
-    bool result = ! path.empty() && ! basename.empty();
+    bool result { ! path.empty() && ! basename.empty() };
     if (result)
     {
-        std::string base = util::filename_base(basename, true);
-        std::string msg = "Deleting " + base + " from";
+        std::string base { util::filename_base(basename, true) };
+        std::string msg { "Deleting " + base + " from" };
         util::file_message(msg, path);
         for (const auto & ext : configfile::sm_file_extensions)
         {
-            std::string fname = util::filename_concatenate(path, base);
+            std::string fname { util::filename_concatenate(path, base) };
             fname = util::file_extension_set(fname, ext);
             if (util::file_exists(fname))
                 (void) util::file_delete(fname);
@@ -1358,24 +1364,27 @@ copy_configuration
 
     if (result)
     {
-        std::string base = util::filename_base(basename, true);
-        std::string sourcename = util::filename_concatenate(source, base);
-        std::string destinationname = util::filename_concatenate
-        (
-            destination, base
-        );
-        std::string msg = "Copying " + source + base + " to";
+        std::string base { util::filename_base(basename, true) };
+        std::string sourcename { util::filename_concatenate(source, base) };
+        std::string destinationname
+        {
+            util::filename_concatenate
+            (
+                destination, base
+            )
+        };
+        std::string msg { "Copying " + source + base + " to" };
         util::file_message(msg, destination);
         for (const auto & ext : configfile::sm_file_extensions)
         {
-            std::string srcname = util::file_extension_set(sourcename, ext);
+            std::string srcname { util::file_extension_set(sourcename, ext) };
             if (util::file_exists(srcname))
             {
-                std::string destname = util::file_extension_set
-                (
-                    destinationname, ext
-                );
-                bool ok = util::file_copy(srcname, destname);
+                std::string destname
+                {
+                    util::file_extension_set(destinationname, ext)
+                };
+                bool ok { util::file_copy(srcname, destname) };
                 if (! ok)
                 {
                     result = false;
@@ -1400,4 +1409,3 @@ get_current_date_time ()
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-

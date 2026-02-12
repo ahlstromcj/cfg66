@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2026-02-09
+ * \updates       2026-02-12
  * \license       See above.
  *
  */
@@ -67,7 +67,7 @@ main (int argc, char * argv [])
     int rcode { EXIT_FAILURE };
     cfg::set_client_name("cli");                    /* for error_message()  */
     cfg::set_app_version("0.4.0");
-    cli::parser clip{s_test_options};               /* see test_spec.hpp    */
+    cli::parser clip { s_test_options };            /* see test_spec.hpp    */
     bool success { clip.parse(argc, argv) };
     if (success)
     {

@@ -28,7 +28,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2025-10-27
+ * \updates       2026-02-12
  * \license       GNU GPLv2 or above
  *
  *  This is actually an elegant little parser, and works well as long as one
@@ -136,14 +136,14 @@ private:
      *  file, but without the period. Examples: "rc", "session".
      */
 
-    std::string m_file_type;
+    std::string m_file_type { };
 
     /**
      *  Provides the name of the configuration or other file being parsed.
      *  This will normally be a full-path specification.
      */
 
-    std::string m_file_name;
+    std::string m_file_name { };
 
     /**
      *  Provides the current version of the derived configuration file format.
@@ -158,14 +158,14 @@ private:
      *  option for changes in the format of the "usr" file.
      */
 
-    std::string m_version;
+    std::string m_version { };
 
     /**
      *  The actual version specified in the configuration file, which could be
      *  older than the newest version supported in the code.
      */
 
-    std::string m_file_version;
+    std::string m_file_version { };
 
 protected:
 
@@ -174,32 +174,31 @@ protected:
      *  an input line, and so needs to be a character buffer.
      */
 
-    std::string m_line;
+    std::string m_line { };
 
     /**
      *  Provides the current line number, useful in troubleshooting.
      */
 
-    int m_line_number;
+    int m_line_number { 0 };
 
     /**
      *  Holds the stream position before a line is obtained.
      */
 
-    std::streampos m_line_position;
+    std::streampos m_line_position { 0 };
 
 public:
 
+    configfile () = default;
     configfile
     (
         const std::string & name,
         const std::string & cfgtype
     );
-
-    configfile () = delete;
-    configfile (configfile &&) = delete;
     configfile (const configfile &) = delete;
     configfile & operator = (const configfile &) = delete;
+    configfile (configfile &&) = delete;
     configfile & operator = (configfile &&) = delete;
 
     /**
@@ -529,4 +528,3 @@ extern std::string get_current_date_time ();
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-

@@ -56,25 +56,8 @@ namespace cli
 {
 
 /**
- *  Constructors. The first creates an empty options container.
+ *  Principal constructor.
  */
-
-parser::parser () :
-    m_option_set            (),
-    m_has_error             (false),
-    m_error_msg             (),
-    m_alternative           (false),
-    m_help_request          (false),
-    m_version_request       (false),
-    m_verbose_request       (false),
-    m_inspect_request       (false),
-    m_investigate_request   (false),
-    m_description_request   (false),
-    m_use_log_file          (false),
-    m_log_file              ()
-{
-    // no code needed
-}
 
 /**
  *  Constructs the parser from an options object.
@@ -84,6 +67,8 @@ parser::parser () :
  *
  *  Also note that this class's construction is compatible with the C
  *  interface in the cliplarser_c module.
+ *
+ *  Lastly, many of the member are defaulted in-class.
  *
  * TODO:
  *
@@ -103,17 +88,7 @@ parser::parser
     bool use_alternative_long_option
 ) :
     m_option_set            (specs, filename, sectionname),
-    m_has_error             (false),
-    m_error_msg             (),
-    m_alternative           (use_alternative_long_option),
-    m_help_request          (false),
-    m_version_request       (false),
-    m_verbose_request       (false),
-    m_inspect_request       (false),
-    m_investigate_request   (false),
-    m_description_request   (false),
-    m_use_log_file          (false),
-    m_log_file              ()
+    m_alternative           (use_alternative_long_option)
 {
     // no code needed
 }
@@ -137,7 +112,7 @@ parser::parse (int argc, char * argv [])
     {
         for (int i = 1; i < argc; ++i)      /* token 0 might be app name    */
         {
-            std::string token = argv[i];
+            std::string token { argv[i] };
             if (token == "--")              /* GNU end-of-options marker    */
                 break;
 
@@ -151,7 +126,7 @@ parser::parse (int argc, char * argv [])
                     std::string name;
                     std::string value;
                     (void) extract_value(name, value);
-                    bool good = parse_o_option(name, value);
+                    bool good { parse_o_option(name, value) };
                     if (good)
                     {
                         if (name == "log")
@@ -224,15 +199,15 @@ parser::check_option
     bool must_exist
 ) const
 {
-    bool result = false;
-    bool ok = not_nullptr(argv) && ! token.empty();
+    bool result { false };
+    bool ok { not_nullptr(argv) && ! token.empty() };
     if (ok && argc > 1)
     {
-        std::string stripped = token;
-        std::string cltarget = token;
+        std::string stripped { token };
+        std::string cltarget { token };
         if (token[0] != '-')
         {
-            std::string pre = cltarget.size() > 1 ? "--" : "-" ;
+            std::string pre { cltarget.size() > 1 ? "--" : "-" };
             cltarget = pre + cltarget;
         }
         else
@@ -244,7 +219,7 @@ parser::check_option
         }
         for (int i = 1; i < argc; ++i)      /* token 0 might be app name    */
         {
-            std::string arg = argv[i];
+            std::string arg { argv[i] };
             if (arg == "--")                /* GNU end-of-options marker    */
                 break;
 
@@ -296,16 +271,16 @@ parser::parse_value
     const std::string & token
 )
 {
-    bool result = false;                    /* a pessimistic start          */
+    bool result { false };                  /* a pessimistic start          */
     std::string name;                       /* holds the option name/chars  */
     std::string value;                      /* value for a compound option  */
-    bool boolvalue = true;                  /* used for boolean options     */
-    size_t offset = 1;                      /* count the first hyphen       */
-    std::string tk = token;
-    std::string no = tk.substr(0, 5);
+    bool boolvalue { true };                /* used for boolean options     */
+    size_t offset { 1 };                    /* count the first hyphen       */
+    std::string tk { token };
+    std::string no { tk.substr(0, 5) };
     if (no == "--no-")                      /* it's a falsified boolean     */
     {
-        std::string partial = tk.substr(5); /* after "--no-"                */
+        std::string partial { tk.substr(5) }; /* after "--no-"              */
         boolvalue = false;
         tk = "--";                          /* pretend there's no "--no-"   */
         tk += partial;                      /* get the parts after "--no-"  */
@@ -336,7 +311,7 @@ parser::parse_value
          *  Note that boolean options are not compound options.
          */
 
-        bool compound = extract_value(name, value);     /* side effects     */
+        bool compound { extract_value(name, value) };   /* side effects     */
         if (compound)
         {
             result = change_value(name, value, true);
@@ -402,7 +377,8 @@ parser::parse_value
 bool
 parser::parse_o_option
 (
-    const std::string & name,  const std::string & value
+    const std::string & name,
+    const std::string & value
 )
 {
     return change_value(name, value, true);
@@ -432,11 +408,11 @@ parser::parse_o_option
 bool
 parser::extract_value (std::string & token, std::string & value)
 {
-    std::size_t seppos = token.find_first_of(":=");         /* holy Algol!  */
-    bool result = seppos != std::string::npos;
+    std::size_t seppos { token.find_first_of(":=") };       /* holy Algol!  */
+    bool result { seppos != std::string::npos };
     if (result)
     {
-        lib66::tokenization tokens = util::tokenize(token, ":=");
+        lib66::tokenization tokens { util::tokenize(token, ":=") };
         result = tokens.size() == 2;        /* separator is not a token     */
         if (result)
         {
@@ -478,7 +454,7 @@ parser::token_match
     char code
 )
 {
-    bool result = ! token.empty() && token[0] == '-';
+    bool result { ! token.empty() && token[0] == '-' };
     if (result)
     {
         if (token.length() == 2)            /* check for a short option -x  */
@@ -490,18 +466,18 @@ parser::token_match
         }
         else
         {
-            bool singledash = token[1] != '-';
+            bool singledash { token[1] != '-' };
             if (singledash)
             {
                 if (m_alternative)
                 {
-                    std::string tokpart = token.substr(1);
+                    std::string tokpart { token.substr(1) };
                     result = tokpart == opt;
                 }
             }
             else
             {
-                std::string tokpart = token.substr(2);
+                std::string tokpart { token.substr(2) };
                 result = tokpart == opt;
             }
         }
@@ -519,7 +495,7 @@ parser::token_match
 bool
 parser::show_information_only () const
 {
-    bool result = false;
+    bool result { false };
     if (help_request())
     {
         /*
@@ -542,7 +518,7 @@ parser::show_information_only () const
     }
     if (version_request())
     {
-        const std::string & ver = cfg::get_app_version();
+        const std::string & ver { cfg::get_app_version() };
         if (! ver.empty())
             std::cout << "Version " << cfg::get_app_version() << std::endl;
         else
@@ -560,4 +536,3 @@ parser::show_information_only () const
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-

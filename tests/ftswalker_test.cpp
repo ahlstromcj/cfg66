@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2025-03-10
- * \updates       2025-03-25
+ * \updates       2026-02-12
  * \license       See above.
  *
  */
@@ -261,10 +261,15 @@ main (int argc, char * argv [])
                  * This test works only with nsmd running.
                  */
 
-                const std::string rootdir{"/run/user/1000/nsm"};
+                const std::string rootdir { "/run/user/1000/nsm" };
                 util::ftswalker walker(rootdir);
                 lib66::tokenization results;
                 (void) walker.find_regular_files(results);
+                std::cout
+                    << "Note that " << rootdir
+                    << " exists only if nsmd is running."
+                    << std::endl
+                    ;
             }
         }
         if (success)

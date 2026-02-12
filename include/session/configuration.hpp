@@ -103,7 +103,7 @@ private:
      *      ext = ".rc"
      */
 
-    directories m_dir_manager;
+    directories m_dir_manager { };
 
     /**
      *  Provides a list of sections to be process. Each section refers to
@@ -112,13 +112,13 @@ private:
      *  extension.
      */
 
-    sections m_section_list;
+    sections m_section_list { };
 
     /**
      *  Holds the list of sub-directories to be created. They are optional.
      */
 
-    subdirectories m_data_directories;
+    subdirectories m_data_directories { };
 
     /**
      *  [Cfg66] : auto-option-save
@@ -126,7 +126,7 @@ private:
      *  If true (the default), all modified configuration files are saved.
      */
 
-    bool m_auto_option_save;
+    bool m_auto_option_save { false };
 
     /**
      *  [Cfg66] : auto-save
@@ -134,7 +134,7 @@ private:
      *  If true (the default), all modified data files are saved.
      */
 
-    bool m_auto_save;
+    bool m_auto_save { false };
 
     /**
      *  [Cfg66] : quiet
@@ -142,7 +142,7 @@ private:
      *  If true, bypass startup error prompts.
      */
 
-    bool m_quiet;
+    bool m_quiet { false };
 
     /**
      *  [Cfg66] : verbose
@@ -150,7 +150,7 @@ private:
      *  If true, show additional status data. Does not negate quiet.
      */
 
-    bool m_verbose;
+    bool m_verbose { false };
 
     /**
      *  [Cfg66] : home
@@ -160,7 +160,7 @@ private:
      *  used. Another value is "$home", which also default to that.
      */
 
-    std::string m_home;
+    std::string m_home { };
 
     /**
      *  If true, reroute console output to a log file. Note that
@@ -168,8 +168,8 @@ private:
      *  precedence.
      */
 
-    bool m_use_log_file;
-    std::string m_log_file;
+    bool m_use_log_file { false };
+    std::string m_log_file { };
 
 public:
 
@@ -320,7 +320,6 @@ private:
         m_home = h;
     }
 
-
 };          // class configuration
 
 }           // namespace session
@@ -332,4 +331,3 @@ private:
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-

@@ -27,7 +27,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-03-29
- * \updates       2024-09-05
+ * \updates       2026-02-11
  * \license       GNU GPLv2 or above
  *
  *  It is based on the "recent" class of Seq66, with some additional
@@ -127,4 +127,3 @@ public:
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-

@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2018-11-10
- * \updates       2025-12-28
+ * \updates       2026-02-12
  * \license       GNU GPLv2 or above
  *
  *  One of the big features of some of these functions is writing the name
@@ -77,9 +77,9 @@ static std::string formatted (const std::string & fmt, va_list args);
  *  also set these options.
  */
 
-static bool s_is_quiet = false;
-static bool s_is_verbose = false;
-static bool s_is_investigate = false;
+static bool s_is_quiet          { false };
+static bool s_is_verbose        { false };
+static bool s_is_investigate    { false };
 
 void
 set_quiet (bool flag)
@@ -143,17 +143,17 @@ write_msg (int fd, const char * msg, size_t count)
  *  No longer needed: static const char * s_label = "[cfg66] ";
  */
 
-static const char * s_start = "[\033[1;30mcfg66\033[0m] \033[1;30m";    // 26
-static const char * s_error = "[\033[1;31mcfg66\033[0m] \033[1;30m";    // 26
-static const char * s_eol   = "\033[0m\n";                              //  5
-static const char * s_nl    = "\n";                                     //  1
+static const char * s_start { "[\033[1;30mcfg66\033[0m] \033[1;30m" };  // 26
+static const char * s_error { "[\033[1;31mcfg66\033[0m] \033[1;30m" };  // 26
+static const char * s_eol   { "\033[0m\n" };                            //  5
+static const char * s_nl    { "\n" };                                   //  1
 
 void
 async_safe_strprint (const char * msg, bool colorit)
 {
     if (not_nullptr(msg))
     {
-        size_t count = std::strlen(msg);
+        size_t count { std::strlen(msg) };
         if (count > 0)
         {
             if (cfg::is_a_tty(STDOUT_FILENO) && colorit)
@@ -164,8 +164,8 @@ async_safe_strprint (const char * msg, bool colorit)
             }
             else
             {
-                const char * label = CSTR(cfg::get_client_name());
-                size_t szlabel = cfg::get_client_name().size() + 2; // "[xxx]"
+                const char * label { CSTR(cfg::get_client_name()) };
+                size_t szlabel { cfg::get_client_name().size() + 2 } ; // "[xxx]"
                 write_msg(STDOUT_FILENO, label, szlabel);
                 write_msg(STDOUT_FILENO, msg, count);
                 write_msg(STDOUT_FILENO, s_nl, 1);
@@ -220,19 +220,19 @@ async_safe_errprint (const char * msg, bool colorit)
 void
 async_safe_utoa (char * destination, unsigned number, bool spacebefore)
 {
-    const unsigned ascii_base = unsigned('0');
-    char reversed[c_async_safe_utoa_size];
-    int count = 0;
+    const unsigned ascii_base { unsigned('0') };
+    char reversed [c_async_safe_utoa_size];
+    int count { 0 };
     do
     {
-        unsigned remainder = number % 10;
+        unsigned remainder { number % 10 };
         reversed[count++] = char(remainder) + ascii_base;
         number /= 10;
 
     } while (number != 0);
 
-    int index = 0;
-    int limit = count;
+    int index { 0 };
+    int limit { count };
     if (spacebefore)
     {
         destination[index++] = ' ';
@@ -288,8 +288,8 @@ info_printf (std::string fmt, ...)
         va_list args;                                       /* Step 1       */
         va_start(args, fmt);
 
-        std::string output = formatted(fmt, args);          /* Steps 2 & 3  */
-        lib66::msglevel lev = lib66::msglevel::info;
+        std::string output { formatted(fmt, args) };        /* Steps 2 & 3  */
+        lib66::msglevel lev { lib66::msglevel::info };
         std::cout << cfg::get_client_tag(lev) << " " << output << std::endl;
         va_end(args);
     }
@@ -313,8 +313,8 @@ status_printf (std::string fmt, ...)
     va_list args;                                           /* Step 1       */
     va_start(args, fmt);
 
-    std::string output = formatted(fmt, args);              /* Steps 2 & 3  */
-    lib66::msglevel lev = lib66::msglevel::status;
+    std::string output { formatted(fmt, args) };            /* Steps 2 & 3  */
+    lib66::msglevel lev { lib66::msglevel::status };
     std::cout << cfg::get_client_tag(lev) << " " << output << std::endl;
     va_end(args);
     return true;
@@ -337,8 +337,8 @@ session_printf (std::string fmt, ...)
     va_list args;                                           /* Step 1       */
     va_start(args, fmt);
 
-    std::string output = formatted(fmt, args);              /* Steps 2 & 3  */
-    lib66::msglevel lev = lib66::msglevel::session;
+    std::string output { formatted(fmt, args) };            /* Steps 2 & 3  */
+    lib66::msglevel lev { lib66::msglevel::session };
     std::cout << cfg::get_client_tag(lev) << " " << output << std::endl;
     va_end(args);
     return true;
@@ -375,8 +375,8 @@ warn_printf (std::string fmt, ...)
     va_list args;                                           /* Step 1       */
     va_start(args, fmt);
 
-    std::string output = formatted(fmt, args);              /* Steps 2 & 3  */
-    lib66::msglevel lev = lib66::msglevel::warn;
+    std::string output { formatted(fmt, args) };            /* Steps 2 & 3  */
+    lib66::msglevel lev { lib66::msglevel::warn };
     std::cout << cfg::get_client_tag(lev) << " " << output << std::endl;
     va_end(args);
     return true;
@@ -413,8 +413,8 @@ error_printf (std::string fmt, ...)
     va_list args;                                           /* Step 1       */
     va_start(args, fmt);
 
-    std::string output = formatted(fmt, args);              /* Steps 2 & 3  */
-    lib66::msglevel lev = lib66::msglevel::error;
+    std::string output { formatted(fmt, args) };            /* Steps 2 & 3  */
+    lib66::msglevel lev { lib66::msglevel::error };
     std::cout << cfg::get_client_tag(lev) << " " << output << std::endl;
     va_end(args);
     return true;
@@ -424,8 +424,8 @@ error_printf (std::string fmt, ...)
  *  More sneaky escape sequences for coloring.
  */
 
-static const char * s_black  = "\033[1;30m";
-static const char * s_normal = "\033[0m";
+static const char * s_black  { "\033[1;30m" };
+static const char * s_normal { "\033[0m" };
 
 /**
  *  Common-code for debug messages.  Adds markers, and returns false.
@@ -469,8 +469,8 @@ debug_printf (std::string fmt, ...)
         va_list args;                                       /* Step 1       */
         va_start(args, fmt);
 
-        std::string output = formatted(fmt, args);          /* Steps 2 & 3  */
-        lib66::msglevel lev = lib66::msglevel::debug;
+        std::string output { formatted(fmt, args) };        /* Steps 2 & 3  */
+        lib66::msglevel lev { lib66::msglevel::debug };
         std::cout << cfg::get_client_tag(lev) << " " << output << std::endl;
         va_end(args);
     }
@@ -528,11 +528,13 @@ file_message (const std::string & tag, const std::string & path)
 void
 print_client_tag (lib66::msglevel el)
 {
-    std::string tag = cfg::get_client_tag(el);
-    bool iserror = el == lib66::msglevel::error ||
+    std::string tag { cfg::get_client_tag(el) };
+    bool iserror
+    {
+        el == lib66::msglevel::error ||
         el == lib66::msglevel::warn ||
-        el == lib66::msglevel::debug;
-
+        el == lib66::msglevel::debug
+    };
     tag += " ";
     if (iserror)
         std::cerr << tag;
@@ -567,8 +569,8 @@ formatted (const std::string & fmt, va_list args)
     va_list args_copy;                                      /* Step 2       */
     va_copy(args_copy, args);
 
-    const char * const szfmt = V(fmt);
-    int ilen = std::vsnprintf(NULL, 0, szfmt, args_copy);
+    const char * const szfmt { V(fmt) };
+    int ilen { std::vsnprintf(NULL, 0, szfmt, args_copy) };
     va_end(args_copy);
     if (ilen > 0)
     {
@@ -593,7 +595,7 @@ formatted (const std::string & fmt, va_list args)
 void
 boolprint (const std::string & tag, bool flag)
 {
-    std::string fmt = tag + " %s";
+    std::string fmt { tag + " %s" };
     msgprintf(lib66::msglevel::info, fmt, flag ? "true" : "false");
 }
 
@@ -610,7 +612,7 @@ boolprint (const std::string & tag, bool flag)
 void
 toggleprint (const std::string & tag, bool flag)
 {
-    std::string fmt = tag + " %s";
+    std::string fmt { tag + " %s" };
     msgprintf(lib66::msglevel::info, fmt, flag ? "on" : "off");
 }
 
@@ -654,7 +656,7 @@ msgprintf (lib66::msglevel lev, std::string fmt, ...)
         va_list args;                                       /* Step 1       */
         va_start(args, fmt);
 
-        std::string output = formatted(fmt, args);          /* Steps 2 & 3  */
+        std::string output { formatted(fmt, args) };        /* Steps 2 & 3  */
         switch (lev)
         {
         case lib66::msglevel::none:
@@ -726,4 +728,3 @@ msgsnprintf (std::string fmt, ...)
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-

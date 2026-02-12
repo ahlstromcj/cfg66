@@ -37,7 +37,7 @@
 namespace cfg
 {
 
-const std::string drums_extension{"drums"};
+const std::string drums_extension { "drums" };
 
 /*------------------------------------------------------------------------
  * 'drums' file
@@ -130,7 +130,7 @@ inisection::specification drums_section_data
  * All sections of the 'drums' configuration
  *------------------------------------------------------------------------*/
 
-inisection::specification drums_comments = inifile_comment_data;
+inisection::specification drums_comments { inifile_comment_data };
 
 inisections::specification drums_data
 {
@@ -170,8 +170,7 @@ inisections::specification drums_data
 #endif      // CFG66_CFG_DRUMS_SPEC_HPP
 
 /*
-* drums_spec.hpp
-*
-* vim: sw=4 ts=4 wm=4 et ft=cpp
-*/
-
+ * drums_spec.hpp
+ *
+ * vim: sw=4 ts=4 wm=4 et ft=cpp
+ */

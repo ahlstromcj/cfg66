@@ -28,7 +28,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-26
- * \updates       2022-12-28
+ * \updates       2026-02-12
  * \license       GNU GPLv2 or above
  *
  */
@@ -54,13 +54,13 @@ private:
      *  them when the "rc" file is auto-saved.
      */
 
-    std::string m_comments_block;
+    std::string m_comments_block { "Add your comment block here.\n" };
 
     /**
      *  Indicates if some caller called the set() function.
      */
 
-    bool m_comment_is_set;
+    bool m_comment_is_set { false };
 
 public:
 
@@ -100,4 +100,3 @@ public:
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-

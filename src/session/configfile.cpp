@@ -24,7 +24,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2024-09-09
- * \updates       2024-09-28
+ * \updates       2026-02-12
  * \license       GNU GPLv2 or above
  *
  */
@@ -66,7 +66,7 @@ bool
 configfile::parse ()
 {
     std::ifstream file(file_name(), std::ios::in | std::ios::ate);
-    bool result = set_up_ifstream(file);
+    bool result { set_up_ifstream(file) };
     if (result)
     {
         /*
@@ -76,13 +76,13 @@ configfile::parse ()
          */
 
         util::file_message("Parse", file_name());
-        std::string section = cfg::get_main_cfg_section_name();
-        std::string s = parse_version(file);
-        std::string cfgtype = get_variable(file, section, "config-type");
-        bool correct = cfgtype == "session";
+        std::string section { cfg::get_main_cfg_section_name() };
+        std::string s { parse_version(file) };
+        std::string cfgtype { get_variable(file, section, "config-type") };
+        bool correct { cfgtype == "session" };
         if (correct && (s.empty() || file_version_old(file)))
         {
-            bool b = get_boolean(file, section, "auto-option-save");
+            bool b { get_boolean(file, section, "auto-option-save") };
             parent().auto_option_save(b);
             b = get_boolean(file, section, "auto-save");
             parent().auto_save(b);
@@ -91,14 +91,14 @@ configfile::parse ()
             b = get_boolean(file, section, "verbose");
             parent().verbose(b);
 
-            std::string h = get_variable(file, section, "home");
+            std::string h { get_variable(file, section, "home") };
             parent().home(h);
 
-            std::string c = parse_comments(file);
+            std::string c { parse_comments(file) };
             parent().comments_block().set(c);
 
             lib66::tokenization sects;
-            int count = parse_list(file, "[cfg]", sects, "section");
+            int count { parse_list(file, "[cfg]", sects, "section") };
             if (count > 0)
                 result = parent().section_list_fill(sects);
             else
@@ -114,7 +114,7 @@ configfile::parse ()
 
                 for (const auto & s : sects)
                 {
-                    directories::entry e = parse_dir_entry(file, s);
+                    directories::entry e { parse_dir_entry(file, s) };
                     if (! e.ent_active)
                         break;
                 }
@@ -148,14 +148,14 @@ directories::entry
 configfile::parse_dir_entry (std::ifstream & file, const std::string & s)
 {
     directories::entry result;
-    bool ok = section_name_valid(s);
+    bool ok { section_name_valid(s) };
     if (ok)
     {
-        int filepos = position_of_section(file, s);
-        bool flag = get_boolean(file, s, "active", filepos);
+        int filepos { position_of_section(file, s) };
+        bool flag { get_boolean(file, s, "active", filepos) };
         result.ent_active = flag;
 
-        std::string value = get_variable(file, s, "directory", filepos);
+        std::string value { get_variable(file, s, "directory", filepos) };
         if (value.empty())
         {
             util::error_message(s, "'directory' missing");
@@ -191,7 +191,7 @@ bool
 configfile::write ()
 {
     std::ofstream file(file_name(), std::ios::out | std::ios::trunc);
-    bool result = file.is_open();
+    bool result { file.is_open() };
     if (result)
     {
         /*
@@ -239,4 +239,3 @@ configfile::write ()
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-

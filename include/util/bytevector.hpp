@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-05-16
- * \updates       2024-05-21
+ * \updates       2026-02-12
  * \license       GNU GPLv2 or above
  *
  *  The bytevector class is meant for handling number binary data in chunks
@@ -96,14 +96,14 @@ private:
      *  m_data.size().
      */
 
-    size_t m_nominal_size;
+    size_t m_nominal_size { 0 };
 
     /**
      *  Provides an option offset to indicate that this buffer was taken
      *  from part of a larger vector. Defaults to 0.
      */
 
-    size_t m_offset;
+    size_t m_offset { 0 };
 
     /**
      *  Holds the last error message, useful for trouble-shooting without
@@ -111,7 +111,7 @@ private:
      *  pending error.  Currently most useful in the parse() function.
      */
 
-    mutable std::string m_error_message;
+    mutable std::string m_error_message { };
 
     /**
      *  Indicates if the error should be considered fatal to the loading of
@@ -119,20 +119,20 @@ private:
      *  return value from parse().
      */
 
-    mutable bool m_error_is_fatal;
+    mutable bool m_error_is_fatal { false };
 
     /**
      *  Indicates that vector read/writing has been disabled due to
      *  serious errors, so don't complain about it anymore. Once is enough.
      */
 
-    mutable bool m_disable_reported;
+    mutable bool m_disable_reported { false };
 
     /**
      *  Holds all the bytes of the bytevector, read in at once.
      */
 
-    util::bytes m_data;
+    util::bytes m_data { };
 
     /**
      *  Holds the position in the bytevector. This is at least a 31-bit
@@ -141,11 +141,11 @@ private:
      *  the actual "reading" done by the track object.
      */
 
-    mutable size_t m_position;
+    mutable size_t m_position { 0 };
 
 public:
 
-    bytevector ();
+    bytevector () = default;
     bytevector (const std::string & s);
     explicit bytevector
     (

@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-26
- * \updates       2022-12-28
+ * \updates       2026-02-12
  * \license       GNU GPLv2 or above
  *
  */
@@ -37,15 +37,14 @@ namespace cfg
 
 /**
  *  Default constructor.  Here, we do not use the set() function.  Makes
- *  debugging what caller's are doing with set() a little easier.
+ *  debugging what caller's are doing with set() a little easier. The
+ *  two members are also defaulted "in-class" (i.e. in the class header).
  */
 
 comments::comments (const std::string & comtext) :
-    m_comments_block    (comtext),
-    m_comment_is_set    (false)
+    m_comments_block    (comtext)
 {
-    if (comtext.empty())
-        m_comments_block = "Add your comment block here\n";
+    // no code needed
 }
 
 void
@@ -69,4 +68,3 @@ comments::set (const std::string & block)
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-

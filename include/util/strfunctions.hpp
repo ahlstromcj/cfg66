@@ -27,7 +27,7 @@
  *
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2026-02-10
+ * \updates       2026-02-12
  * \version       $Revision$
  *
  *    Also see the strfunctions.cpp module.
@@ -74,10 +74,11 @@ template<typename ... Args>
 std::string string_format (const std::string & format, Args ... args)
 {
     std::string result;
-    size_t sz { std::snprintf(nullptr, 0, format.c_str(), args ...) };
+    int count { std::snprintf(nullptr, 0, format.c_str(), args ...) };
+    size_t sz { size_t(count) };
     if (sz > 0)
     {
-        std::unique_ptr<char []> buf(new char[sz + 1]);
+        std::unique_ptr<char []> buf(new (std::nothrow) char[sz + 1]);
         std::snprintf(buf.get(), sz + 1, format.c_str(), args ...);
         result = std::string(buf.get(), buf.get() + sz);
     }

@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-01-26
- * \updates       2026-02-09
+ * \updates       2026-02-12
  * \license       See above.
  *
  *  Also includes testing of session::manager.
@@ -236,8 +236,8 @@ legacy_main_test (int argc, char * argv [])
     bool success { cfgmgr.add_inisections(s_sections_data) };
     if (success)
     {
-        session::directories dirs{};            /* TEMPORARY */
-        session::climanager{dirs, cfgmgr};
+        session::directories dirs { };            /* TEMPORARY */
+        session::climanager { dirs, cfgmgr };
         cli::multiparser & clip { cfgmgr.multi_parser() };
         success = clip.parse(argc, argv);
         if (clip.use_log_file())
@@ -278,7 +278,7 @@ legacy_main_test (int argc, char * argv [])
                  * of parsing.
                  */
 
-                std::string fname{cfgmgr.value("read")};
+                std::string fname { cfgmgr.value("read") };
                 success = cfgmgr.read_sections(fname, "rc");
                 if (success)
                 {
@@ -327,8 +327,8 @@ main_test (int argc, char * argv [])
     bool success { cfgmgr.add_inisections(s_sections_data) ;
     if (success)
     {
-        session::directories dirs{};            /* TEMPORARY */
-        session::climanager{dirs, cfgmgr};
+        session::directories dirs { };            /* TEMPORARY */
+        session::climanager { dirs, cfgmgr };
         cli::multiparser & clip { cfgmgr.multi_parser() };
         success = clip.parse(argc, argv);
         if (clip.use_log_file())
@@ -369,7 +369,7 @@ main_test (int argc, char * argv [])
                  * of parsing.
                  */
 
-                std::string fname{cfgmgr.value("read")};
+                std::string fname { cfgmgr.value("read") };
                 success = cfgmgr.read_sections(fname, "rc");
                 if (success)
                 {
@@ -394,7 +394,7 @@ main_test (int argc, char * argv [])
             }
             else if (do_write)
             {
-                std::string fname{cfgmgr.value("write")};
+                std::string fname { cfgmgr.value("write") };
                 success = cfgmgr.write_sections(fname, "rc");
                 /*
                 if (success)

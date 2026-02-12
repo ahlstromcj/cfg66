@@ -225,8 +225,7 @@ public:
 
     public:
 
-        spec () = default;
-
+        spec ();
         spec
         (
             const char * name, char code, const char * kind,
@@ -627,4 +626,3 @@ extern std::string build_help_line
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-

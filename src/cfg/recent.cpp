@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-03-29
- * \updates       2024-09-05
+ * \updates       2026-02-12
  * \license       GNU GPLv2 or above
  *
  *  The cfg66::recent class simply keeps track of recently-used files for the
@@ -45,7 +45,7 @@ namespace cfg
  *  store.
  */
 
-static const int sc_recent_files_max = 12;
+static const int sc_recent_files_max { 12 };
 
 /**
  *  This construction creates an empty recent-files list and sets the maximum
@@ -99,20 +99,20 @@ recent::operator = (const recent & source)
 bool
 recent::append (const std::string & item)
 {
-    bool result = count() < maximum();
+    bool result { count() < maximum() };
     if (result)
     {
-        std::string path = util::get_full_path(util::normalize_path(item));
+        std::string path { util::get_full_path(util::normalize_path(item)) };
         result = ! path.empty();
         if (result)
             result = util::file_readable(path);
 
         if (result)
         {
-            const auto & it = std::find
-            (
-                m_recent_list.cbegin(), m_recent_list.cend(), path
-            );
+            const auto & it
+            {
+                std::find(m_recent_list.cbegin(), m_recent_list.cend(), path)
+            };
             if (it == m_recent_list.end())              /* not found?   */
                 m_recent_list.push_back(path);          /* append it!   */
         }
@@ -123,8 +123,9 @@ recent::append (const std::string & item)
 /**
  *  This function is meant to be used when adding a file that the user
  *  selected.  If the file is already in the list, it is moved to the "top"
- *  (the beginning of the list); the original entry is removed.  If the list is
- *  full, the last entry is removed, in order to make room for the new entry.
+ *  (the beginning of the list); the original entry is removed.  If the list
+ *  is full, the last entry is removed, in order to make room for the new
+ *  entry.
  *
  * \param item
  *      Provides the file-name to add.  It is converted to the full path to
@@ -138,17 +139,17 @@ recent::append (const std::string & item)
 bool
 recent::add (const std::string & item)
 {
-    std::string path = util::get_full_path(util::normalize_path(item));
-    bool result = ! path.empty();
+    std::string path { util::get_full_path(util::normalize_path(item)) };
+    bool result { ! path.empty() };
     if (result)
         result = util::file_readable(path);
 
     if (result)
     {
-        const auto & it = std::find
-        (
-            m_recent_list.cbegin(), m_recent_list.cend(), path
-        );
+        const auto & it
+        {
+            std::find(m_recent_list.cbegin(), m_recent_list.cend(), path)
+        };
         if (it != m_recent_list.end())
             (void) m_recent_list.erase(it);
 
@@ -180,14 +181,14 @@ recent::add (const std::string & item)
 bool
 recent::remove (const std::string & item)
 {
-    std::string path = util::get_full_path(util::normalize_path(item));
-    bool result = ! path.empty();
+    std::string path { util::get_full_path(util::normalize_path(item)) };
+    bool result { ! path.empty() };
     if (result)
     {
-        const auto & it = std::find
-        (
-            m_recent_list.cbegin(), m_recent_list.cend(), path
-        );
+        const auto & it
+        {
+            std::find(m_recent_list.cbegin(), m_recent_list.cend(), path)
+        };
         if (it != m_recent_list.end())
             (void) m_recent_list.erase(it);
         else
@@ -241,13 +242,13 @@ recent::get (int index) const
 std::string
 recent::file (int index, bool shorten) const
 {
-    std::string result = get(index);
+    std::string result { get(index) };
     if (shorten && ! result.empty())
     {
         if (util::name_has_path(result))
         {
             std::string destpath, destbase;
-            bool ok = util::filename_split(result, destpath, destbase);
+            bool ok { util::filename_split(result, destpath, destbase) };
             if (ok)
                 result = destbase;
         }
@@ -262,4 +263,3 @@ recent::file (int index, bool shorten) const
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-

@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2025-02-07
- * \updates       2026-02-09
+ * \updates       2026-02-12
  * \license       See above.
  *
  *  We generally test only newly-added functions here; others were
@@ -117,7 +117,7 @@ main (int argc, char * argv [])
         }
         if (success)
         {
-            std::string file{"tests/data/lines.txt"};
+            std::string file { "tests/data/lines.txt" };
             lib66::tokenization lines;
             success = util::file_read_lines(file, lines);
             if (success)

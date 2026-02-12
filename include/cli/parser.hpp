@@ -82,13 +82,13 @@ private:
      *  options.
      */
 
-    cfg::options m_option_set;
+    cfg::options m_option_set { };
 
     /**
      *  Error messaging.
      */
 
-    bool m_has_error;
+    bool m_has_error { false };
     std::string m_error_msg;
 
     /**
@@ -96,7 +96,7 @@ private:
      *  options to start with a single '-' characters. The default is false.
      */
 
-    bool m_alternative;
+    bool m_alternative { false };
 
     /**
      *  Useful to quickly determine that the app was run only to see the help
@@ -105,19 +105,19 @@ private:
      *  configuration file, but the other options do not need to be saved.
      */
 
-    bool m_help_request;
+    bool m_help_request { false };
 
     /**
      *  This also manages the verbose setting in msgfunctions. See
      *  util::set_verbose() and util::verbose.
      */
 
-    bool m_version_request;
-    bool m_quiet_request;
-    bool m_verbose_request;
-    bool m_inspect_request;
-    bool m_investigate_request;
-    bool m_description_request;
+    bool m_version_request { false };
+    bool m_quiet_request { false };
+    bool m_verbose_request { false };
+    bool m_inspect_request { false };
+    bool m_investigate_request { false };
+    bool m_description_request { false };
 
     /**
      *  The settings for a log file can also be made via
@@ -127,12 +127,12 @@ private:
      *  function in the Xpc66 library project.
      */
 
-    bool m_use_log_file;
-    std::string m_log_file;
+    bool m_use_log_file { false };
+    std::string m_log_file { };
 
 public:
 
-    parser ();
+    parser () = default;
     parser
     (
         const cfg::options::container & optset,
@@ -513,4 +513,3 @@ protected:
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-

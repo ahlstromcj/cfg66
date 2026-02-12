@@ -275,4 +275,3 @@ extern std::string make_xdg_runtime_directory (const std::string & sub = "");
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-

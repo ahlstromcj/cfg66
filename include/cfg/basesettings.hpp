@@ -27,7 +27,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2019-01-17
- * \updates       2024-09-05
+ * \updates       2026-02-12
  * \license       GNU GPLv2 or above
  *
  *  This module defines some items common to all configuration files that get
@@ -57,14 +57,14 @@ private:
      *  Provides an optional file-name for the settings object.
      */
 
-    std::string m_file_name;
+    std::string m_file_name { };
 
     /**
      *  Indicates if the settings have been modified (in the user interface).
      *  Starts out false.
      */
 
-    bool m_modified;
+    bool m_modified { false };
 
     /**
      *  A new item that indicates the format of the file. For now,
@@ -72,7 +72,7 @@ private:
      *  "INI", "XML", "JSON".
      */
 
-    std::string m_config_format;
+    std::string m_config_format { };
 
     /**
      *  [Cfg66] config-type
@@ -83,7 +83,7 @@ private:
      *  with these values also representing the file extension.
      */
 
-    std::string m_config_type;
+    std::string m_config_type { };
 
     /**
      *  [Cfg66] version
@@ -93,7 +93,7 @@ private:
      *  change is made.
      */
 
-    int m_ordinal_version;
+    int m_ordinal_version { 0 };
 
     /**
      *  [comments]
@@ -108,23 +108,24 @@ private:
      *  Holds a buffer of error message(s).
      */
 
-    mutable std::string m_error_message;
+    mutable std::string m_error_message { };
 
     /**
      *  Indicates if the error message buffer contains error messages.
      */
 
-    mutable bool m_is_error;
+    mutable bool m_is_error { false };
 
 public:
 
+    basesettings () = default;
     basesettings
     (
-        const std::string & filename    = "",
-        const std::string & cfgformat   = "",
-        const std::string & cfgtype     = "",
+        const std::string & filename,
+        const std::string & cfgformat,
+        const std::string & cfgtype,
         const std::string & comtext     = "",
-        int version = 0
+        int version                     = 0
     );
     basesettings (const basesettings & rhs) = default;
     basesettings (basesettings && rhs) = default;
@@ -227,4 +228,3 @@ protected:
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-

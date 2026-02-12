@@ -105,9 +105,9 @@ inisection::specification small_interaction_data
  * All sections of the 'small' configuration
  *------------------------------------------------------------------------*/
 
-const std::string small_extension{"small"};
+const std::string small_extension { "small" };
 
-inisection::specification small_comments = stock_comment_data();
+inisection::specification small_comments { stock_comment_data() };
 
 inisection::specification small_cfg66_data
 {
@@ -164,4 +164,3 @@ inisections::specification small_data
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-

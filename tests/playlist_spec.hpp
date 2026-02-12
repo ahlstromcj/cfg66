@@ -37,7 +37,7 @@
 namespace cfg
 {
 
-const std::string playlist_extension{"playlist"};
+const std::string playlist_extension { "playlist" };
 
 /*------------------------------------------------------------------------
  * 'playlist' file
@@ -143,7 +143,7 @@ inisection::specification playlist_list_data
  * All sections of the 'playlist' configuration
  *------------------------------------------------------------------------*/
 
-inisection::specification playlist_comments = inifile_comment_data;
+inisection::specification playlist_comments { inifile_comment_data };
 
 inisections::specification playlist_data
 {
@@ -172,8 +172,8 @@ inisections::specification playlist_data
 #endif      // CFG66_CFG_PLAYLIST_SPEC_HPP
 
 /*
-* playlist_spec.hpp
-*
-* vim: sw=4 ts=4 wm=4 et ft=cpp
-*/
+ * playlist_spec.hpp
+ *
+ * vim: sw=4 ts=4 wm=4 et ft=cpp
+ */
 

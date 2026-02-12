@@ -544,8 +544,7 @@ inisections::specification session_data
 #endif      // CFG66_CFG_SESSION_SPEC_HPP
 
 /*
-* session_spec.hpp
-*
-* vim: sw=4 ts=4 wm=4 et ft=cpp
-*/
-
+ * session_spec.hpp
+ *
+ * vim: sw=4 ts=4 wm=4 et ft=cpp
+ */

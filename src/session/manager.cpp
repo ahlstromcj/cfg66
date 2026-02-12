@@ -97,25 +97,6 @@ static cfg::options::container s_option_client_name // or a single option?
 };
 
 /**
- *  Default constructor
- */
-
-manager::manager () :
-    m_session_config        (),
-    m_capabilities          (),
-    m_manager_name          (),
-    m_manager_path          (),
-    m_display_name          (),
-    m_client_id             (),
-    m_is_help               (false),
-    m_last_dirty_status     (false),
-    m_extant_errmsg         (),
-    m_extant_msg_active     (false)
-{
-    // set_configuration_defaults();
-}
-
-/**
  *  Principle constructor
  *
  *  The filename and section name are meant to be used when reading and writing
@@ -187,12 +168,12 @@ manager::~manager ()
 bool
 manager::settings (int argc, char * argv [])
 {
-    std::string appname = cfg::get_app_name();  /* see initialize_appinfo() */
-    bool result = ! appname.empty();
+    std::string appname { cfg::get_app_name() }; /* initialize_appinfo()    */
+    bool result { ! appname.empty() };
     if (result)
     {
         std::string errmessage;                 /* just in case!            */
-        bool ishelp = false;    // TODO
+        bool ishelp { false };    // TODO
         if (ishelp)
         {
             is_help(true);
@@ -223,7 +204,7 @@ manager::settings (int argc, char * argv [])
 bool
 manager::parse_option_file (std::string & errmessage)
 {
-    bool result = true;
+    bool result { true };
     errmessage = "parse_option_file() not implemented";
 #if THIS_CODE_IS_READY
     if (result)
@@ -240,7 +221,7 @@ manager::parse_command_line
     std::string & errmessage
 )
 {
-    bool result = true;
+    bool result { true };
     errmessage = "parse_command_line() not implemented";
     (void) argc;
     (void) argv;
@@ -262,7 +243,7 @@ manager::write_option_file (std::string & errmessage)
 bool
 manager::create_configuration (std::string & errmessage)
 {
-    bool result = false;
+    bool result { false };
     errmessage = "create_configuration() not yet implemented";
     return result;
 }
@@ -270,7 +251,7 @@ manager::create_configuration (std::string & errmessage)
 bool
 manager::create_directories (std::string & errmessage)
 {
-    bool result = false;
+    bool result { false };
     errmessage = "create_directories() not yet implemented";
     return result;
 }
@@ -311,7 +292,7 @@ manager::create_session (int /*argc*/, char * /*argv*/ [])
 bool
 manager::close_session (std::string & msg, bool ok)
 {
-    bool result = save_session(msg, true); // result);
+    bool result { save_session(msg, true) }; // result);
     if (result)
     {
     }
@@ -347,11 +328,11 @@ manager::close_session (std::string & msg, bool ok)
 bool
 manager::save_session (std::string & msg, bool ok)
 {
-    bool result = true;
+    bool result { true };
     if (ok)
     {
         std::string errmessage;
-        bool save = session_config().modified();
+        bool save { session_config().modified() };
 
         if (save)
         {
@@ -423,14 +404,14 @@ manager::append_error_message (const std::string & msg) const
 void
 manager::show_message (const std::string & tag, const std::string & msg) const
 {
-    std::string fullmsg = tag + ": " + msg;
+    std::string fullmsg { tag + ": " + msg };
     util::info_message(fullmsg);       /* checks for "debug" and adds "[]" */
 }
 
 void
 manager::show_error (const std::string & tag, const std::string & msg) const
 {
-    std::string fullmsg = tag + ": " + msg;
+    std::string fullmsg { tag + ": " + msg };
     util::error_message(msg);
 }
 
@@ -453,7 +434,7 @@ manager::internal_error_check (std::string & errmsg) const
     std::string pmerrmsg;
     errmsg.clear();
 
-    bool result = internal_error_pending();
+    bool result { internal_error_pending() };
     if (result)
     {
         pmerrmsg +=
@@ -502,19 +483,18 @@ manager::error_handling ()
 bool
 manager::create_manager (int argc, char * argv [])
 {
-    bool result = settings(argc, argv);
+    bool result { settings(argc, argv) };
     if (result)
     {
-        bool ok = create_session(argc, argv);   /* get path, client ID, etc */
+        bool ok { create_session(argc, argv) }; /* get path, client ID, etc */
         if (ok)
         {
-            std::string homedir = manager_path();
+            std::string homedir { manager_path() };
             if (homedir.empty())
                 homedir = "GET FROM files CLASS";   // c_home_directory;
 
             util::file_message("Session manager path", homedir);
 
-            //
             // TODO TODO TODO
             // (void) create_project(argc, argv, homedir);
         }
@@ -566,12 +546,12 @@ manager::create_configuration
     const std::string & cfgfilepath
 )
 {
-    bool result = ! cfgfilepath.empty();
+    bool result { ! cfgfilepath.empty() };
     if (result)
     {
-        std::string rcbase = config_filename();
-        std::string rcfile = util::filename_concatenate(cfgfilepath, rcbase);
-        bool already_created = util::file_exists(rcfile);
+        std::string rcbase { config_filename() };
+        std::string rcfile { util::filename_concatenate(cfgfilepath, rcbase) };
+        bool already_created { util::file_exists(rcfile) };
         // midi_filename(midifilepath);                    /* do this first    */
         if (already_created)
         {
@@ -586,7 +566,7 @@ manager::create_configuration
                 }
                 else
                 {
-                    bool u = rc().auto_usr_save();      /* --user-save?     */
+                    bool u { rc().auto_usr_save() };    /* --user-save?     */
                     rc().set_save_list(false);          /* save them all    */
                     rc().auto_usr_save(u);              /* restore it       */
                 }
@@ -641,7 +621,7 @@ manager::read_configuration
 //  session_config().home_config_path(cfgfilepath);    /* set NSM dir      */
 
     std::string errmessage;
-    bool result = parse_option_file(errmessage);
+    bool result { parse_option_file(errmessage) };
     if (result)
     {
         /*
@@ -654,7 +634,7 @@ manager::read_configuration
 
         if (argc > 1)
         {
-            int rcode = parse_command_line(argc, argv, errmessage);
+            int rcode { parse_command_line(argc, argv, errmessage) };
             result = rcode != (-1);
             if (! result)               // DONE above parse_o_options(argc, argv);
                 is_help(true);          /* a hack to avoid create_window()  */
@@ -675,10 +655,10 @@ manager::make_path_names
     std::string & outcfgpath
 )
 {
-    bool result = ! path.empty();
+    bool result { ! path.empty() };
     if (result)
     {
-        std::string cfgpath = path;
+        std::string cfgpath { path };
 
         // FIXME
         if (result) // TODO:  in session call? in_nsm_session()) // nsm_active()
@@ -717,12 +697,12 @@ manager::import_into_session
     const std::string & sourcebase              /* e.g. qrcfg66.rc */
 )
 {
-    bool result = ! sourcepath.empty() && ! sourcebase.empty();
+    bool result { ! sourcepath.empty() && ! sourcebase.empty() };
     if (result)
     {
 #if defined THIS_CODE_IS_READY
-        std::string destdir = rc().home_config_directory();
-        std::string destbase = rc().config_filename();
+        std::string destdir { rc().home_config_directory() };
+        std::string destbase { rc().config_filename() };
         std::string cfgpath;
         result = make_path_names(destdir, cfgpath);
         if (result)
@@ -775,12 +755,12 @@ manager::import_configuration
     const std::string & // cfgfilepath
 )
 {
-    bool result = ! sourcepath.empty() && ! sourcebase.empty();
+    bool result { ! sourcepath.empty() && ! sourcebase.empty() };
     if (result)
     {
 #if defined THIS_CODE_IS_READY
-        std::string rcbase = util::file_extension_set(sourcebase, ".rc");
-        std::string rcfile = util::filename_concatenate(sourcepath, rcbase);
+        std::string rcbase { util::file_extension_set(sourcebase, ".rc") };
+        std::string rcfile { util::filename_concatenate(sourcepath, rcbase) };
         result = util::file_exists(rcfile);             /* a valid source   */
         if (result)
         {
@@ -817,4 +797,3 @@ manager::import_configuration
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-

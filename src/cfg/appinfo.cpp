@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2017-03-12
- * \updates       2024-10-28
+ * \updates       2026-02-12
  * \license       GNU GPLv2 or above
  *
  *  The first part of this file defines a couple of global structure
@@ -75,11 +75,11 @@ namespace cfg
  */
 
 #if defined PLATFORM_UNIX
-static std::string s_path_separator     = "/";
+static std::string s_path_separator     { "/" };
 #elif defined PLATFORM_WINDOWS
-static std::string s_path_separator     = "\\";
+static std::string s_path_separator     { "\\" };
 #else
-static std::string s_path_separator     = "/";
+static std::string s_path_separator     { "/" };
 #endif
 
 
@@ -91,25 +91,25 @@ static std::string s_path_separator     = "/";
  */
 
 #if defined PLATFORM_WINDOWS
-static std::string s_app_build_os    = "Windows 1x";    /* FIXME    */
-static std::string s_app_build_issue = "Microsoft Windows";
+static std::string s_app_build_os    { "Windows 1x" };    /* FIXME    */
+static std::string s_app_build_issue { "Microsoft Windows" };
 #elif defined PLATFORM_MACOSX
-static std::string s_app_build_os    = "MacOSX";        /* FIXME    */
-static std::string s_app_build_issue = "Apple MacOSX";
+static std::string s_app_build_os    { "MacOSX" };        /* FIXME    */
+static std::string s_app_build_issue { "Apple MacOSX" };
 #elif defined PLATFORM_UNIX
 #if defined PLATFORM_LINUX
-static std::string s_app_build_os    = "Linux";
-static std::string s_app_build_issue = "Linux";         /* FIXME    */
+static std::string s_app_build_os    { "Linux" };
+static std::string s_app_build_issue { "Linux" };         /* FIXME    */
 #elif defined PLATFORM_FREEBSD
-static std::string s_app_build_os    = "FreeBSD";
-static std::string s_app_build_issue = "FreeBSD";       /* FIXME    */
+static std::string s_app_build_os    { "FreeBSD" };
+static std::string s_app_build_issue { "FreeBSD" };       /* FIXME    */
 #else
-static std::string s_app_build_os    = "UNIX";
-static std::string s_app_build_issue = "UNIX";          /* FIXME    */
+static std::string s_app_build_os    { "UNIX" };
+static std::string s_app_build_issue { "UNIX" };          /* FIXME    */
 #endif
 #else
-static std::string s_app_build_os    = "Other platform";
-static std::string s_app_build_issue = "Other platform";
+static std::string s_app_build_os    { "Other platform" };
+static std::string s_app_build_issue { "Other platform" };
 #endif
 
 /**
@@ -121,33 +121,6 @@ app_info ()
 {
     static appinfo s_app_info;
     return s_app_info;
-}
-
-/**
- *  Default constructor.
- */
-
-appinfo::appinfo () :
-    m_app_kind              (appkind::indeterminate),
-    m_app_name              ("app"),
-    m_app_version           ("0"),
-    m_main_cfg_section_name ("[Cfg66]"),
-    m_home_cfg_directory    (),
-    m_home_cfg_file         (),
-    m_client_name           ("app"),
-    m_app_tag               ("app-0"),
-    m_arg_0                 (),
-    m_package_name          ("NOPACKAGE"),
-    m_session_tag           (),
-    m_app_icon_name         (),
-    m_app_version_text      ("app v. 0"),
-    m_api_engine            (),
-    m_api_version           (),
-    m_gui_version           (),
-    m_client_name_short     ("app"),
-    m_client_name_tag       ()
-{
-    // no other code
 }
 
 /**
@@ -200,7 +173,7 @@ appinfo::appinfo
 bool
 appinfo::initialize (const std::string & arg0)
 {
-    std::string cname = m_client_name;           /* might have a wart        */
+    std::string cname { m_client_name };         /* might have a wart        */
     if (cname.empty())
         cname = m_app_name;
 
@@ -286,7 +259,7 @@ set_app_version (const std::string & version)
 void
 set_app_type (const std::string & atype)
 {
-    appkind temp = appkind::indeterminate;
+    appkind temp { appkind::indeterminate };
     if (atype == "headless")
         temp = appkind::headless;
     else if (atype == "cli")
@@ -352,7 +325,7 @@ set_arg_0 (const std::string & arg)
 void
 set_client_name (const std::string & cname)
 {
-    auto pos = cname.find_first_of("./:");      /* session delimiters       */
+    auto pos { cname.find_first_of("./:") };    /* session delimiters       */
     app_info().m_client_name = cname;           /* base name of client      */
     app_info().m_client_name_short = cname;
     if (pos != std::string::npos)               /* strip off the wart       */
@@ -396,20 +369,20 @@ set_session_tag (const std::string & sname)
 const std::string &
 get_home ()
 {
-    static bool s_got_home = false;
-    static std::string s_home = "";
+    static bool s_got_home { false };
+    static std::string s_home { "" };
     if (! s_got_home)
     {
 #if defined PLATFORM_UNIX
-        char * env = std::getenv("HOME");
+        char * env { std::getenv("HOME") };
         if (not_nullptr(env))
         {
             s_got_home = true;
             s_home = std::string(env);
         }
 #elif defined PLATFORM_WINDOWS
-        char * envdrv = std::getenv("HOMEDRIVE");
-        char * envpath = std::getenv("HOMEPATH");
+        char * envdrv { std::getenv("HOMEDRIVE") };
+        char * envpath { std::getenv("HOMEPATH") };
         if (not_nullptr_2(envdrv, envpath))
         {
             s_got_home = true;
@@ -433,7 +406,7 @@ get_home ()
 std::string
 get_home_cfg_directory ()
 {
-    std::string result = get_home();
+    std::string result { get_home() };
     if (app_info().m_home_cfg_directory.empty())
     {
         result = get_home();
@@ -466,7 +439,7 @@ get_home_cfg_file ()
 std::string
 get_home_cfg_filespec ()
 {
-    std::string result = get_home_cfg_directory();
+    std::string result { get_home_cfg_directory() };
     result += s_path_separator;
     result += app_info().m_home_cfg_file;
     return result;
@@ -588,7 +561,7 @@ is_a_tty (int fd)
         case STDERR_FILENO: fileno = _fileno(stderr);   break;
         default:            fileno = (-1);              break;
     }
-    int rc = (fileno >= 0) ? _isatty(fileno) : 90 ;
+    int rc { fileno >= 0 ? _isatty(fileno) : 90 };
     return rc == 1;                             /* fd refers to a terminal  */
 #else
     int rc = isatty(fd);
@@ -605,7 +578,7 @@ is_a_tty (int fd)
 const std::string &
 level_color (int index)
 {
-    static const std::string s_level_colors [] =
+    static const std::string s_level_colors []
     {
         "\033[0m",          /* 0: goes back to normal console color */
         "\033[1;32m",       /* 1: info message green                */
@@ -643,13 +616,16 @@ get_client_tag (lib66::msglevel el)
     }
     else
     {
-        std::string result = "[";
-        int index = static_cast<int>(el);
-        bool iserror = el == lib66::msglevel::error ||
+        std::string result { "[" };
+        int index { static_cast<int>(el) };
+        bool iserror
+        {
+            el == lib66::msglevel::error ||
             el == lib66::msglevel::warn ||
-            el == lib66::msglevel::debug;
+            el == lib66::msglevel::debug
+        };
 
-        bool showcolor = is_a_tty(iserror ? STDERR_FILENO : STDOUT_FILENO);
+        bool showcolor { is_a_tty(iserror ? STDERR_FILENO : STDOUT_FILENO) };
         if (showcolor)
             result += level_color(index);
 
@@ -676,7 +652,7 @@ get_package_name ()
 std::string
 get_session_tag (const std::string & refinement)
 {
-    std::string result = app_info().m_session_tag;
+    std::string result { app_info().m_session_tag };
     if (! refinement.empty())
     {
         result += " ";
@@ -705,7 +681,7 @@ get_api_version ()
 const std::string &
 get_api_subdirectory ()
 {
-    static bool s_uninitialized = true;
+    static bool s_uninitialized { true };
     static std::string s_subdirectory;
     if (s_uninitialized)
     {
@@ -755,9 +731,9 @@ get_app_tag ()
  */
 
 #if defined PLATFORM_32_BIT
-const static std::string s_bitness = "32-bit";
+const static std::string s_bitness { "32-bit" };
 #else
-const static std::string s_bitness = "64-bit";
+const static std::string s_bitness { "64-bit" };
 #endif
 
 /**
@@ -773,9 +749,9 @@ get_build_details ()
 {
     std::ostringstream result;
 #if defined PLATFORM_DEBUG
-    std::string buildmode = "Debug";
+    std::string buildmode { "Debug" };
 #else
-    std::string buildmode = "Release";
+    std::string buildmode { "Release" };
 #endif
 
     result
@@ -863,7 +839,6 @@ get_app_variable (const std::string & variable)
     return result;
 }
 
-
 #endif
 
 }           // namespace cfg
@@ -873,4 +848,3 @@ get_app_variable (const std::string & variable)
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-

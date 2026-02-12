@@ -25,7 +25,7 @@
  * \library       ftswalker
  * \author        Chris Ahlstrom
  * \date          2025-03-10
- * \updates       2025-04-13
+ * \updates       2026-02-12
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
@@ -304,10 +304,10 @@ ftswalker::find_file
     lib66::tokenization & destination
 )
 {
-    bool result = not_nullptr(paths());
+    bool result { not_nullptr(paths()) };
     if (result)
     {
-        ::FTS * ftsp = ::fts_open(paths(), FTS_LOGICAL, NULL);
+        ::FTS * ftsp { ::fts_open(paths(), FTS_LOGICAL, NULL) };
         if (ftsp == NULL)
         {
             util::error_message("fts_open() failed");
@@ -318,16 +318,16 @@ ftswalker::find_file
             result = false;                             /* tentative        */
             for (;;)
             {
-                ::FTSENT * ent = fts_read_entry(ftsp);  /* next file/dir    */
+                ::FTSENT * ent { fts_read_entry(ftsp) }; /* next file/dir   */
                 if (ent == NULL)
                     break;
 
                 if (is_actionable_file(ent))
                 {
-                    std::string base = util::filename_base(ent->fts_path);
+                    std::string base { util::filename_base(ent->fts_path) };
                     if (util::strcompare(target, base))
                     {
-                        std::string p = ent->fts_path;  /* target path  */
+                        std::string p { ent->fts_path };  /* target path    */
                         util::info_message("Path", p);
                         destination.push_back(p);
                         result = true;
@@ -335,7 +335,7 @@ ftswalker::find_file
                 }
                 else if (is_fts_error(ent))
                 {
-                    std::string errmsg = strerror(ent->fts_errno);
+                    std::string errmsg { strerror(ent->fts_errno) };
                     util::error_message(errmsg, ent->fts_path);
                 }
             }
@@ -365,10 +365,10 @@ ftswalker::find_file
 bool
 ftswalker::find_regular_files (lib66::tokenization & destination)
 {
-    bool result = not_nullptr(paths());
+    bool result { not_nullptr(paths()) };
     if (result)
     {
-        ::FTS * ftsp = ::fts_open(paths(), FTS_LOGICAL, NULL);
+        ::FTS * ftsp { ::fts_open(paths(), FTS_LOGICAL, NULL) };
         if (ftsp == NULL)
         {
             util::error_message("fts_open() failed");
@@ -379,20 +379,20 @@ ftswalker::find_regular_files (lib66::tokenization & destination)
             result = false;                             /* tentative        */
             for (;;)
             {
-                ::FTSENT * ent = fts_read_entry(ftsp);  /* next file/dir    */
+                ::FTSENT * ent { fts_read_entry(ftsp) }; /* next file/dir   */
                 if (ent == NULL)
                     break;
 
                 if (is_regular_file(ent))
                 {
-                    std::string p = ent->fts_path;      /* target path      */
+                    std::string p { ent->fts_path };    /* target path      */
                     util::info_message("File", p);
                     destination.push_back(p);
                     result = true;
                 }
                 else if (is_fts_error(ent))
                 {
-                    std::string errmsg = strerror(ent->fts_errno);
+                    std::string errmsg { strerror(ent->fts_errno) };
                     util::error_message(errmsg, ent->fts_path);
                 }
             }
@@ -434,10 +434,10 @@ ftswalker::process_files
     comparator cfn
 )
 {
-    bool result = not_nullptr(paths()); /* ! m_search_directories.empty();  */
+    bool result { not_nullptr(paths()) };
     if (result)
     {
-        ::FTS * ftsp = ::fts_open(paths(), FTS_LOGICAL, cfn);
+        ::FTS * ftsp { ::fts_open(paths(), FTS_LOGICAL, cfn) };
         if (ftsp == NULL)
         {
             util::error_message("fts_open() failed");
@@ -451,21 +451,21 @@ ftswalker::process_files
 
             for (;;)
             {
-                ::FTSENT * ent = fts_read_entry(ftsp);  /* next file/dir    */
+                ::FTSENT * ent { fts_read_entry(ftsp) }; /* next file/dir   */
                 if (ent == NULL)
                     break;
 
                 if (is_actionable_file(ent))
                 {
-                    bool process_it = true;
+                    bool process_it { true };
                     if (! target.empty())
                     {
-                        std::string base = util::filename_base(ent->fts_path);
+                        std::string base { util::filename_base(ent->fts_path) };
                         process_it = util::strcompare(target, base);
                     }
                     if (process_it)
                     {
-                        std::string p = ent->fts_path;  /* target path      */
+                        std::string p { ent->fts_path }; /* target path     */
                         FTS ft = get_fts_type(ent);
                         result = fn(p, ft);
                         if (! result)
@@ -474,7 +474,7 @@ ftswalker::process_files
                 }
                 else if (is_fts_error(ent))
                 {
-                    std::string errmsg = strerror(ent->fts_errno);
+                    std::string errmsg { strerror(ent->fts_errno) };
                     util::error_message(errmsg, ent->fts_path);
                 }
             }
@@ -557,10 +557,10 @@ ftswalker::process_files
     comparator cfn
 )
 {
-    bool result = not_nullptr(paths()) && util::file_is_directory(target);
+    bool result { not_nullptr(paths()) && util::file_is_directory(target) };
     if (result)
     {
-        ::FTS * ftsp = ::fts_open(paths(), FTS_LOGICAL, cfn);
+        ::FTS * ftsp { ::fts_open(paths(), FTS_LOGICAL, cfn) };
         if (ftsp == NULL)
         {
             util::error_message("fts_open() failed");
@@ -568,20 +568,20 @@ ftswalker::process_files
         }
         if (result)
         {
-            bool exited_directory = false;
-            std::string lastdest = target;
+            bool exited_directory { false };
+            std::string lastdest { target };
             for (;;)
             {
-                ::FTSENT * ent = fts_read_entry(ftsp);  /* next file/dir    */
+                ::FTSENT * ent { fts_read_entry(ftsp) }; /* next file/dir   */
                 if (ent == NULL)
                     break;
 
                 if (is_actionable_file(ent))
                 {
-                    bool process_it = ! target.empty();
+                    bool process_it { ! target.empty() };
                     if (process_it)
                     {
-                        std::string p = ent->fts_path;
+                        std::string p { ent->fts_path };
                         FTS ft = get_fts_type(ent);
                         if (ft == FTS::D)
                         {
@@ -612,7 +612,7 @@ ftswalker::process_files
                 }
                 else if (is_fts_error(ent))
                 {
-                    std::string errmsg = strerror(ent->fts_errno);
+                    std::string errmsg { strerror(ent->fts_errno) };
                     util::error_message(errmsg, ent->fts_path);
                 }
             }
@@ -632,15 +632,15 @@ ftswalker::process_files
 void
 ftswalker::make_paths ()
 {
-    int count = int(m_search_directories.size());
+    int count { int(m_search_directories.size()) };
     delete_paths();
     if (count > 0)
     {
-        char ** p = new (std::nothrow) char * [count + 1];  /* with nullptr */
+        char ** p { new (std::nothrow) char * [count + 1] };   /* w/nullptr */
         m_paths = p;
         if (not_nullptr(m_paths))
         {
-            int i = 0;
+            int i { 0 };
             for (const auto & s : m_search_directories)
                 m_paths[i++] = STR(s);
 
@@ -699,8 +699,8 @@ fts_read_entry (::FTS * ftsp)
 bool
 fts_show_target (const std::string & match, util::ftswalker::FTS ft)
 {
-    std::string t = get_fts_type_name(ft);
-    std::string m = match.empty() ? "---" : match ;
+    std::string t { get_fts_type_name(ft) };
+    std::string m { match.empty() ? "---" : match };
     if (t.empty())
         t = "?";                        /* this should not happen           */
 
@@ -730,7 +730,7 @@ fts_item_copy
     util::ftswalker::FTS ft
 )
 {
-    bool result = true;                             /* no action is okay    */
+    bool result { true };                           /* no action is okay    */
     if (ft == util::ftswalker::FTS::D)              /* first directory      */
     {
         util::info_message("Entered directory", source);
@@ -766,7 +766,7 @@ fts_item_copy
 bool
 fts_copy_directory (const std::string & source, const std::string & dest)
 {
-    bool result = file_is_directory(source) && file_is_directory(dest);
+    bool result { file_is_directory(source) && file_is_directory(dest) };
     if (result)
     {
         util::ftswalker walker(source);
@@ -789,7 +789,7 @@ fts_copy_directory (const std::string & source, const std::string & dest)
 bool
 fts_item_delete (const std::string & item, util::ftswalker::FTS ft)
 {
-    bool result = file_exists(item);
+    bool result { file_exists(item) };
     if (result)
     {
         if (ft == util::ftswalker::FTS::D)              /* first directory  */
@@ -840,7 +840,7 @@ fts_item_delete (const std::string & item, util::ftswalker::FTS ft)
 bool
 fts_delete_directory (const std::string & path)
 {
-    bool result = file_is_directory(path);
+    bool result { file_is_directory(path) };
     if (result)
     {
         util::ftswalker walker(path);
@@ -961,16 +961,16 @@ fts_find_file
     const std::string & target
 )
 {
-    bool result = false;
-    char * const paths [] =
+    bool result { false };
+    char * const paths [] { STR(rootdir), nullptr };
+    ::FTS * ftsp
     {
-        STR(rootdir), nullptr
+        fts_open
+        (
+            paths, FTS_LOGICAL,
+            compare_files_before_dirs       /* a comparator, defined above  */
+        )
     };
-    ::FTS * ftsp = fts_open
-    (
-        paths, FTS_LOGICAL,
-        compare_files_before_dirs           /* a comparator, defined above  */
-    );
     if (ftsp == NULL)
     {
         util::error_message("fts_open() failed");
@@ -985,10 +985,10 @@ fts_find_file
      * The loop will call fts_read() enough times to get each file.
      */
 
-    ::FTSENT * currententry = NULL;
+    ::FTSENT * currententry { NULL };
     for (;;)
     {
-        ::FTSENT * ent = ::fts_read(ftsp);  /* get next file or directory   */
+        ::FTSENT * ent { ::fts_read(ftsp) }; /* get next file or directory  */
         if (ent == NULL)
             break;
 
@@ -1000,7 +1000,7 @@ fts_find_file
                  * Set that no descendants of this file are visited.
                  */
 
-                int err = fts_set(ftsp, ent, FTS_SKIP);
+                int err { fts_set(ftsp, ent, FTS_SKIP) };
                 if (err != 0)
                 {
                     util::error_message("fts_set() failed");
@@ -1016,16 +1016,16 @@ fts_find_file
         }
         else if (is_regular_file(ent))
         {
-            std::string base = util::filename_base(ent->fts_path);
+            std::string base { util::filename_base(ent->fts_path) };
             if (util::strcompare(target, base))
             {
-                std::string p = ent->fts_path;          /* target path      */
+                std::string p { ent->fts_path };        /* target path      */
 
                 /*
                  * This code basically gets the base filename.
                  */
 
-                std::string rest = p;
+                std::string rest { p };
                 rest = rest.substr(rootdir.length() + 1);
                 util::info_printf("Path %s, file %s", V(p), V(rest));
                 result = true;
@@ -1073,4 +1073,3 @@ fts_find_file
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-

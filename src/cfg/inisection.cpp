@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-07-28
+ * \updates       2026-02-12
  * \license       See above.
  *
  *  See the inisections class and modules for details.
@@ -59,7 +59,7 @@ inisection::inisection (bool loadglobal) :
 {
     if (loadglobal)
     {
-        options::container & opspecs = option_set().option_pairs();
+        options::container & opspecs { option_set().option_pairs() };
         for (const auto & opt : opspecs)
             add_name(opt.first);
     }
@@ -108,11 +108,11 @@ inisection::inisection
 #endif
 
 #if defined WE_NEED_THIS_CODE
-    options::container & opspecs = spec.sec_optionlist;
+    options::container & opspecs { spec.sec_optionlist };
     options::init_container(opspecs);
     for (const auto & opt : opspecs)
     {
-        options::option p = std::make_pair(opt.first, opt.second);
+        options::option p { std::make_pair(opt.first, opt.second) };
         if (option_set().add(p))
             add_name(opt.first);
     }
@@ -126,7 +126,7 @@ inisection::inisection
 std::string
 inisection::settings_text () const
 {
-    std::string result = "\n";
+    std::string result { "\n" };
     result += description_commented();          /* description_wrapped() */
     result += name();
     for (const auto & s : option_names())
@@ -150,12 +150,12 @@ inisection::cli_help_text () const
     std::string result;
     if (get_main_cfg_section_name() != name())
     {
-        bool havenames = false;
-        std::string enabledoptshelp = option_set().cli_help_text();
+        bool havenames { false };
+        std::string enabledoptshelp { option_set().cli_help_text() };
         if (! enabledoptshelp.empty())
         {
 #if defined USE_COLOR_CLI_HELP_TEXT
-            bool showcolor = is_a_tty();
+            bool showcolor { is_a_tty() };
             if (showcolor)
                 result += level_color(3);           /* see appinfo module   */
 #endif
@@ -180,21 +180,30 @@ inisection::cli_help_text () const
             if (! section_description().empty())
             {
 #if defined SHOW_WHOLE_DESCRIPTION          // way too much for --help
-                std::string formatted = util::hanging_word_wrap
-                (
-                    section_description(), 0, options::terminal_width
-                );
+                std::string formatted
+                {
+                    util::hanging_word_wrap
+                    (
+                        section_description(), 0, options::terminal_width
+                    )
+                };
                 result += formatted;
                 result += "\n\n";
 #else
-                std::string line = util::first_sentence(section_description());
+                std::string line
+                {
+                    util::first_sentence(section_description())
+                };
                 if (havenames)
                     result += "\n\n";
 
-                std::string formatted = util::hanging_word_wrap
-                (
-                    line, 0, options::terminal_width
-                );
+                std::string formatted
+                {
+                    util::hanging_word_wrap
+                    (
+                        line, 0, options::terminal_width
+                    )
+                };
                 result += formatted;
                 result += "\n\n";
 #endif
@@ -208,7 +217,7 @@ inisection::cli_help_text () const
 std::string
 inisection::help_text () const
 {
-    std::string result = name();
+    std::string result { name() };
     result += "\n";
     result += section_description();
     result += "\n";
@@ -219,7 +228,7 @@ inisection::help_text () const
 std::string
 inisection::debug_text () const
 {
-    std::string result = config_type();
+    std::string result { config_type() };
     result += ":";
     result += name();
     result += "\n";
@@ -317,7 +326,8 @@ stock_cfg66_data ()
             {
                 "config-type",
                 {
-                    options::code_null, options::kind::string, options::disabled,
+                    options::code_null, options::kind::string,
+                    options::disabled,
                     "session", "", false, false,
                     "The type of configuration file.", false
                 }
@@ -325,7 +335,8 @@ stock_cfg66_data ()
             {
                 "version",
                 {
-                    options::code_null, options::kind::integer, options::disabled,
+                    options::code_null, options::kind::integer,
+                    options::disabled,
                     "0", "", false, false,
                     "Configuration file version.", false
                 }
@@ -356,7 +367,8 @@ stock_comment_data ()
             {
                 "comment",
                 {
-                    options::code_null, options::kind::section, options::disabled,
+                    options::code_null, options::kind::section,
+                    options::disabled,
 "Add your comment block here. Comments are a 'section' option. For 'section'\n"
 "options, there are no 'variable = value' lines, just lines that are read\n"
 "as is.\n"
@@ -380,4 +392,3 @@ stock_comment_data ()
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-

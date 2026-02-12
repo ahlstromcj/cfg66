@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-08-04
+ * \updates       2026-02-12
  * \license       See above.
  *
  * Operations to support:
@@ -253,7 +253,7 @@ inisections::extract_file_values (const std::string & fname)
     else
     {
         std::string path, filebase, ext;
-        bool has_path = util::filename_split_ext(fname, path, filebase, ext);
+        bool has_path { util::filename_split_ext(fname, path, filebase, ext) };
         if (has_path)
             m_directory = path;
 
@@ -275,7 +275,7 @@ inisections::extract_file_values (const std::string & fname)
 void
 inisections::fix_extension (const std::string & ext)
 {
-    std::string extension = ext;
+    std::string extension { ext };
     if (extension[0] != '.')
         extension = "." + extension;
 
@@ -315,8 +315,8 @@ inisections::file_specification
 {
     if (util::name_has_path(basename))
     {
-        std::string base = basename;
-        std::string extension = cfgtype;
+        std::string base { basename };
+        std::string extension { cfgtype };
         if (! extension.empty())
         {
             if (extension.front() != '.')
@@ -328,8 +328,11 @@ inisections::file_specification
     }
     else
     {
-        const std::string & base = basename.empty() ? m_base_name : basename ;
-        std::string extension = cfgtype;
+        const std::string & base
+        {
+            basename.empty() ? m_base_name : basename
+        };
+        std::string extension { cfgtype };
         if (extension.empty())
         {
             extension = m_extension;
@@ -351,9 +354,12 @@ inisections::file_specification
 std::string
 inisections::settings_text () const
 {
-    std::string filespec = util::filename_concatenate(m_directory, m_base_name);
-    std::string result = "# ";
-    result += m_app_version + "\n# INI: "; // result += s_stock_file_intro + "\n"
+    std::string filespec
+    {
+        util::filename_concatenate(m_directory, m_base_name)
+    };
+    std::string result { "# " };
+    result += m_app_version + "\n# INI: ";
     result += filespec + "\n# ";
     result += m_description + "\n#";
 
@@ -429,8 +435,8 @@ inisections::fix_section_name (const std::string & s) const
 const inisection &
 inisections::find_inisection (const std::string & sectionname) const
 {
-    static inisection s_inactive_inisection{! options::stock};
-    std::string name = fix_section_name(sectionname);
+    static inisection s_inactive_inisection { ! options::stock };
+    std::string name { fix_section_name(sectionname) };
     for (const auto & section : section_list())
     {
         if (section.name() == name)
@@ -466,8 +472,8 @@ inisections::find_inisection (const std::string & sectionname)
 const options &
 inisections::find_options (const std::string & sectionname) const
 {
-    static options s_inactive_options{! options::stock};
-    const inisection & section = find_inisection(sectionname);
+    static options s_inactive_options { ! options::stock };
+    const inisection & section { find_inisection(sectionname) };
     if (section.active())
         return section.option_set();
     else
@@ -505,8 +511,8 @@ inisections::add_options
     const std::string & sectionname
 )
 {
-    options & opts = find_options(sectionname);
-    bool result = opts.active();
+    options & opts { find_options(sectionname) };
+    bool result { opts.active() };
     if (result)
         result = opts.add(specs);
 
@@ -528,7 +534,7 @@ inisections::find_option_spec (const std::string & name) const
     static options::spec s_inactive_spec;
     for (const auto & section : section_list())
     {
-        const options::spec & opt = section.find_option_spec(name);
+        const options::spec & opt { section.find_option_spec(name) };
         if (! options::inactive(opt))
             return opt;
     }
@@ -551,4 +557,3 @@ inisections::find_option_spec (const std::string & name)
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-

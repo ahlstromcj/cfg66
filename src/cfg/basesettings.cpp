@@ -24,7 +24,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2019-01-17
- * \updates       2023-07-21
+ * \updates       2026-02-11
  * \license       GNU GPLv2 or above
  *
  */
@@ -102,7 +102,7 @@ basesettings::normalize ()
 bool
 basesettings::set_error_message (const std::string & em) const
 {
-    bool result = em.empty();
+    bool result { em.empty() };
     if (result)
     {
         m_error_message.clear();
@@ -126,4 +126,3 @@ basesettings::set_error_message (const std::string & em) const
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-

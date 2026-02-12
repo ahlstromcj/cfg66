@@ -79,7 +79,7 @@ climanager::climanager
 bool
 climanager::detect_session (std::string & url)      // MAKE VIRTUAL for NSM
 {
-    bool result = false;
+    bool result { false };
     url.clear();
 
     /*
@@ -106,7 +106,7 @@ climanager::detect_session (std::string & url)      // MAKE VIRTUAL for NSM
 bool
 climanager::create_session (int argc, char * argv [])   // MAKE VIRTUAL FOR NSM
 {
-    bool result = manager::create_session(argc, argv);
+    bool result { manager::create_session(argc, argv) };
     session_active(result);
     return result;
 }
@@ -116,7 +116,7 @@ climanager::create_session (int argc, char * argv [])   // MAKE VIRTUAL FOR NSM
  */
 
 bool
-climanager::close_session (std::string & msg, bool ok)      // MAKE VIRTUAL NSM
+climanager::close_session (std::string & msg, bool ok)  // MAKE VIRTUAL NSM
 {
     session_active(false);
     return manager::close_session(msg, ok);
@@ -130,7 +130,7 @@ climanager::close_session (std::string & msg, bool ok)      // MAKE VIRTUAL NSM
 bool
 climanager::save_session (std::string & msg, bool ok)
 {
-    bool result = ok; // not_nullptr(perf());
+    bool result { ok };                                 // not_nullptr(perf());
     if (ok)
         msg.clear();
 
@@ -162,8 +162,8 @@ climanager::save_session (std::string & msg, bool ok)
 bool
 climanager::run ()
 {
-    bool result = setup_session();          /* daemonize: session_setup()   */
-    std::string msg;
+    bool result { setup_session() };        /* daemonize: session_setup()   */
+    std::string msg { };
     while (! close_session(msg))            /* daemonize: session_close()   */
     {
         result = true;
@@ -225,7 +225,7 @@ climanager::create_project
     const std::string & path
 )
 {
-    bool result = ! path.empty();
+    bool result { ! path.empty() };
     if (result)
     {
         std::string cfgpath;
@@ -306,7 +306,7 @@ climanager::show_error
 {
     if (msg.empty())
     {
-        std::string msg = error_message();
+        std::string msg { error_message() };
         msg += "Please exit and fix the configuration.";
         show_message(tag, msg);
     }
@@ -324,4 +324,3 @@ climanager::show_error
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-

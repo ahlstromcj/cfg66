@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2020-03-22
- * \updates       2024-09-27
+ * \updates       2026-02-12
  * \license       GNU GPLv2 or above
  *
  *  This class provides directories and files for a "session".  In this base
@@ -106,11 +106,8 @@ namespace session
  */
 
 directories::directories () :
-    m_file_entries          (),
-    m_file_specs            (),
     m_home_config_path      (cfg::get_home_cfg_directory()),
-    m_session_path          (cfg::get_home_cfg_directory()),
-    m_session_path_override (false)
+    m_session_path          (cfg::get_home_cfg_directory())
 {
     (void) make_file_specs();
 }
@@ -171,10 +168,10 @@ directories::directories
 {
     for (const auto & f : fileentries)
     {
-        entry e = split_filename(f);
+        entry e { split_filename(f) };
         m_file_entries.push_back(e);
 
-        bool ok = make_file_spec(e);
+        bool ok { make_file_spec(e) };
         if (! ok)
             break;
     }
@@ -205,7 +202,7 @@ directories::add_entry
     const std::string & ext
 )
 {
-    bool result = ext.front() == '.';
+    bool result { ext.front() == '.' };
     if (result)
     {
         entry e;
@@ -231,7 +228,7 @@ directories::split_filename (const std::string & fullpath)
     std::string path;                           /* can end up empty         */
     std::string filebare;                       /* will not have extension  */
     std::string ext;                            /* can end up empty         */
-    bool ok = util::filename_split_ext(fullpath, path, filebare, ext);
+    bool ok { util::filename_split_ext(fullpath, path, filebare, ext) };
     if (ok)
     {
         if (ext.empty())
@@ -262,19 +259,19 @@ directories::split_filename (const std::string & fullpath)
 bool
 directories::make_file_spec (const directories::entry & dentry)
 {
-    bool result = dentry.ent_active;
+    bool result { dentry.ent_active };
     if (result)
     {
-        std::string directory = dentry.ent_directory;
-        std::string basename = dentry.ent_basename;
-        std::string extension = dentry.ent_extension;
+        std::string directory { dentry.ent_directory };
+        std::string basename { dentry.ent_basename };
+        std::string extension { dentry.ent_extension };
         if (directory.empty())
         {
             directory = m_session_path; // cfg::get_home_cfg_directory();
         }
         else if (! util::name_has_path(directory))
         {
-            std::string temp = m_session_path;  // cfg::get_home_cfg_directory();
+            std::string temp { m_session_path }; // cfg::get_home_cfg_directory();
             directory = util::filename_concatenate(temp, directory);
         }
 
@@ -294,11 +291,12 @@ directories::make_file_spec (const directories::entry & dentry)
 
             basename += extension;
 
-            std::string filepath =
-                util::filename_concatenate(directory, basename);
-
-            auto p = std::make_pair(dentry.ent_section, filepath);
-            auto r = m_file_specs.insert(p);
+            std::string filepath
+            {
+                util::filename_concatenate(directory, basename)
+            };
+            auto p { std::make_pair(dentry.ent_section, filepath) };
+            auto r { m_file_specs.insert(p) };
             result = r.second;
         }
     }
@@ -308,7 +306,7 @@ directories::make_file_spec (const directories::entry & dentry)
 bool
 directories::make_file_specs ()
 {
-    bool result = false;
+    bool result { false };
     for (const auto & specentry : m_file_entries)
     {
         result = make_file_spec(specentry);
@@ -335,7 +333,7 @@ std::string
 directories::get_file_spec (const std::string & section) const
 {
     std::string result;
-    auto r = m_file_specs.find(section);
+    auto r { m_file_specs.find(section) };
     if (r != m_file_specs.end())
         result = r->second;
 
@@ -367,7 +365,7 @@ directories::get_file_spec
 ) const
 {
     std::string result;
-    auto r = m_file_specs.find(section);
+    auto r { m_file_specs.find(section) };
     if (r != m_file_specs.end())
         result = util::file_base_set(r->second, filebase);
 
@@ -416,7 +414,7 @@ directories::home_config_path
     const std::string & configdir       /* e.g. "config"                */
 )
 {
-    std::string path = util::pathname_concatenate(sesspath, configdir);
+    std::string path { util::pathname_concatenate(sesspath, configdir) };
     m_home_config_path = util::os_normalize_path(path);
 }
 
@@ -437,10 +435,10 @@ directories::home_config_path
 std::string
 directories::filespec_helper (const std::string & base_ext) const
 {
-    std::string result = base_ext;
+    std::string result { base_ext };
     if (! result.empty())
     {
-        bool use_as_is = false;
+        bool use_as_is { false };
         if (util::name_has_path(base_ext))
         {
             if (util::name_has_root_path(base_ext))
@@ -463,4 +461,3 @@ directories::filespec_helper (const std::string & base_ext) const
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-

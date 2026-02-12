@@ -109,24 +109,17 @@
 namespace session
 {
 
+/**
+ *  In-class defaulting of some members.
+ */
+
 configuration::configuration () :
     cfg::basesettings
     (
         "Default Session", "session",
         "A session specifying only the configuration and log directories.",
         0
-    ),
-    m_dir_manager       (),                 /* empty [cfg] file directories */
-    m_section_list      (),                 /* vector of section names      */
-    m_data_directories  (),                 /* vector of subdirectory names */
-    m_auto_option_save  (false),            /* save rc, usr, etc.           */
-    m_auto_save         (false),            /* save edited data file        */
-    m_quiet             (false),            /* true suppresses startup errs */
-    m_verbose           (false),            /* true shows more status       */
-    m_home              (),                 /* the base app directory       */
-
-    m_use_log_file      (false),
-    m_log_file          ()
+    )
 {
     // set_configuration_defaults();
 }
@@ -202,7 +195,7 @@ configuration::parse_command_line
     std::string & errmessage
 )
 {
-    int optionindex = -1;
+    int optionindex { -1 };
     (void) argc;
     (void) argv;
     errmessage = "Not implemented, please program an implementation";
@@ -211,13 +204,13 @@ configuration::parse_command_line
 //      result = optionindex >= 0;
 //      result = parse_o_options(argc, argv);
 
-    std::string logfile = usr().option_logfile();
-    if (usr().option_use_logfile())
+    std::string logfile { usr().option_logfile() };
+    if (usr().option_use_logfile())         // !!!!!!!!!!!!!!!!!!!
         (void) xpc::reroute_stdio(logfile);
 
     if (optionindex < argc)                 /* MIDI filename given? */
     {
-        std::string fname = argv[optionindex];
+        std::string fname { argv[optionindex]};
         std::string errmsg;
         if (util::file_readable(fname))
         {
@@ -272,13 +265,13 @@ configuration::parse
 bool
 configuration::section_list_fill (const lib66::tokenization & sects)
 {
-    bool result = sects.size() > 0;
+    bool result { sects.size() > 0 };
     if (result)
     {
         section_list().clear();
         for (const auto & s : sects)
         {
-            std::string item = s;
+            std::string item { s };
             if (s.front() != '[' && s.back() != ']')
                 item = "[" + s + "]";
 
@@ -295,4 +288,3 @@ configuration::section_list_fill (const lib66::tokenization & sects)
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-

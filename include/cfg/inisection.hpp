@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-19
- * \updates       2024-09-05
+ * \updates       2026-02-11
  * \license       See above.
  *
  *  We want to provide a list of { filename, sectionname } pairs, and
@@ -187,7 +187,7 @@ public:
 
     bool add_name (const std::string & optionname)
     {
-        bool result = ! optionname.empty();
+        bool result { ! optionname.empty() };
         if (result)
             m_option_names.push_back(optionname);
 
@@ -259,4 +259,3 @@ extern const inisection::specification & stock_comment_data ();
 *
 * vim: sw=4 ts=4 wm=4 et ft=cpp
 */
-

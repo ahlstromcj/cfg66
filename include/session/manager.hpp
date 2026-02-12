@@ -68,7 +68,7 @@ private:
      *  know the capabilities provided.
      */
 
-    std::string m_capabilities;
+    std::string m_capabilities { };
 
     /**
      *  Holds the session manager's name. It can be the value returned by
@@ -80,7 +80,7 @@ private:
      *  dispaly the values in a window or dialog.
      */
 
-    std::string m_manager_name;
+    std::string m_manager_name { };
 
     /**
      *  The NSM sends the path to the NSM session information, such as
@@ -91,53 +91,53 @@ private:
      *        session::directories::session_path() function.
      */
 
-    std::string m_manager_path;
+    std::string m_manager_path { };
 
     /**
      *  The NSM sends the display name (the session name, such as
      *  "JackSession".
      */
 
-    std::string m_display_name;
+    std::string m_display_name { };
 
     /**
      *  The NSM sends the client ID (the session sub-directory, such as
      *  "seq66.nUKIE".
      */
 
-    std::string m_client_id;
+    std::string m_client_id { };
 
     /**
      *  Indicates if the --help or --version options were provided at
      *  start-up. In that case operation will change quite a bit.
      */
 
-    bool m_is_help;
+    bool m_is_help { false };
 
     /**
      *  Used in seeing if the "dirty" status has changed so that the session
      *  manager can be told about the change.
      */
 
-    bool m_last_dirty_status;
+    bool m_last_dirty_status { false };
 
     /**
      *  Holds the current error message.  Mutable because it is not part of
      *  the true state of the session manager.
      */
 
-    mutable std::string m_extant_errmsg;
+    mutable std::string m_extant_errmsg { };
 
     /**
      *  Holds the current error state.  Mutable because it is not part of
      *  the true state of the session manager.
      */
 
-    mutable bool m_extant_msg_active;
+    mutable bool m_extant_msg_active { false };
 
 public:
 
-    manager ();
+    manager () = default;
     manager
     (
         directories & fileentries,
@@ -382,4 +382,3 @@ protected:
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-

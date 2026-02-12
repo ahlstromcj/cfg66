@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2025-10-27
+ * \updates       2026-02-12
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -248,8 +248,8 @@ s_stringcopy
    size_t sourcelimit = 0
 )
 {
-    bool result = false;
-    size_t length = std::strlen(source);        /* inefficient              */
+    bool result { false };
+    size_t length { std::strlen(source) };      /* inefficient              */
     *destination = 0;                           /* empty out destination    */
     if (sourcelimit > length || sourcelimit == 0)
         sourcelimit = length;
@@ -265,7 +265,7 @@ s_stringcopy
 #if defined PLATFORM_MSVC
 
         int rcode;
-        size_t count = _TRUNCATE;                /* overloaded parameter!!  */
+        size_t count { _TRUNCATE };              /* overloaded parameter!!  */
         if (sourcelimit < destsize)              /* truncation impossible   */
         {
             destsize = sourcelimit + 1;
@@ -320,8 +320,8 @@ static std::string
 string_errno (errno_t errnum)
 {
     std::string result;
-    char dest[1024];                    /* static allocation for now only   */
-    bool ok = true;                     /* start optimistically             */
+    char dest [1024];                   /* static allocation for now only   */
+    bool ok { true };                   /* start optimistically             */
     dest[0] = 0;                        /* make it an empty string to start */
 
 #if defined PLATFORM_MING_OR_WINDOWS
@@ -329,7 +329,7 @@ string_errno (errno_t errnum)
 
     if (errnum != 0)
     {
-        int rcode = strerror_s(dest, sizeof dest, errnum);
+        int rcode { strerror_s(dest, sizeof dest, errnum) };
         ok = (errnum >= 0) && (errnum < ELAST) ? (rcode == 0) : false ;
     }
     else
@@ -339,7 +339,7 @@ string_errno (errno_t errnum)
 
 #if defined PLATFORM_XSI
 
-    int rcode = strerror_r(int(errnum), dest, sizeof dest);
+    int rcode { strerror_r(int(errnum), dest, sizeof dest) };
     ok = rcode == 0;
 
 #elif defined PLATFORM_GNU
@@ -348,12 +348,12 @@ string_errno (errno_t errnum)
      * This code gets compiled in Qt/Mingw on Windows.
      */
 
-    char * msg = strerror(int(errnum));
+    char * msg { strerror(int(errnum)) };
     (void) strncpy(dest, msg, sizeof dest - 1);
 
 #else
 
-    const char * msg = strerror(errnum);
+    const char * msg { strerror(errnum) };
     (void) std::strncpy(dest, msg, sizeof dest - 1);
 
 #endif
@@ -396,10 +396,10 @@ s_file_error
     int errnum
 )
 {
-    bool result = errnum == 0;
+    bool result { errnum == 0 };
     if (! result)
     {
-        std::string temp = string_errno(errnum);
+        std::string temp { string_errno(errnum) };
         temp += " (mode/function " + mode + ")";
         file_error(temp, filename);
     }
@@ -436,7 +436,7 @@ s_file_error
 bool
 file_access (const std::string & filename, int mode)
 {
-    bool result = file_name_good(filename);
+    bool result { file_name_good(filename) };
     if (result)
     {
 #if defined PLATFORM_MSVC
@@ -453,11 +453,11 @@ file_access (const std::string & filename, int mode)
         }
         else
         {
-            int errnum = S_ACCESS(CSTR(filename), mode);
+            int errnum { S_ACCESS(CSTR(filename), mode) };
             result = errnum == 0;
         }
 #else
-        int errnum = S_ACCESS(CSTR(filename), mode);
+        int errnum { S_ACCESS(CSTR(filename), mode) };
         result = errnum == 0;
 #endif
     }
@@ -489,7 +489,7 @@ bool
 file_status (const std::string & filename)
 {
     stat_t statusbuf;
-    int statresult = S_STAT(CSTR(filename), &statusbuf);
+    int statresult { S_STAT(CSTR(filename), &statusbuf) };
     return statresult == 0;
 }
 
@@ -562,11 +562,11 @@ file_read_writable (const std::string & filename)
 bool
 file_executable (const std::string & filename)
 {
-    bool result = file_name_good(filename);
+    bool result { file_name_good(filename) };
     if (result)
     {
         stat_t statusbuf;
-        int statresult = S_STAT(CSTR(filename), &statusbuf);
+        int statresult { S_STAT(CSTR(filename), &statusbuf) };
         if (statresult == 0)                          /* a good file handle? */
         {
 #if defined PLATFORM_MSVC
@@ -600,11 +600,11 @@ file_executable (const std::string & filename)
 bool
 file_is_directory (const std::string & filename)
 {
-    bool result = file_name_good(filename);
+    bool result { file_name_good(filename) };
     if (result)
     {
         stat_t statusbuf;
-        int statresult = S_STAT(CSTR(filename), &statusbuf);
+        int statresult { S_STAT(CSTR(filename), &statusbuf) };
         if (statresult == 0)                           // a good file handle?
         {
 #if defined PLATFORM_MSVC
@@ -644,11 +644,11 @@ file_is_directory (const std::string & filename)
 size_t
 file_size (const std::string & filename)
 {
-    size_t result = 0;
+    size_t result { 0 };
     if (file_name_good(filename))
     {
         stat_t statusbuf;
-        int statresult = S_STAT(CSTR(filename), &statusbuf);
+        int statresult { S_STAT(CSTR(filename), &statusbuf) };
         if (statresult == 0)                           // a good file handle?
             result = statusbuf.st_size;
     }
@@ -678,7 +678,7 @@ file_size (const std::string & filename)
 bool
 file_name_good (const std::string & fname)
 {
-    bool result = ! fname.empty();
+    bool result { ! fname.empty() };
     if (result)
     {
         result = fname != "stdout" && fname != "stdin" && fname != "stderr";
@@ -718,7 +718,7 @@ file_name_good (const std::string & fname)
 bool
 file_mode_good (const std::string & mode)
 {
-    bool result = ! mode.empty();
+    bool result { ! mode.empty() };
     if (result)
     {
         /*
@@ -778,15 +778,15 @@ file_mode_good (const std::string & mode)
 std::FILE *
 file_open (const std::string & filename, const std::string & mode)
 {
-    std::FILE * filehandle = nullptr;
+    std::FILE * filehandle { nullptr };
     if (file_name_good(filename) && ! mode.empty())
     {
 #if defined PLATFORM_WINDOWS      /* MSVC undefined in Qt on Windows  */
-        int errnum = (int) S_FOPEN(&filehandle, CSTR(filename), CSTR(mode));
+        int errnum { (int) S_FOPEN(&filehandle, CSTR(filename), CSTR(mode)) };
         if (errnum != 0)
             filehandle = nullptr;
 #else
-        int errnum = 0;
+        int errnum { 0 };
         filehandle = S_FOPEN(CSTR(filename), CSTR(mode));
         if (is_nullptr(filehandle))
             errnum = errno;
@@ -813,7 +813,7 @@ file_open (const std::string & filename, const std::string & mode)
 std::FILE *
 file_open_for_read (const std::string & filename)
 {
-    std::FILE * filehandle = nullptr;
+    std::FILE * filehandle { nullptr };
     if (file_readable(filename))
         filehandle = file_open(filename, "rb");  /* open for reading only    */
 
@@ -855,13 +855,13 @@ file_create_for_write (const std::string & filename)
 std::string
 current_date_time ()
 {
-    static char s_temp[64];
-    static const char * const s_format = "%Y-%m-%d %H:%M:%S";
+    static char s_temp [64];
+    static const char * const s_format { "%Y-%m-%d %H:%M:%S" };
     time_t t;
     std::memset(s_temp, 0, sizeof s_temp);
     time(&t);
 
-    struct tm * tm = localtime(&t);
+    struct tm * tm { localtime(&t) };
     std::strftime(s_temp, sizeof s_temp - 1, s_format, tm);
     return std::string(s_temp);
 }
@@ -874,12 +874,12 @@ current_date_time ()
 bool
 file_append_string (const std::string & filename, const std::string & text)
 {
-    std::FILE * fptr = file_open(filename, "a");
+    std::FILE * fptr { file_open(filename, "a") };
     bool result = not_nullptr(fptr);
     if (result)
     {
-        size_t len = text.length();
-        size_t rc = fwrite(CSTR(text), sizeof(char), len, fptr);
+        size_t len { text.length() };
+        size_t rc { fwrite(CSTR(text), sizeof(char), len, fptr) };
         if (rc < len)
         {
             file_error("Append failed", filename);
@@ -915,12 +915,12 @@ file_write_string
     }
     else
     {
-        std::FILE * fptr = file_open(filename, "w");
-        bool result = not_nullptr(fptr);
+        std::FILE * fptr { file_open(filename, "w") };
+        bool result { not_nullptr(fptr) };
         if (result)
         {
-            size_t len = text.length();
-            size_t rc = fwrite(CSTR(text), sizeof(char), len, fptr);
+            size_t len { text.length() };
+            size_t rc { fwrite(CSTR(text), sizeof(char), len, fptr) };
             if (rc < len)
             {
                 file_error("Write failed", filename);
@@ -966,8 +966,8 @@ file_write_lines
     const lib66::tokenization & textlist
 )
 {
-    std::FILE * fptr = file_open(filename, "w");
-    bool result = not_nullptr(fptr);
+    std::FILE * fptr { file_open(filename, "w") };
+    bool result { not_nullptr(fptr) };
     if (result)
     {
         for (auto & t : textlist)
@@ -976,8 +976,8 @@ file_write_lines
             if (t2.back() != '\n')
                 t2 += "\n";
 
-            size_t len = t2.length();
-            size_t rc = fwrite(CSTR(t2), sizeof(char), len, fptr);
+            size_t len { t2.length() };
+            size_t rc { fwrite(CSTR(t2), sizeof(char), len, fptr) };
             if (rc < len)
             {
                 file_error("Write failed", filename);
@@ -1004,10 +1004,10 @@ std::string
 file_read_string (const std::string & file)
 {
     std::string result;
-    bool ok = file_name_good(file);
+    bool ok { file_name_good(file) };
     if (ok)
     {
-        std::FILE * input = file_open_for_read(file);
+        std::FILE * input { file_open_for_read(file) };
         if (not_nullptr(input))
         {
             int ci;
@@ -1053,25 +1053,27 @@ file_read_lines
     bool trimlines
 )
 {
-    bool result = file_name_good(file);
+    bool result { file_name_good(file) };
     if (result)
     {
-        std::FILE * input = file_open_for_read(file);
+        std::FILE * input { file_open_for_read(file) };
         if (not_nullptr(input))
         {
-            size_t maxim = 512;
-            char * destination = new (std::nothrow) char [maxim];
+            size_t maxim { 512 };
+            char * destination { new (std::nothrow) char [maxim] };
             if (is_nullptr(destination))
                 return false;
 
             for (;;)
             {
-                ssize_t count = getline(&destination, &maxim, input);
+                ssize_t count { getline(&destination, &maxim, input) };
                 if (count == 1)                 /* empty line, "\n" only    */
+                {
                     continue;
+                }
                 else if (count > 1)
                 {
-                    std::string tmp = destination;
+                    std::string tmp { destination };
                     if (tmp[0] == '#')
                         continue;
                     else
@@ -1114,10 +1116,10 @@ file_read_lines
 bool
 file_close (std::FILE * filehandle, const std::string & filename)
 {
-    bool result = not_nullptr(filehandle);
+    bool result { not_nullptr(filehandle) };
     if (result)
     {
-        int rcode = fclose(filehandle);
+        int rcode { fclose(filehandle) };
         result = s_file_error(filename, __func__, rcode);
     }
     else
@@ -1133,10 +1135,10 @@ file_close (std::FILE * filehandle, const std::string & filename)
 bool
 file_delete (const std::string & filespec)
 {
-    bool result = ! filespec.empty();
+    bool result { ! filespec.empty() };
     if (result)
     {
-        int rc = unlink(CSTR(filespec));
+        int rc { unlink(CSTR(filespec)) };
         result = rc != (-1);
         if (! result)
             file_error("Delete failed", filespec);
@@ -1183,10 +1185,10 @@ file_copy
     const std::string & newfile
 )
 {
-    bool result = file_name_good(oldfile) && file_name_good(newfile);
+    bool result { file_name_good(oldfile) && file_name_good(newfile) };
     if (result)
     {
-        std::string destfilespec = newfile;
+        std::string destfilespec { newfile };
         std::string destpath;
         std::string destbase;
         result = filename_split(newfile, destpath, destbase);
@@ -1194,7 +1196,7 @@ file_copy
         {
             if (destbase.empty())
             {
-                std::string sourcebase = filename_base(oldfile);
+                std::string sourcebase { filename_base(oldfile) };
                 destfilespec = filename_concatenate(destpath, sourcebase);
             }
         }
@@ -1205,15 +1207,15 @@ file_copy
          * seeming empty string to compare against.
          */
 
-        bool ok = get_full_path(oldfile) != get_full_path(destfilespec);
+        bool ok { get_full_path(oldfile) != get_full_path(destfilespec) };
         if (result && ok)
         {
-            std::FILE * input = file_open_for_read(oldfile);
+            std::FILE * input { file_open_for_read(oldfile) };
             if (not_nullptr(input))
             {
-                bool okinput = false;
-                bool okoutput = false;
-                std::FILE * output = file_create_for_write(destfilespec);
+                bool okinput { false };
+                bool okoutput { false };
+                std::FILE * output { file_create_for_write(destfilespec) };
                 if (not_nullptr(output))
                 {
                     int ci;
@@ -1255,24 +1257,24 @@ file_copy_to_path
     const std::string & path
 )
 {
-    bool result = file_exists(sourcefile) && file_is_directory(path);
+    bool result { file_exists(sourcefile) && file_is_directory(path) };
     if (result)
     {
-        std::FILE * input = file_open_for_read(sourcefile);
+        std::FILE * input { file_open_for_read(sourcefile) };
         if (not_nullptr(input))
         {
-            bool okinput = false;
-            bool okoutput = false;
+            bool okinput { false };
+            bool okoutput { false };
             std::string unusedpath;
             std::string filebase;
-            bool ok = filename_split(sourcefile, unusedpath, filebase);
+            bool ok { filename_split(sourcefile, unusedpath, filebase) };
             if (ok)
             {
-                std::string destfilespec = filename_concatenate
-                (
-                    path, filebase
-                );
-                std::FILE * output = file_create_for_write(destfilespec);
+                std::string destfilespec
+                {
+                    filename_concatenate(path, filebase)
+                };
+                std::FILE * output { file_create_for_write(destfilespec) };
                 if (not_nullptr(output))
                 {
                     int ci;
@@ -1316,24 +1318,24 @@ file_append_log
     const std::string & data
 )
 {
-    std::string text = trim(data);
+    std::string text { trim(data) };
     if (text.empty())
     {
         return true;                                /* no need to open      */
     }
     else
     {
-        std::FILE * fp = file_open(filename, "a");  /* open for appending   */
-        bool result = not_nullptr(fp);
+        std::FILE * fp { file_open(filename, "a") }; /* open for appending  */
+        bool result { not_nullptr(fp) };
         if (result)
         {
-            std::string log = "\n";
+            std::string log { "\n" };
             log += current_date_time();
             log += "\n";
             log += text.data();
             log += "\n\n";
 
-            size_t rc = fwrite(log.data(), sizeof(char), log.size(), fp);
+            size_t rc { fwrite(log.data(), sizeof(char), log.size(), fp) };
             if (rc < log.size())
             {
                 file_error("Write failed", filename);
@@ -1362,8 +1364,8 @@ file_append_log
 bool
 name_has_path (const std::string & filename)
 {
-    auto pos = filename.find_first_of("/");
-    bool result = pos != std::string::npos;
+    auto pos { filename.find_first_of("/") };
+    bool result { pos != std::string::npos };
 #if defined PLATFORM_WINDOWS
     if (! result)
     {
@@ -1397,8 +1399,8 @@ name_has_path (const std::string & filename)
 bool
 name_has_root_path (const std::string & filename)
 {
-    auto pos = filename.find_first_of("~/");    /* "~" == "/home/usr"       */
-    bool result = pos != std::string::npos;
+    auto pos { filename.find_first_of("~/") };  /* "~" == "/home/usr"       */
+    bool result { pos != std::string::npos };
 #if defined PLATFORM_WINDOWS
     if (! result)
     {
@@ -1443,12 +1445,12 @@ name_has_root_path (const std::string & filename)
 bool
 name_has_extension (const std::string & filename)
 {
-    auto spos = filename.find_last_of("/");
+    auto spos { filename.find_last_of("/") };
     if (spos == std::string::npos)
         spos = 0;
 
-    auto ppos = filename.find_first_of(".", spos);
-    bool result = ppos != std::string::npos;
+    auto ppos { filename.find_first_of(".", spos) };
+    bool result { ppos != std::string::npos };
     return result;
 }
 
@@ -1477,7 +1479,7 @@ name_has_extension (const std::string & filename)
 static bool
 make_directory (const std::string & pathname, int mode)
 {
-    bool result = file_name_good(pathname);
+    bool result { file_name_good(pathname) };
     if (result)
     {
         static struct stat st { };
@@ -1493,9 +1495,9 @@ make_directory (const std::string & pathname, int mode)
         if (S_STAT(CSTR(pathname), &st) == -1)
         {
 #if defined PLATFORM_WINDOWS
-            int rcode = S_MKDIR(CSTR(pathname));
+            int rcode { S_MKDIR(CSTR(pathname)) };
 #else
-            int rcode = S_MKDIR(CSTR(pathname), mode);
+            int rcode { S_MKDIR(CSTR(pathname), mode) };
 #endif
             result = rcode == 0;
             if (! result)
@@ -1551,8 +1553,8 @@ make_directory (const std::string & pathname, int mode)
 bool
 make_directory_path (const std::string & directory_name, int mode)
 {
-    bool result = file_name_good(directory_name);
-    std::string dirname = os_normalize_path(directory_name);
+    bool result { file_name_good(directory_name) };
+    std::string dirname { os_normalize_path(directory_name) };
     if (result)
     {
         if (file_exists(dirname))               /* directory already exists */
@@ -1566,14 +1568,14 @@ make_directory_path (const std::string & directory_name, int mode)
     }
     if (result)
     {
-        char currdir[S_MAX_PATH];
-        bool more = true;
-        int slash = '/';
+        char currdir [S_MAX_PATH];
+        bool more { true };
+        int slash { '/' };
         char * nextptr;                         /* just what it says!       */
         (void) std::strncpy(currdir, CSTR(dirname), sizeof currdir - 1);
 
-        char * endptr = &currdir[0];            /* start at the beginning   */
-        char * ending = strchr(endptr, '\0');
+        char * endptr { &currdir[0] };          /* start at the beginning   */
+        char * ending { strchr(endptr, '\0') };
         do
         {
             nextptr = strchr(endptr, slash);    /* find next slash          */
@@ -1621,8 +1623,8 @@ make_directory_path (const std::string & directory_name, int mode)
 std::string
 make_path_relative (const std::string & path)
 {
-    std::string result = path;
-    auto spos = result.find_first_of(PATH_SLASHES);
+    std::string result { path };
+    auto spos { result.find_first_of(PATH_SLASHES) };
     if (spos == 0)
         result = result.substr(1);
 
@@ -1650,12 +1652,12 @@ make_path_relative (const std::string & path)
 bool
 delete_directory (const std::string & filename)
 {
-    bool result = file_name_good(filename);
+    bool result { file_name_good(filename) };
     if (result)
     {
         if (file_exists(filename))
         {
-            int rcode = S_RMDIR(CSTR(filename));
+            int rcode { S_RMDIR(CSTR(filename)) };
             if (rcode == (-1))
                 result = s_file_error(filename, __func__, errno);
         }
@@ -1678,24 +1680,19 @@ std::string
 get_current_directory ()
 {
     std::string result;
-    char temp[PATH_MAX];
-    char * cwd = S_GETCWD(temp, PATH_MAX);      /* get current directory      */
+    char temp [PATH_MAX];
+    char * cwd { S_GETCWD(temp, PATH_MAX) };    /* get current directory    */
     if (not_nullptr(cwd))
     {
-        size_t len = strlen(cwd);
+        size_t len { strlen(cwd) };
         if (len > 0)
-        {
             result = cwd;
-        }
         else
-        {
             errprint("empty current directory name");
-        }
     }
     else
-    {
         errprint("current directory unavailable");
-    }
+
     return result;
 }
 
@@ -1739,14 +1736,14 @@ get_full_path (const std::string & path)
     std::string result;                         /* default empty result     */
     if (file_name_good(path))
     {
-#if defined PLATFORM_WINDOWS              /* _MSVC not defined in Qt  */
-        char * resolved_path = NULL;            /* what a relic!            */
-        char temp[256];
+#if defined PLATFORM_WINDOWS                    /* _MSVC not defined in Qt  */
+        char * resolved_path { NULL };          /* what a relic!            */
+        char temp [256];
         resolved_path = _fullpath(temp, CSTR(path), 256);
         if (not_NULL(resolved_path))
             result = resolved_path;
 #else
-        char * resolved_path = NULL;            /* what a relic!            */
+        char * resolved_path { NULL };          /* what a relic!            */
 #if defined PLATFORM_CYGWIN
         resolved_path = realpath_cyg(CSTR(path), NULL);
 #else
@@ -1764,8 +1761,8 @@ get_full_path (const std::string & path)
              */
 
 #if defined SEQ66_PLATFORM_POSIX_API
-            errno_t errnum = errno;
-            std::string errmsg = "Warning: ";
+            errno_t errnum { errno };
+            std::string errmsg { "Warning: " };
             errmsg += string_errno(errnum);
             file_message(errmsg, path);
 #else
@@ -1840,14 +1837,14 @@ normalize_path (const std::string & path, bool to_unix, bool terminate)
     {
         result = path;
 
-        auto circumpos = result.find_first_of("~");
+        auto circumpos { result.find_first_of("~") };
         if (circumpos != std::string::npos)
         {
             result.replace(circumpos, 1, user_home());
         }
         if (to_unix)
         {
-            auto pos = path.find_first_of("\\");
+            auto pos { path.find_first_of("\\") };
             if (pos != std::string::npos)
                 std::replace(result.begin(), result.end(), '\\', '/');
 
@@ -1856,7 +1853,7 @@ normalize_path (const std::string & path, bool to_unix, bool terminate)
         }
         else
         {
-            auto pos = path.find_first_of("/");
+            auto pos { path.find_first_of("/") };
             if (pos != std::string::npos)
                 std::replace(result.begin(), result.end(), '/', '\\');
 
@@ -1894,24 +1891,26 @@ normalize_path (const std::string & path, bool to_unix, bool terminate)
 std::string
 shorten_file_spec (const std::string & fpath, int leng)
 {
-    std::string home = user_home();
-    std::string newhome = "~";
-    std::string newpath = fpath;
+    std::string home { user_home() };
+    std::string newhome { "~" };
+    std::string newpath { fpath };
     if (contains(fpath, home))
         newpath = newpath.replace(0, home.length(), newhome);
 
-    std::size_t pathsize = newpath.size();
+    std::size_t pathsize { newpath.size() };
     if (pathsize <= std::size_t(leng))
     {
         return newpath;
     }
     else
     {
-
-        std::string ellipse("...");
-        std::size_t halflength = (std::size_t(leng) - ellipse.size()) / 2 - 1;
-        std::string result = newpath.substr(0, halflength);
-        std::string lastpart = newpath.substr(pathsize - halflength - 1);
+        std::string ellipse { "..." };
+        std::size_t halflength
+        {
+            (std::size_t(leng) - ellipse.size()) / 2 - 1
+        };
+        std::string result { newpath.substr(0, halflength) };
+        std::string lastpart { newpath.substr(pathsize - halflength - 1) };
         result = result + ellipse + lastpart;
         return result;
     }
@@ -1935,9 +1934,9 @@ std::string
 os_normalize_path (const std::string & path, bool terminate)
 {
 #if defined PLATFORM_UNIX
-    bool to_unix = true;
+    bool to_unix { true };
 #else
-    bool to_unix = false;
+    bool to_unix { false };
 #endif
 
     return normalize_path(path, to_unix, terminate);
@@ -1962,7 +1961,7 @@ os_normalize_path (const std::string & path, bool terminate)
 std::string
 clean_file (const std::string & file, bool to_unix)
 {
-    std::string result = file;
+    std::string result { file };
     (void) trim(result, CFG66_TRIM_CHARS_QUOTES);
     return normalize_path(result, to_unix, false);      /* no added slash   */
 }
@@ -1986,7 +1985,7 @@ clean_file (const std::string & file, bool to_unix)
 std::string
 clean_path (const std::string & path, bool to_unix)
 {
-    std::string result = path;
+    std::string result { path };
     (void) trim(result, CFG66_TRIM_CHARS_QUOTES);
     return normalize_path(result, to_unix, true);       /* an added slash   */
 }
@@ -1999,7 +1998,7 @@ append_file
     bool to_unix
 )
 {
-    std::string result = path;
+    std::string result { path };
     if (! result.empty())
     {
         (void) rtrim(result, CFG66_TRIM_CHARS_PATHS);
@@ -2031,15 +2030,15 @@ append_path
     bool to_unix
 )
 {
-    std::string result = path;
-    std::string pn = pathname;
-    char slash = to_unix ? path_slash() : os_path_slash() ;
+    std::string result { path };
+    std::string pn { pathname };
+    char slash { to_unix ? path_slash() : os_path_slash() };
     if (! result.empty())
     {
         (void) trim(result);                            /* whitespace out   */
 
-        auto spos = result.find_last_of(PATH_SLASHES);
-        auto endindex = result.length() - 1;
+        auto spos { result.find_last_of(PATH_SLASHES) };
+        auto endindex { result.length() - 1 };
         if (spos == std::string::npos || spos != endindex)
             result += slash;
     }
@@ -2048,8 +2047,8 @@ append_path
         (void) trim(pn);
         (void) ltrim(pn, CFG66_TRIM_CHARS_PATHS);
 
-        auto spos = pn.find_last_of(PATH_SLASHES);
-        auto endindex = pn.length() - 1;
+        auto spos { pn.find_last_of(PATH_SLASHES) };
+        auto endindex { pn.length() - 1 };
         if (spos == std::string::npos || spos != endindex)
             pn += slash;
     }
@@ -2071,8 +2070,8 @@ append_path
 std::string
 filename_concatenate (const std::string & path, const std::string & filebase)
 {
-    std::string result = clean_path(path);          /* also adds end slash  */
-    std::string base = filename_base(filebase);     /* strip existing path  */
+    std::string result { clean_path(path) };        /* also adds end slash  */
+    std::string base { filename_base(filebase) };   /* strip existing path  */
     result += base;
     return result;
 }
@@ -2085,7 +2084,7 @@ filename_concatenate
     const std::string & ext
 )
 {
-    std::string result = filename_concatenate(path, base);
+    std::string result { filename_concatenate(path, base) };
     result = file_extension_set(result, ext);
     return result;
 }
@@ -2111,8 +2110,8 @@ filename_concatenate
 std::string
 pathname_concatenate (const std::string & path0, const std::string & path1)
 {
-    std::string result = clean_path(path0);
-    std::string cleanpath1 = clean_path(path1);
+    std::string result { clean_path(path0) };
+    std::string cleanpath1 { clean_path(path1) };
     if (cleanpath1[0] == '/')
         cleanpath1 = cleanpath1.erase(0, 1);
 
@@ -2188,14 +2187,14 @@ filename_split
     std::string & filebase
 )
 {
-    std::string temp = normalize_path(fullpath);
-    auto spos = temp.find_last_of("/");
-    bool result = spos != std::string::npos;
+    std::string temp { normalize_path(fullpath) };
+    auto spos { temp.find_last_of("/") };
+    bool result { spos != std::string::npos };
     path.clear();
     filebase.clear();
     if (result)
     {
-        auto pos = spos + 1;
+        auto pos { spos + 1 };
         path = temp.substr(0, pos);                     /* include slash    */
         filebase = temp.substr(pos, temp.length() - pos);
     }
@@ -2219,13 +2218,13 @@ filename_split_ext
 )
 {
     std::string filebase;                               /* not filebare :-) */
-    bool result = filename_split(fullpath, path, filebase);
-    bool ok = ! filebase.empty();
+    bool result { filename_split(fullpath, path, filebase) };
+    bool ok { ! filebase.empty() };
     ext.clear();
     if (ok)
     {
-        auto hpos = filebase.find_first_of(".");
-        auto ppos = filebase.find_last_of(".");
+        auto hpos { filebase.find_first_of(".") };
+        auto ppos { filebase.find_last_of(".") };
         if (hpos == ppos && hpos == 0)                  /* one dot at start */
         {
             filebare = filebase;
@@ -2330,8 +2329,8 @@ filename_base (const std::string & fullpath, bool noext)
     (void) filename_split(fullpath, path, result);
     if (noext)
     {
-        auto dpos = result.find_last_of(".");
-        bool ok = dpos != std::string::npos;
+        auto dpos { result.find_last_of(".") };
+        bool ok { dpos != std::string::npos };
         if (ok)
             result = result.substr(0, dpos);
     }
@@ -2357,10 +2356,10 @@ std::string
 file_extension (const std::string & path)
 {
     std::string result;
-    auto ppos = path.find_last_of(".");
+    auto ppos { path.find_last_of(".") };
     if (ppos != std::string::npos)
     {
-        auto len = path.length() - 2;
+        auto len { path.length() - 2 };
         result = path.substr(ppos + 1, len);
     }
     return result;
@@ -2398,7 +2397,7 @@ file_extension_set (const std::string & path, const std::string & ext)
         std::string pathspec;
         std::string filebare;
         std::string extdummy;
-        bool ok = filename_split_ext(path, pathspec, filebare, extdummy);
+        bool ok { filename_split_ext(path, pathspec, filebare, extdummy) };
         if (ok)
             result = pathspec;
 
@@ -2425,11 +2424,11 @@ file_extension_set (const std::string & path, const std::string & ext)
 bool
 file_extension_match (const std::string & path, const std::string & target)
 {
-    std::string tar = target;
-    std::string ext = file_extension(path);     /* path ext without period  */
+    std::string tar { target };
+    std::string ext { file_extension(path) };   /* path ext without period  */
     if (tar[0] == '.')
     {
-        auto len = tar.length() - 1;
+        auto len { tar.length() - 1 };
         tar = tar.substr(1, len);
     }
     return strcasecompare(ext, tar);
@@ -2452,10 +2451,10 @@ file_extension_match (const std::string & path, const std::string & target)
 bool
 set_current_directory (const std::string & path)
 {
-    bool result = false;
+    bool result { false };
     if (! path.empty())
     {
-        int rcode = S_CHDIR(CSTR(path));
+        int rcode { S_CHDIR(CSTR(path)) };
         result = is_posix_success(rcode);
         if (! result)
             file_error("chdir() failed", path);
@@ -2477,7 +2476,7 @@ executable_full_path ()
     std::string result;
 
 #if defined PLATFORM_GLIBC        /* TO DO!!!!                        */
-    const char * p = (const char *) getauxval(AT_EXECFN);
+    const char * p { (const char *) getauxval(AT_EXECFN) };
     if (not_nullptr(p))
     {
         result = p;
@@ -2553,22 +2552,22 @@ installed_prefix (const std::string & arg0)
 {
     std::string result;
 #if defined PLATFORM_WINDOWS
-    std::string search1{"C:\\Program Files (x86)\\"};
-    std::string search2{"C:\\Program Files\\"};
+    std::string search1 { "C:\\Program Files (x86)\\" };
+    std::string search2 { "C:\\Program Files\\" };
     search1[0] = search2[0] = arg0[0];              /* actual drive letter  */
 #else
-    std::string search1{"/usr/local/"};
-    std::string search2{"/usr/"};
+    std::string search1 { "/usr/local/" };
+    std::string search2 { "/usr/" };
 #endif
 
-    std::string::size_type pos = arg0.find(search1);
+    std::string::size_type pos { arg0.find(search1) };
     if (pos != std::string::npos && pos == 0)
     {
         result = search1;
     }
     else
     {
-        std::string::size_type pos = arg0.find(search2);
+        std::string::size_type pos { arg0.find(search2) };
         if (pos != std::string::npos && pos == 0)
             result = search2;
     }
@@ -2609,7 +2608,7 @@ installed_data_path
     const std::string & subdir
 )
 {
-    std::string prefix = installed_prefix(arg0);    /* ends with separator  */
+    std::string prefix { installed_prefix(arg0) };  /* ends with separator  */
 #if defined PLATFORM_WINDOWS
     prefix += pkgname;
     prefix += PATH_SLASH;
@@ -2643,7 +2642,7 @@ get_env (const std::string & v)
     std::string result;
     if (! v.empty())
     {
-        char * env = std::getenv(CSTR(v));
+        char * env { std::getenv(CSTR(v)) };
         if (not_nullptr(env))
             result = std::string(env);
     }
@@ -2680,10 +2679,10 @@ user_home (const std::string & appfolder)
 {
     std::string result;
 #if defined PLATFORM_WINDOWS
-    char * env = std::getenv(ENV_HOMEDRIVE);
+    char * env { std::getenv(ENV_HOMEDRIVE) };
     if (not_nullptr(env))
     {
-        char * env2 = std::getenv(ENV_HOMEPATH);
+        char * env2 { std::getenv(ENV_HOMEPATH) };
         if (not_nullptr(env2))
         {
             result += env;              /* "C:"                             */
@@ -2726,7 +2725,7 @@ user_config (const std::string & appfolder)
 {
     std::string result;
 #if defined PLATFORM_WINDOWS
-    char * env = std::getenv(ENV_CONFIG);
+    char * env { std::getenv(ENV_CONFIG) };
     if (not_nullptr(env))
     {
         result = env;                   /* C:\Users\username\AppData\Local  */
@@ -2764,16 +2763,16 @@ std::string
 user_session (const std::string & appfolder)
 {
 #if defined PLATFORM_WINDOWS
-    std::string result = user_config();
+    std::string result { user_config() };
     if (! result.empty())
     {
-        auto spos0 = result.find_first_of("/");
+        auto spos0 { result.find_first_of("/") };
         if (spos0 != std::string::npos)
         {
-            auto spos1= result.find_first_of("/", spos0 + 1);
+            auto spos1 { result.find_first_of("/", spos0 + 1) };
             if (spos1 != std::string::npos)
             {
-                auto spos2= result.find_first_of("/", spos1 + 1);
+                auto spos2 { result.find_first_of("/", spos1 + 1) };
                 if (spos2 != std::string::npos)
                 {
                     result = result.substr(spos2 + 1);
@@ -2784,7 +2783,7 @@ user_session (const std::string & appfolder)
         }
     }
 #else
-    std::string result = ".config";
+    std::string result { ".config" };
     if (! appfolder.empty())
         result = filename_concatenate(result, appfolder);
 #endif
@@ -2823,7 +2822,10 @@ find_file
             }
             else
             {
-                std::string fullspec = filename_concatenate(folder, filename);
+                std::string fullspec
+                {
+                    filename_concatenate(folder, filename)
+                };
                 if (file_exists(fullspec))
                 {
                     result = fullspec;
@@ -2864,17 +2866,17 @@ get_wildcards
     bool append
 )
 {
-    bool result = ! wildpath.empty();
+    bool result { ! wildpath.empty() };
     if (result)
     {
-        int flags = GLOB_ERR;
+        int flags { GLOB_ERR };
 #if defined PLATFORM_LINUX
         flags |= GLOB_TILDE;
 #else
         // anything?
 #endif
         glob_t g;
-        int rc = glob(CSTR(wildpath), flags, nullptr, &g);
+        int rc { glob(CSTR(wildpath), flags, nullptr, &g) };
         if (rc != 0)
         {
             result = false;
@@ -2903,8 +2905,8 @@ file_list_copy
     const lib66::tokenization & filelist
 )
 {
-    int count = 0;
-    bool ok = file_exists(destpath);
+    int count { 0 };
+    bool ok { file_exists(destpath) };
     if (ok)
     {
         for (auto & f : filelist)
@@ -2930,7 +2932,7 @@ file_list_copy
 unsigned long
 file_modification_time (const std::string & fname)
 {
-    unsigned long result = 0;
+    unsigned long result { 0 };
     if (file_name_good(fname))
     {
         stat_t st;
@@ -3001,13 +3003,13 @@ get_xdg_runtime_directory
 )
 {
     std::string result;
-    char * env = std::getenv("XDG_RUNTIME_DIR");
+    char * env { std::getenv("XDG_RUNTIME_DIR") };
     if (not_nullptr(env))
         result = env;
 
     if (result.empty())                             /* env var is not set   */
     {
-        uid_t uid_for_rundir = geteuid();
+        uid_t uid_for_rundir { geteuid() };
         result = util::string_asprintf
         (
             "/run/user/%d/", uid_for_rundir
@@ -3019,7 +3021,7 @@ get_xdg_runtime_directory
     }
     if (! util::file_exists(result))
     {
-        int ec = errno;
+        int ec { errno };
         util::error_printf
         (
             "Failed to access FHS run-dir directory %s with error: %s",
@@ -3081,12 +3083,12 @@ get_xdg_runtime_directory
 std::string
 make_xdg_runtime_directory (const std::string & subdirectory)
 {
-    std::string result = get_xdg_runtime_directory(subdirectory);;
+    std::string result { get_xdg_runtime_directory(subdirectory) };
     if (! result.empty())
     {
         if (! util::make_directory_path(result, 0771))
         {
-            int ec = errno;
+            int ec { errno };
             util::error_printf
             (
                 "Failed to create run-time directory %s with error: %s",
@@ -3114,4 +3116,3 @@ make_xdg_runtime_directory (const std::string & subdirectory)
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-

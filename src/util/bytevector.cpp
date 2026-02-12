@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-05-16
- * \updates       2025-10-27
+ * \updates       2026-02-12
  * \license       GNU GPLv2 or above
  *
  *  The bytevector class is meant to handle big-endian data in a byte-by-byte
@@ -49,7 +49,7 @@ namespace util
  *  array in a file.
  */
 
-static const int c_util_line_max = 1024;
+static const int c_util_line_max { 1024 };
 
 /**
  *  Principal constructor.
@@ -67,6 +67,7 @@ static const int c_util_line_max = 1024;
  *      will be split into multiple tracks by channel.
  */
 
+#if 0
 bytevector::bytevector () :
     m_nominal_size      (0),
     m_offset            (0),
@@ -78,6 +79,7 @@ bytevector::bytevector () :
 {
     // no other code needed
 }
+#endif
 
 /**
  *  Creates a vector of bytes from all characters in a string.
@@ -86,7 +88,9 @@ bytevector::bytevector () :
  *      Provides a std::string to use to initialize m_data.
  */
 
-bytevector::bytevector (const std::string & s) :
+bytevector::bytevector (const std::string & s)
+#if 0
+ :
     m_nominal_size      (0),
     m_offset            (0),
     m_error_message     (),
@@ -94,6 +98,7 @@ bytevector::bytevector (const std::string & s) :
     m_disable_reported  (false),
     m_data              (),                 /* vector of bytes              */
     m_position          (0)                 /* byte position in vector      */
+#endif
 {
     assign(s, 0, 0);                        /* use the whole string         */
 }
@@ -119,13 +124,13 @@ bytevector::bytevector
     size_t offset,
     size_t amount
 ) :
-    m_nominal_size      (0),
-    m_offset            (offset),
-    m_error_message     (),
-    m_error_is_fatal    (false),
-    m_disable_reported  (false),
-    m_data              (),                 /* vector of bytes              */
-    m_position          (0)                 /* byte position in vector      */
+//  m_nominal_size      (0),
+    m_offset            (offset)
+//  m_error_message     (),
+//  m_error_is_fatal    (false),
+//  m_disable_reported  (false),
+//  m_data              (),                 /* vector of bytes              */
+//  m_position          (0)                 /* byte position in vector      */
 {
     if (offset == 0 && amount == 0)
     {
@@ -149,11 +154,11 @@ bytevector::assign
     size_t amount
 )
 {
-    size_t high = offset + amount - 1;
+    size_t high { offset + amount - 1 };
     if (offset == 0 && amount == 0)
         high = data.size() - 1;
 
-    bool ok = offset < data.size() && high < data.size();
+    bool ok { offset < data.size() && high < data.size() };
     if (ok)
     {
         m_data = {data.begin() + offset, data.begin() + high + 1};
@@ -170,7 +175,7 @@ bytevector::assign
     size_t amount
 )
 {
-    const auto & dvec = data.byte_list();       /* const bytes & */
+    const auto & dvec { data.byte_list() };
     assign(dvec, offset, amount);
 }
 
@@ -184,14 +189,14 @@ bytevector::assign
 {
     if (! s.empty())
     {
-        size_t high = offset + amount - 1;
+        size_t high { offset + amount - 1 };
         if (offset == 0 && amount == 0)
             high = s.length() - 1;
 
-        bool ok = offset < s.length() && high < s.length();
+        bool ok { offset < s.length() && high < s.length() };
         if (ok)
         {
-            size_t index = 0;
+            size_t index { 0 };
             m_data.clear();
             for (auto c : s)
             {
@@ -199,7 +204,7 @@ bytevector::assign
                 {
                     if (index <= high)
                     {
-                        util::byte b = static_cast<util::byte>(c);
+                        util::byte b { static_cast<util::byte>(c) };
                         m_data.push_back(b);
                     }
                     else
@@ -272,8 +277,8 @@ bytevector::get_byte () const
 util::ushort
 bytevector::get_short () const
 {
-    util::ushort result = get_byte() << 8;
-    result += get_byte();
+    util::ushort result { util::ushort(get_byte() << 8) };
+    result += util::ushort(get_byte());
     return result;
 }
 
@@ -288,9 +293,9 @@ bytevector::get_short () const
 util::ulong
 bytevector::get_triple () const
 {
-    util::ulong result = get_byte() << 16;
-    result += get_byte() << 8;
-    result += get_byte();
+    util::ulong result { util::ushort(get_byte() << 16) };
+    result += util::ushort(get_byte() << 8);
+    result += util::ushort(get_byte());
     return result;
 }
 
@@ -305,10 +310,10 @@ bytevector::get_triple () const
 util::ulong
 bytevector::get_long () const
 {
-    util::ulong result = get_byte() << 24;
-    result += get_byte() << 16;
-    result += get_byte() << 8;
-    result += get_byte();
+    util::ulong result { util::ulong(get_byte() << 24) };
+    result += util::ulong(get_byte() << 16);
+    result += util::ulong(get_byte() << 8);
+    result += util::ulong(get_byte());
     return result;
 }
 
@@ -323,7 +328,7 @@ bytevector::get_long () const
 util::ulonglong
 bytevector::get_longlong () const
 {
-    util::ulonglong result = util::ulonglong(get_byte()) << 56;
+    util::ulonglong result { util::ulonglong(get_byte()) << 56 };
     result += util::ulonglong(get_byte()) << 48;
     result += util::ulonglong(get_byte()) << 40;
     result += util::ulonglong(get_byte()) << 32;
@@ -350,7 +355,7 @@ bytevector::get_longlong () const
 util::ulong
 bytevector::get_varinum ()
 {
-    util::ulong result = 0;
+    util::ulong result { 0 };
     util::byte c;
     while (((c = get_byte()) & 0x80) != 0x00)       /* while bit 7 is set  */
     {
@@ -442,15 +447,15 @@ bytevector::peek_byte_at (size_t offset) const
 util::ushort
 bytevector::peek_short () const
 {
-    util::ushort result = peek_byte() << 8;
-    result += peek_byte(1);
+    util::ushort result { util::ushort(peek_byte() << 8) };
+    result += util::ushort(peek_byte(1));
     return result;
 }
 
 util::ulong
 bytevector::peek_long () const
 {
-    util::ulong result = peek_byte();
+    util::ulong result { peek_byte() };
     result <<= 24;
     result += peek_byte(1) << 16;
     result += peek_byte(2) << 8;
@@ -461,7 +466,7 @@ bytevector::peek_long () const
 util::ulonglong
 bytevector::peek_longlong () const
 {
-    util::ulonglong result = util::ulonglong(peek_byte()) << 56;
+    util::ulonglong result { util::ulonglong(peek_byte()) << 56 };
     result += util::ulonglong(peek_byte(1)) << 48;
     result += util::ulonglong(peek_byte(2)) << 40;
     result += util::ulonglong(peek_byte(3)) << 32;
@@ -480,16 +485,16 @@ std::string
 bytevector::peek_string (size_t offset, size_t amount)
 {
     std::string result;
-    size_t high = offset + amount - 1;
+    size_t high { offset + amount - 1 };
     if (offset == 0 && amount == 0)
         high = m_data.size() - 1;
 
-    bool ok = offset < m_data.size() && high < m_data.size();
+    bool ok { offset < m_data.size() && high < m_data.size() };
     if (ok)
     {
         for (size_t index = offset; index <= high; ++index)
         {
-            char c = static_cast<char>(m_data[index]);
+            char c { static_cast<char>(m_data[index]) };
             result.push_back(c);
         }
     }
@@ -587,7 +592,7 @@ bytevector::put_longlong (util::ulonglong x)
 void
 bytevector::put_varinum (util::ulong v)
 {
-    util::ulong buffer = v & 0x7F;                  /* mask a no-sign byte  */
+    util::ulong buffer { v & 0x7F };                /* mask a no-sign byte  */
     while (v >>= 7)                                 /* shift right, test    */
     {
         buffer <<= 8;                               /* move LSB bits to MSB */
@@ -643,19 +648,20 @@ bytevector::poke_longlong (util::ulonglong x, size_t pos)
 bool
 bytevector::read (const std::string & infilename)
 {
-    bool result = ! infilename.empty();
+    bool result { ! infilename.empty() };
     if (result)
     {
-        std::ios_base::openmode m =
-            std::ios::in | std::ios::binary | std::ios::ate;
-
+        std::ios_base::openmode m
+        {
+            std::ios::in | std::ios::binary | std::ios::ate
+        };
         std::ifstream ifs(infilename, m);
         result = ifs.is_open();
         if (result)
         {
-            size_t file_size;
             try
             {
+                size_t file_size;
                 clear();                        /* bytes, errors, etc.      */
                 (void) ifs.seekg(0, ifs.end);   /* seek to the file's end   */
                 file_size = ifs.tellg();        /* get the end offset       */
@@ -676,7 +682,7 @@ bytevector::read (const std::string & infilename)
         }
         else
         {
-            std::string errmsg = "Open failed: '";
+            std::string errmsg { "Open failed: '" };
             errmsg += infilename;
             errmsg += "'";
             result = set_error(errmsg);
@@ -696,7 +702,7 @@ bytevector::read (const std::string & infilename)
 bool
 bytevector::write (const std::string & outfilename)
 {
-    bool result = m_data.size() > 0;
+    bool result { m_data.size() > 0 };
     if (result)
     {
         std::ofstream file
@@ -710,7 +716,7 @@ bytevector::write (const std::string & outfilename)
             file.rdbuf()->pubsetbuf(file_buffer, sizeof file_buffer);
             for (auto c : m_data)
             {
-                char kc = char(c);
+                char kc { char(c) };
                 file.write(&kc, 1);
                 if (file.fail())
                 {
@@ -777,7 +783,7 @@ bytevector::set_error_dump (const std::string & msg) const
         temp, sizeof temp, "At 0x%zx of 0x%zx (real 0x%zx): ",
         position(), m_data.size(), real_position()
     );
-    std::string result = temp;
+    std::string result { temp };
     result += msg;
     util::msgprintf(lib66::msglevel::error, "%s", V(result));
     return set_error(result);
@@ -802,7 +808,7 @@ bytevector::set_error_dump (const std::string & msg, unsigned long v) const
 {
     char temp[64];
     snprintf(temp, sizeof temp, "; 0x%lx.", v);
-    std::string result = msg;
+    std::string result { msg };
     result += temp;
     return set_error_dump(result);
 }

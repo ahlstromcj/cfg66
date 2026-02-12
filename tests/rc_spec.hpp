@@ -686,7 +686,7 @@ inisection::specification rc_recent_files_data
  * Not yet used.
  */
 
-const std::string rc_extension{"rc"};
+const std::string rc_extension { "rc" };
 
 /*
  *  Each INI file needs its own "[Cfg66]" section. It is recommended to
@@ -747,7 +747,7 @@ inisection::specification rc_cfg66_data
  *  This works!
  */
 
-inisection::specification rc_comments = stock_comment_data();
+inisection::specification rc_comments { stock_comment_data() };
 
 /*
  * Fields:
@@ -795,4 +795,3 @@ inisections::specification rc_data
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-

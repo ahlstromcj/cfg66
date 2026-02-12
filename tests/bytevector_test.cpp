@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-05-17
- * \updates       2025-10-27
+ * \updates       2026-02-12
  * \license       See above.
  *
  */
@@ -93,21 +93,21 @@ static const std::string s_desc_intro
 bool
 basic_string_io ()
 {
-    std::string fname{"tests/data/1Bar.midi"};
+    std::string fname { "tests/data/1Bar.midi" };
     util::bytevector bv0;
     bv0.assign(fname);
 
-    std::string all{bv0.peek_string()};
-    bool result = all == fname;
+    std::string all { bv0.peek_string() };
+    bool result { all == fname };
     std::cout << "The whole string: '" << all << "'" << std::endl;
     if (result)
     {
-        util::bytevector bv1{fname};
-        std::string all{bv1.peek_string()};
-        bool result = all == fname;
+        util::bytevector bv1 { fname };
+        std::string all { bv1.peek_string() };
+        bool result { all == fname };
         if (result)
         {
-            std::string data{bv1.peek_string(6, 4)};
+            std::string data { bv1.peek_string(6, 4) };
             result = data == "data";
         }
 
@@ -125,16 +125,16 @@ basic_string_io ()
 bool
 big_endian_file_io ()
 {
-    static const util::ulong c_mthd_tag  = 0x4D546864;  /* magic no. 'MThd' */
-    static const util::ulong c_mtrk_tag  = 0x4D54726B;  /* magic no. 'MTrk' */
-    std::string fname{"tests/data/1Bar.midi"};
+    static const util::ulong c_mthd_tag  { 0x4D546864 };    /* magic 'MThd' */
+    static const util::ulong c_mtrk_tag  { 0x4D54726B };    /* magic 'MTrk' */
+    std::string fname { "tests/data/1Bar.midi" };
     util::bytevector bv0;
     bool result = bv0.read(fname);
     if (result)
     {
         util::file_message("Read", fname);
-        util::ulong ID = bv0.get_long();                /* hdr chunk        */
-        util::ulong hdrlength = bv0.get_long();         /* MThd length      */
+        util::ulong ID { bv0.get_long() };                  /* hdr chunk    */
+        util::ulong hdrlength { bv0.get_long() };           /* MThd length  */
         util::ushort format;
         util::ushort trackcount;
         util::ushort fppqn;
@@ -156,8 +156,8 @@ big_endian_file_io ()
                 util::bytevector trkbytes;
                 trkbytes.assign(bv0, bv0.position(), tracklen);
 
-                util::ulong delta = trkbytes.get_varinum();  /* improve!!! */
-                util::byte bstatus = trkbytes.peek_byte();
+                util::ulong delta { trkbytes.get_varinum() }; /* improve!!! */
+                util::byte bstatus { trkbytes.peek_byte() };
                 result = delta == 0 && bstatus == 0xff;
                 if (result)
                 {
@@ -172,7 +172,7 @@ big_endian_file_io ()
                     bv1.put_varinum(delta);
                     bv1.put_byte(bstatus);
 
-                    std::string outname{"tests/data/1Bar-out.midi"};
+                    std::string outname { "tests/data/1Bar-out.midi" };
                     result = bv1.write(outname);
                 }
             }
@@ -191,18 +191,18 @@ big_endian_file_io ()
 bool
 midi_file_test_2 ()
 {
-    static const util::ulong c_mthd_tag  = 0x4D546864;  /* magic no. 'MThd' */
+    static const util::ulong c_mthd_tag  { 0x4D546864 };    /* magic 'MThd' */
 #if defined THIS_CODE_IS_USED
-    static const util::ulong c_mtrk_tag  = 0x4D54726B;  /* magic no. 'MTrk' */
+    static const util::ulong c_mtrk_tag  { 0x4D54726B };    /* magic 'MTrk' */
 #endif
-    std::string fname{"tests/data/MIDI_sample-480.mid"};
+    std::string fname { "tests/data/MIDI_sample-480.mid" };
     util::bytevector bv0;
     bool result = bv0.read(fname);
     if (result)
     {
         util::file_message("Read", fname);
-        util::ulong ID = bv0.get_long();                /* hdr chunk        */
-        util::ulong hdrlength = bv0.get_long();         /* MThd length      */
+        util::ulong ID { bv0.get_long() };                  /* hdr chunk    */
+        util::ulong hdrlength { bv0.get_long() };           /* MThd length  */
         util::ushort format;
         util::ushort trackcount;
         util::ushort fppqn;

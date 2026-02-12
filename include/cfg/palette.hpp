@@ -29,7 +29,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-02-18
- * \updates       2024-01-22
+ * \updates       2026-02-11
  * \license       GNU GPLv2 or above
  *
  *  This module is inspired by MidiPerformance::getSequenceColor() in
@@ -261,13 +261,13 @@ palette<COLOR>::add
     const std::string & colorname
 )
 {
-    int key = static_cast<int>(index);
-    size_t count = m_container.size();
+    int key { static_cast<int>(index) };
+    size_t count { m_container.size() };
     pair colorspec;
     colorspec.ppt_color = color;
     colorspec.ppt_color_name = colorname;
 
-    auto p = std::make_pair(key, colorspec);
+    auto p { std::make_pair(key, colorspec) };
     (void) m_container.insert(p);
     return m_container.size() == (count + 1);
 }
@@ -291,12 +291,12 @@ palette<COLOR>::get_color (PaletteColor index) const
 {
     if (index >= PaletteColor::black && index < PaletteColor::max)
     {
-        int key = static_cast<int>(index);
+        int key { static_cast<int>(index) };
         return m_container.at(key).ppt_color;
     }
     else
     {
-        int key = palette_to_int(none);
+        int key { palette_to_int(none) };
         return m_container.at(key).ppt_color;
     }
 }
@@ -307,12 +307,12 @@ palette<COLOR>::get_color_name (PaletteColor index) const
 {
     if (index >= PaletteColor::black && index < PaletteColor::max)
     {
-        int key = static_cast<int>(index);
+        int key { static_cast<int>(index) };
         return m_container.at(key).ppt_color_name;
     }
     else
     {
-        int key = palette_to_int(none);
+        int key { palette_to_int(none) };
         return m_container.at(key).ppt_color_name;
     }
 }
@@ -321,7 +321,7 @@ template <typename COLOR>
 std::string
 palette<COLOR>::get_color_name_ex (PaletteColor index) const
 {
-    std::string result = std::to_string(static_cast<int>(index));
+    std::string result { std::to_string(static_cast<int>(index)) };
     result += " ";
     result += get_color_name(index);
     return result;
@@ -336,13 +336,13 @@ palette<COLOR>::add
     const std::string & colorname
 )
 {
-    int key = static_cast<int>(index);
-    size_t count = m_container.size();
+    int key { static_cast<int>(index) };
+    size_t count { m_container.size() };
     pair colorspec;
     colorspec.ppt_color = color;
     colorspec.ppt_color_name = colorname;
 
-    auto p = std::make_pair(key, colorspec);
+    auto p { std::make_pair(key, colorspec) };
     (void) m_container.insert(p);
     return m_container.size() == (count + 1);
 }
@@ -353,7 +353,7 @@ palette<COLOR>::get_color (InvertibleColor index) const
 {
     if (index >= InvertibleColor::black && index < InvertibleColor::max)
     {
-        int key = static_cast<int>(index);
+        int key { static_cast<int>(index) };
         return m_container.at(key).ppt_color;
     }
     else
@@ -366,7 +366,7 @@ palette<COLOR>::get_color_name (InvertibleColor index) const
 {
     if (index >= InvertibleColor::black && index < InvertibleColor::max)
     {
-        int key = static_cast<int>(index);
+        int key { static_cast<int>(index) };
         return m_container.at(key).ppt_color_name;
     }
     else
@@ -377,7 +377,7 @@ template <typename COLOR>
 std::string
 palette<COLOR>::get_color_name_ex (InvertibleColor index) const
 {
-    std::string result = std::to_string(static_cast<int>(index));
+    std::string result { std::to_string(static_cast<int>(index)) };
     result += " ";
     result += get_color_name(index);
     return result;
@@ -392,4 +392,3 @@ palette<COLOR>::get_color_name_ex (InvertibleColor index) const
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-

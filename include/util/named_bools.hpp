@@ -27,7 +27,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2021-09-13
- * \updates       2022-07-01
+ * \updates       2026-02-12
  * \license       GNU GPLv2 or above
  *
  *  This seems to be much easier for small sets of booleans that using an
@@ -66,20 +66,20 @@ public:
 
     bool add (const std::string & name, bool value)
     {
-        auto p = std::make_pair(name, value);
-        auto r = m_container.insert(p);
+        auto p { std::make_pair(name, value) };
+        auto r { m_container.insert(p) };
         return r.second;
     }
 
     bool get (const std::string & name) const
     {
-        auto r = m_container.find(name);
+        auto r { m_container.find(name) };
         return r != m_container.end() ? r->second : false ;
     }
 
     void set (const std::string & name, bool value = true)
     {
-        auto r = m_container.find(name);
+        auto r { m_container.find(name) };
         if (r != m_container.end())
             r->second = value;
         else
@@ -107,4 +107,3 @@ public:
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-

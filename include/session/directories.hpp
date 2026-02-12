@@ -115,14 +115,14 @@ private:
      *  instead.
      */
 
-    entries m_file_entries;
+    entries m_file_entries { };
 
     /**
      *  Provies the file-specifications, which can be looked up by the section
      *  name.
      */
 
-    filespecs m_file_specs;
+    filespecs m_file_specs { };
 
     /**
      *  The full expanded path to the files directory.  This value is
@@ -135,7 +135,7 @@ private:
      *  Non/New Session Manager).
      */
 
-    mutable std::string m_home_config_path;
+    mutable std::string m_home_config_path { };
 
     /**
      *  Holds the path to the application configuration directory specified
@@ -160,7 +160,7 @@ private:
      *  of the 'session' file.
      */
 
-    std::string m_session_path;
+    std::string m_session_path { };
 
     /**
      *  A cool flag that indicates the caller (e.g. one working to interact
@@ -170,7 +170,7 @@ private:
      *  "/home/user/NSM Sessions/RockNRoll/seq66v2.nLKKY/").
      */
 
-    bool m_session_path_override;
+    bool m_session_path_override { false };
 
 public:
 
