@@ -6,7 +6,7 @@
 % \library     Documents
 % \author      Chris Ahlstrom
 % \date        2024-04-16
-% \update      2024-08-30
+% \update      2026-02-14
 % \version     $Revision$
 % \license     $XPC_GPL_LICENSE$
 %
@@ -646,6 +646,298 @@
    the module, but also a statically-initialized list of
    default options that any application can use.
    It is also a good example of how to create a list of options.
+
+\subsubsection{cfg::options::kind}
+\label{subsubsec:cfg_namespace_options_kind}
+
+   The \texttt{cfg::options::kind} enumeration specifies the format of
+   an option variable.
+   Here is summary:
+
+
+   \begin{itemize}
+       \item \textbf{boolean}. Each value is either true or false.
+       \item \textbf{floating}. The value is either a float or a double.
+       \item \textbf{floatpair}. Two floating values in a format like "3.0x4.0".
+       \item \textbf{integer}. The value is an integer, whether signed or
+           unsigned.
+       \item \textbf{intpair}. Two integer values in a format like "3x4".
+       \item \textbf{list}. The value is a multi-line list of items, such as
+           a list of busses or a list of recent files.
+       \item \textbf{overflow}. The option is supported by the "--option"
+           option.
+       \item \textbf{section}. The INI-section has no variables, but contains
+           some section-specific values.  Example: the "[comments]"
+           section, containing paragraphs.
+       \item \textbf{string}.  The value is a human readable string. It can also
+           be used to hold string versions of enumeration values.
+       \item \textbf{filename}. A file-name component, such as a path, a base
+           file-name, or a full file-specification.
+       \item \textbf{dummy}. This value is used only when an option cannot
+            be found.
+   \end{itemize}
+
+   Another type, related to the \texttt{section}, but not called out
+   in the list above, is the \texttt{comment}.
+
+   Option values are retrieved from the command-line via the following
+   functions.
+
+      \begin{enumber}
+         \item \texttt{cli::parser::parse()}.
+            Tokens beginning with a \texttt{-} or \texttt{-\-}
+            mark an option.
+            The specific option named \texttt{-\-option} is handle
+            as discussed below in
+            \sectionref{paragraph:cfg_namespace_options_kind_overflow}.
+            Otherwise, the next function is called.
+         \item \texttt{cli::parser::parse\_value()}.
+            This function handles single-letter codes and full option
+            names. Next...
+         \item \texttt{cli::parser::extract\_value()}.
+            A token such as
+            \texttt{-a},
+            \texttt{-a:value}, or
+            \texttt{-\-analyze:value}
+            is tokenized; the first token is returned as the
+            full option name, and the second is the value, if
+            provided after the \texttt{:} or \texttt{=}.
+            Next...
+         \item \texttt{cli::parser::change\_value()}.
+            This function calls the \texttt{cfg::options} function
+            of the same name.
+      \end{enumber}
+
+   Option values are retrieved from a configuration file via the
+   following functions.
+
+      \begin{enumber}
+         \item \texttt{cfg::configfile::get\_xxx()}.
+            This set of functions calls the next function to
+            get the value string of an option, and then
+            passes it, if needed, to a conversion-from-string
+            function. See the next sections for kind-specific
+            handling.
+         \item \texttt{cfg::configfile::get\_variable()}.
+            This function searches for a given option name
+            after first searching for a section name 
+            (e.g. \texttt{[input-ports]}).
+            Next...
+         \item \texttt{cfg::configfile::extract\_variable()}.
+            This function searches the given line
+            for an option name, and returns the value that was
+            found.
+      \end{enumber}
+
+   The next sections show examples in an INI-style configuration file.
+   In most cases, an equals sign is required.
+   Space before and after is optional, but improves readability.
+
+\paragraph{cfg::options::kind::boolean}
+\label{paragraph:cfg_namespace_options_kind_boolean}
+
+   Boolean options flag either a true value, or, if the option
+   starts with \texttt{-\-no-} (on the command line), a false value.
+   The option format in the configuration file is one of the following:
+
+   \begin{verbatim}
+      port-naming = true
+      client-naming = false
+   \end{verbatim}
+
+   If the value is not equal to "true", then "false" is assumed.
+   See the \texttt{cfg::configfile::get\_boolean()},
+   \texttt{cfg::configfile::write\_boolean()},
+   and the \texttt{util::string\_to\_bool()} functions.
+
+\paragraph{cfg::options::kind::floating}
+\label{paragraph:cfg_namespace_options_kind_floating}
+
+   Here, the value is intended to be a floating-point variable,
+   i.e. of C++ type \texttt{float}.
+   The caller might convert it to a longer floating-point type.
+
+   \begin{verbatim}
+      precision = 0.001
+   \end{verbatim}
+
+   See the \texttt{cfg::configfile::get\_float()}
+   \texttt{cfg::configfile::write\_float()},
+   and the \texttt{util::string\_to\_double()} functions.
+
+\paragraph{cfg::options::kind::floatpair}
+\label{paragraph:cfg_namespace_options_kind_floatpair}
+
+   This option provides a way to represent 2-dimensional
+   floating-point quantities.
+   They can be separated by a space, a hyphen, a comma, or an x.
+   Here are three examples, which should be followed
+   strictly for readability.
+
+   \begin{verbatim}
+      flux-parameters = 0.50 1.25
+      energy-range = 10.0-15.0
+      window-scale = 0.5 x 0.5
+      float-items = 1.0, 8.0
+   \end{verbatim}
+
+   See the \texttt{cfg::configfile::get\_float\_pair()}
+   \texttt{cfg::configfile::write\_float\_pair()},
+   and the \texttt{util::string\_to\_float()} functions.
+
+   At some point we should support more than two values on
+   a line.
+
+\paragraph{cfg::options::kind::integer}
+\label{paragraph:cfg_namespace_options_kind_integer}
+
+   Here, the value is intended to be an integer variable,
+   i.e. of C++ type \texttt{int}.
+   The caller might convert it to a longer integer type.
+
+   \begin{verbatim}
+      string-limit = 32
+   \end{verbatim}
+
+   See the \texttt{cfg::configfile::get\_integer()}
+   \texttt{cfg::configfile::write\_integer()},
+   and the \texttt{util::string\_to\_int()} functions.
+
+\paragraph{cfg::options::kind::intpair}
+\label{paragraph:cfg_namespace_options_kind_intpair}
+
+   This option provides a way to represent 2-dimensional
+   integer quantities.
+   They can be separated by a space, a hyphen, a comma, or an x.
+   Here are three examples, which should be followed
+   strictly for readability.
+
+   \begin{verbatim}
+      port-pair = 9 10
+      channel-range = 0-15
+      window-size = 640 x 400
+      items = 1, 8
+   \end{verbatim}
+
+   Note that other bases are supported via a leading "0"
+   for octal and "0x" for hexadecimal.
+
+   See the \texttt{cfg::configfile::get\_int\_pair()}
+   \texttt{cfg::configfile::write\_int\_pair()},
+   and the \texttt{util::string\_to\_int()} functions.
+
+   At some point we should support more than two values on
+   a line.
+
+\paragraph{cfg::options::kind::list}
+\label{paragraph:cfg_namespace_options_kind_list}
+
+   A list here is simply a list of non-empty lines, preceded
+   by a count of item.
+   The whole section is just this list; only one list can reside
+   in a section.
+   However, additional options can be held in a list section,
+   as long as they are uniquely named over all of the configuration
+   files in an application.
+
+   \begin{verbatim}
+      [midi-input]
+      midi-input-active = true
+      count = 3
+      0  1   "[0] 0:1 system:ALSA Announce"
+      1  1   "[1] 14:0 Midi Through Port-0"
+      2  0   "[2] 28:0 nanoKEY2 _ CTRL"
+   \end{verbatim}
+
+   The whole line is obtained, and the application is
+   responsible for processing it.
+
+   Note that the "count" value is not the name of an option,
+   though it can be searched. The list must immediately follow
+   the count. (Blank lines are ignored.)
+
+   Extra options (e.g. \texttt{midi-input-active})
+   can be added and handled in the normal way by the color.
+
+   See the \texttt{cfg::configfile::parse\_list()}
+   \texttt{cfg::configfile::write\_list()},
+   and the \texttt{util::string\_to\_int()} functions.
+
+   See the \textsl{recents} section below
+   for a another kind of list.
+
+\paragraph{cfg::options::kind::recents}
+\label{paragraph:cfg_namespace_options_kind_recents}
+
+   This class holds a list of the most-recent items in a
+   list of items, always strings.
+
+   It can be filled from a list, but also includes a couple
+   of true options.
+
+   \begin{verbatim}
+      [recent-files]
+      full-paths = false
+      load-most-recent = true
+      count = 2
+      "/home/me/seq66/midi/Shock the Monkey.midi"
+      "/home/me/seq66/midi/Sitarbeat.midi"
+   \end{verbatim}
+
+\paragraph{cfg::options::kind::overflow (--option)}
+\label{paragraph:cfg_namespace_options_kind_overflow}
+
+   The main purpose of an overflow option is to support
+   additional options on the command line
+   when there are too many of them to be supported
+   by codes in the sets A-Z, a-z, 0-9, etc.
+   Therefore, these options do not appear in a configuration
+   file as overflow options, but as code-less long-name
+   options.
+
+   More to come.
+
+\paragraph{cfg::options::kind::section}
+\label{paragraph:cfg_namespace_options_kind_section}
+
+   A section is one, such as \texttt{[comments]},
+   that merely contains lines of text, with a line
+   having only a space being considered a line of text.
+   Here's in an example:
+
+   \begin{verbatim}
+      [description]
+
+      This is the first line of the description. The next line
+      is not blank, but has a space to represent a blank line.
+
+      This is the last line of the description.
+   \end{verbatim}
+
+   See the \texttt{cfg::configfile::parse\_section\_option()}.
+
+%
+% We need a write function, don't we.
+%
+
+   Another type, related, but not called out,
+   is the \texttt{comment}, represented by a section
+   name \texttt{[comment]}.
+   See the \texttt{cfg::configfile::parse\_comments()}.
+
+%
+%  WE NEED to explain numbered sections  ("[Drums nn]" where
+%  nn is relative to 0).
+%
+
+\paragraph{cfg::options::kind::filename}
+\label{paragraph:cfg_namespace_options_kind_filename}
+
+%  HERE, WE NEED to work out a way to indicate that a file is
+%  "active".
+
+   \begin{verbatim}
+   \end{verbatim}
 
 \subsection{cfg::palette}
 \label{subsec:cfg_namespace_}

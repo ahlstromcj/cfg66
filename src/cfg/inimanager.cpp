@@ -93,7 +93,7 @@ inimanager::inimanager () :
     {
         const options & opts { sec.find_options() }; /* find stock options  */
         if (opts.active())
-            (void) multi_parser().cli_mappings_add(opts.option_pairs());
+            (void) multi_parser().name_mappings_add(opts.option_pairs());
     }
 }
 
@@ -123,7 +123,7 @@ inimanager::inimanager (const options::container & additional) :
     {
         const options & opts { sec.find_options() }; /* find global options */
         if (opts.active())
-            (void) multi_parser().cli_mappings_add(opts.option_pairs());
+            (void) multi_parser().name_mappings_add(opts.option_pairs());
     }
     else
         util::error_message("Failed to add inisection", "inimanager");
@@ -160,7 +160,7 @@ inimanager::add_inisections (inisections::specification & spec)
         auto r { sections_map().insert(p) };        /* another copy         */
         result = r.second;
         if (result)
-            result = multi_parser().cli_mappings_add(spec);
+            result = multi_parser().name_mappings_add(spec);
         else
             util::error_message("Unable to insert sections", cfgtype);
     }

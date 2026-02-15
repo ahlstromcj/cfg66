@@ -295,9 +295,9 @@ write_sections (const cfg::inimanager & ccfg, const std::string & cfgtype)
  *  so that the long form of the option name be looked up by code
  *  character.
  *
- *  The long name of the option is used in multiparser::cli_mappings_add()
- *  to associate the option name with a configuration type (i.e a
- *  file extension) and a configuration section.
+ *  The long name of the option is used in multiparser::name_mappings_add()
+ *  to associate the option name with a configuration type (i.e a file
+ *  extension) and a configuration section.
  *
  *  TODO: Since the multiparser inherits an empty cfg::options object,
  *        we need to override the cli::parser::parse() function to

@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-03-29
- * \updates       2026-02-12
+ * \updates       2026-02-13
  * \license       GNU GPLv2 or above
  *
  *  The cfg66::recent class simply keeps track of recently-used files for the
@@ -40,12 +40,15 @@
 namespace cfg
 {
 
-/**
- *  Indicates the maximum number of recently-opened file-names we will
- *  store.
- */
+recent::recent (std::size_t maxsize, bool fullpath, bool loadnewest) :
+    m_maximum_size      (maxsize),
+    m_full_path         (fullpath),
+    m_load_most_recent  (loadnewest)
+{
+    // no code
+}
 
-static const int sc_recent_files_max { 12 };
+#if 0
 
 /**
  *  This construction creates an empty recent-files list and sets the maximum
@@ -79,6 +82,8 @@ recent::operator = (const recent & source)
     }
     return *this;
 }
+
+#endif
 
 /**
  *  This function is meant to be used when loading the recent-files list from

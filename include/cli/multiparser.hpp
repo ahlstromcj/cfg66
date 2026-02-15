@@ -27,7 +27,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-23
- * \updates       2024-09-05
+ * \updates       2026-02-13
  * \license       See above.
  *
  *  This class provides a way to look up command-line options specified by
@@ -114,7 +114,7 @@ private:
      *  The complete set of configurations options.
      */
 
-    names m_cli_mappings;
+    names m_name_mappings;
 
 public:
 
@@ -143,8 +143,8 @@ public:
         const std::string & sectionname = ""
     );
 
-    bool cli_mappings_add (cfg::inisections::specification & spec);
-    bool cli_mappings_add
+    bool name_mappings_add (cfg::inisections::specification & spec);
+    bool name_mappings_add
     (
         const cfg::options::container & opts,
         const std::string & configtype      = cfg::global,
@@ -157,9 +157,9 @@ public:
         std::string & configsection
     );
 
-    const names & cli_mappings () const
+    const names & name_mappings () const
     {
-        return m_cli_mappings;
+        return m_name_mappings;
     }
 
     cfg::inimanager & ini_manager ()
@@ -184,9 +184,9 @@ private:
         return m_code_mappings;
     }
 
-    names & cli_mappings ()
+    names & name_mappings ()
     {
-        return m_cli_mappings;
+        return m_name_mappings;
     }
 
 };          // class multiparser

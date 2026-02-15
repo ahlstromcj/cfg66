@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2026-02-11
+ * \updates       2026-02-14
  * \license       GNU GPLv2 or above
  *
  *  std::streamoff is a signed integral type (usually long long) that can
@@ -101,6 +101,8 @@ configfile::is_missing (float v)
 /**
  *  Provides the string constructor for a configuration file.
  *
+ *  The other members are defined as defaults "in-class".
+ *
  * \param name
  *      The name of the configuration file. It can have a path, or not.
  *      It can have a file-extension, or not. If not, then the \a cfgtype
@@ -117,12 +119,7 @@ configfile::configfile
     const std::string & cfgtype
 ) :
     m_file_type     (cfgtype),
-    m_file_name     (filename),
-    m_version       ("0"),
-    m_file_version  ("0"),
-    m_line          (),
-    m_line_number   (0),
-    m_line_position (0)
+    m_file_name     (filename)
 {
     if (! util::name_has_extension(filename))
     {
@@ -182,15 +179,15 @@ configfile::parse_section_option
     const std::string & secname
 )
 {
-    std::string result;
-    if (line_after_section(file, secname, 0, false)) /* 1st line w/out strip */
+    std::string result { };
+    if (line_after_section(file, secname, 0, false)) /* 1st line, no strip  */
     {
         do
         {
             result += line();
             result += "\n";
 
-        } while (next_data_line(file, false));      /* no strip here either */
+        } while (next_data_line(file, false));       /* no strip here too   */
     }
     return result;
 }
@@ -227,13 +224,14 @@ configfile::parse_list
 (
     std::ifstream & file,
     const std::string & section,
-    lib66::tokenization & items,
+    options::list & oplist,
     const std::string & valuetag
 )
 {
     int result { 0 };
     int position { 0 };
     int count { get_integer(file, section, "count", position) };
+    lib66::tokenization & items { oplist.list_tokens };
     items.clear();
     if (count == configfile::sm_int_missing)                   /* -9998    */
     {
@@ -241,6 +239,7 @@ configfile::parse_list
     }
     else
     {
+        oplist.list_count = count;
         position = line_position();
         for (int linenum = 0; linenum < count; /* ++linenum */)
         {
@@ -698,6 +697,9 @@ configfile::write_cfg66_footer (std::ofstream & file)
  *  Write a list of options that comprise a whole section and are identical
  *  in data type.
  *
+ *  Note that, if other values are to be written, they should be written
+ *  before calling this function.
+ *
  * \param file
  *      Provides the output file stream.
  *
@@ -721,14 +723,15 @@ configfile::write_list
 (
     std::ofstream & file,
     const std::string & section,
-    const lib66::tokenization & items,
+    const options::list & oplist,
     const std::string & valuetag
 )
 {
     int result { 0 };
-    int count { int(items.size()) };
+    int count { int(oplist.list_count) };
     if (count > 0)
     {
+        const lib66::tokenization & items { oplist.list_tokens };
         file
             << "\n" << section << "\n\n"
             << "count = " << count << "\n"
@@ -796,6 +799,60 @@ configfile::write_integer
         file << name << " = " << value << "\n";
 }
 
+options::intpair
+configfile::get_int_pair
+(
+    std::ifstream & file,
+    const std::string & s,
+    const std::string & variablename,
+    int position
+)
+{
+    options::intpair result { -1, -1 };
+    std::string value { get_variable(file, s, variablename, position) };
+    bool ok { ! value.empty() };
+    if (ok)
+    {
+        lib66::tokenization tokens { util::tokenize(value, " x,-") };
+        if (tokens.size() > 0)
+        {
+            result.a = util::string_to_int(tokens[0]);
+            if (tokens.size() > 1)
+                result.b = util::string_to_int(tokens[1]);
+        }
+    }
+    return result;
+}
+
+void
+configfile::write_int_pair
+(
+    std::ofstream & file,
+    const std::string & name,
+    const options::intpair & value,
+    bool usehex,
+    char separator
+)
+{
+    std::string sepstring { " " };
+    if (separator == ',')
+        sepstring = ", ";
+    else if (separator == 'x')
+        sepstring = " x ";
+
+    if (usehex)
+    {
+        file
+            << name << " = 0x" << std::hex << std::setw(2) << value.a
+            << sepstring
+            << "0x" << std::hex << std::setw(2) << value.b
+            << "\n"
+            ;
+    }
+    else
+        file << name << value.a << sepstring << value.b << "\n";
+}
+
 /**
  *  This function cannot detect a missing value.
  */
@@ -827,7 +884,56 @@ configfile::write_float
     float value
 )
 {
-    file << name << " = " << value << "\n";
+    file << name << " = " << std::setprecision(3) << value << "\n";
+}
+
+options::floatpair
+configfile::get_float_pair
+(
+    std::ifstream & file,
+    const std::string & s,
+    const std::string & variablename,
+    int position
+)
+{
+    options::floatpair result { -1, -1 };
+    std::string value { get_variable(file, s, variablename, position) };
+    bool ok { ! value.empty() };
+    if (ok)
+    {
+        lib66::tokenization tokens { util::tokenize(value, " x,-") };
+        if (tokens.size() > 0)
+        {
+            result.a = util::string_to_float(tokens[0]);
+            if (tokens.size() > 1)
+                result.b = util::string_to_float(tokens[1]);
+        }
+    }
+    return result;
+}
+
+void
+configfile::write_float_pair
+(
+    std::ofstream & file,
+    const std::string & name,
+    const options::floatpair & value,
+    char separator
+)
+{
+    std::string sepstring { " " };
+    if (separator == 'x')
+        sepstring = " x ";
+    else if (separator == ',')
+        sepstring = "";
+    else if (separator == '-')
+        sepstring = "-";
+
+    file
+        << name << std::setprecision(3) << value.a
+        << sepstring
+        << std::setprecision(3) << value.b << "\n"
+        ;
 }
 
 /**
@@ -867,6 +973,12 @@ configfile::write_string
  *
  *  We now enforce that all configuration files are restricted to the HOME
  *  directory, so we also strip the path from the file-name.
+ *
+ *  We need to deal with a list of file-names and their status, rather
+ *  than an "active" value in the file's section. Why? because we
+ *  require that all the value names are unique.
+ *
+ *  Or is there another way?
  */
 
 bool
@@ -880,7 +992,7 @@ configfile::get_file_status
 {
     bool result { get_boolean(file, s, "active", position) };
     filename = util::strip_quotes(get_variable(file, s, "name", position));
-    if (util::is_missing_string(filename))                /* filename.empty()     */
+    if (util::is_missing_string(filename))          /* filename.empty()     */
     {
         result = false;
     }

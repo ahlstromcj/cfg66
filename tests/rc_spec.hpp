@@ -159,7 +159,7 @@ inisection::specification rc_midi_input_data
     },
     {
         {
-            "count",
+            "count",            // FIXME
             {
                 options::code_null, options::kind::list, options::disabled,
                 "0", "", false, false,

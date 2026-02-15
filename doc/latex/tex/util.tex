@@ -6,7 +6,7 @@
 % \library     Documents
 % \author      Chris Ahlstrom
 % \date        2024-04-16
-% \update      2024-07-24
+% \update      2026-02-13
 % \version     $Revision$
 % \license     $XPC_GPL_LICENSE$
 %
@@ -43,7 +43,14 @@
    There are also functions to read a file and write the vector to the
    file.
 
-   The bytes are treated as a stream of big-endian data.
+   The bytes are treated as a stream of \textsl{big-endian} data.
+   Big endian is a storage format where the most significant
+   byte (MSB) of a multibyte data value is stored at the lowest memory address,
+   "big-end-first." It is also called "network byte order" because it is the
+   standard for network protocols. It facilitates easier human readability of
+   hexadecimal dumps and allows numerical sorting of byte string.
+   Also note that MIDI data is big-endian.
+
    Integers are extracted from the bytes a byte at a time, starting with
    the most significant byte.
    Since this data is big-endian, it is suitable for use with MIDI

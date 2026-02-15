@@ -370,7 +370,7 @@ const std::string &
 get_home ()
 {
     static bool s_got_home { false };
-    static std::string s_home { "" };
+    static std::string s_home { };
     if (! s_got_home)
     {
 #if defined PLATFORM_UNIX
@@ -460,7 +460,7 @@ get_app_name ()
 std::string
 get_app_type ()
 {
-    std::string result;
+    std::string result { };
     switch (app_info().m_app_kind)
     {
     case appkind::cli:      result = "cli";         break;
@@ -682,7 +682,7 @@ const std::string &
 get_api_subdirectory ()
 {
     static bool s_uninitialized { true };
-    static std::string s_subdirectory;
+    static std::string s_subdirectory { };
     if (s_uninitialized)
     {
         s_uninitialized = false;
@@ -829,11 +829,12 @@ get_runtime_details ()
 std::string
 get_app_variable (const std::string & variable)
 {
-    std::string result;
+    std::string result { };
     if (variable.length() > 1)
     {
         if (variable.front() == '$')
         {
+            // TODO
         }
     }
     return result;

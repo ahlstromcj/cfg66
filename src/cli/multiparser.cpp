@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-06-24
- * \updates       2026-02-10
+ * \updates       2026-02-13
  * \license       See above.
  *
  *      The limitations of command-line options as implemented in cli::parser
@@ -50,7 +50,7 @@ namespace cli
  *  Empty options set.
  */
 
-static cfg::options::container s_dummy_options;
+static cfg::options::container s_dummy_options { };
 
 /**
  *  Constructors. The first creates an empty options container, but hooks
@@ -62,12 +62,9 @@ multiparser::multiparser (cfg::inimanager & mgr) :
     m_ini_manager       (mgr),
     m_current_options   (nullptr),
     m_code_mappings     (),
-    m_cli_mappings      ()
+    m_name_mappings      ()
 {
-    // no code; QUESTION: should we set m_current_options (null at this point)
-    // to the current value of options_set()?
-    // ????????????????????
-
+    // no code
 }
 
 /**
@@ -98,7 +95,7 @@ multiparser::help_text () const
  */
 
 bool
-multiparser::cli_mappings_add (cfg::inisections::specification & spec)
+multiparser::name_mappings_add (cfg::inisections::specification & spec)
 {
     std::string configtype { spec.file_extension };
     bool result { ! configtype.empty() };
@@ -122,7 +119,7 @@ multiparser::cli_mappings_add (cfg::inisections::specification & spec)
              *      const std::pair<std::string, options::spec>
              */
 
-            result = cli_mappings_add
+            result = name_mappings_add
             (
                 isectspec.sec_optionlist, configtype, configsection
             );
@@ -152,7 +149,7 @@ multiparser::cli_mappings_add (cfg::inisections::specification & spec)
  */
 
 bool
-multiparser::cli_mappings_add
+multiparser::name_mappings_add
 (
     const cfg::options::container & opts,
     const std::string & configtype,
@@ -203,7 +200,7 @@ multiparser::cli_mappings_add
 
                 duo d { configtype, configsection };
                 auto p { std::make_pair(name, d) };
-                auto r { cli_mappings().insert(p) };
+                auto r { name_mappings().insert(p) };
                 if (r.second)
                 {
 #if defined PLATFORM_DEBUG_TMI
@@ -232,10 +229,6 @@ multiparser::cli_mappings_add
     }
     return result;
 }
-
-/**
- *
- */
 
 const cfg::options &
 multiparser::option_set () const
@@ -268,7 +261,7 @@ multiparser::find_option_set
     const std::string & configsection
 ) const
 {
-    static cfg::options s_empty_options;
+    static cfg::options s_empty_options { };
     const cfg::inisection & ini
     {
         m_ini_manager.find_inisection(configtype, configsection)
@@ -357,8 +350,8 @@ multiparser::parse (int argc, char * argv [])
 
             std::string value;
             /* bool has_value = */ extract_value(longname, value);
-            auto dit { cli_mappings().find(longname) };
-            if (dit != cli_mappings().end())
+            auto dit { name_mappings().find(longname) };
+            if (dit != name_mappings().end())
             {
                 std::string configtype { dit->second.config_type };
                 std::string configsection { dit->second.config_section };
@@ -432,8 +425,8 @@ multiparser::lookup_names
             if (nip != code_mappings().end())
                 truename = nip->second;
         }
-        const auto nip { cli_mappings().find(truename) };
-        result = nip != cli_mappings().end();
+        const auto nip { name_mappings().find(truename) };
+        result = nip != name_mappings().end();
         if (result)
         {
             auto d { nip->second };

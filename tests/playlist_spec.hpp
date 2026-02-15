@@ -27,7 +27,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-08-05
- * \updates       2024-07-15
+ * \updates       2026-02-13
  * \license       See above.
  *
  */
@@ -120,7 +120,7 @@ inisection::specification playlist_list_data
             }
         },
         {
-            "directory",
+            "list-directory",           /* "directory" alone is too common. */
             {
                 options::code_null, options::kind::string, options::disabled,
                 "", "", false, false,

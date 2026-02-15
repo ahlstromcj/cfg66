@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-07-22
- * \updates       2026-02-09
+ * \updates       2026-02-13
  * \license       See above.
  *
  *  This is the first of a set of test/demo header files to set up a large
@@ -137,7 +137,11 @@ inisection::specification session_cfg66_data
                 "0", "", false, false,
                 "Configuration file version.", false
             }
-        },
+        }
+        /*
+         * These items are already present in the global ("stock") options
+         * in the library.
+         *
         {
             "quiet",
             {
@@ -154,6 +158,8 @@ inisection::specification session_cfg66_data
                 "Show informational messages.", false
             }
         }
+         *
+         */
     }
 };
 
@@ -207,7 +213,7 @@ inisection::specification session_config_file_data
             {
                 options::code_null, options::kind::boolean, options::enabled,
                 "false", "", false, false,
-                "Usage of configuration file; otherwise a default is used.",
+                "Usage of configuration files; otherwise a defaults are used.",
                 false
             }
         },
@@ -236,6 +242,13 @@ inisection::specification session_config_file_data
             }
         }
     }
+#if 0
+    /*
+     *  A list of supported and active configuration files.
+     *
+     *      cfg::options::kind::list
+     */
+#endif
 };
 
 /**
@@ -264,7 +277,7 @@ inisection::specification session_rc_file_data
             }
         },
         {
-            "directory",
+            "rc-directory",             /* "directory" alone is too common  */
             {
                 options::code_null, options::kind::filename, options::disabled,
                 "", "", false, false,
@@ -308,7 +321,7 @@ inisection::specification session_usr_file_data
             }
         },
         {
-            "directory",
+            "usr-directory",            /* "directory" alone is too common  */
             {
                 options::code_null, options::kind::filename, options::disabled,
                 "", "", false, false,
@@ -355,7 +368,7 @@ inisection::specification session_palette_file_data
             }
         },
         {
-            "directory",
+            "pal-directory",            /* "directory" alone is too common  */
             {
                 options::code_null, options::kind::filename, options::disabled,
                 "", "", false, false,
@@ -390,7 +403,7 @@ inisection::specification session_ctrl_file_data
             }
         },
         {
-            "directory",
+            "ctrl-directory",
             {
                 options::code_null, options::kind::filename, options::disabled,
                 "", "", false, false,
@@ -425,7 +438,7 @@ inisection::specification session_mutes_file_data
             }
         },
         {
-            "directory",
+            "mutes-directory",
             {
                 options::code_null, options::kind::filename, options::enabled,
                 "", "", false, false,
@@ -459,7 +472,7 @@ inisection::specification session_drums_file_data
             }
         },
         {
-            "directory",
+            "note-directory",
             {
                 options::code_null, options::kind::filename, options::disabled,
                 "", "", false, false,
@@ -493,7 +506,7 @@ inisection::specification session_playlist_file_data
             }
         },
         {
-            "directory",
+            "list-directory",
             {
                 options::code_null, options::kind::filename, options::enabled,
                 "", "", false, false,

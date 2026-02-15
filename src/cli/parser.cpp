@@ -107,7 +107,7 @@ parser::parser
 bool
 parser::parse (int argc, char * argv [])
 {
-    bool result = not_nullptr(argv) && ! has_error();
+    bool result { not_nullptr(argv) && ! has_error() };
     if (result && argc > 1)
     {
         for (int i = 1; i < argc; ++i)      /* token 0 might be app name    */
@@ -272,12 +272,12 @@ parser::parse_value
 )
 {
     bool result { false };                  /* a pessimistic start          */
-    std::string name;                       /* holds the option name/chars  */
-    std::string value;                      /* value for a compound option  */
     bool boolvalue { true };                /* used for boolean options     */
     size_t offset { 1 };                    /* count the first hyphen       */
     std::string tk { token };
     std::string no { tk.substr(0, 5) };
+    std::string name;                       /* holds the option name/chars  */
+    std::string value;                      /* value for a compound option  */
     if (no == "--no-")                      /* it's a falsified boolean     */
     {
         std::string partial { tk.substr(5) }; /* after "--no-"              */
@@ -296,9 +296,15 @@ parser::parse_value
         {
             /*
              *  We set the flag for being set from the command-line.
+             *
+             *
              */
 
-            std::string code(1, name[i]);               /* a bit tricky     */
+            // xxxxxxxxxxxxxxx
+            // The stuff in the else-clause needs to be in a separate
+            // function to be called in this and the else-clause.
+
+            std::string code { 1, name[i] };            /* a bit tricky     */
             result = change_value(code, "true", true);  /* set the "bit"    */
             if (! result)
                 break;

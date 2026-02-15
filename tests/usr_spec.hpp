@@ -27,7 +27,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-08-04
- * \updates       2026-02-08
+ * \updates       2026-02-13
  * \license       See above.
  *
  *
@@ -598,7 +598,7 @@ inisection::specification usr_session_data
     },
     {
         {
-            "session",
+            "session-mgr",
             {
                 options::code_null, options::kind::string, options::disabled,
                 "non", "", false, false,

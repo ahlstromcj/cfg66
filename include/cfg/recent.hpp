@@ -27,7 +27,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-03-29
- * \updates       2026-02-11
+ * \updates       2026-02-13
  * \license       GNU GPLv2 or above
  *
  *  It is based on the "recent" class of Seq66, with some additional
@@ -49,6 +49,13 @@ namespace cfg
 class recent
 {
 
+    /**
+     *  Indicates the maximum number of recently-opened file-names we will
+     *  store.
+     */
+
+    const std::size_t c_recent_files_max { 12 };
+
 private:
 
     /**
@@ -68,21 +75,39 @@ private:
      *  Holds the list of recent files.
      */
 
-    container m_recent_list;
+    container m_recent_list { };
 
     /**
      *  Holds the constraint on the number of recent files.  Usually a value
      *  like 12.
      */
 
-    const int m_maximum_size;
+    std::size_t m_maximum_size { c_recent_files_max } ;
+
+    /**
+     *  If true, store the full path of a file-name.
+     */
+
+    bool m_full_path { false };
+
+    /**
+     *  If true, the caller will immediately load the most recent file.
+     */
+
+    bool m_load_most_recent { false };
 
 public:
 
     recent ();
+    recent
+    (
+        std::size_t maxsize,
+        bool fullpath           = false,
+        bool loadnewest         = false
+    );
     recent (const recent &) = default;
     recent (recent &&) = default;
-    recent & operator = (const recent &);
+    recent & operator = (const recent &) = default;
     recent & operator = (recent &&) = delete;
     ~recent () = default;
 
@@ -98,7 +123,27 @@ public:
 
     int maximum () const
     {
-        return m_maximum_size;
+        return int(m_maximum_size);
+    }
+
+    bool full_path () const
+    {
+        return m_full_path;
+    }
+
+    void full_path (bool f)
+    {
+        m_full_path = f;
+    }
+
+    bool load_most_recent () const
+    {
+        return m_load_most_recent;
+    }
+
+    void load_most_recent (bool f)
+    {
+        m_load_most_recent = f;
     }
 
     /**

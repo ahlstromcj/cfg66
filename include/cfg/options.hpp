@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2026-02-10
+ * \updates       2026-02-14
  * \license       See above.
  *
  *  Supports variables of the following types:
@@ -62,7 +62,7 @@
 #include <map>                          /* std::map container               */
 #include <string>                       /* std::string class                */
 
-#include "cpp_types.hpp"                /* enum class opt                   */
+#include "cpp_types.hpp"                /* lib66::tokenization              */
 #include "platform_macros.h"            /* PLATFORM_DEBUG etc.              */
 
 /**
@@ -114,9 +114,9 @@ namespace cfg
  *  util::questionable_string().
  */
 
-static std::string global { "" };
-static std::string lookup { "?" };
-static std::string bad { "?" };
+static std::string global   { ""  };
+static std::string lookup   { "?" };
+static std::string bad      { "?" };
 
 /**
  *  Accessor function class.
@@ -139,10 +139,10 @@ public:
      *  The "global" boolean corresponds to the "global" string defined above.
      */
 
-    static const bool disabled { false };
-    static const bool enabled { true };
-    static const bool stock { true };   /* used in reset() & debug_text()   */
-    static const bool nostock { false };
+    static const bool disabled  { false };
+    static const bool enabled   { true  };
+    static const bool stock     { true  };  /* see reset() & debug_text()   */
+    static const bool nostock   { false };
 
     /**
      *  More searchable versions of specific booleans and a null option
@@ -158,9 +158,9 @@ public:
      *  longer than about 78.
      */
 
-    static const size_t hanging_width { 25 };                   /* tricky   */
-    static const size_t field_width { 40 };
-    static const size_t terminal_width { 78 };
+    static const size_t hanging_width   { 25 };                 /* tricky   */
+    static const size_t field_width     { 40 };
+    static const size_t terminal_width  { 78 };
 
     /**
      *  The kinds of options supported, mostly representing various
@@ -170,7 +170,6 @@ public:
     enum class kind
     {
         boolean,                    /**< Values are "true" or "false".      */
-        filename,                   /**< A quoted file specification.       */
         floating,                   /**< A float or double value.           */
         floatpair,                  /**< Two float or double values.        */
         integer,                    /**< An integer value.                  */
@@ -180,7 +179,32 @@ public:
         overflow,                   /**< An --option or -o option.          */
         section,                    /**< Only an un-named string value.     */
         string,                     /**< A quoted string.                   */
+        filename,                   /**< A quoted file specification.       */
         dummy                       /**< Used when option can't be found.   */
+    };
+
+    /*
+     *  Types to represent the more complex option::kind types.
+     *  Note that cfg::recent is it's own class and module.
+     */
+
+    using intpair = struct
+    {
+        int a { 0 };
+        int b { 0 };
+    };
+
+    using floatpair = struct
+    {
+        float a { 0.0 };
+        float b { 0.0 };
+    };
+
+    using list = struct
+    {
+        bool list_active { true };
+        std::size_t list_count { 0 };
+        lib66::tokenization list_tokens { };
     };
 
     /**

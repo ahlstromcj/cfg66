@@ -24,7 +24,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2024-09-09
- * \updates       2026-02-12
+ * \updates       2026-02-14
  * \license       GNU GPLv2 or above
  *
  */
@@ -97,10 +97,13 @@ configfile::parse ()
             std::string c { parse_comments(file) };
             parent().comments_block().set(c);
 
-            lib66::tokenization sects;
-            int count { parse_list(file, "[cfg]", sects, "section") };
+            cfg::options::list oplist;
+            lib66::tokenization & sects { oplist.list_tokens };
+            int count { parse_list(file, "[cfg]", oplist, "section") };
             if (count > 0)
-                result = parent().section_list_fill(sects);
+            {
+                // result = parent().section_list_fill(sects);
+            }
             else
                 result = false;     // fatal or okay?
 

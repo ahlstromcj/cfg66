@@ -28,7 +28,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2026-02-12
+ * \updates       2026-02-14
  * \license       GNU GPLv2 or above
  *
  *  This is actually an elegant little parser, and works well as long as one
@@ -40,7 +40,8 @@
 #include <string>                       /* std::string, the ubiquitous one  */
 
 #include "cpp_types.hpp"                /* std::string, tokenization alias  */
-#include "util/strfunctions.hpp"        /* util::string_to_int()           */
+#include "cfg/options.hpp"              /* PLATFORM_DEBUG etc.              */
+#include "util/strfunctions.hpp"        /* util::string_to_int()            */
 
 namespace cfg
 {
@@ -158,14 +159,14 @@ private:
      *  option for changes in the format of the "usr" file.
      */
 
-    std::string m_version { };
+    std::string m_version { "0" };
 
     /**
      *  The actual version specified in the configuration file, which could be
      *  older than the newest version supported in the code.
      */
 
-    std::string m_file_version { };
+    std::string m_file_version { "0" };
 
 protected:
 
@@ -223,7 +224,7 @@ public:
     (
         std::ifstream & file,
         const std::string & section,
-        lib66::tokenization & items,
+        options::list & oplist,
         const std::string & valuetag    = ""
     );
     std::string parse_version (std::ifstream & file);
@@ -429,7 +430,7 @@ protected:
     (
         std::ofstream & file,
         const std::string & section,
-        const lib66::tokenization & items,
+        const options::list & oplist,
         const std::string & valuetag
     );
     bool get_boolean
@@ -460,6 +461,21 @@ protected:
         int value,
         bool usehex = false
     );
+    options::intpair get_int_pair
+    (
+        std::ifstream & file,
+        const std::string & s,
+        const std::string & variablename,
+        int position = 0
+    );
+    void write_int_pair
+    (
+        std::ofstream & file,
+        const std::string & name,
+        const options::intpair & value,
+        bool usehex = false,
+        char separator = ' '
+    );
     float get_float
     (
         std::ifstream & file,
@@ -472,6 +488,20 @@ protected:
         std::ofstream & file,
         const std::string & name,
         float value
+    );
+    options::floatpair get_float_pair
+    (
+        std::ifstream & file,
+        const std::string & s,
+        const std::string & variablename,
+        int position = 0
+    );
+    void write_float_pair
+    (
+        std::ofstream & file,
+        const std::string & name,
+        const options::floatpair & value,
+        char separator = ' '
     );
     void write_string
     (
