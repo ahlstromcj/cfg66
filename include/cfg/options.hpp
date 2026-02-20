@@ -190,21 +190,21 @@ public:
 
     using intpair = struct
     {
-        int a { 0 };
-        int b { 0 };
+        int a;
+        int b;
     };
 
     using floatpair = struct
     {
-        float a { 0.0 };
-        float b { 0.0 };
+        float a;
+        float b;
     };
 
     using list = struct
     {
-        bool list_active { true };
-        std::size_t list_count { 0 };
-        lib66::tokenization list_tokens { };
+        bool list_active;
+        std::size_t list_count;
+        lib66::tokenization list_tokens;
     };
 
     /**

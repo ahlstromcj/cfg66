@@ -27,7 +27,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-03-29
- * \updates       2026-02-13
+ * \updates       2026-02-20
  * \license       GNU GPLv2 or above
  *
  *  It is based on the "recent" class of Seq66, with some additional
@@ -107,7 +107,7 @@ public:
     );
     recent (const recent &) = default;
     recent (recent &&) = default;
-    recent & operator = (const recent &) = default;
+    recent & operator = (const recent &) = delete;
     recent & operator = (recent &&) = delete;
     ~recent () = default;
 

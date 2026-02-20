@@ -1,5 +1,5 @@
-#if ! defined CFG66_UTIL_STRING_CONVERSIONS_HPP
-#define CFG66_UTIL_STRING_CONVERSIONS_HPP
+#if ! defined CFG66_UTIL_STRINGCONVERSIONS_HPP
+#define CFG66_UTIL_STRINGCONVERSIONS_HPP
 
 /*
  * Copyright (C) 2015 Tim Mayberry <mojofunk@gmail.com>
@@ -79,6 +79,7 @@ inline bool
 to_string (T val, std::string & str)
 {
     typename T::TO_STRING_TEMPLATE_NOT_DEFINED_FOR_THIS_TYPE invalid_type;
+    (void) val; (void) str;
     return false;
 }
 
@@ -168,6 +169,7 @@ template <class T>
 inline bool string_to (const std::string & str, T & val)
 {
     typename T::TO_STRING_TEMPLATE_NOT_DEFINED_FOR_THIS_TYPE invalid_type;
+    (void) val; (void) str;
     return false;
 }
 
@@ -260,6 +262,7 @@ inline std::string
 to_string (T val)
 {
     typename T::TO_STRING_TEMPLATE_NOT_DEFINED_FOR_THIS_TYPE invalid_type;
+    (void) val;
     return std::string();
 }
 
@@ -362,13 +365,17 @@ to_string (double val)
     return tmp;
 }
 
+/**
+ *  This will cause a compile time error if this function is ever
+ *  instantiated, which is useful to catch unintended conversions.
+ */
+
 template <class T>
 inline T
 string_to (const std::string & str)
 {
-    // This will cause a compile time error if this function is ever
-    // instantiated, which is useful to catch unintended conversions
     typename T::STRING_TO_TEMPLATE_NOT_DEFINED_FOR_THIS_TYPE invalid_type;
+    (void) str;
     return T();
 }
 
@@ -473,7 +480,7 @@ string_to (const std::string & str)
 
 }               // namespace util
 
-#endif          // CFG66_UTIL_STRING_CONVERSIONS_HPP
+#endif          // CFG66_UTIL_STRINGCONVERSIONS_HPP
 
 /*
  * strconversions.hpp
