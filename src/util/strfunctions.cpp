@@ -770,6 +770,12 @@ string_to_bool (const std::string & s, bool defalt)
 }
 
 bool
+string_to_bool_ex (const std::string & s)
+{
+    return string_to_bool(s, false);
+}
+
+bool
 string_to_int_pair
 (
     const std::string & s,
@@ -908,6 +914,12 @@ string_to_double (const std::string & s, double defalt, int rounding)
         }
     }
     return result;
+}
+
+double
+string_to_double_ex (const std::string & s)
+{
+    return string_to_double(s, 0.0, 0);
 }
 
 /**

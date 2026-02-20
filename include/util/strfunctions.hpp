@@ -189,6 +189,7 @@ extern std::string string_to_midi_bytes
 );
 extern std::string midi_bytes_to_string (const std::string & s);
 extern bool string_to_bool (const std::string & s, bool defalt = false);
+extern bool string_to_bool_ex (const std::string & s);
 extern bool string_to_time_signature
 (
     const std::string & s,
@@ -213,8 +214,9 @@ extern double string_to_double
     double defalt = 0.0,
     int rounding = 0
 );
+extern double string_to_double_ex (const std::string & s);
 extern bool is_floating_string (const std::string & value);
-extern std::string double_to_string(double value, int precision = 0);
+extern std::string double_to_string (double value, int precision = 0);
 extern float string_to_float
 (
     const std::string & s, float defalt = 0.0, int rounding = 0
