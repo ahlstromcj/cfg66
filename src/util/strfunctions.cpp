@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-24
- * \updates       2026-02-10
+ * \updates       2026-02-20
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -206,7 +206,7 @@ next_quoted_string (const std::string & source, std::string::size_type pos)
         auto rpos { source.find_first_of(double_quotes(), lpos + 1) };
         if (rpos != std::string::npos)
         {
-            size_t len { size_t(rpos - lpos - 1) };
+            std::size_t len { std::size_t(rpos - lpos - 1) };
             if (len > 0)
                 result = source.substr(lpos + 1, len);
         }
@@ -233,7 +233,7 @@ next_bracketed_string
         auto rpos { source.find_first_of("]", lpos + 1) };
         if (rpos != std::string::npos)
         {
-            size_t len { size_t(rpos - lpos - 1) };
+            std::size_t len { std::size_t(rpos - lpos - 1) };
             if (len > 0)
                 result = trim(source.substr(lpos + 1, len));
         }
@@ -345,6 +345,10 @@ strcompare (const std::string & a, const std::string & b)
  *  We want to see if the "comparing" string matches the "compared" string up
  *  to n characters or to the full length of the compared string.
  *
+ * ca 2026-02-20: This test is always true, so no longer done.
+ *
+ *      if (n <= a.length() && b.length() >= n) // e.g. "xxx" and "xxxa"
+ *
  * \param a
  *      Provides the "compared" string. False is returned if it is empty.  It
  *      is the "target", the string whose contents we want to match.  It is
@@ -367,7 +371,7 @@ strcompare (const std::string & a, const std::string & b)
  */
 
 bool
-strncompare (const std::string & a, const std::string & b, size_t n)
+strncompare (const std::string & a, const std::string & b, std::size_t n)
 {
     bool result { ! a.empty() && ! b.empty() };
     if (result)
@@ -375,23 +379,18 @@ strncompare (const std::string & a, const std::string & b, size_t n)
         if (n == 0)
             n = std::min(a.length(), b.length());
 
-        if (n <= a.length() && b.length() >= n)
-        {
 #if defined USE_SLOW_CODE
-            for (size_t i = 0; i < n; ++i)
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            if (a[i] != b[i])
             {
-                if (a[i] != b[i])
-                {
-                    result = false;
-                    break;
-                }
+                result = false;
+                break;
             }
-#else
-            result = std::memcmp(a.data(), b.data(), n) == 0;
-#endif
         }
-        else
-            result = false;
+#else
+        result = std::memcmp(a.data(), b.data(), n) == 0;
+#endif
     }
     return result;
 }
@@ -429,6 +428,29 @@ strcasecompare (const std::string & a, const std::string & b)
         (a.size() == b.size()) &&
             std::equal(a.begin(), a.end(), b.begin(), casecompare)
     );
+}
+
+/**
+ *  This function is strncompare() using the casecompare() function.
+ */
+
+bool
+strncasecompare (const std::string & a, const std::string & b, std::size_t n)
+{
+    bool result { ! a.empty() && ! b.empty() };
+    if (result)
+    {
+        if (n == 0)
+            n = std::min(a.length(), b.length());
+
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            result = casecompare(a[i], b[i]);
+            if (! result)
+                break;
+        }
+    }
+    return result;
 }
 
 /*
@@ -639,7 +661,7 @@ hex_digit (char c)
  */
 
 std::string
-string_to_midi_bytes (const std::string & s, size_t limit)
+string_to_midi_bytes (const std::string & s, std::size_t limit)
 {
     int maximum { limit == 0 ? INT_MAX : int(limit) };
     std::string result;
@@ -1535,7 +1557,7 @@ widen_string (const std::string & source)
         return std::wstring();          /* trivial case of empty string     */
 
 #if defined CFG66_PLATFORM_WINDOWS
-    size_t required_length
+    std::size_t required_length
     {
         ::MultiByteToWideChar
         (
@@ -1589,13 +1611,13 @@ widen_string (const std::string & source)
  */
 
 std::string
-word_wrap (const std::string & source, size_t margin, char commentchar)
+word_wrap (const std::string & source, std::size_t margin, char commentchar)
 {
     std::string result;
     if (! source.empty())
     {
         std::string commenting { "  " };
-        size_t linelen { 0 };
+        std::size_t linelen { 0 };
         lib66::tokenization words { tokenize(source, CFG66_WHITE_CHARS) };
         commenting[0] = commentchar;
         for (auto w : words)
@@ -1655,8 +1677,8 @@ std::string
 hanging_word_wrap
 (
     const std::string & source,
-    size_t leftmargin,
-    size_t rightmargin
+    std::size_t leftmargin,
+    std::size_t rightmargin
 )
 {
     std::string result;
@@ -1666,7 +1688,7 @@ hanging_word_wrap
          * int line = 0;                       // the first line   //
          */
 
-        size_t linelen { leftmargin };
+        std::size_t linelen { leftmargin };
         std::string padding(leftmargin, ' ');
         lib66::tokenization words { tokenize(source, CFG66_WHITE_CHARS) };
         for (auto w : words)
@@ -1716,7 +1738,7 @@ line_comments (const std::string & source, char commentchar)
         {
             nlpos = source.find_first_of("\n", start);
 
-            size_t count
+            std::size_t count
             {
                 nlpos != std::string::npos ?
                     nlpos - start + 1 : std::string::npos
@@ -1759,7 +1781,7 @@ std::string
 first_sentence
 (
     const std::string & source,
-    size_t limit, char ender
+    std::size_t limit, char ender
 )
 {
     std::string result;

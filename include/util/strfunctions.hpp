@@ -27,7 +27,7 @@
  *
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2026-02-12
+ * \updates       2026-02-20
  * \version       $Revision$
  *
  *    Also see the strfunctions.cpp module.
@@ -75,7 +75,7 @@ std::string string_format (const std::string & format, Args ... args)
 {
     std::string result;
     int count { std::snprintf(nullptr, 0, format.c_str(), args ...) };
-    size_t sz { size_t(count) };
+    std::size_t sz { std::size_t(count) };
     if (sz > 0)
     {
         std::unique_ptr<char []> buf(new (std::nothrow) char[sz + 1]);
@@ -147,9 +147,19 @@ extern const std::string & double_quotes ();
 extern bool strcompare (const std::string & a, const std::string & b);
 extern bool strncompare
 (
-    const std::string & a, const std::string & b, size_t n = 0
+    const std::string & a,
+    const std::string & b, std::size_t n = 0
 );
-extern bool strcasecompare (const std::string & a, const std::string & b);
+extern bool strcasecompare
+(
+    const std::string & a,
+    const std::string & b
+);
+extern bool strncasecompare
+(
+    const std::string & a,
+    const std::string & b, std::size_t n = 0
+);
 extern std::string & ltrim
 (
     std::string & str,
@@ -173,7 +183,10 @@ extern std::string string_replace
     int n = -1
 );
 extern int hex_digit (char c);
-extern std::string string_to_midi_bytes (const std::string & s, size_t lim = 0);
+extern std::string string_to_midi_bytes
+(
+    const std::string & s, std::size_t lim = 0
+);
 extern std::string midi_bytes_to_string (const std::string & s);
 extern bool string_to_bool (const std::string & s, bool defalt = false);
 extern bool string_to_time_signature
@@ -245,14 +258,14 @@ extern std::wstring widen_string (const std::string & source);
 extern std::string word_wrap
 (
     const std::string & source,
-    size_t margin       = 80,
+    std::size_t margin  = 80,
     char commentchar    = 0
 );
 extern std::string hanging_word_wrap
 (
     const std::string & source,
-    size_t leftmargin   = 28,
-    size_t rightmargin  = 80
+    std::size_t leftmargin   = 28,
+    std::size_t rightmargin  = 80
 );
 extern std::string line_comments
 (
@@ -262,8 +275,8 @@ extern std::string line_comments
 extern std::string first_sentence
 (
     const std::string & source,
-    size_t limit    = 72,
-    char ender      = '.'
+    std::size_t limit   = 72,
+    char ender          = '.'
 );
 extern int count_character (const std::string & s, char target = '\n');
 extern bool target_terminated (const std::string & s, char target = '\n');
@@ -283,4 +296,3 @@ extern std::string simple_hash (const std::string & s);
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-
