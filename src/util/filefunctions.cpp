@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2026-02-12
+ * \updates       2026-02-21
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -164,6 +164,7 @@ using stat_t = struct stat;
 
 #else                                   /* non-Microsoft stuff follows      */
 
+#include <fcntl.h>                      /* open(2), O_RDWR, O_CREAT         */
 #include <unistd.h>                     /* stuff like geteuid()             */
 
 #define S_ACCESS    access              /* ISO/POSIX/BSD unsafe access()    */
@@ -2952,12 +2953,55 @@ file_is_newer (const std::string & file_1, const std::string & file_2)
     return file_modification_time(file_1) > file_modification_time(file_2);
 }
 
-void
+bool
 file_descriptor_touch (int fd)
 {
-    stat_t st;
-    if (S_FSTAT(fd, &st) == 0)
-        S_FCHMOD(fd, st.st_mode);
+    bool result { fd >= 0 };
+    if (result)
+    {
+        stat_t st;
+        if (S_FSTAT(fd, &st) == 0)
+            S_FCHMOD(fd, st.st_mode);
+    }
+    return result;
+}
+
+/**
+ *  Currently not exposed to the outside world.
+ */
+
+static int
+file_descriptor_open (const std::string & path)
+{
+    int result { -1 };
+    if (! path.empty())
+    {
+        const char * fname { CSTR(path) };
+#if defined PLATFORM_WINDOWS
+        int oflags { _O_RDWR | _O_CREAT };
+        int shflag { _SH_DENYNO };          /* allow R/W sharing; ok to do? */
+        int pmode { _S_IREAD | _S_IWRITE };
+        (void) S_OPEN&(result, fname, oflags, shflag, pmode);
+#else
+        int oflags { O_RDWR | O_CREAT };
+        int pmode { 0660 };
+        result = S_OPEN(fname, oflags, pmode);
+#endif
+        if (result == (-1))
+            util::error_message("Could not open file descriptor", path);
+    }
+    return result;
+}
+
+bool
+file_touch (const std::string & path)
+{
+    int fd { file_descriptor_open(path) };
+    bool result { fd >= 0 };
+    if (result)
+        S_CLOSE(fd);
+
+    return result;
 }
 
 /*

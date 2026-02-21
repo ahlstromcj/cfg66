@@ -31,7 +31,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2026-02-20
- * \updates       2026-02-20
+ * \updates       2026-02-21
  * \version       $Revision$
  *
  *  This module is a reworking of the PBD code as used in the source
@@ -68,6 +68,13 @@ extern bool string_to_int64 (const std::string & str, int64_t & val);
 extern bool string_to_uint64 (const std::string & str, uint64_t & val);
 extern bool string_to_float (const std::string & str, float & val);
 extern bool string_to_double (const std::string & str, double & val);
+extern std::string capitalize (const std::string & str);
+extern std::string uncapitalize (const std::string & str);
+extern std::string abbreviation                         /* short_version()  */
+(
+    std::string orig, std::string::size_type targetlength = 3
+);
+extern std::string url_decode (std::string const & url);
 
 /**
  *  This will cause a compile time error if this function is ever
@@ -253,8 +260,9 @@ inline bool string_to (const std::string & str, double & val)
 
 /*
  * Variation that disregards conversion errors.
-    // This will cause a compile time error if this function is ever
-    // instantiated, which is useful to catch unintended conversions
+ *
+ *  This will cause a compile time error if this function is ever
+ *  instantiated, which is useful to catch unintended conversions.
  */
 
 template <class T>

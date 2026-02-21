@@ -27,7 +27,7 @@
  *
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2025-04-20
+ * \updates       2026-02-21
  * \version       $Revision$
  *
  *    Also see the filefunctions.cpp module.  The functions here use
@@ -258,7 +258,8 @@ extern bool file_is_newer
     const std::string & file_1,
     const std::string & file_2
 );
-extern void file_descriptor_touch (int fd);
+extern bool file_descriptor_touch (int fd);
+extern bool file_touch (const std::string & path);
 extern std::string get_xdg_runtime_directory
 (
     const std::string & sub1 = "",
