@@ -1568,7 +1568,7 @@ widen_string (const std::string & source)
     if (source.empty())
         return std::wstring();          /* trivial case of empty string     */
 
-#if defined CFG66_PLATFORM_WINDOWS
+#if defined PLATFORM_WINDOWS
     std::size_t required_length
     {
         ::MultiByteToWideChar

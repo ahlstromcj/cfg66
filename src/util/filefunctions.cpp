@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2026-02-21
+ * \updates       2026-02-22
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -2651,6 +2651,42 @@ get_env (const std::string & v)
 }
 
 /**
+ *  A C++ wrapper for setenv(), which is not in the std namespace.
+ *
+ * \param v
+ *      Provides the name of the environment variable to look up.
+ *
+ * \param value
+ *      Provides the value to be assigned to that environment variable.
+ *
+ * \param overwrite
+ *      If true, then an existing value for that environment variable will be
+ *      overwritten, The default value is true.
+ *
+ * \return
+ *      Returns true if the value change succeeded.
+ */
+
+bool
+set_env
+(
+    const std::string & v,
+    const std::string & value,
+    bool overwrite
+)
+{
+    bool result { ! v.empty() };
+    if (result)
+    {
+        int rc { setenv(CSTR(v), CSTR(value), overwrite ? 1 : 0) };
+        result = rc == 0;
+        if (! result)
+            util::error_message("set_env() failed", v);
+    }
+    return result;
+}
+
+/**
  *  Gets the user's $HOME (Linux) or $LOCALAPPDAT (Windows) directory from the
  *  current environment.
  *
@@ -2920,6 +2956,29 @@ file_list_copy
         }
     }
     return count == int(filelist.size());
+}
+
+/**
+ * This free function supports the searchpath object.
+ */
+
+bool
+export_search_path
+(
+    const std::string & basedir,
+    const std::string & varname,
+    const std::string & dir
+)
+{
+	std::string path { util::get_env(varname) };
+	bool result { ! path.empty() };
+	if (result)
+    {
+        path = filename_concatenate(path, basedir);
+        path = filename_concatenate(path, dir);
+        set_env(varname, path);
+	}
+    return result;
 }
 
 /*--------------------------------------------------------------------------

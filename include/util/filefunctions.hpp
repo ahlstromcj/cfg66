@@ -27,7 +27,7 @@
  *
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2026-02-21
+ * \updates       2026-02-22
  * \version       $Revision$
  *
  *    Also see the filefunctions.cpp module.  The functions here use
@@ -228,6 +228,12 @@ extern std::string installed_data_path
     const std::string & subdir = ""
 );
 extern std::string get_env (const std::string & v);
+extern bool set_env
+(
+    const std::string & v,
+    const std::string & value,
+    bool overwrite = true
+);
 extern std::string user_home (const std::string & appfolder = "");
 extern std::string user_config (const std::string & appfolder = "");
 extern std::string user_session (const std::string & appfolder = "");
@@ -246,6 +252,12 @@ extern bool file_list_copy
 (
     const std::string & destpath,
     const lib66::tokenization & filelist
+);
+extern bool export_search_path
+(
+    const std::string & base_dir,
+    const std::string & varname,
+    const std::string & dir
 );
 
 /*--------------------------------------------------------------------------

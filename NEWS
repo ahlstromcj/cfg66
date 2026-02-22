@@ -1,30 +1,52 @@
 NEWS for Cfg66 0.4
 Chris Ahlstrom
-2024-04-15 to 2025-04-20
+2024-04-15 to 2026-02-22
 
 # Changelog
 
-## [0.4] - 2025-04-20
+## [0.4] - 2026-02-22
+
+While working to build a library to support MIDINAM files, we
+borrowed code from the "pdb" and "xml" support portions of
+the Ardour DAW's source code, updated it to C++11 to C++17
+conventions, and created additional classes and functions.
 
 ### Added
 
-- The ftswalker module, class, and tests. Also includes useful samples
-  of ftswalker memeber and callback functions for finding, copying,
-  and deleting files.
-- Added filename\_target(), get\_parent\_directory(),
-  get\_xdg\_runtime_\directory(), and get\_env() to the filefunctions
-  module.
-- The CPTR() function to convert a string to a const pointer, with the
-  added feature that, if the string is empty, the pointer is null.
-  SPTR() is similar, but the return value is non-const.
-- The STR() function, which is like CSTR() but returns a non-const
-  pointer.
+- Added the ftswalker module, class, and tests. Also includes useful
+  samples of ftswalker member and callback functions for finding,
+  copying, and deleting files.
+- Added the strconversions module. Its functions, both normal and
+  template, work with strings and numeric values of a specific size.
+- Added a searchpath class and a test module for it. It is useful
+  in building PATH-like environment variables.
+- Added these functions to the filefunctions module:
+  - filename\_target()
+  - get\_parent\_directory()
+  - get\_xdg\_runtime_\directory()
+  - get\_env()
+  - set\_env()
+  - export\_search\_path()
+- Added these functions to the strfunctions module:
+    - The CPTR() function to convert a string to a const pointer, with the
+      added feature that, if the string is empty, the pointer is null.
+      SPTR() is similar, but the return value is non-const.
+    - The STR() function, which is like CSTR() but returns a non-const
+      pointer.
+    - strncasecompare()
 
 ### Fixed
 
 - Fixed the util::delete\_directory() function.
 - Fixed the internal function formatted(), which would trim the last
   character of the formatted string.
+- Fixed warnings found by gcc or Clang.
+- Updated initialization of variables to use the universal
+  initializer {}. Also initialized default values in the class
+  header.
+- Fixed cfg::history::operator =, and replaced the implementation of
+  history with a more correct version.
+- Fixed the usage of the lib66 and potext subprojects.
 
 ## [0.3] - 2025-03-02
 

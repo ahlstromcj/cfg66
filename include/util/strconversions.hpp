@@ -19,9 +19,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <string>
-#include <stdint.h>
-
 /**
  * \file          strconversions.cpp
  *
@@ -31,7 +28,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2026-02-20
- * \updates       2026-02-21
+ * \updates       2026-02-22
  * \version       $Revision$
  *
  *  This module is a reworking of the PBD code as used in the source
@@ -40,6 +37,9 @@
  *  We removed all the debug code such as the following. Let the caller
  *  decide how to handle an error.
  */
+
+#include <string>
+#include <cstdint>
 
 /**
  * Locale independent and thread-safe string conversion utility functions.  All
