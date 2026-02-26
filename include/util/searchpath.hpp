@@ -1,5 +1,5 @@
-#if ! defined CFG66_UTIL_STRINGCONVERSIONS_HPP
-#define CFG66_UTIL_STRINGCONVERSIONS_HPP
+#if ! defined CFG66_UTIL_SEARCHPATH_HPP
+#define CFG66_UTIL_SEARCHPATH_HPP
 
 /*
  * Copyright (C) 2007-2015 Tim Mayberry <mojofunk@gmail.com>
@@ -32,7 +32,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2026-02-22
- * \updates       2026-02-22
+ * \updates       2026-02-26
  * \version       $Revision$
  *
  *  This module is a reworking of the PBD code as used in the source
@@ -127,7 +127,7 @@ public:
 
 }           // namespace util
 
-#endif          // CFG66_UTIL_STRINGCONVERSIONS_HPP
+#endif      // CFG66_UTIL_SEARCHPATH_HPP
 
 /*
  * searchpath.hpp
