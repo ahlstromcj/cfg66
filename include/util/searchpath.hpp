@@ -58,8 +58,12 @@ namespace util
 
 class searchpath
 {
+    friend std::string search_path_expand (const std::string &);
+    friend lib66::tokenization parse_search_path (const std::string &, bool);
 
 private:
+
+    static const std::string sm_sp_separator;
 
     /**
      *  This member will contain a list of paths to be searched.
@@ -124,6 +128,16 @@ public:
     bool remove_directories (const lib66::tokenization & paths);
     bool contains (const std::string & path) const;
 };
+
+/*-------------------------------------------------------------------------
+ * Free functions
+ *-------------------------------------------------------------------------*/
+
+extern std::string search_path_expand (const std::string & path);
+extern lib66::tokenization parse_search_path
+(
+    const std::string & path, bool check_if_exists
+);
 
 }           // namespace util
 

@@ -27,7 +27,7 @@
  *
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2026-02-22
+ * \updates       2026-02-26
  * \version       $Revision$
  *
  *    Also see the filefunctions.cpp module.  The functions here use
@@ -272,6 +272,8 @@ extern bool file_is_newer
 );
 extern bool file_descriptor_touch (int fd);
 extern bool file_touch (const std::string & path);
+extern std::string file_canonical_path (const std::string & path);
+extern std::string file_path_expand (const std::string & inpath);
 extern std::string get_xdg_runtime_directory
 (
     const std::string & sub1 = "",

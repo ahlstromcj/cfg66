@@ -29,7 +29,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2026-02-22
- * \updates       2026-02-22
+ * \updates       2026-02-26
  * \version       $Revision$
  *
  *  This module is a reworking of some of the PBD code as used in the source
@@ -53,6 +53,16 @@ namespace util
 {
 
 /**
+ * Static member
+ */
+
+#if defined PLATFORM_WINDOWS
+const std::string searchpath::sm_sp_separator { ";" };
+#else
+const std::string searchpath::sm_sp_separator { ":" };
+#endif
+
+/**
  *  Initialize searchpath from a string where the string contains one or
  *  more absolute paths to directories which are delimited by a path
  *  separation character. The path delimeter is a colon (":") on UNIX and
@@ -67,20 +77,7 @@ namespace util
 
 searchpath::searchpath (const std::string & path)
 {
-#if defined PLATFORM_WINDOWS
-    std::string separator { ";" };
-#else
-    std::string separator { ":" };
-#endif
-
-#if 0
-    if (tokenize (path, string(SEARCHPATH_SEPARATOR_S), std::back_inserter (tmp)))
-    {
-        add_directories (tmp);
-    }
-#endif
-
-    paths() = util::tokenize(path, separator);
+    paths() = util::tokenize(path, sm_sp_separator);
     for (const auto & p : paths())
     {
         add_directory(p);
@@ -110,16 +107,11 @@ searchpath::searchpath (const lib66::tokenization & paths)
 std::string
 searchpath::to_string () const
 {
-#if defined PLATFORM_WINDOWS
-    std::string separator { ";" };
-#else
-    std::string separator { ":" };
-#endif
     std::string result;
     for (const auto & p : paths())
     {
         result += p;
-        result += separator;
+        result += sm_sp_separator;
     }
     result = result.substr(0, result.length() - 1); /* drop final separator */
     return result;
@@ -331,6 +323,68 @@ searchpath::contains (const std::string & path) const
         return false;
 
     return true;
+}
+
+/*-------------------------------------------------------------------------
+ * Free functions
+ *-------------------------------------------------------------------------*/
+
+std::string
+search_path_expand (const std::string & path)
+{
+    std::string result;
+    if (! path.empty())
+    {
+        lib66::tokenization s
+        {
+            util::tokenize(path, searchpath::sm_sp_separator)
+        };
+        lib66::tokenization n;
+        for (const auto & token : s)
+        {
+            std::string exp { util::file_path_expand(token) };
+            if (! exp.empty())
+                n.push_back(exp);
+        }
+        for (const auto & token : n)
+        {
+            if (! result.empty())
+                result += searchpath::sm_sp_separator;
+
+            result += token;
+        }
+    }
+    return result;
+}
+
+lib66::tokenization
+parse_search_path (const std::string & path, bool check_if_exists)
+{
+    lib66::tokenization tmp
+    {
+        util::tokenize(path, searchpath::sm_sp_separator)
+    };
+    lib66::tokenization pathlist;
+    for (const auto & token : tmp)
+    {
+        if (! token.empty())
+        {
+            std::string dir;
+
+#if ! defined PLATFORM_WINDOWS
+
+            if (token[0] == '~')
+                dir = util::user_home(token.substr(1));
+            else
+#endif
+            {
+                dir = token;
+            }
+            if (! check_if_exists || util::file_is_directory(dir))
+                pathlist.push_back(dir);
+        }
+    }
+    return pathlist;
 }
 
 }           // namespace util

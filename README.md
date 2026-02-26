@@ -1,4 +1,4 @@
-# README for Library Cfg66 0.4 2025-03-10
+# README for Library Cfg66 0.4 2026-02-26
 
 __Cfg66__ is a configuration library based on the "cfg" directories
 in the __Seq66__ project, but that is useful in other applications.
@@ -46,7 +46,7 @@ or classes in a namespace of the same name:
 ##  Library Features
 
     *   Can be built using GNU C++ or Clang C++.
-    *   Basic dependencies: Meson 1.1 and above; C++14 and above.
+    *   Basic dependencies: Meson 1.1 and above; C++17 and above.
     *   The build system is Meson, and sample wrap files are provided
         for using Cfg66 as a C++ subproject.
     *   PDF documentation built from LaTeX.
@@ -56,7 +56,7 @@ or classes in a namespace of the same name:
     *   The code is a mix of hard-core C++ and C-like functions.
     *   The C++ STL and advanced language features are used as much as
         possible
-    *   C++14 is required for some of its features.
+    *   C++17 is required for some of its features.
     *   The GNU and Clang C++ compilers are supported.
     *   Broken into modules for easier maintenance.
 

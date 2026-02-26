@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2026-02-22
+ * \updates       2026-02-26
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -42,7 +42,9 @@
 #include <cstdlib>                      /* realpath()/_fullpath()/getenv()  */
 #include <cstring>                      /* std::strlen(), strerror_r() etc. */
 #include <ctime>                        /* std::strftime()                  */
+#include <filesystem>                   /* std::filesystem::path            */
 #include <glob.h>                       /* ::glob() to get wildcards        */
+#include <regex>                        /* std::regex, smatch, etc.         */
 #include <sys/stat.h>
 
 #include "cfg66-config.h"               /* HAVE macros defined by meson     */
@@ -3060,6 +3062,88 @@ file_touch (const std::string & path)
     if (result)
         S_CLOSE(fd);
 
+    return result;
+}
+
+/**
+ *  Must check if path is an existing path or use a try-catch.
+ */
+
+std::string
+file_canonical_path (const std::string & path)
+{
+    std::string result;
+    std::filesystem::path fspath(path);         /* format fmt = auto_format */
+    try
+    {
+        [[ maybe_unused ]]
+        auto canon = std::filesystem::canonical(fspath);
+        result = fspath.string();
+    }
+    catch (const std::exception & exc)
+    {
+        std::string msg {"Canonical path for " + path + "threw exception" };
+        std::string err { exc.what() };
+        util::error_message(msg, path);
+    }
+    return result;
+}
+
+/**
+ *  Expands a path.
+ *
+ *
+ *  Note in the regex expression that '(R"( ... )")' is the raw string
+ *  literal that allows using a single backslash for regex escapes such
+ *  as \d and \s.
+ *
+ *  Also note that std::smatch is defined as:
+ *
+ *          std::match_results<std::string::const_iterator>
+ */
+
+std::string
+file_path_expand (const std::string & inpath)
+{
+	static const std::regex s_var_regex                 /* what is R"?      */
+    {
+         (R"(\$([A-Za-z_][A-Za-z0-9_]*|\{[A-Za-z_][A-Za-z0-9_]*\}))")
+    };
+    std::string result { false };
+	if (! inpath.empty())
+    {
+        std::string outpath { inpath };
+        if (outpath[0] == '~')                          /* tilde expansion  */
+        {
+            if (outpath.length() == 1)
+                return user_home();
+
+            if (outpath[1] == '/')                      /* "~/" at start    */
+                outpath.replace(0, 1, user_home());
+
+            /*
+             * We can't handle ~roger, so just leave him be. Also see the
+             * normalize_path() function.
+             */
+        }
+
+        /*
+         * Now do $VAR or ${VAR} substitution, since wordexp isn't
+         * reliable.
+         */
+
+        std::smatch m;
+        while (std::regex_search(outpath, m, s_var_regex))
+        {
+            std::string var = m[1].str();               /* "$FOO"/"${FOO}"  */
+            if (var[0] == '{')
+                var = var.substr(1, var.size() - 2);    /* make it "$FOO"   */
+
+            std::string val { util::get_env(var) };
+            outpath.replace(m.position(0), m.length(0), val /* ? val : "" */ );
+        }
+        result = file_canonical_path(outpath);          /* canonicalize     */
+    }
     return result;
 }
 
