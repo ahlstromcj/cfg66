@@ -1,10 +1,10 @@
 NEWS for Cfg66 0.4
 Chris Ahlstrom
-2024-04-15 to 2026-02-26
+2024-04-15 to 2026-02-27
 
 # Changelog
 
-## [0.4] - 2026-02-26
+## [0.4] - 2026-02-27
 
 While working to build a library to support MIDINAM files, we
 borrowed code from the "pdb" and "xml" support portions of
@@ -37,6 +37,9 @@ conventions, and created additional classes and functions.
     - The STR() function, which is like CSTR() but returns a non-const
       pointer.
     - strncasecompare()
+    - string\_has\_regex()
+    - string\_ext\_match()
+    - patter\_match()
 
 ### Fixed
 

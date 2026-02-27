@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-24
- * \updates       2026-02-20
+ * \updates       2026-02-27
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -39,6 +39,7 @@
 #include <cmath>                        /* std::floor(), std::pow()         */
 #include <cstdarg>                      /* see "man stdarg(3)"              */
 #include <cstring>                      /* std::memcmp() function           */
+#include <regex>                        /* std::regex                       */
 #include <stdexcept>                    /* std::invalid_argument            */
 
 #include "util/strfunctions.hpp"        /* free functions in util n'space   */
@@ -1194,6 +1195,149 @@ strings_match (const std::string & target, const std::string & x)
                 }
             }
         }
+    }
+    return result;
+}
+
+/**
+ *  Checks for regular expression characters starting at the given
+ *  position (which defaults to 0.
+ *
+ *  The characters are: ". () \ [] {} ^ $ * | ?" }.
+ *
+ * \param s
+ *      The string to be searched.
+ *
+ * \param p
+ *      The position at which to start the search. It defaults to
+ *      0. If a period is expected, then set p past the period.
+ *
+ * \return
+ *      Returns true if a regex character is found.
+ */
+
+bool
+string_has_regex (const std::string & s, std::string::size_type p)
+{
+    static const std::string s_regex_chars { ".()\\[]{}^$*|?" };
+    auto rpos { s.find_first_of(s_regex_chars, p) };
+    return rpos != std::string::npos;
+}
+
+/**
+ *  Checks if the path has a given extension, without using any of
+ *  the functions in the filefunctions module.
+ *
+ * \param path
+ *      Provides a presumed file path, which should have an extension,
+ *      but might not.
+ *
+ * \param ext
+ *      Provides the target extension of the form ".extchars".
+ *      It must provide the period. It must not contain regex-related
+ *      characters: "() \ [] {} ^ $ * | ?" }. However, if "*." appears
+ *      at the beginning, the "*" is skipped.
+ *
+ * \return
+ *      Returns true only if the path has an extension that matches the
+ *      target and contains no regex special characters.
+ */
+
+bool
+string_ext_match (const std::string & path, const std::string & ext)
+{
+    auto ppos { path.find_first_of(".") };
+    bool result { ppos == std::string::npos && ! ext.empty() };
+    if (result)
+    {
+        bool ext_has_regex { false };   /* we have to ignore ext w/regex    */
+        std::string target { ext };     /* make a copy of the ext string    */
+        if (target[0] == '*')           /* check for "*." and adapt to it   */
+        {
+            if (target[0] == '.')
+                target = target.substr(1, target.length() - 1);
+            else
+                ext_has_regex = true;   /* a lone "*" indicates regex here  */
+        }
+        if (! ext_has_regex)            /* check the rest of the ext target */
+        {
+            std::string::size_type start { 0 };
+            if (target[0] == '.')
+                ++start;
+
+            ext_has_regex = string_has_regex(target, start);
+        }
+        if (ext_has_regex)
+        {
+            result = false;
+        }
+        else
+        {
+            auto len { path.length() - ppos };
+            std::string pext { path.substr(ppos, len) };    /* get ".ext"   */
+            result = strcasecompare(pext, target);
+        }
+    }
+    return result;
+}
+
+/**
+ *  Tests if the string parameter contains a match for the given regular
+ *  expression.
+ *
+ * std::regex_search(): Searches for all matches in a string.
+ * std::regex_match(): Determine if a whole string matches a pattern.
+ *
+ * Search Cases:
+ *
+ *      -   "*.midnam". This a file extension search, flagged by the
+ *          target starting with "*." and no regex characters
+ *          (e.g. () \ [] {} ^ $ * | ? = but no .) after that.
+ *          In that case, one could call file_extension_match();
+ *          see the filefunctions library. However, we provide the
+ *          string_ext_match() function, which is more thorough in
+ *          checking for regex characters after the "*.".
+ *      -   "midisong*". Match anything starting with "midisong".
+ *      -   "midisong*.mid". Match anything starting with "midisong" and
+ *          ending with "mid". Note that "midisong-mid" would match
+ *          this expression; use "midisong*\.mid" instead.
+ *      -   "midisong.m*"
+ *
+ * \param target
+ *      Provides a string that needs to be tested as a match.
+ *
+ * \param pattern
+ *      Provides a pattern to check the target against. It should represent
+ *      a valid regular expression, but this is not tested.
+ *
+ * \param ignorecase
+ *      If true, letter case is ignored in the search.
+ *      Might be useful in some cases on Windows.
+ */
+
+bool
+pattern_match
+(
+    const std::string & target,
+    const std::string & pattern,
+    bool ignorecase
+)
+{
+    bool result { ! target.empty() && ! pattern.empty() };
+    if (result)
+    {
+        /*
+         * Note that std::regex::icase also includes the default grammar
+         * option, std::regex::ECMAScript. Also note that the default
+         * regex_match() match type is std::regex_constants::match_default.
+         */
+
+        std::regex_constants::syntax_option_type grammartype
+        {
+            ignorecase ?  std::regex::icase : std::regex::ECMAScript
+        };
+        std::regex r(pattern, grammartype);
+        result = std::regex_match(pattern, r);
     }
     return result;
 }

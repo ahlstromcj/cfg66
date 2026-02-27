@@ -27,7 +27,7 @@
  *
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2026-02-20
+ * \updates       2026-02-27
  * \version       $Revision$
  *
  *    Also see the strfunctions.cpp module.
@@ -235,7 +235,27 @@ extern int string_to_int (const std::string & s, int defalt = 0);
 extern std::string int_to_string (int value);
 extern bool string_not_void (const std::string & s);
 extern bool string_is_void (const std::string & s);
-extern bool strings_match (const std::string & target, const std::string & x);
+extern bool strings_match
+(
+    const std::string & target,
+    const std::string & x
+);
+extern bool string_has_regex
+(
+    const std::string & s,
+    std::string::size_type p = 0
+);
+extern bool string_ext_match
+(
+    const std::string & path,
+    const std::string & target
+);
+extern bool pattern_match
+(
+    const std::string & rgx,
+    const std::string & target,
+    bool ignorecase = false
+);
 extern std::string tolower (const std::string & source);
 extern std::string toupper (const std::string & source);
 extern std::string capitalize (const std::string & source);

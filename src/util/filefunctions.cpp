@@ -2362,7 +2362,7 @@ file_extension (const std::string & path)
     auto ppos { path.find_last_of(".") };
     if (ppos != std::string::npos)
     {
-        auto len { path.length() - 2 };
+        auto len { path.length() - 2 };         /* incorrect, works anyway  */
         result = path.substr(ppos + 1, len);
     }
     return result;
@@ -2972,14 +2972,14 @@ export_search_path
     const std::string & dir
 )
 {
-	std::string path { util::get_env(varname) };
-	bool result { ! path.empty() };
-	if (result)
+    std::string path { util::get_env(varname) };
+    bool result { ! path.empty() };
+    if (result)
     {
         path = filename_concatenate(path, basedir);
         path = filename_concatenate(path, dir);
         set_env(varname, path);
-	}
+    }
     return result;
 }
 
@@ -3092,7 +3092,6 @@ file_canonical_path (const std::string & path)
 /**
  *  Expands a path.
  *
- *
  *  Note in the regex expression that '(R"( ... )")' is the raw string
  *  literal that allows using a single backslash for regex escapes such
  *  as \d and \s.
@@ -3105,12 +3104,12 @@ file_canonical_path (const std::string & path)
 std::string
 file_path_expand (const std::string & inpath)
 {
-	static const std::regex s_var_regex                 /* what is R"?      */
+    static const std::regex s_var_regex                 /* what is R"?      */
     {
          (R"(\$([A-Za-z_][A-Za-z0-9_]*|\{[A-Za-z_][A-Za-z0-9_]*\}))")
     };
     std::string result { false };
-	if (! inpath.empty())
+    if (! inpath.empty())
     {
         std::string outpath { inpath };
         if (outpath[0] == '~')                          /* tilde expansion  */
@@ -3146,6 +3145,123 @@ file_path_expand (const std::string & inpath)
     }
     return result;
 }
+
+//-------------------------------------------------------------------------
+
+#if defined THIS_CODE_IS_READY
+
+// find_files_matching_pattern (vector<string>& result,
+
+using stringlist = std::set<std::string>;
+using runfunctor = bool (* functor) (const std::string &, void *);
+
+bool
+find_files_by_pattern
+(
+    lib66::tokenization & destination,
+    const searchpath & paths,
+    const std::string & pattern
+)
+{
+    lib66::tokenization result;
+
+//  Glib::PatternSpec tmp(pattern);
+//  find_files_matching_pattern (result, paths, tmp);
+
+    stringlist unused;
+    run_functor_for_paths
+    (
+        result, paths, pattern_filter,
+//      const_cast<Glib::PatternSpec*>(&pattern),
+        true, false, true, false, unused
+    );
+
+}
+
+/**
+ *  Glib::dir
+ *
+ *      Opens a directory for reading. The names of the files in the directory can
+ *      then be retrieved using g_dir_read_name(). Note that the ordering is not
+ *      defined.
+ *
+ *  ftswalker::process_files (...)
+ */
+
+static void
+run_functor_for_paths
+(
+    lib66::tokenization & result,
+    const searchpath & srchpaths,
+    runfunctor functor,         // bool (*functor)(const std::string &, void *),
+    void * arg,
+    bool pass_files_only,
+    bool pass_fullpath,
+    bool return_fullpath,
+    bool recurse,
+    stringlist & scanned_paths
+)
+{
+//  for (vector<string>::const_iterator i = paths.begin(); i != paths.end(); ++i)
+
+    for (const auto & s : srchpaths.path())
+    {
+        try
+        {
+            std::string expandedpath { file_path_expand(s) };
+            if (file_is_directory(expandedpath))
+                continue;
+
+//          Glib::Dir dir(expandedpath);
+            for (Glib::DirIterator di = dir.begin(); di != dir.end(); di++) {
+
+                std::string fullpath = Glib::build_filename(expandedpath, *di);
+                std::string basename = *di;
+                bool isdir = file_is_directory(fullpath);
+                if (isdir && recurse)
+                {
+                    if (scanned_paths.find(fullpath) == scanned_paths.end())
+                    {
+                        scanned_paths.insert (fullpath);
+                        run_functor_for_paths
+                        (
+                            result, fullpath, functor, arg, pass_files_only,
+                            pass_fullpath, return_fullpath, recurse,
+                            scanned_paths
+                        );
+                    }
+                }
+                if (isdir && pass_files_only)
+                    continue;
+
+                std::string functor_str
+                {
+                    pass_fullpath ? fullpath : basename
+                };
+                if (! functor(functor_str, arg))
+                    continue;
+
+                result.push_back(return_fullpath ? fullpath : basename);
+            }
+        }
+        catch (Glib::FileError const & err)
+        {
+char errstr[PATH_MAX*2];
+snprintf (errstr, sizeof (errstr), "Cannot access file: %s", err.what().c_str());
+warning << errstr << endmsg;
+        }
+        catch (Glib::ConvertError const & err)
+        {
+char errstr[PATH_MAX*2];
+snprintf (errstr, sizeof (errstr), "Cannot convert filename: %s", err.what().c_str());
+warning << errstr << endmsg;
+        }
+    }
+}
+
+#endif      // defined THIS_CODE_IS_READY
+
+//-------------------------------------------------------------------------
 
 /*
  * NSM functions replaced by the already-implemented file functions above,
