@@ -27,7 +27,7 @@
  * \library       ftswalker
  * \author        Chris Ahlstrom
  * \date          2025-03-10
- * \updates       2025-03-25
+ * \updates       2026-03-02
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
@@ -148,10 +148,10 @@ public:
 
 private:
 
-    void make_paths ();
-    void delete_paths ();
+    void make_path_ptrs ();
+    void delete_path_ptrs ();
 
-    char * const * paths () const
+    char * const * path_ptrs () const
     {
         return m_paths;
     }
@@ -168,6 +168,13 @@ extern bool fts_find_file
 (
     const std::string & rootdir,
     const std::string & target
+);
+extern bool fts_find_files_by_regex
+(
+    lib66::tokenization & collected,
+    const lib66::tokenization & paths,
+    const std::string & rgx,
+    ftswalker::comparator cfn = nullptr
 );
 extern bool fts_copy_directory
 (
@@ -206,6 +213,7 @@ extern bool fts_item_delete
     const std::string & item,
     util::ftswalker::FTS ft
 );
+extern std::string get_fts_type_name (util::ftswalker::FTS typevalue);
 
 }               // namespace util
 

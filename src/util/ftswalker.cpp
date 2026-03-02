@@ -25,7 +25,7 @@
  * \library       ftswalker
  * \author        Chris Ahlstrom
  * \date          2025-03-10
- * \updates       2026-02-12
+ * \updates       2026-03-01
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
@@ -166,84 +166,6 @@ get_fts_type (const FTSENT * entry)
     return result;
 }
 
-/**
- *  Gets a brief description of an FTS file type.
- */
-
-std::string
-get_fts_type_name (util::ftswalker::FTS typevalue)
-{
-    std::string result;
-    switch (typevalue)
-    {
-        case util::ftswalker::FTS::D:
-
-            result = "Directory";
-            break;
-
-        case util::ftswalker::FTS::DC:
-
-            result = "Directory cycle";
-            break;
-
-        case util::ftswalker::FTS::DEFAULT:
-
-            result = "Other file type";
-            break;
-
-        case util::ftswalker::FTS::DOT:
-
-            result = "Dot file";
-            break;
-
-        case util::ftswalker::FTS::DP:
-
-            result = "Postorder directory";
-            break;
-
-        case util::ftswalker::FTS::DNR:
-
-            result = "Directory read error";
-            break;
-
-        case util::ftswalker::FTS::ERR:
-
-            result = "Error";
-            break;
-
-        case util::ftswalker::FTS::NS:
-
-            result = "No-stat error";
-            break;
-
-        case util::ftswalker::FTS::F:
-
-            result = "File";
-            break;
-
-        case util::ftswalker::FTS::NSOK:
-
-            result = "No stat request";
-            break;
-
-        case util::ftswalker::FTS::SL:
-
-            result = "Symbolic link";
-            break;
-
-        case util::ftswalker::FTS::SLNONE:
-
-            result = "Untargeted symbolic link";
-            break;
-
-        default:
-
-            result = "Unknown";
-            break;
-    }
-    return result;
-}
-
 }           // namespace
 
 namespace util
@@ -258,7 +180,7 @@ ftswalker::ftswalker (const std::string & path) :
     m_paths                 (nullptr)
 {
     m_search_directories.push_back(path);
-    make_paths();
+    make_path_ptrs();
 
     // to do?
 }
@@ -267,12 +189,12 @@ ftswalker::ftswalker (const lib66::tokenization & paths) :
     m_search_directories    (paths),
     m_paths                 (nullptr)
 {
-    make_paths();
+    make_path_ptrs();
 }
 
 ftswalker::~ftswalker ()
 {
-    delete_paths();
+    delete_path_ptrs();
 }
 
 /**
@@ -304,10 +226,10 @@ ftswalker::find_file
     lib66::tokenization & destination
 )
 {
-    bool result { not_nullptr(paths()) };
+    bool result { not_nullptr(path_ptrs()) };
     if (result)
     {
-        ::FTS * ftsp { ::fts_open(paths(), FTS_LOGICAL, NULL) };
+        ::FTS * ftsp { ::fts_open(path_ptrs(), FTS_LOGICAL, NULL) };
         if (ftsp == NULL)
         {
             util::error_message("fts_open() failed");
@@ -354,8 +276,8 @@ ftswalker::find_file
  *
  * \param [out] destination
  *      A vector of strings to hold the full path names of the files
- *      found that matched the target. This item is not cleared,
- *      so one theoretically do a number of searches.
+ *      found that are regular files. This item is not cleared,
+ *      so one theoretically do a serial number of searches.
  *
  * \return
  *      Returns true if no error occurred and any files were found.
@@ -365,10 +287,10 @@ ftswalker::find_file
 bool
 ftswalker::find_regular_files (lib66::tokenization & destination)
 {
-    bool result { not_nullptr(paths()) };
+    bool result { not_nullptr(path_ptrs()) };
     if (result)
     {
-        ::FTS * ftsp { ::fts_open(paths(), FTS_LOGICAL, NULL) };
+        ::FTS * ftsp { ::fts_open(path_ptrs(), FTS_LOGICAL, NULL) };
         if (ftsp == NULL)
         {
             util::error_message("fts_open() failed");
@@ -412,15 +334,21 @@ ftswalker::find_regular_files (lib66::tokenization & destination)
  *      every entry. It should at least handle the values in the
  *      ftswalker::FTS enumeration.
  *
+ *          function = bool (*) (const std::string &, FTS);
+ *
  * \param target
  *      If not empty, then only matching files will be processed.
- *      The default is empty.
+ *      The default is empty. NEW: the file base ("xyz.txt") is no longer
+ *      extracted for the match. Use regular expressions, as
+ *      described in util::regex_match() in the strfunctions module.
  *
  * \param cfn
  *      If not null (the default), this function is used in ordering the
  *      traversal. By default, the directory traversal order is in the
  *      order listed in the root paths, and in the order listed in the
  *      directory for everything else.
+ *
+ *          comparator = int (*) (const FTSENT ** 1st, const FTSENT ** 2nd)
  *
  * \return
  *      If all the calls to \a fn return true, this function returns true.
@@ -430,14 +358,14 @@ bool
 ftswalker::process_files
 (
     function fn,
-    const std::string & target,
+    const std::string & rgx,
     comparator cfn
 )
 {
-    bool result { not_nullptr(paths()) };
+    bool result { not_nullptr(path_ptrs()) };
     if (result)
     {
-        ::FTS * ftsp { ::fts_open(paths(), FTS_LOGICAL, cfn) };
+        ::FTS * ftsp { ::fts_open(path_ptrs(), FTS_LOGICAL, cfn) };
         if (ftsp == NULL)
         {
             util::error_message("fts_open() failed");
@@ -458,10 +386,20 @@ ftswalker::process_files
                 if (is_actionable_file(ent))
                 {
                     bool process_it { true };
-                    if (! target.empty())
+                    if (! rgx.empty())
                     {
-                        std::string base { util::filename_base(ent->fts_path) };
-                        process_it = util::strcompare(target, base);
+#if defined USE_SIMPLE_MATCH                            /* DEPRECATED       */
+                        std::string base
+                        {
+                            util::filename_base(ent->fts_path)
+                        };
+                        process_it = util::strcompare(rgx, base);
+#else
+                        process_it = util::regex_match
+                        (
+                            rgx, ent->fts_path
+                        );
+#endif
                     }
                     if (process_it)
                     {
@@ -533,7 +471,7 @@ ftswalker::process_files
  *      The function that takes the source file/directory as retrieved
  *      by fts_read_entry() and the target directory and does some cross
  *      processing, such as copying. Remember that the source directory
- *      comes from the paths() accessor.
+ *      comes from the path_ptrs() accessor.
  *
  * \param target
  *      The destination for the processed file. An example would be
@@ -557,10 +495,13 @@ ftswalker::process_files
     comparator cfn
 )
 {
-    bool result { not_nullptr(paths()) && util::file_is_directory(target) };
+    bool result
+    {
+        not_nullptr(path_ptrs()) && util::file_is_directory(target)
+    };
     if (result)
     {
-        ::FTS * ftsp { ::fts_open(paths(), FTS_LOGICAL, cfn) };
+        ::FTS * ftsp { ::fts_open(path_ptrs(), FTS_LOGICAL, cfn) };
         if (ftsp == NULL)
         {
             util::error_message("fts_open() failed");
@@ -630,10 +571,10 @@ ftswalker::process_files
  */
 
 void
-ftswalker::make_paths ()
+ftswalker::make_path_ptrs ()
 {
     int count { int(m_search_directories.size()) };
-    delete_paths();
+    delete_path_ptrs();
     if (count > 0)
     {
         char ** p { new (std::nothrow) char * [count + 1] };   /* w/nullptr */
@@ -655,7 +596,7 @@ ftswalker::make_paths ()
  */
 
 void
-ftswalker::delete_paths ()
+ftswalker::delete_path_ptrs ()
 {
     if (not_nullptr(m_paths))
     {
@@ -694,6 +635,7 @@ fts_read_entry (::FTS * ftsp)
 
 /**
  *  Just a simple test callback function; see tests/ftswalker_test.
+ *  Must apply the --verbose flag to see the output.
  */
 
 bool
@@ -704,7 +646,7 @@ fts_show_target (const std::string & match, util::ftswalker::FTS ft)
     if (t.empty())
         t = "?";                        /* this should not happen           */
 
-    util::status_message(t, m);
+    util::info_message(t, m);           /* show message if --verbose        */
     return true;
 }
 
@@ -738,12 +680,12 @@ fts_item_copy
     }
     else if (ft == util::ftswalker::FTS::F)         /* a regular file       */
     {
-        util::info_printf("Copying file %s to %s", V(source), V(target));
+        util::info_printf("Copying %s to %s", V(source), V(target));
         result = util::file_copy_to_path(source, target);
     }
     else if (ft == util::ftswalker::FTS::SL)        /* a symbolic link      */
     {
-        util::info_printf("Copying file %s to %s", V(source), V(target));
+        util::info_printf("Copying %s to %s", V(source), V(target));
         result = util::file_copy_to_path(source, target);
     }
     else if (ft == util::ftswalker::FTS::SLNONE)    /* link with no target  */
@@ -805,7 +747,7 @@ fts_item_delete (const std::string & item, util::ftswalker::FTS ft)
         }
         else if (ft == util::ftswalker::FTS::F)         /* a regular file   */
         {
-            util::info_message("Deleting file", item);
+            util::info_message("Deleting", item);
             result = util::file_delete(item);
         }
         else if (ft == util::ftswalker::FTS::SL)        /* a symbolic link  */
@@ -1062,9 +1004,187 @@ fts_find_file
     return result;
 }
 
-#if defined THIS_CODE_IS_READY
+/**
+ *  Inspired by a similarly-named function in the Ardour source code.
+ *  However, it does not directly use a searchpath; instead, created the
+ *  desired search and use it as noted below.
+ *
+ *  It is a more hardwired version of ftswalker::process_files(). It
+ *  does not call an ftswalker::function. Instead, it just copies
+ *  path to the 'collected' parameter.
+ *
+ * \param [out] collected
+ *      Holds the files that were found. Use it if true is returned.
+ *
+ * \param paths
+ *      Holds all of the paths to be searched. The searchpath class
+ *      can be used to get all of the paths in a "PATH"-type variable,
+ *      and then the searchpath::paths() function can be used for
+ *      this parameter.
+ *
+ * \param rgx
+ *      Holds a regular expression, which must be valid, to define the
+ *      objects of the search. If a glob is needed, first convert it to
+ *      a regex via the util::glob_to_regex() function in the strfunctions
+ *      module.
+ *
+ * \return
+ *      Returns true if no errors occurred and at least one
+ *      file was found.
+ */
 
-#endif
+bool
+fts_find_files_by_regex
+(
+    lib66::tokenization & collected,
+    const lib66::tokenization & paths,
+    const std::string & rgx,
+    ftswalker::comparator cfn
+)
+{
+    int count { int(paths.size()) };
+    bool result { count > 0  && ! rgx.empty() };
+    if (result)
+    {
+        char ** pointers
+        {
+            new (std::nothrow) char * [count + 1]   /* w/nullptr */
+        };
+        result = not_nullptr(pointers);
+        if (result)
+        {
+            int i { 0 };
+            for (auto & p : paths)
+                pointers[i++] = SPTR(p);
+
+            pointers[i] = nullptr;
+
+            ::FTS * ftsp { ::fts_open(pointers, FTS_LOGICAL, cfn) };
+            if (ftsp == NULL)
+            {
+                util::error_message("fts_open() failed");
+                result = false;
+            }
+            if (result)
+            {
+                for (;;)
+                {
+                    ::FTSENT * ent { fts_read_entry(ftsp) }; /* next item   */
+                    if (ent == NULL)
+                        break;
+
+                    if (is_actionable_file(ent))
+                    {
+                        bool process_it
+                        {
+                            util::regex_match(rgx, ent->fts_path)
+                        };
+                        if (process_it)
+                        {
+                            /*
+                             * We'll depend on regex to filter regular files
+                             * versus directories. Compare to fts_item_copy().
+                             *
+                             * FTS ft = get_fts_type(ent);
+                             * result = fn(p, ft);
+                             * if (! result) break;
+                             */
+
+                            std::string p { ent->fts_path }; /* target path */
+                            collected.push_back(p);
+                        }
+                    }
+                    else if (is_fts_error(ent))
+                    {
+                        std::string errmsg { strerror(ent->fts_errno) };
+                        util::error_message(errmsg, ent->fts_path);
+                    }
+                }
+                if (::fts_close(ftsp) == (-1))
+                    util::error_message("fts_close() failed");
+            }
+        }
+    }
+    return result;
+}
+
+/**
+ *  Gets a brief description of an FTS file type.
+ */
+
+std::string
+get_fts_type_name (util::ftswalker::FTS typevalue)
+{
+    std::string result;
+    switch (typevalue)
+    {
+        case util::ftswalker::FTS::D:
+
+            result = "Directory";
+            break;
+
+        case util::ftswalker::FTS::DC:
+
+            result = "Directory cycle";
+            break;
+
+        case util::ftswalker::FTS::DEFAULT:
+
+            result = "Other file type";
+            break;
+
+        case util::ftswalker::FTS::DOT:
+
+            result = "Dot file";
+            break;
+
+        case util::ftswalker::FTS::DP:
+
+            result = "Postorder directory";
+            break;
+
+        case util::ftswalker::FTS::DNR:
+
+            result = "Directory read error";
+            break;
+
+        case util::ftswalker::FTS::ERR:
+
+            result = "Error";
+            break;
+
+        case util::ftswalker::FTS::NS:
+
+            result = "No-stat error";
+            break;
+
+        case util::ftswalker::FTS::F:
+
+            result = "File";
+            break;
+
+        case util::ftswalker::FTS::NSOK:
+
+            result = "No stat request";
+            break;
+
+        case util::ftswalker::FTS::SL:
+
+            result = "Symbolic link";
+            break;
+
+        case util::ftswalker::FTS::SLNONE:
+
+            result = "Untargeted symbolic link";
+            break;
+
+        default:
+
+            result = "Unknown";
+            break;
+    }
+    return result;
+}
 
 }           // namespace util
 

@@ -1,15 +1,16 @@
 NEWS for Cfg66 0.4
 Chris Ahlstrom
-2024-04-15 to 2026-02-27
+2024-04-15 to 2026-03-02
 
 # Changelog
 
-## [0.4] - 2026-02-27
+## [0.4] - 2026-03-02
 
 While working to build a library to support MIDINAM files, we
 borrowed code from the "pdb" and "xml" support portions of
 the Ardour DAW's source code, updated it to C++11 to C++17
-conventions, and created additional classes and functions.
+conventions, and created additional classes and functions to
+support the functionality.
 
 ### Added
 
@@ -30,16 +31,21 @@ conventions, and created additional classes and functions.
   - export\_search\_path()
   - file\_canonical\_path()
   - file\_path\_expand()
+  - find\_files\_by\_regex()
 - Added these functions to the strfunctions module:
-    - The CPTR() function to convert a string to a const pointer, with the
-      added feature that, if the string is empty, the pointer is null.
-      SPTR() is similar, but the return value is non-const.
-    - The STR() function, which is like CSTR() but returns a non-const
-      pointer.
-    - strncasecompare()
+    - The CPTR() function to convert a string to a const pointer,
+      with the added feature that, if the string is empty, the
+      pointer is null.
+    - SPTR() is similar, but the return value is non-const.
+    - The STR() function, which is like CSTR() but returns a
+      non-const pointer.
+    - compare\_tokenizations()
+    - glob\_to\_regex()
     - string\_has\_regex()
     - string\_ext\_match()
-    - patter\_match()
+    - strncasecompare()
+    - pattern\_match(). This function supports using C++ regular
+      expressions.
 
 ### Fixed
 
@@ -53,6 +59,8 @@ conventions, and created additional classes and functions.
 - Fixed cfg::history::operator =, and replaced the implementation of
   history with a more correct version.
 - Fixed the usage of the lib66 and potext subprojects.
+- The ftswalker::process\_files() function now uses regular
+  expressions instead of simple matching of the file base-name.
 
 ## [0.3] - 2025-03-02
 

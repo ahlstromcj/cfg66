@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-24
- * \updates       2026-02-27
+ * \updates       2026-03-02
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -1205,15 +1205,19 @@ strings_match (const std::string & target, const std::string & x)
  *
  *  The characters are: ". () \ [] {} ^ $ * | ?" }.
  *
+ *  This function creates a temporary std::regex object in order
+ *  to validate it.
+ *
  * \param s
- *      The string to be searched.
+ *      The string to be searched and validated.
  *
  * \param p
  *      The position at which to start the search. It defaults to
  *      0. If a period is expected, then set p past the period.
  *
  * \return
- *      Returns true if a regex character is found.
+ *      Returns true if a regex character is found and the regex
+ *      does not throw an exception.
  */
 
 bool
@@ -1221,7 +1225,60 @@ string_has_regex (const std::string & s, std::string::size_type p)
 {
     static const std::string s_regex_chars { ".()\\[]{}^$*|?" };
     auto rpos { s.find_first_of(s_regex_chars, p) };
-    return rpos != std::string::npos;
+    bool result { rpos != std::string::npos };
+    if (result)
+    {
+        try
+        {
+            std::regex r(s);
+        }
+        catch (const std::regex_error & e)
+        {
+            printf("Invalid regex '%s': %s\n", CSTR(s), e.what());
+
+            /*
+             * Too many codes to check, for now.
+             *
+             * if (e.code == std::regex_constants::error_brack)
+             *    printf("code error_brack");
+             */
+
+            result = false;
+        }
+    }
+    return result;
+}
+
+std::string
+glob_to_regex (const std::string & globb)
+{
+    std::string result { "^" };
+    for (char c : globb)
+    {
+        switch (c)
+        {
+        case '*':   result += ".*";     break;
+        case '?':   result += ".";      break;
+        case '.':   result += "\\.";    break;
+        case '\\':
+        case '[': case ']':             /* is this ']' really necessary?    */
+        case '(': case ')':
+        case '{': case '}':
+        case '+': case '^':
+        case '$': case '|':
+
+            result += "\\";
+            result += c;
+            break;
+
+        default:
+
+            result += c;
+            break;
+        }
+    }
+    result += "$";
+    return result;
 }
 
 /**
@@ -1293,14 +1350,19 @@ string_ext_match (const std::string & path, const std::string & ext)
  *      -   "*.midnam". This a file extension search, flagged by the
  *          target starting with "*." and no regex characters
  *          (e.g. () \ [] {} ^ $ * | ? = but no .) after that.
- *          In that case, one could call file_extension_match();
- *          see the filefunctions library. However, we provide the
- *          string_ext_match() function, which is more thorough in
- *          checking for regex characters after the "*.".
+ *          -   In that case, one could call file_extension_match();
+ *              see the filefunctions library.
+ *          -   However, we provide the string_ext_match() function,
+ *              which is more thorough in checking for regex characters
+ *              after the "*.".
+ *          -   One more option, by far the best, is to use the
+ *              regular expression ".+\.midnam", where ".+" indicates
+ *              we want one or more characters before the last period
+ *              in the string.
  *      -   "midisong*". Match anything starting with "midisong".
  *      -   "midisong*.mid". Match anything starting with "midisong" and
  *          ending with "mid". Note that "midisong-mid" would match
- *          this expression; use "midisong*\.mid" instead.
+ *          this expression; use "midisong.*\.mid" instead.
  *      -   "midisong.m*"
  *
  * \param target
@@ -1309,6 +1371,8 @@ string_ext_match (const std::string & path, const std::string & ext)
  * \param pattern
  *      Provides a pattern to check the target against. It should represent
  *      a valid regular expression, but this is not tested.
+ *      As a special case (and somewhat iffy case), if the pattern begins
+ *      "icase:", then the ignorecase parameter is set to true.
  *
  * \param ignorecase
  *      If true, letter case is ignored in the search.
@@ -1316,16 +1380,25 @@ string_ext_match (const std::string & path, const std::string & ext)
  */
 
 bool
-pattern_match
+regex_match
 (
-    const std::string & target,
-    const std::string & pattern,
+    const std::string & rgx,
+    const std::string & candidate,
     bool ignorecase
 )
 {
-    bool result { ! target.empty() && ! pattern.empty() };
+    bool result { ! rgx.empty() && ! candidate.empty() };
     if (result)
     {
+        std::string r { rgx };              /* copy the regular expression  */
+        std::string::size_type position { r.find("icase:") };
+        if (position == 0)
+        {
+            position = 6;                   /* the size of "icase:"         */
+            r = r.substr(position + 1, r.length() - position + 1);
+            ignorecase = true;
+        }
+
         /*
          * Note that std::regex::icase also includes the default grammar
          * option, std::regex::ECMAScript. Also note that the default
@@ -1334,12 +1407,38 @@ pattern_match
 
         std::regex_constants::syntax_option_type grammartype
         {
-            ignorecase ?  std::regex::icase : std::regex::ECMAScript
+            ignorecase ? std::regex::icase : std::regex::ECMAScript
         };
-        std::regex r(pattern, grammartype);
-        result = std::regex_match(pattern, r);
+        try
+        {
+            std::regex reggie(r, grammartype);
+            result = std::regex_match(candidate, reggie);
+        }
+        catch (const std::regex_error & e)
+        {
+            printf("Invalid regex '%s': %s\n", CSTR(r), e.what());
+
+            /*
+             * Too many codes to check, for now.
+             *
+             * if (e.code == std::regex_constants::error_brack)
+             *    printf("code error_brack");
+             */
+
+            result = false;
+        }
     }
     return result;
+}
+
+bool
+regex_match
+(
+    const std::string & rgx,
+    const std::string & candidate
+)
+{
+    return regex_match(rgx, candidate, false);      /* don't ignore case    */
 }
 
 /**
@@ -1648,6 +1747,25 @@ tokenize_quoted (const std::string & source)
         }
     }
     return result;
+}
+
+/**
+ *  Makes a copy of each vector, sorts them, and then checks if they
+ *  are identical.
+ */
+
+bool
+compare_tokenizations
+(
+    const lib66::tokenization & a,
+    const lib66::tokenization & b
+)
+{
+    lib66::tokenization a_sorted { a };
+    lib66::tokenization b_sorted { b };
+    std::sort(a_sorted.begin(), a_sorted.end());
+    std::sort(b_sorted.begin(), b_sorted.end());
+    return a_sorted == b_sorted;
 }
 
 /**

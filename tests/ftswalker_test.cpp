@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2025-03-10
- * \updates       2026-02-12
+ * \updates       2026-03-02
  * \license       See above.
  *
  */
@@ -37,6 +37,7 @@
 #include "util/ftswalker.hpp"           /* util::ftswalker big-endian code  */
 #include "util/filefunctions.hpp"       /* util::file_exists(), etc.        */
 #include "util/msgfunctions.hpp"        /* util::file_message(), etc.       */
+#include "util/strfunctions.hpp"        /* util::glob_to_regex(), etc.      */
 
 namespace                               /* anonymous namespace              */
 {
@@ -75,6 +76,7 @@ const std::string s_help_intro
 {
     "Not all of the above options are fully supported.\n\n"
     "This test program illustrates/tests the util::ftswalker class.\n"
+    "To see all of the files operated on, use the --verbose option.\n"
     "For a list of build and run-time details, use the --description\n"
     "command-line option.\n"
 };
@@ -83,6 +85,11 @@ const std::string s_desc_intro
 {
     "This test exercises the util::ftswalker file traversal code.\n"
 };
+
+/**
+ *  The session.fts file can be found in tests/data/fts,
+ *  tests/data/session_2, and tests/data/session_3.
+ */
 
 bool
 fts_get_file_list_test ()
@@ -98,12 +105,11 @@ fts_callback_test ()
 {
     const std::string rootdir { "tests/data/fts" };
     util::ftswalker walker(rootdir);
-    util::info_message("Default directory traversal....");
-
     bool result = walker.process_files(util::fts_show_target);
+    util::info_message("Default directory traversal", rootdir);
     if (result)
     {
-        util::info_message("Compare-files-before-directories traversal....");
+        util::info_message("Compare-files-before-directories traversal.");
         result = walker.process_files
         (
             util::fts_show_target, "", util::compare_files_before_dirs
@@ -181,8 +187,8 @@ fts_copy_test ()
 bool
 fts_delete_test ()
 {
-    const std::string rootdir{ "build/tests/fts" };
-    const std::string matcher{ };               /* remove all directories   */
+    const std::string rootdir { "build/tests/fts" };
+    const std::string matcher { };              /* remove all directories   */
     util::ftswalker walker(rootdir);
     bool result = walker.process_files
     (
@@ -193,6 +199,209 @@ fts_delete_test ()
 
     return result;
 }
+
+/**
+ *  This is the set of files we expect to find.
+ */
+
+lib66::tokenization s_expected_results
+{
+    "tests/data/fts/a_fake_file.midi",
+    "tests/data/fts/b_fake_file.midi",
+    "tests/data/fts/c_fake_file.midi",
+    "tests/data/fts/session_2/a_fake_file.midi",
+    "tests/data/fts/session_3/b_fake_file.midi",
+    "tests/data/fts/session_3/set_1/c_fake_file.midi",
+    "tests/data/fts/session_3/set_2/a_fake_file.midi",
+    "tests/data/fts/session_3/set_2/b_fake_file.midi",
+    "tests/data/fts/session_3/set_2/c_fake_file.midi",
+};
+
+/**
+ *  This is the set of files actually found. It can be compared by using
+ *  util::compare_tokenizations() to sort and equate it with the
+ *  expected results.
+ */
+
+lib66::tokenization s_actual_results;
+
+/**
+ *  This ftswalker-compatible function takes the string that matched
+ *  in fts_file_list_test_by_pattern() and adds it to s_actual_results.
+ */
+
+bool
+fts_collect_matches (const std::string & match, util::ftswalker::FTS ft)
+{
+    std::size_t sz { s_actual_results.size() };
+    bool result { false };
+    if (! match.empty())
+    {
+        std::string msg { util::get_fts_type_name(ft) };
+        msg += " file match";
+        util::info_message(msg, match);
+        s_actual_results.push_back(match);
+        result = s_actual_results.size() == (sz + 1);
+    }
+    return result;
+}
+
+/**
+ *  This function passes the fts_collect_matches() function above and
+ *  uses ftswalker::process_files() to find files that match the
+ *  glob "*.midi", which is illegal regex and must be converted to a
+ *  regex.
+ */
+
+bool
+fts_file_list_test_by_pattern ()
+{
+    const std::string rootdir { "tests/data/fts" };
+    util::ftswalker walker(rootdir);
+    std::string target { "*.midi" };                /* this is NOT a regex  */
+    bool result                                     /* verify that fact     */
+    {
+        ! util::string_has_regex(target)            /* tries to make regex  */
+    };
+    if (result)
+    {
+        std::cout
+            << "  Note that the 'Invalid regex' error is expected."
+            << std::endl
+            ;
+        util::info_message("Default directory traversal", rootdir);
+        std::string rgx                         /* this is NOW a regex  */
+        {
+            util::glob_to_regex(target)
+        };
+        util::info_message("Converted '*.midi' glob to regex", V(rgx));
+        s_actual_results.clear();
+        result = walker.process_files(fts_collect_matches, rgx);
+        if (result)
+        {
+            /*
+             * This can't happen directly because of traversal order.
+             *
+             *      result = s_actual_results == s_expected_results;
+             */
+
+            result = util::compare_tokenizations
+            (
+                s_actual_results, s_expected_results
+            );
+        }
+    }
+    else
+    {
+        std::cerr
+            << "  We did not get the regex error we expected!"
+            << std::endl
+            ;
+    }
+    return result;
+}
+
+/**
+ *  This test is identical to fts_file_list_test_by_pattern(), but
+ *  it uses a free function from the ftswalker module, and requires
+ *  no callback function. It also doesn't test string_has_regex().
+ */
+
+bool
+find_files_by_pattern ()
+{
+    const std::string rootdir { "tests/data/fts" };
+    std::string rgx { util::glob_to_regex("*.midi") };
+    lib66::tokenization collected;
+    lib66::tokenization paths;
+    util::info_message("Testing 'find_files_by_pattern()'", rgx);
+    paths.push_back(rootdir);
+
+    bool result = util::fts_find_files_by_regex(collected, paths, rgx);
+    if (result)
+        result = util::compare_tokenizations(collected, s_expected_results);
+
+    return result;
+}
+
+/**
+ *  This is another set of files we expect to find.
+ */
+
+lib66::tokenization s_expected_results_2
+{
+    "tests/data/fts/session_3/b_fake_file.midi",
+    "tests/data/fts/session_3/set_1/c_fake_file.midi",
+    "tests/data/fts/session_3/set_2/a_fake_file.midi",
+    "tests/data/fts/session_3/set_2/b_fake_file.midi",
+    "tests/data/fts/session_3/set_2/c_fake_file.midi",
+};
+
+/**
+ *  This test uses another, more complex glob.
+ */
+
+bool
+find_files_by_pattern_2 ()
+{
+    const std::string rootdir { "tests/data/fts" };
+    std::string target { "*session_3/*.midi" };
+    std::string rgx { util::glob_to_regex(target) };
+    lib66::tokenization collected;
+    lib66::tokenization paths { rootdir };
+    util::info_message("Testing 'find_files_by_pattern()' 2", rgx);
+
+    bool result = util::fts_find_files_by_regex(collected, paths, rgx);
+    if (result)
+        result = util::compare_tokenizations(collected, s_expected_results_2);
+
+    return result;
+}
+
+/**
+ *  This is the set of files we expect to find.
+ */
+
+lib66::tokenization s_expected_results_3
+{
+    "tests/data/fts/session_2/a_fake_file.midi",
+    "tests/data/fts/session_3/b_fake_file.midi",
+    "tests/data/fts/session_3/set_1/c_fake_file.midi",
+    "tests/data/fts/session_3/set_2/a_fake_file.midi",
+    "tests/data/fts/session_3/set_2/b_fake_file.midi",
+    "tests/data/fts/session_3/set_2/c_fake_file.midi",
+};
+
+/**
+ *  This test uses two search paths and the simple glob.
+ */
+
+bool
+find_files_by_pattern_3 ()
+{
+    const std::string rootdir { "tests/data/fts" };
+    std::string target { "*.midi" };
+    std::string rgx { util::glob_to_regex(target) };
+    lib66::tokenization collected;
+    lib66::tokenization paths
+    {
+        "tests/data/fts/session_2",
+        "tests/data/fts/session_3"
+    };
+    util::info_message("Testing 'find_files_by_pattern()' 3", rgx);
+
+    bool result = util::fts_find_files_by_regex(collected, paths, rgx);
+    if (result)
+        result = util::compare_tokenizations(collected, s_expected_results_3);
+
+    return result;
+}
+
+/**
+ * -------------------------------------------------------------------
+ *  NEXT: add a util::searchpath test. Also test the "icase:" feature.
+ * -------------------------------------------------------------------
+ */
 
 }       // namespace anonymous
 
@@ -256,6 +465,18 @@ main (int argc, char * argv [])
                 success = fts_delete_test();
 
             if (success)
+                success = fts_file_list_test_by_pattern();
+
+            if (success)
+                success = find_files_by_pattern();
+
+            if (success)
+                success = find_files_by_pattern_2();
+
+            if (success)
+                success = find_files_by_pattern_3();
+
+            if (success)
             {
                 /*
                  * This test works only with nsmd running.
@@ -266,7 +487,7 @@ main (int argc, char * argv [])
                 lib66::tokenization results;
                 (void) walker.find_regular_files(results);
                 std::cout
-                    << "Note that " << rootdir
+                    << "  Note that " << rootdir
                     << " exists only if nsmd is running."
                     << std::endl
                     ;

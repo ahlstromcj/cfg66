@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2026-02-26
+ * \updates       2026-04-01
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -3145,123 +3145,6 @@ file_path_expand (const std::string & inpath)
     }
     return result;
 }
-
-//-------------------------------------------------------------------------
-
-#if defined THIS_CODE_IS_READY
-
-// find_files_matching_pattern (vector<string>& result,
-
-using stringlist = std::set<std::string>;
-using runfunctor = bool (* functor) (const std::string &, void *);
-
-bool
-find_files_by_pattern
-(
-    lib66::tokenization & destination,
-    const searchpath & paths,
-    const std::string & pattern
-)
-{
-    lib66::tokenization result;
-
-//  Glib::PatternSpec tmp(pattern);
-//  find_files_matching_pattern (result, paths, tmp);
-
-    stringlist unused;
-    run_functor_for_paths
-    (
-        result, paths, pattern_filter,
-//      const_cast<Glib::PatternSpec*>(&pattern),
-        true, false, true, false, unused
-    );
-
-}
-
-/**
- *  Glib::dir
- *
- *      Opens a directory for reading. The names of the files in the directory can
- *      then be retrieved using g_dir_read_name(). Note that the ordering is not
- *      defined.
- *
- *  ftswalker::process_files (...)
- */
-
-static void
-run_functor_for_paths
-(
-    lib66::tokenization & result,
-    const searchpath & srchpaths,
-    runfunctor functor,         // bool (*functor)(const std::string &, void *),
-    void * arg,
-    bool pass_files_only,
-    bool pass_fullpath,
-    bool return_fullpath,
-    bool recurse,
-    stringlist & scanned_paths
-)
-{
-//  for (vector<string>::const_iterator i = paths.begin(); i != paths.end(); ++i)
-
-    for (const auto & s : srchpaths.path())
-    {
-        try
-        {
-            std::string expandedpath { file_path_expand(s) };
-            if (file_is_directory(expandedpath))
-                continue;
-
-//          Glib::Dir dir(expandedpath);
-            for (Glib::DirIterator di = dir.begin(); di != dir.end(); di++) {
-
-                std::string fullpath = Glib::build_filename(expandedpath, *di);
-                std::string basename = *di;
-                bool isdir = file_is_directory(fullpath);
-                if (isdir && recurse)
-                {
-                    if (scanned_paths.find(fullpath) == scanned_paths.end())
-                    {
-                        scanned_paths.insert (fullpath);
-                        run_functor_for_paths
-                        (
-                            result, fullpath, functor, arg, pass_files_only,
-                            pass_fullpath, return_fullpath, recurse,
-                            scanned_paths
-                        );
-                    }
-                }
-                if (isdir && pass_files_only)
-                    continue;
-
-                std::string functor_str
-                {
-                    pass_fullpath ? fullpath : basename
-                };
-                if (! functor(functor_str, arg))
-                    continue;
-
-                result.push_back(return_fullpath ? fullpath : basename);
-            }
-        }
-        catch (Glib::FileError const & err)
-        {
-char errstr[PATH_MAX*2];
-snprintf (errstr, sizeof (errstr), "Cannot access file: %s", err.what().c_str());
-warning << errstr << endmsg;
-        }
-        catch (Glib::ConvertError const & err)
-        {
-char errstr[PATH_MAX*2];
-snprintf (errstr, sizeof (errstr), "Cannot convert filename: %s", err.what().c_str());
-warning << errstr << endmsg;
-        }
-    }
-}
-
-#endif      // defined THIS_CODE_IS_READY
-
-//-------------------------------------------------------------------------
 
 /*
  * NSM functions replaced by the already-implemented file functions above,

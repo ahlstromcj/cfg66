@@ -27,7 +27,7 @@
  *
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2026-02-27
+ * \updates       2026-03-02
  * \version       $Revision$
  *
  *    Also see the strfunctions.cpp module.
@@ -245,16 +245,22 @@ extern bool string_has_regex
     const std::string & s,
     std::string::size_type p = 0
 );
+extern std::string glob_to_regex (const std::string & globb);
 extern bool string_ext_match
 (
     const std::string & path,
-    const std::string & target
+    const std::string & ext
 );
-extern bool pattern_match
+extern bool regex_match
 (
     const std::string & rgx,
-    const std::string & target,
-    bool ignorecase = false
+    const std::string & candidate,
+    bool ignorecase
+);
+extern bool regex_match
+(
+    const std::string & rgx,
+    const std::string & candidate
 );
 extern std::string tolower (const std::string & source);
 extern std::string toupper (const std::string & source);
@@ -275,6 +281,11 @@ extern lib66::tokenization tokenize
     const std::string & delimiters = " \t"
 );
 extern lib66::tokenization tokenize_quoted (const std::string & source);
+extern bool compare_tokenizations
+(
+    const lib66::tokenization & a,
+    const lib66::tokenization & b
+);
 extern std::string simplify (const std::string & source);
 extern std::wstring widen_string (const std::string & source);
 extern std::string word_wrap
