@@ -264,7 +264,13 @@ extern bool regex_match
 );
 extern std::string tolower (const std::string & source);
 extern std::string toupper (const std::string & source);
-extern std::string capitalize (const std::string & source);
+
+/*
+ * Already defined in strconversions.
+ *
+ * extern std::string capitalize (const std::string & source);
+ */
+
 extern std::string bool_to_string (bool x, bool yesno = false);
 extern char bool_to_char (bool x);
 extern std::string pointer_to_string (void * ptr);

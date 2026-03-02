@@ -1473,9 +1473,12 @@ toupper (const std::string & source)
     return result;
 }
 
-/**
+/*
  *  Returns the source string with the first character converted to uppercase.
+ *  Already defined in the strconversions module!
  */
+
+# if 0
 
 std::string
 capitalize (const std::string & source)
@@ -1489,6 +1492,8 @@ capitalize (const std::string & source)
     }
     return result;
 }
+
+#endif
 
 /**
  *  Easy conversion from boolean to string, "true" or "false".
