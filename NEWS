@@ -9,14 +9,17 @@ Chris Ahlstrom
 While working to build a library to support MIDINAM files, we
 borrowed code from the "pdb" and "xml" support portions of
 the Ardour DAW's source code, updated it to C++11 to C++17
-conventions, and created additional classes and functions to
-support the functionality.
+conventions, reworked it, and created additional classes and
+functions to support the functionality. No Glib code needed.
+The biggest feature is functions to wrap the usage of std::regex.
+Supports matching and file-tree navigation.
 
 ### Added
 
 - Added the ftswalker module, class, and tests. Also includes useful
   samples of ftswalker member and callback functions for finding,
-  copying, and deleting files.
+  copying, and deleting files. Newest is find\_files\_by\_regex().
+  See the ftswalker\_test module.
 - Added the strconversions module. Its functions, both normal and
   template, work with strings and numeric values of a specific size.
 - Added a searchpath class and a test module for it. It is useful
@@ -31,7 +34,6 @@ support the functionality.
   - export\_search\_path()
   - file\_canonical\_path()
   - file\_path\_expand()
-  - find\_files\_by\_regex()
 - Added these functions to the strfunctions module:
     - The CPTR() function to convert a string to a const pointer,
       with the added feature that, if the string is empty, the
@@ -44,7 +46,7 @@ support the functionality.
     - string\_has\_regex()
     - string\_ext\_match()
     - strncasecompare()
-    - pattern\_match(). This function supports using C++ regular
+    - regex\_match(). This function supports using C++ regular
       expressions.
 
 ### Fixed
