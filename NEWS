@@ -1,10 +1,10 @@
 NEWS for Cfg66 0.4
 Chris Ahlstrom
-2024-04-15 to 2026-03-02
+2024-04-15 to 2026-03-04
 
 # Changelog
 
-## [0.4] - 2026-03-02
+## [0.4] - 2026-03-04
 
 While working to build a library to support MIDINAM files, we
 borrowed code from the "pdb" and "xml" support portions of
@@ -32,8 +32,13 @@ Supports matching and file-tree navigation.
   - get\_env()
   - set\_env()
   - export\_search\_path()
+  - file\_build\_path()
   - file\_canonical\_path()
+  - file\_get\_file\_path()
   - file\_path\_expand()
+  - file\_path\_fix()
+  - file\_path\_env\_variable()
+  - file\_path\_env\_fix()
 - Added these functions to the strfunctions module:
     - The CPTR() function to convert a string to a const pointer,
       with the added feature that, if the string is empty, the
@@ -48,6 +53,11 @@ Supports matching and file-tree navigation.
     - strncasecompare()
     - regex\_match(). This function supports using C++ regular
       expressions.
+
+### Changed
+
+- Changed util::path\_slash() to util::unix\_path\_slash(). The
+  path\_slash() function now returns the slash as a string.
 
 ### Fixed
 

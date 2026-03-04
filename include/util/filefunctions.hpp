@@ -27,7 +27,7 @@
  *
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2026-02-26
+ * \updates       2026-03-04
  * \version       $Revision$
  *
  *    Also see the filefunctions.cpp module.  The functions here use
@@ -129,7 +129,9 @@ extern bool set_current_directory (const std::string & path);
 extern std::string get_current_directory ();
 extern std::string get_parent_directory (const std::string & path);
 extern std::string get_full_path (const std::string & path);
-extern char path_slash ();
+extern const std::string & path_env_separator ();
+extern const std::string & path_slash ();
+extern char unix_path_slash ();
 extern char os_path_slash ();
 extern std::string os_normalize_path
 (
@@ -226,6 +228,22 @@ extern std::string installed_data_path
     const std::string & arg0,
     const std::string & pkgname,
     const std::string & subdir = ""
+);
+extern std::string file_build_path
+(
+    const lib66::tokenization & subs,
+    bool last_is_file = false
+);
+extern std::string file_path_fix
+(
+    const std::string & path,
+    bool to_unix = true
+);
+extern std::string file_path_env_variable (const lib66::tokenization & paths);
+extern std::string file_path_env_fix
+(
+    const std::string & pathenv,
+    bool to_unix = true
 );
 extern std::string get_env (const std::string & v);
 extern bool set_env

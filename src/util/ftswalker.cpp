@@ -25,7 +25,7 @@
  * \library       ftswalker
  * \author        Chris Ahlstrom
  * \date          2025-03-10
- * \updates       2026-03-01
+ * \updates       2026-03-04
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
@@ -237,7 +237,7 @@ ftswalker::find_file
         }
         else
         {
-            result = false;                             /* tentative        */
+            result = false;                              /* tentative       */
             for (;;)
             {
                 ::FTSENT * ent { fts_read_entry(ftsp) }; /* next file/dir   */
@@ -1005,6 +1005,75 @@ fts_find_file
 }
 
 /**
+ *  A near duplicate of fts_find_file. It returns the full path of the file.
+ *  Stripped out most comments for readability
+ *
+ *  Why this instead of a new return parameter? Do not want to break the
+ *  code in this library and a few others.
+ */
+
+std::string
+fts_get_file_path
+(
+    const std::string & rootdir,
+    const std::string & target
+)
+{
+    std::string result;
+    char * const paths [] { STR(rootdir), nullptr };
+    ::FTS * ftsp { fts_open(paths, FTS_LOGICAL, compare_files_before_dirs) };
+    if (ftsp == NULL)
+    {
+        util::error_message("fts_open() failed");
+        return result;
+    }
+
+    ::FTSENT * currententry { NULL };
+    for (;;)
+    {
+        ::FTSENT * ent { ::fts_read(ftsp) }; /* get next file or directory  */
+        if (ent == NULL)
+            break;
+
+        if (is_directory(ent))              /* check file types; see banner */
+        {
+            if (currententry != NULL)
+            {
+                int err { fts_set(ftsp, ent, FTS_SKIP) };   /* no visit     */
+                if (err != 0)
+                {
+                    util::error_message("fts_set() failed");
+                    return result;
+                }
+            }
+        }
+        else if (is_leaving_directory(ent))
+        {
+            if (ent == currententry)
+                currententry = NULL;
+        }
+        else if (is_regular_file(ent))
+        {
+            std::string path { ent->fts_path };
+            std::string base { util::filename_base(path) };
+            if (util::strcompare(target, base))         /* got target?      */
+            {
+                result = path;
+                break;
+            }
+        }
+        else if (is_other_file_type(ent))
+        {
+            // util::info_message("Non-directory/file", ent->fts_path);
+        }
+    }
+    if (::fts_close(ftsp) == (-1))
+        util::error_message("fts_close() failed");
+
+    return result;
+}
+
+/**
  *  Inspired by a similarly-named function in the Ardour source code.
  *  However, it does not directly use a searchpath; instead, created the
  *  desired search and use it as noted below.
@@ -1012,6 +1081,16 @@ fts_find_file
  *  It is a more hardwired version of ftswalker::process_files(). It
  *  does not call an ftswalker::function. Instead, it just copies
  *  path to the 'collected' parameter.
+ *
+ *  We'll depend on regex to filter regular files
+ *  versus directories. Compare to fts_item_copy().
+ *
+ *          FTS ft = get_fts_type(ent);
+ *          result = fn(p, ft);
+ *          if (! result) break;
+ *
+ *  Another option is bind an ftswalker::function to a non-auto
+ *  lib66::tokenization object into which the findings are pushed.
  *
  * \param [out] collected
  *      Holds the files that were found. Use it if true is returned.
@@ -1082,6 +1161,7 @@ fts_find_files_by_regex
                         if (process_it)
                         {
                             /*
+                             * See "Filter" in the function banner.
                              * We'll depend on regex to filter regular files
                              * versus directories. Compare to fts_item_copy().
                              *

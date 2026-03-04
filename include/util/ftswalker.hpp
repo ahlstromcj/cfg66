@@ -27,7 +27,7 @@
  * \library       ftswalker
  * \author        Chris Ahlstrom
  * \date          2025-03-10
- * \updates       2026-03-02
+ * \updates       2026-03-04
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
@@ -165,6 +165,11 @@ private:
 extern ::FTSENT * fts_read_entry (::FTS * ftsp);
 extern bool fts_delete_directory (const std::string & path);
 extern bool fts_find_file
+(
+    const std::string & rootdir,
+    const std::string & target
+);
+extern std::string fts_get_file_path
 (
     const std::string & rootdir,
     const std::string & target

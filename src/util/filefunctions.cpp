@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2026-04-01
+ * \updates       2026-03-04
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -36,6 +36,10 @@
  *    UNIX format, even if the name includes Window's constructs such as "C:".
  *    So the normalize_path() function (which converts both ways) is used
  *    heavily.  For OS calls, we want to use the native format.
+ *
+ *    Note that, while some functions use the C++17 std::filesystem
+ *    construct, many are still basically C code. (The same is true of
+ *    the ftswalker module).
  */
 
 #include <algorithm>                    /* std::replace() function          */
@@ -43,6 +47,7 @@
 #include <cstring>                      /* std::strlen(), strerror_r() etc. */
 #include <ctime>                        /* std::strftime()                  */
 #include <filesystem>                   /* std::filesystem::path            */
+#include <limits>                       /* std::numeric_limits<>::max()     */
 #include <glob.h>                       /* ::glob() to get wildcards        */
 #include <regex>                        /* std::regex, smatch, etc.         */
 #include <sys/stat.h>
@@ -67,34 +72,6 @@ extern char * realpath_cyg (const char * path, char got_path []);
 EXTERN_C_END
 
 #endif
-
-/**
- *  All file-specifications internal to Seq66 and in its configuration files
- *  use the UNIX path separator ("/"), no matter what the operating system.
- *  Also, select the HOME or LOCALAPPDATA environment variables depending on
- *  whether building for Windows or not.  LOCALAPPDATA points to the root of
- *  the Windows user's configuration directory, AppData/Local.
- *
- *      APPDATA         C:\Users\username\AppData\Roaming
- *      LOCALAPPDATA    C:\Users\username\AppData\Local
- *      HOMEDRIVE       C:
- *      HOMEPATH        \Users\username
- */
-
-#if defined PLATFORM_WINDOWS
-#define PATH_SLASH                "\\"
-#define PATH_SLASH_CHAR           '\\'
-#define ENV_HOMEDRIVE             "HOMEDRIVE"
-#define ENV_HOMEPATH              "HOMEPATH"
-#define ENV_CONFIG                "LOCALAPPDATA"
-#else
-#define PATH_SLASH                "/"
-#define PATH_SLASH_CHAR           '/'
-#define ENV_HOME                  "HOME"
-#define ENV_CONFIG                ".config"
-#endif
-
-#define PATH_SLASHES              "/\\"
 
 /*
  *  More legacy configuration macros.
@@ -204,6 +181,81 @@ using errno_t = int;
 namespace util
 {
 
+/**
+ *  All file-specifications internal to Seq66 and in its configuration files
+ *  use the UNIX path separator ("/"), no matter what the operating system.
+ *  Also, select the HOME or LOCALAPPDATA environment variables depending on
+ *  whether building for Windows or not.  LOCALAPPDATA points to the root of
+ *  the Windows user's configuration directory, AppData/Local.
+ *
+ *      APPDATA         C:\Users\username\AppData\Roaming
+ *      LOCALAPPDATA    C:\Users\username\AppData\Local
+ *      HOMEDRIVE       C:
+ *      HOMEPATH        \Users\username
+ */
+
+#if defined PLATFORM_WINDOWS
+static const std::string s_path_slash       { "\\" };
+static const char        s_path_slash_char  { '\\' };
+static const std::string s_env_homedrive    { "HOMEDRIVE" };
+static const std::string s_env_homepath     { "HOMEPATH" };
+static const std::string s_env_config       { "LOCALAPPDATA" };
+static const std::string sm_sp_separator    { ";" };
+#else
+static const std::string s_path_slash       { "/" };
+static const char        s_path_slash_char  { '/' };
+static const std::string s_env_home         { "HOME" };
+static const std::string s_env_config       { ".config" }; /* not an env var */
+static const std::string sm_sp_separator    { ":" };
+#endif
+
+static const std::string s_path_slashes     { "/\\" };
+
+/*
+ *  An accessor for the OS-dependent path separators.
+ *
+ *  Also see the user_home() and user_config() functions further below.
+ */
+
+/**
+ *  Returns the OS-dependent slash string.
+ */
+
+const std::string &
+path_slash ()
+{
+    return s_path_slash;
+}
+
+/**
+ *  Returns the UNIX path separator, no matter the build platform.
+ *  See os_path_slash() below.
+ */
+
+char
+unix_path_slash ()
+{
+    return '/';
+}
+
+/**
+ *  Returns the default path separator. Based on the operating system:  a
+ *  backslash for Windows and (laughing) CPM and DOS, and a forward slash
+ *  for UNIXen.
+ */
+
+char
+os_path_slash ()
+{
+    return s_path_slash_char;
+}
+
+const std::string &
+path_env_separator ()
+{
+    return sm_sp_separator;
+}
+
 /*
  *  Almost equivalent to PLATFORM_WINDOWS.
  */
@@ -257,7 +309,7 @@ s_stringcopy
     if (sourcelimit > length || sourcelimit == 0)
         sourcelimit = length;
 
-    if (sourcelimit <= INT_MAX)                 /* just a sanity check      */
+    if (sourcelimit <= std::numeric_limits<std::size_t>::max()) /* sanity   */
     {
         /*
          * This code checks the length of the source string, and decides
@@ -1627,7 +1679,7 @@ std::string
 make_path_relative (const std::string & path)
 {
     std::string result { path };
-    auto spos { result.find_first_of(PATH_SLASHES) };
+    auto spos { result.find_first_of(s_path_slashes) };
     if (spos == 0)
         result = result.substr(1);
 
@@ -1683,7 +1735,7 @@ std::string
 get_current_directory ()
 {
     std::string result;
-    char temp [PATH_MAX];
+    char temp [ PATH_MAX ];
     char * cwd { S_GETCWD(temp, PATH_MAX) };    /* get current directory    */
     if (not_nullptr(cwd))
     {
@@ -1776,29 +1828,6 @@ get_full_path (const std::string & path)
 #endif
     }
     return result;
-}
-
-/**
- *  Returns the UNIX path separator, no matter the build platform.
- *  See os_path_slash() below.
- */
-
-char
-path_slash ()
-{
-    return '/';
-}
-
-/**
- *  Returns the default path separator. Based on the operating system:  a
- *  backslash for Windows and (laughing) CPM and DOS, and a forward slash
- *  for UNIXen.
- */
-
-char
-os_path_slash ()
-{
-    return PATH_SLASH_CHAR;
 }
 
 /**
@@ -2005,7 +2034,7 @@ append_file
     if (! result.empty())
     {
         (void) rtrim(result, CFG66_TRIM_CHARS_PATHS);
-        result += to_unix ? path_slash() : os_path_slash();
+        result += to_unix ? unix_path_slash() : os_path_slash();
     }
     result += filename;
     return normalize_path(result, to_unix, false);
@@ -2035,12 +2064,12 @@ append_path
 {
     std::string result { path };
     std::string pn { pathname };
-    char slash { to_unix ? path_slash() : os_path_slash() };
+    char slash { to_unix ? unix_path_slash() : os_path_slash() };
     if (! result.empty())
     {
         (void) trim(result);                            /* whitespace out   */
 
-        auto spos { result.find_last_of(PATH_SLASHES) };
+        auto spos { result.find_last_of(s_path_slashes) };
         auto endindex { result.length() - 1 };
         if (spos == std::string::npos || spos != endindex)
             result += slash;
@@ -2050,7 +2079,7 @@ append_path
         (void) trim(pn);
         (void) ltrim(pn, CFG66_TRIM_CHARS_PATHS);
 
-        auto spos { pn.find_last_of(PATH_SLASHES) };
+        auto spos { pn.find_last_of(s_path_slashes) };
         auto endindex { pn.length() - 1 };
         if (spos == std::string::npos || spos != endindex)
             pn += slash;
@@ -2614,18 +2643,164 @@ installed_data_path
     std::string prefix { installed_prefix(arg0) };  /* ends with separator  */
 #if defined PLATFORM_WINDOWS
     prefix += pkgname;
-    prefix += PATH_SLASH;
+    prefix += path_slash();
     if (! subdir.empty())
         prefix += subdir;                       /* "data" or ? "data/share" */
 #else
     prefix += "share";
-    prefix += PATH_SLASH;
+    prefix += path_slash();
     prefix += pkgname;
-    prefix += PATH_SLASH;
+    prefix += path_slash();
     if (! subdir.empty())
         prefix += subdir;
 #endif
     return prefix;
+}
+
+/**
+ *  Assembles a path from a vector of subdirectories. Each subdirectory
+ *  should be unadorned with path separator, except for paths that start
+ *  at the root directory. Some examples showing the parts:
+ *
+ *      -   /usr  /  share  /  doc  /  seq66-0.99
+ *      -   tests / data  /  fts
+ *      -   user_home()  /  .config  /  seq66
+ *      -   C:  \  Users  \  ca  \  AppData  \  Local
+ *
+ * \param subs
+ *      Contains a vector of subdirectories to be concatenated.
+ *
+ * \param last_is_file
+ *      If true (the default is false), then the last entry is an
+ *      actual file, and does not get the ending path separator.
+ *      The presence of a dot in the string cannot be used to
+ *      indicate this.
+ */
+
+std::string
+file_build_path (const lib66::tokenization & subs, bool last_is_file)
+{
+    std::string result;
+    std::size_t sz { subs.size() };
+    if (sz > 0)
+    {
+        std::size_t index { 0 };
+        std::size_t ending_index
+        {
+            last_is_file ?
+                std::numeric_limits<std::size_t>::max() : sz - 1
+        };
+        for (auto s : subs)
+        {
+            result += subs[index];
+            if (index == ending_index)
+                break;
+
+            result += path_slash();
+        }
+    }
+    return result;
+}
+
+/**
+ *  Assures that a file-specification uses the desired path separator.
+ *
+ * \param path
+ *      Provides a path such as "/usr/local/share" or "C:\Users\ca\AppData".
+ *
+ * \param to_unix
+ *      If true (the default), then the path is converted (if necessary)
+ *      to UNIX conventions. Otherwise, to Windows conventions.
+ *
+ * \return
+ *      Returns the fixed path, which will be unchanged if no changes were
+ *      needed.
+ */
+
+std::string
+file_path_fix (const std::string & path, bool to_unix)
+{
+    std::string result { path };
+    char oldseparator { '/' };              /* UNIX directory separator     */
+    char newseparator { '\\' };             /* Windows directory separator  */
+    if (to_unix)                            /* swap them                    */
+    {
+        oldseparator = '\\';
+        newseparator = '/';
+    }
+
+    std::string::size_type spos { result.find_first_of(oldseparator) };
+    if (spos != std::string::npos)
+    {
+        do
+        {
+            result[spos] = newseparator;
+            spos = result.find_first_of(oldseparator, spos + 1);
+
+        } while (spos != std::string::npos);
+    }
+    return result;
+}
+
+/**
+ *  Construct a PATH-style string from a list of path strings.
+ */
+
+std::string
+file_path_env_variable (const lib66::tokenization & paths)
+{
+    std::string result;
+    if (paths.size() > 0)
+    {
+        for (const auto & p : paths)
+        {
+            result += p;
+            result += path_env_separator();
+        }
+    }
+    return result;
+}
+
+/**
+ *  Assures that a PATH-like string uses the desired search-path separator.
+ *  After that, it assures the subdirectory separators are also fixed.
+ *
+ * \param pathenv
+ *      Provides a PATH-style string such as "/etc:/usr/share:/usr/local/share"
+ *      or "C:\bin;C:\User\ca\bin".
+ *
+ * \param to_unix
+ *      If true (the default), then the path is converted (if necessary)
+ *      to UNIX conventions. Otherwise, to Windows conventions.
+ *
+ * \return
+ *      Returns the fixed path, which will be unchanged if no changes were
+ *      needed.
+ */
+
+std::string
+file_path_env_fix (const std::string & pathenv, bool to_unix)
+{
+    std::string result { pathenv };
+    char oldseparator { ':' };              /* UNIX PATH separator          */
+    char newseparator { ';' };              /* Windows PATH separator       */
+    if (to_unix)
+    {
+        oldseparator = ';';
+        newseparator = ':';
+    }
+
+    std::string::size_type spos { result.find_first_of(oldseparator) };
+    if (spos != std::string::npos)
+    {
+        do
+        {
+            result[spos] = newseparator;
+            spos = result.find_first_of(oldseparator, spos + 1);
+
+        } while (spos != std::string::npos);
+    }
+    return file_path_fix(result, to_unix);
 }
 
 /**
@@ -2694,10 +2869,10 @@ set_env
  *
  * getenv("HOME"):
  *
- *      -   Linux returns "/home/ahlstrom".  Append "/.config/seq66".
- *      -   Windows returns "\Users\ahlstrom".  A better value than HOMEPATH
+ *      -   Linux returns "/home/ca".  Append "/.config/seq66".
+ *      -   Windows returns "\Users\ca".  A better value than HOMEPATH
  *          is LOCALAPPDATA, which gives us most of what we want:
- *          "C:\Users\ahlstrom\AppData\Local", and then we append simply
+ *          "C:\Users\ca\AppData\Local", and then we append simply
  *          "seq66".  However, this inconsistency is annoying. So now
  *          we provide separate functions for home versus the standard
  *          configuration directory for a Windows or Linux user.
@@ -2718,10 +2893,10 @@ user_home (const std::string & appfolder)
 {
     std::string result;
 #if defined PLATFORM_WINDOWS
-    char * env { std::getenv(ENV_HOMEDRIVE) };
+    char * env { std::getenv(s_env_homedrive) };
     if (not_nullptr(env))
     {
-        char * env2 { std::getenv(ENV_HOMEPATH) };
+        char * env2 { std::getenv(s_env_homepath) };
         if (not_nullptr(env2))
         {
             result += env;              /* "C:"                             */
@@ -2729,7 +2904,7 @@ user_home (const std::string & appfolder)
         }
     }
 #else
-    result = get_env(ENV_HOME);
+    result = get_env(s_env_home);
 #endif
     if (result.empty())
     {
@@ -2764,7 +2939,7 @@ user_config (const std::string & appfolder)
 {
     std::string result;
 #if defined PLATFORM_WINDOWS
-    char * env { std::getenv(ENV_CONFIG) };
+    char * env { std::getenv(s_env_config) };               /* tricky code  */
     if (not_nullptr(env))
     {
         result = env;                   /* C:\Users\username\AppData\Local  */
@@ -2773,7 +2948,7 @@ user_config (const std::string & appfolder)
 #else
     result = user_home();
     if (! result.empty())
-        result = filename_concatenate(result, ENV_CONFIG);
+        result = filename_concatenate(result, s_env_config);
 #endif
 
     if (result.empty())
@@ -3104,7 +3279,7 @@ file_canonical_path (const std::string & path)
 std::string
 file_path_expand (const std::string & inpath)
 {
-    static const std::regex s_var_regex                 /* what is R"?      */
+    static const std::regex s_var_regex                 /* what is R"? Raw! */
     {
          (R"(\$([A-Za-z_][A-Za-z0-9_]*|\{[A-Za-z_][A-Za-z0-9_]*\}))")
     };

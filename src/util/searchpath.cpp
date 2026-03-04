@@ -24,12 +24,12 @@
  * \file          searchpath.cpp
  *
  *    Provides the implementations for safe replacements for the various C
- *    file functions.
+ *    path functions.
  *
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2026-02-22
- * \updates       2026-02-26
+ * \updates       2026-03-04
  * \version       $Revision$
  *
  *  This module is a reworking of some of the PBD code as used in the source
@@ -42,6 +42,26 @@
  *      (
  *          string_compose("float_to_string conversion failure for %1", val)
  *      );
+ *
+ *  This module is useful for working with PATH-style values.
+ *
+ *  Note that there is potential overlap with the filefunctions module,
+ *  and that functions in the strfunctions module are used.
+ *
+ * Path conventions:
+ *
+ *      -   We generally want the paths represented internally by UNIX
+ *          conventions.
+ *      -   Configuration files (in our projects) will also always use
+ *          UNIX conventions.
+ *      -   Externally, the caller might provide either Windows conventions
+ *          or UNIX conventions.
+ *      -   The caller might want the results back in Windows conventions.
+ *          Windows can deal with path slashes in UNIX conventions, but
+ *          not the PATH-style separators.
+ *
+ *      We will cover these goals ad hoc until we can find an easy and
+ *      systematic way to do this.
  */
 
 #include <algorithm>                    /* std::find()                      */
@@ -51,16 +71,6 @@
 
 namespace util
 {
-
-/**
- * Static member
- */
-
-#if defined PLATFORM_WINDOWS
-const std::string searchpath::sm_sp_separator { ";" };
-#else
-const std::string searchpath::sm_sp_separator { ":" };
-#endif
 
 /**
  *  Initialize searchpath from a string where the string contains one or
@@ -77,15 +87,16 @@ const std::string searchpath::sm_sp_separator { ":" };
 
 searchpath::searchpath (const std::string & path)
 {
-    paths() = util::tokenize(path, sm_sp_separator);
+    paths() = util::tokenize(path, path_env_separator());
     for (const auto & p : paths())
-    {
         add_directory(p);
-    }
 }
 
 /**
- * Initialize searchpath from a vector of paths that may or may not exist.
+ *  Initialize searchpath from a vector of paths that may or may not exist.
+ *  Compare this to file_build_path() in the filefunctions module; that
+ *  one puts the path separator in between each sub-path. Also see the
+ *  to_string() function below.
  *
  * \param paths
  *      A vector of paths to be added.
@@ -107,13 +118,10 @@ searchpath::searchpath (const lib66::tokenization & paths)
 std::string
 searchpath::to_string () const
 {
-    std::string result;
-    for (const auto & p : paths())
-    {
-        result += p;
-        result += sm_sp_separator;
-    }
-    result = result.substr(0, result.length() - 1); /* drop final separator */
+    std::string result { file_path_env_variable(paths()) };
+    if (! result.empty())
+        result = result.substr(0, result.length() - 1); /* drop final :/;  */
+
     return result;
 }
 
@@ -141,9 +149,8 @@ searchpath &
 searchpath::operator += (const searchpath & spath)
 {
     for (const auto & p : spath.paths())
-    {
         add_directory(p);
-    }
+
     return *this;
 }
 
@@ -204,9 +211,8 @@ static std::string
 poor_mans_glob (std::string path)
 {
     if (path.find('~') == 0)
-    {
         path.replace (0, 1, util::user_home()); /* Glib::get_home_dir())    */
-    }
+
     return path;
 }
 
@@ -243,9 +249,8 @@ bool
 searchpath::add_directories (const lib66::tokenization & paths)
 {
     for (const auto & p : paths)
-    {
         add_directory(p);
-    }
+
     return ! paths.empty();
 }
 
@@ -267,9 +272,8 @@ searchpath &
 searchpath::add_subdirectory_to_paths (const std::string & subdir)
 {
     for (auto & p : paths())
-    {
         p = util::filename_concatenate(p, subdir);
-    }
+
     return *this;
 }
 
@@ -315,14 +319,11 @@ searchpath::remove_directories (const lib66::tokenization & paths)
 bool
 searchpath::contains (const std::string & path) const
 {
-    lib66::tokenization::const_iterator i
+    lib66::tokenization::const_iterator p
     {
         std::find(paths().begin(), paths().end(), path)
     };
-    if (i == paths().end())
-        return false;
-
-    return true;
+    return p != paths().end();
 }
 
 /*-------------------------------------------------------------------------
@@ -337,7 +338,7 @@ search_path_expand (const std::string & path)
     {
         lib66::tokenization s
         {
-            util::tokenize(path, searchpath::sm_sp_separator)
+            util::tokenize(path, path_env_separator())      /* ":" or ";"   */
         };
         lib66::tokenization n;
         for (const auto & token : s)
@@ -349,7 +350,7 @@ search_path_expand (const std::string & path)
         for (const auto & token : n)
         {
             if (! result.empty())
-                result += searchpath::sm_sp_separator;
+                result += path_env_separator();
 
             result += token;
         }
@@ -362,7 +363,7 @@ parse_search_path (const std::string & path, bool check_if_exists)
 {
     lib66::tokenization tmp
     {
-        util::tokenize(path, searchpath::sm_sp_separator)
+        util::tokenize(path, path_env_separator())
     };
     lib66::tokenization pathlist;
     for (const auto & token : tmp)
@@ -377,9 +378,8 @@ parse_search_path (const std::string & path, bool check_if_exists)
                 dir = util::user_home(token.substr(1));
             else
 #endif
-            {
                 dir = token;
-            }
+
             if (! check_if_exists || util::file_is_directory(dir))
                 pathlist.push_back(dir);
         }
@@ -394,4 +394,3 @@ parse_search_path (const std::string & path, bool check_if_exists)
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-
