@@ -27,7 +27,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-09-30
+ * \updates       2026-03-06
  * \license       See above.
  *
  *  Provides for the handling of options specifications.  This module is
@@ -233,6 +233,11 @@ public:
         int argc, char * argv [],
         const std::string & token,
         bool must_exist = true
+    ) const;
+    std::string adhoc_option
+    (
+        int argc, char * argv [],
+        const std::string & token
     ) const;
     bool show_information_only () const;
 

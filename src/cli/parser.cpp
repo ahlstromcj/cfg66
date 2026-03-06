@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2024-07-24
+ * \updates       2026-03-06
  * \license       See above.
  *
  *      While this parser follows the basics of GNU getopt fairly well,
@@ -121,7 +121,12 @@ parser::parse (int argc, char * argv [])
 
             if (token_match(token, "option"))
             {
-                if (argv[i + 1][0] != '-')  /* needs a non-option argument  */
+                /*
+                 * Needs a non-option argument.
+                 */
+
+                int nexti { i + 1 };
+                if (nexti < argc && argv[nexti][0] != '-')
                 {
                     std::string name;
                     std::string value;
@@ -169,7 +174,9 @@ parser::parse (int argc, char * argv [])
 }
 
 /**
- *  Determine if an option name is present in the command-line.
+ *  Determine if an option name is present in the command-line. This
+ *  function is useful adding an option quickly to an application in
+ *  the main() function.
  *
  * \param argc
  *      Command-line argument count from main().
@@ -232,6 +239,90 @@ parser::check_option
                     result = option_set().option_exists(stripped);
                 else
                     result = true;
+
+                break;
+            }
+        }
+    }
+    return result;
+}
+
+/**
+ *  An "ad hoc" option is one for which no special setup has been
+ *  made, just as noted in the check_option() function. This function
+ *  is similar to check_option(), except that the option does not
+ *  need to exist in the option set, and a string option parameter
+ *  can be returned.
+ *
+ * \param argc
+ *      Command-line argument count from main().
+ *
+ * \param argv
+ *      Command-line argument array from main().
+ *
+ * \param token
+ *      The name of the current option. For convenience, if it doesn't
+ *      have the option markers ("--" or "-"), one of them will be
+ *      prepended.
+ *
+ * \return
+ *      Returns the "value" of the option. If there is an argument after
+ *      the option, and it does not start with '-', or has digits after it,
+ *      then it is returned. Otherwise a "?" is returned, which indicates
+ *      that the option is present, but has no parameter. If the option is
+ *      not present, an empty string is returned.
+ */
+
+std::string
+parser::adhoc_option
+(
+    int argc, char * argv [],
+    const std::string & token
+) const
+{
+    std::string result;
+    bool ok { not_nullptr(argv) && ! token.empty() };
+    if (ok && argc > 1)
+    {
+        std::string stripped { token };
+        std::string cltarget { token };
+        if (token[0] != '-')
+        {
+            std::string pre { cltarget.size() > 1 ? "--" : "-" };
+            cltarget = pre + cltarget;
+        }
+        else
+        {
+            if (token.size() == 2)
+                stripped = token.substr(1, 1);
+            else
+                stripped = token.substr(2, token.length() - 2);
+        }
+        for (int i = 1; i < argc; ++i)      /* token 0 might be app name    */
+        {
+            std::string arg { argv[i] };
+            if (arg == "--")                /* GNU end-of-options marker    */
+                break;
+
+            if (arg == "-")                 /* ill-formed token, bug out    */
+                break;
+
+            if (arg == cltarget)
+            {
+                ++i;
+                if (i < argc)
+                {
+                    arg = argv[i];
+                    if (arg[0] == '-')      /* this rules out minus numbers */
+                    {
+                        if (std::isdigit(arg[1]))
+                            result = arg;
+                    }
+                    else
+                        result = arg;
+                }
+                else
+                    result = "?";
 
                 break;
             }
@@ -460,6 +551,11 @@ parser::token_match
     char code
 )
 {
+    /*
+     * Note: this catches tokens like -23! But someone might want
+     * an option being a digit. FIXME!
+     */
+
     bool result { ! token.empty() && token[0] == '-' };
     if (result)
     {

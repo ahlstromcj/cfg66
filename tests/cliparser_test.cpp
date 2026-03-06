@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2026-02-12
+ * \updates       2026-03-06
  * \license       See above.
  *
  */
@@ -35,11 +35,8 @@
 #include "cfg/appinfo.hpp"              /* cfg::appinfo                     */
 #include "cli/parser.hpp"               /* cli::parser, etc.                */
 #include "util/filefunctions.hpp"       /* util::file_write_string()        */
-#include "test_spec.hpp"                /* s_test_options container         */
-
-#if ! defined USE_STD_COUT_CERR
 #include "util/msgfunctions.hpp"        /* util::error_message()            */
-#endif
+#include "test_spec.hpp"                /* s_test_options container         */
 
 /*
  * Explanation text.
@@ -68,25 +65,41 @@ main (int argc, char * argv [])
     cfg::set_client_name("cli");                    /* for error_message()  */
     cfg::set_app_version("0.4.0");
     cli::parser clip { s_test_options };            /* see test_spec.hpp    */
+    bool adhoc_option_present { false };
+    std::string extra { clip.adhoc_option(argc, argv, "--extra") };
+    if (extra == "?")
+    {
+        std::cout << "Ad hoc option --extra detected." << std::endl;
+        adhoc_option_present = true;
+    }
+
+    std::string testfile { clip.adhoc_option(argc, argv, "testfile") };
+    if (! testfile.empty())
+    {
+        adhoc_option_present = true;
+        if (testfile == "?")
+        {
+            std::cout << "--testfile requires a filename." << std::endl;
+        }
+        else
+        {
+            std::cout
+                << "--testfile argument '" << testfile << "'."
+                << std::endl
+                ;
+        }
+    }
+
     bool success { clip.parse(argc, argv) };
-    if (success)
+    if (success || adhoc_option_present)
     {
         std::string msg { "Option codes: " + clip.code_list() };
-#if defined USE_STD_COUT_CERR
-        std::cout << msg << std::endl;
-#else
         util::status_message(msg);                  /* (info needs verbose) */
-#endif
 
         bool show_results { true };
         bool findme_active { clip.check_option(argc, argv, "find-me", false) };
-#if defined USE_STD_COUT_CERR
-        if (findme_active)
-            std::cout << "--find-me option found." << std::endl;
-#else
         if (findme_active)
             util::status_message("--find-me option found.");
-#endif
 
         rcode = EXIT_SUCCESS;
         if (clip.show_information_only())
@@ -120,23 +133,12 @@ main (int argc, char * argv [])
         }
         if (clip.inspect_request())
         {
-#if defined USE_STD_COUT_CERR
-            std::cerr << "--inspect unsupported in this program" << std::endl;
-#else
             util::error_message("--inspect unsupported in this program");
-#endif
             success = false;
         }
         if (clip.investigate_request())
         {
-#if defined USE_STD_COUT_CERR
-            std::cerr
-                << "--investigate unsupported in this program"
-                << std::endl
-                ;
-#else
             util::error_message("--investigate unsupported in this program");
-#endif
             success = false;
         }
         if (success && clip.use_log_file())
@@ -274,42 +276,24 @@ main (int argc, char * argv [])
         }
         if (success)
         {
-#if defined USE_STD_COUT_CERR
-            std::cout << "cli::parser C++ test succeeded" << std::endl;
-            if (! clip.help_request())
-                std::cout << "Use --help to see all the options." << std::endl;
-#else
             util::status_message("cli::parser C++ test succeeded");
             if (! clip.help_request())
                 util::status_message("Use --help to see all the options.");
-#endif
         }
         else
         {
-#if defined USE_STD_COUT_CERR
-            std::cout << "cli::parser C++ test failed!" << std::endl;
-            if (clip.inspect_request() || clip.investigate_request())
-                std::cout << "Deliberately!" << std::endl;
-            else
-                std::cout << "Use --help to see the options." << std::endl;
-#else
             util::error_message("cli::parser C++ test failed");
             if (clip.inspect_request() || clip.investigate_request())
                 util::status_message("Deliberately!");
             else
                 util::status_message("Use --help to see the options.");
-#endif
         }
     }
     else
     {
         std::string errmsg { "Setup or parsing error: " };
         errmsg += clip.error_msg();
-#if defined USE_STD_COUT_CERR
-        std::cerr << errmsg << std::endl;
-#else
         util::error_message(errmsg);
-#endif
     }
     return rcode;
 }

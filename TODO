@@ -1,6 +1,6 @@
 TODOs for the cfg66 library
 Chris Ahlstrom
-2023-07-16 to 2026-02-10
+2023-07-16 to 2026-03-06
 
 This file lists only the high-priority features and fixtures we need
 to do for Cfg66.
@@ -9,6 +9,8 @@ ini_test_cpp:
 
     -   Add processing to at least some of the options in
         ini_set_test.
+    -   Improve the handling digit options (e.g. "-2" versus
+        negative-number parameters.)
     -   Add a variable main-section name (besides "[Cfg66]") to
         configfile.
     -   In the ini_set_test for reading/writing, add processing of
