@@ -25,13 +25,15 @@
  * \library       ftswalker
  * \author        Chris Ahlstrom
  * \date          2025-03-10
- * \updates       2026-03-04
+ * \updates       2026-03-10
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
  *      This module defines the util::ftswalker class to manage some aspects
  *      of file-tree walking, as well as a few free functions in the util
  *      and anonymous namespaces.
+ *
+ *  TODO: On Windows, we need Gnulib's fts module.
  */
 
 #include <cerrno>                       /* #include <errno.h>               */
