@@ -1,0 +1,388 @@
+Exploring reimplementing ftswalker with <filesystem>
+Chris Ahlstrom
+2026-03-29 to 2026-03-31
+
+The ftswalker module currently does not compile on Windows... it needs
+Gnulib's fts module. Which probably means downloading and building the
+whole library on Windows.
+
+So let us look into using the <filesystem> support of C++17.
+
+The functions from ftswalker that we need to support:
+
+    -   File/directory status a la get_fts_type ()
+        -   is_directory ()
+        -   is_regular_file ()
+        -   is_leaving_directory ()
+        -   is_other_file_type ()
+        -   is_fts_error ()
+        -   is_actionable_file ()
+    -   Search paths. Can use lib66::tokenization or util::searchpath.
+    -   find_file (), which collects full paths where the file is found.
+    -   find_regular_files () and collect all the full paths-to-files find.
+    -   process_files (function fn, string rgx, comparator cfn)
+    -   process_files (bifunction fn, string target, comparator cfn)
+
+Free callback functions:
+
+    -   fts_show_target (const std::string & match, util::ftswalker::FTS ft)
+    -   fts_item_copy (string source, string target, util::ftswalker::FTS ft)
+    -   fts_copy_directory (const std::string & source, const std::string & dest)
+    -   fts_item_delete (const std::string & item, util::ftswalker::FTS ft)
+    -   fts_delete_directory (const std::string & path)
+    -   compare_files_before_dirs (const ::FTSENT ** first, const ::FTSENT ** second)
+    -   fts_find_file (string rootdir, string target)
+    -   fts_get_file_path (string rootdir, string target)
+    -   fts_find_files_by_regex
+    (
+        tokenization & collected, const lib66::tokenization & paths,
+        string rgx, comparator cfn
+    )
+
+The functions from the fts API:
+
+    -   fts_open() and fts_close()
+    -   fts_read()
+    -   fts_read_entry()
+
+=============================================================================
+
+SANDOR DARGOs BLOG
+
+https://www.sandordargo.com/blog/2024/02/28/std-filesystem-part1-paths-and-operations
+
+GET CURRENT FILENAME (of source-code file):
+
+    std::cout << __FILE__ << '\n';
+
+    // requires C++20:
+
+    std::cout << std::source_location::current().file_name() << '\n';
+
+GET ABSOLUTE PATH:
+
+    int main()
+    {
+        // get_current_directory() and remove the source-code file
+
+        std::cout << std::filesystem::current_path() << '\n';
+        std::cout << __FILE__ << '\n';
+        std::cout << std::filesystem::path(__FILE__).remove_filename() << '\n';
+    }
+
+GET RELATIVE PATH:
+
+    RELATIVE TO ROOT:
+
+        std::filesystem::path::relative_path() doesn’t take any parameters!
+        What does relative mean then? It only removes the prefix that signals
+        the root, e.g. / or C:\…
+
+        std::filesystem::path p("/Users/sandor/.../HtmlTextConverter_Test.cpp");
+        std::cout << p.relative_path() << '\n';
+
+        // "Users/sandor/.../HtmlTextConverter_Test.cpp"
+
+    RELATIVE TO ANOTHER PATH:
+
+        “Give me the relative path of the left-hand path compared to
+        the right-hand path”:
+
+        int main()
+        {
+            std::filesystem::path filePath
+            (
+                "/Users/sandor/personal/dev/dojos/Racing-Car-Katas/Cpp/"
+                "TextConverter/tests/HtmlTextConverter_Test.cpp"
+            );
+            std::filesystem::path repoRoot
+            (
+                "/Users/sandor/personal/dev/dojos/Racing-Car-Katas/"
+            );
+            std::cout << std::filesystem::relative(filePath, repoRoot) << '\n';
+            std::cout << std::filesystem::relative(repoRoot, filePath) << '\n';
+        }
+
+        /*
+         *  "Cpp/TextConverter/tests/HtmlTextConverter_Test.cpp"
+         *  "../../../../"
+         */
+
+STEP UP A DIRECTORY:
+
+    int main()
+    {
+        std::filesystem::path p
+        (
+            "/Users/sandor/personal/dev/dojos/Racing-Car-Katas/Cpp/"
+            "TextConverter/tests/HtmlTextConverter_Test.cpp"
+        );
+        while (p != p.root_directory())
+        {
+            std::cout << p.parent_path() << '\n';
+            p = p.parent_path();
+        }
+
+CREATE A DIRECTORY:
+
+    std::string newdirname {"temp"};
+    std::cout << newdirname << " exists? "
+        << std::filesystem::exists(newdirname) << '\n';
+
+    std::filesystem::create_directory("temp");
+
+    std::cout << newdirname << " exists? "
+        << std::filesystem::exists(newdirname) << '\n';
+
+CHECK TYPE OF FILE:
+
+    std::filesystem::is_directory(newdirname)
+    std::filesystem::is_directory(newFilePath)
+    std::filesystem::is_block_file(newFilePath)
+    std::filesystem::is_character_file(newFilePath)
+    std::filesystem::is_regular_file(newFilePath)
+
+COPY OR RENAME A FILE:
+
+    std::filesystem::path newpath1{"temp/file1.txt"};
+    std::filesystem::path newpath2{"temp/file2.txt"};
+
+    // create a file
+
+    std::ofstream(newpath1).put('a');
+    std::ofstream(newpath2).put('b');
+
+    // copy a directory (and contents)
+
+    std::filesystem::path anotherdir1{"anotherTemp"};
+    std::filesystem::exists(anotherdir1)                    // false
+    std::filesystem::copy(newpath1, anotherdir1);
+    std::filesystem::exists("anotherTemp/file1.txt")        // true
+    std::filesystem::exists("anotherTemp/file2.txt")        // true
+
+    // copy a file to...
+
+    We observe that when we want to copy a file, the destination is
+    *not* the destination *directory*, but the destination *path*.
+
+    You cannot use std::filesystem::copy() to copy to a non-existing
+    directory; you have to make sure it exists. Even though as a third,
+    optional parameter, it takes std::filesystem::copy_options, there
+    is no option to create automatically the needed directory.
+
+    There is also std::filesystem::copy_file() which can only copy
+    a single file. The copy() function is void, while the copy_file()
+    function returns a bool.
+
+    std::filesystem::path anotherdir2{"yetAnotherTemp"};
+    std::filesystem::exists(anotherdir2)                    // false
+    std::filesystem::copy(newpath1, anotherdir2);
+    std::filesystem::exists("yetAnotherTemp/file1.txt")     // false
+    std::filesystem::exists("yetAnotherTemp/file2.txt")     // false
+    std::filesystem::exists(anotherdir2)                    // true
+    std::filesystem::is_directory(anotherdir2)              // false
+    std::filesystem::is_regular_file(anotherdir2)           // true
+  
+    // copy files
+
+    std::filesystem::remove(anotherdir2)
+    std::filesystem::exists(anotherdir2)                    // false
+
+    // std::filesystem::copy(newFilePath, "yetAnotherTemp/file1.txt");
+    // ERROR, target directory does not exist
+
+    std::filesystem::create_directory(anotherdir2);
+    std::filesystem::copy(newFilePath, "yetAnotherTemp/file1.txt");
+    std::filesystem::exists("yetAnotherTemp/file1.txt")     // true
+
+    std::filesystem::copy_file(anotherNewFilePath, "yetAnotherTemp/file2.txt");
+    std::filesystem::exists("yetAnotherTemp/file2.txt")     // true
+
+=============================================================================
+
+https://www.sandordargo.com/blog/2024/03/06/std-filesystem-part2-iterate-over-directories
+
+ITERATE WITH directory_iterator:
+
+    std::filesystem::create_directory("temp");
+    std::filesystem::create_directory("temp/subdir");
+
+    // create files
+
+    std::ofstream("temp/file1.txt").put('a');
+    std::ofstream("temp/file2.txt").put('b');
+    std::ofstream("temp/subdir/file3.txt").put('c');
+
+    The contents of temp:
+
+    for (const auto & entry : std::filesystem::directory_iterator("temp"))
+    {
+        const auto filename = entry.path().filename().string();
+        if (entry.is_directory()) { }
+        else if (entry.is_regular_file()) { }
+        else { std::cout << "unknown type: " << filename << '\n'; }
+    }
+
+ITERATE WITH recursive_directory_iterator:
+
+// The hard way
+
+void iterate_dir (const std::filesystem::path & root, int level = 0)
+{
+    for (const auto & entry : std::filesystem::directory_iterator(root))
+    {
+        const auto filename = entry.path().filename().string();
+        if (entry.is_directory())
+        {
+            std::cout << "directory: " <<filename << '\n';
+            iterate_dir(entry, level + 1);
+        }
+        else if (entry.is_regular_file())
+        {
+            std::cout << "file: " << filename << '\n';
+        }
+        else
+        {
+            std::cout << "unknown type: " << filename << '\n';
+        }
+    }
+}
+
+int main ()
+{
+    <same as the above>
+
+    iterate_dir("temp");
+    return 0;
+}
+
+// The easy way (recursion):
+
+void iterate_dir (const std::filesystem::path & root)
+{
+    for
+    (
+        const auto & entry :
+            std::filesystem::recursive_directory_iterator(root)
+    )
+    {
+        std::cout << entry << '\n';
+    }
+}
+
+main() is the same as above.
+
+If we need access to the depth and display a directory tree, we can still
+do that with recursive_directory_iterator, but we cannot use a range-based
+for loop.
+
+void iterate_dir (const std::filesystem::path & root)
+{
+    for
+    (
+        auto entry = std::filesystem::recursive_directory_iterator(root);
+        entry != std::filesystem::recursive_directory_iterator();
+        ++entry
+    )
+    {
+        const auto filename = entry->path().filename().string();
+        const auto level = entry.depth();
+        if (entry->is_directory())
+        {
+            std::cout << "directory: " <<filename << '\n';
+        }
+        else if (entry->is_regular_file())
+        {
+            std::cout << "file: " << filename << '\n';
+        }
+        else
+        {
+            std::cout << "unknown type: " << filename << '\n';
+        }
+    }
+}
+
+The reason is that the value_type of recursive_directory_iterator is
+std::filesystem::directory_entry, which has no notion of depth.
+By using the range-based version, we lose access to the iterator type.
+
+SKIP CERTAIN FILES AND FOLDERS:
+
+std::array<std::string, 2> allowed_extensions {".h", ".cpp"};
+
+void iterate_dir(const std::filesystem::path & root, int level = 0)
+{
+    for (const auto & entry : std::filesystem::directory_iterator(root))
+    {
+        const auto filename = entry.path().filename().string();
+        const auto extension = entry.path().extension().string();
+        if
+        (
+            ! entry.is_directory() &&
+            std::ranges::find(allowed_extensions, extension) ==
+                allowed_extensions.end())
+        {
+            continue;
+        }
+        if (entry.is_directory())   // && filename != "build"
+        {
+            std::cout << "directory: " <<filename << '\n';
+            iterate_dir(entry, level + 1);
+        }
+        else if (entry.is_regular_file())
+        {
+            std::cout << "file: " << filename << '\n';
+        }
+        else
+        {
+            std::cout << "unknown type: " << filename << '\n';
+        }
+    }
+}
+
+main ()
+{
+    // create more directories and files.
+
+    iterate_dir("temp");
+    return 0;
+}
+
+We have to disable recursing for that folder and we can do that by calling std::filesystem::recursive_directory_iterator::disable_recursion_pending:
+
+void iterate_dir (const std::filesystem::path & root)
+{
+    for
+    (
+        auto entry = std::filesystem::recursive_directory_iterator(root);
+        entry != std::filesystem::recursive_directory_iterator();
+        ++entry
+    )
+    {
+        const auto filename = entry->path().filename().string();
+        const auto extension = entry->path().extension().string();
+        const auto level = entry.depth();
+        if
+        (
+            ! entry->is_directory() &&
+                std::ranges::find(allowed_extensions, extension) ==
+                    allowed_extensions.end())
+        {
+            continue;
+        }
+        if (entry->is_directory() && filename == "build")
+        {
+            entry.disable_recursion_pending();
+            continue;
+        }
+        . . .
+    }
+}
+
+
+
+C++23:
+
+    https://www.sandordargo.com/tags/cpp23/
+
+# vim: sw=4 ts=4 wm=8 et ft=rc

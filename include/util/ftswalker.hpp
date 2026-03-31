@@ -27,7 +27,7 @@
  * \library       ftswalker
  * \author        Chris Ahlstrom
  * \date          2025-03-10
- * \updates       2026-03-04
+ * \updates       2026-03-30
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
@@ -109,7 +109,8 @@ public:
 private:
 
     /**
-     *  The set of directories to search when ever a file needs to be found.
+     *  The set of directories to search whenever a file needs to be found.
+     *  We could use util::searchpath, which uses a tokenization.
      */
 
     lib66::tokenization m_search_directories;
@@ -125,6 +126,8 @@ public:
     ftswalker () = default;
     ftswalker (const std::string & path);
     ftswalker (const lib66::tokenization & paths);
+    ftswalker (ftswalker &&) = default;
+    ftswalker & operator = (ftswalker &&) = default;
     virtual ~ftswalker ();
 
     bool find_file
