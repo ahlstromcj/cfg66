@@ -376,13 +376,49 @@ void iterate_dir (const std::filesystem::path & root)
             continue;
         }
         . . .
-    }
+   }
 }
 
+=============================================================================
 
+This section describes more filesystems features.
 
-C++23:
+Recall the ftswalker module:
 
-    https://www.sandordargo.com/tags/cpp23/
+    -   File/directory status a la get_fts_type ()
+        -   is_directory ()
+        -   is_regular_file ()
+        -   is_leaving_directory ()
+        -   is_other_file_type ()
+        -   is_fts_error ()
+        -   is_actionable_file ()
+
+    -   <filesystem>
+        -   is_block_file()
+        -   is_character_file()
+        -   is_directory()
+        -   is_empty () checks whether the given path refers to an empty
+            file or directory
+        -   is_fifo () checks for a named pipe
+        -   is_other()
+        -   is_regular_file()
+        -   is_socket()
+        -   is_symlink()
+        -   status_known()
+
+    These functions have three overloads (examples):
+
+        bool is_character_file(std::filesystem::file_status s)
+        bool is_character_file(const std::filesystem::path & p)
+        bool is_character_file
+        (
+            const std::filesystem::path & p, std::error_code & ec
+        )
+
+    class file_status has information about the type
+    [std::filesystem::file_type, an enum class with members none,
+    not_found, regular, symlink, etc.] and permissions
+    [std::filesystems::perms, a bit set with values on none, owner_read
+    (S_IRUSR), etc.
 
 # vim: sw=4 ts=4 wm=8 et ft=rc
