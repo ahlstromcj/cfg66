@@ -6,7 +6,7 @@
 # \library     cfg66
 # \author      Chris Ahlstrom
 # \date        2022-06-22
-# \updates     2026-02-22
+# \updates     2026-04-03
 # \license     $XPC_SUITE_GPL_LICENSE$
 #
 #  This file is part of the "cfg66" library. See the top-level meson.build
@@ -79,6 +79,12 @@ util_test_exe = executable(
    dependencies : [ libcfg66_dep, liblib66_library_dep ]
    )
 
+filewalker_test_exe = executable(
+   'filewalker_test',
+   sources : [ 'filewalker_test.cpp' ],
+   dependencies : [ libcfg66_dep, liblib66_library_dep ]
+   )
+
 ftswalker_test_exe = executable(
    'ftswalker_test',
    sources : [ 'ftswalker_test.cpp' ],
@@ -100,6 +106,7 @@ test('C++ Options Test', options_test_exe)
 test('C++ INI Test', ini_test_exe)
 test('C++ INI Set/Map Test', ini_set_test_exe)
 test('C++ Util Test', util_test_exe)
+test('C++ File Walker Test', filewalker_test_exe)
 test('C++ FTS Walker Test', ftswalker_test_exe)
 test('C++ Search Path Test', searchpath_test_exe)
    

@@ -22,16 +22,16 @@
 /**
  * \file          ftswalker.hpp
  *
- *    This module ...
+ *    This module wraps the fts(3) API.
  *
  * \library       ftswalker
  * \author        Chris Ahlstrom
  * \date          2025-03-10
- * \updates       2026-03-30
+ * \updates       2026-04-02
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
- *   To do.
+ *   It provides wrapper functions and free-function callbacks.
  */
 
 #include <string>
@@ -128,7 +128,7 @@ public:
     ftswalker (const lib66::tokenization & paths);
     ftswalker (ftswalker &&) = default;
     ftswalker & operator = (ftswalker &&) = default;
-    virtual ~ftswalker ();
+    ~ftswalker ();
 
     bool find_file
     (

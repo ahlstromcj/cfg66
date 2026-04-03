@@ -25,7 +25,7 @@
  * \library       ftswalker
  * \author        Chris Ahlstrom
  * \date          2025-03-10
- * \updates       2026-03-10
+ * \updates       2026-04-02
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
@@ -228,7 +228,7 @@ ftswalker::find_file
     lib66::tokenization & destination
 )
 {
-    bool result { not_nullptr(path_ptrs()) };
+    bool result { ! target.empty() && not_nullptr(path_ptrs()) };
     if (result)
     {
         ::FTS * ftsp { ::fts_open(path_ptrs(), FTS_LOGICAL, NULL) };

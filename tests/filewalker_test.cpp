@@ -17,14 +17,14 @@
  */
 
 /**
- * \file          ftswalker_test.cpp
+ * \file          filewalker_test.cpp
  *
- *      A test-file for the ftswalker file-tree traversal module.
+ *      A test-file for the filewalker file-tree traversal module.
  *
  * \library       cfg66
  * \author        Chris Ahlstrom
- * \date          2025-03-10
- * \updates       2026-03-03
+ * \date          2026-04-03
+ * \updates       2026-04-03
  * \license       See above.
  *
  */
@@ -34,7 +34,7 @@
 
 #include "cfg/appinfo.hpp"              /* cfg::appinfo functions           */
 #include "cli/parser.hpp"               /* cli::parser, etc.                */
-#include "util/ftswalker.hpp"           /* util::ftswalker big-endian code  */
+#include "util/filewalker.hpp"          /* util::filewalker big-endian code  */
 #include "util/filefunctions.hpp"       /* util::file_exists(), etc.        */
 #include "util/msgfunctions.hpp"        /* util::file_message(), etc.       */
 #include "util/strfunctions.hpp"        /* util::glob_to_regex(), etc.      */
@@ -49,7 +49,7 @@ namespace                               /* anonymous namespace              */
 cfg::appinfo s_application_info
 {
     cfg::appkind::test,                 // "test"
-    "ftswalker_test",                   // _app_name (mandatory!)
+    "filewalker_test",                  // _app_name (mandatory!)
     "0.1",                              // _app_version
     "[fts]",                            // _main_cfg_section_name
     "",                                 // _home_cfg_directory
@@ -75,7 +75,7 @@ cfg::appinfo s_application_info
 const std::string s_help_intro
 {
     "Not all of the above options are fully supported.\n\n"
-    "This test program illustrates/tests the util::ftswalker class.\n"
+    "This test program illustrates/tests the util::filewalker class.\n"
     "To see all of the files operated on, use the --verbose option.\n"
     "For a list of build and run-time details, use the --description\n"
     "command-line option.\n"
@@ -83,8 +83,21 @@ const std::string s_help_intro
 
 const std::string s_desc_intro
 {
-    "This test exercises the util::ftswalker file traversal code.\n"
+    "This test exercises the util::filewalker file traversal code.\n"
 };
+
+/**
+ *
+ */
+
+bool
+fw_traverse_test ()
+{
+    const std::string rootdir { "tests/data/fts" };
+    util::filewalker walker(rootdir);
+    bool result { walker.traverse(rootdir) };
+    return result;
+}
 
 /**
  *  The session.fts file can be found in tests/data/fts,
@@ -92,27 +105,29 @@ const std::string s_desc_intro
  */
 
 bool
-fts_get_file_list_test ()
+fw_get_file_list_test ()
 {
     const std::string rootdir { "tests/data/fts" };
     const std::string target { "session.fts" };
-    bool result = util::fts_find_file(rootdir, target);
+    bool result = util::file::find_file(rootdir, target);
     return result;
 }
 
 bool
-fts_callback_test ()
+fw_callback_test ()
 {
     const std::string rootdir { "tests/data/fts" };
-    util::ftswalker walker(rootdir);
-    bool result = walker.process_files(util::fts_show_target);
+    util::filewalker walker(rootdir);
+    bool result = walker.process_files(util::file::show_target, rootdir);
     util::info_message("Default directory traversal", rootdir);
     if (result)
     {
+        std::string nul;
         util::info_message("Compare-files-before-directories traversal.");
         result = walker.process_files
         (
-            util::fts_show_target, "", util::compare_files_before_dirs
+            util::file::show_target, nul,
+            util::file::compare_files_before_dirs
         );
     }
     return result;
@@ -161,18 +176,22 @@ fts_callback_test ()
  * Using the second method looks to be a tad more straight-forward.
  *
  * Note that this code is essentially the same as the free function
- * fts_copy_directory() function in the ftswalker module.
+ * fw_copy_directory() function in the filewalker module.
  */
 
 bool
-fts_copy_test ()
+fw_copy_test ()
 {
     const std::string rootdir { "tests/data/fts" };
     const std::string destdir { "build/tests" };   /* -> "build/tests/fts/..." */
-    util::ftswalker walker(rootdir);
-    bool result = walker.process_files
+    util::filewalker walker(rootdir);
+
+    // TO DO:FIXME
+
+    bool result = walker.process_bi_files
     (
-        util::fts_item_copy, destdir, util::compare_files_before_dirs
+        util::file::item_copy, rootdir, destdir,
+        util::file::compare_files_before_dirs
     );
     if (result)
         result = util::file_is_directory("build/tests/fts");
@@ -181,18 +200,20 @@ fts_copy_test ()
 }
 
 /**
- *  A test of deleting the files and directories created in fts_copy_test().
+ *  A test of deleting the files and directories created in fw_copy_test().
  */
 
 bool
-fts_delete_test ()
+fw_delete_test ()
 {
     const std::string rootdir { "build/tests/fts" };
     const std::string matcher { };              /* remove all directories   */
-    util::ftswalker walker(rootdir);
+    std::string nul;
+    util::filewalker walker(rootdir);
     bool result = walker.process_files
     (
-        util::fts_item_delete, "", util::compare_files_before_dirs
+        util::file::item_delete, nul,
+        util::file::compare_files_before_dirs
     );
     if (result)
         result = ! util::file_exists("build/tests/fts");
@@ -226,18 +247,22 @@ lib66::tokenization s_expected_results
 lib66::tokenization s_actual_results;
 
 /**
- *  This ftswalker-compatible function takes the string that matched
- *  in fts_file_list_test_by_pattern() and adds it to s_actual_results.
+ *  This filewalker-compatible function takes the string that matched
+ *  in fw_file_list_test_by_pattern() and adds it to s_actual_results.
  */
 
 bool
-fts_collect_matches (const std::string & match, util::ftswalker::FTS ft)
+fw_collect_matches
+(
+    const std::string & match,
+    std::filesystem::file_type ft
+)
 {
     std::size_t sz { s_actual_results.size() };
     bool result { false };
     if (! match.empty())
     {
-        std::string msg { util::get_fts_type_name(ft) };
+        std::string msg { util::file::get_type_name(ft) };
         msg += " file match";
         util::info_message(msg, match);
         s_actual_results.push_back(match);
@@ -247,17 +272,17 @@ fts_collect_matches (const std::string & match, util::ftswalker::FTS ft)
 }
 
 /**
- *  This function passes the fts_collect_matches() function above and
- *  uses ftswalker::process_files() to find files that match the
+ *  This function passes the fw_collect_matches() function above and
+ *  uses filewalker::process_files() to find files that match the
  *  glob "*.midi", which is illegal regex and must be converted to a
  *  regex.
  */
 
 bool
-fts_file_list_test_by_pattern ()
+fw_file_list_test_by_pattern ()
 {
     const std::string rootdir { "tests/data/fts" };
-    util::ftswalker walker(rootdir);
+    util::filewalker walker(rootdir);
     std::string target { "*.midi" };                /* this is NOT a regex  */
     bool result                                     /* verify that fact     */
     {
@@ -270,13 +295,13 @@ fts_file_list_test_by_pattern ()
             << std::endl
             ;
         util::info_message("Default directory traversal", rootdir);
-        std::string rgx                         /* this is NOW a regex  */
+        std::string rgx                             /* this is a regex      */
         {
             util::glob_to_regex(target)
         };
         util::info_message("Converted '*.midi' glob to regex", V(rgx));
         s_actual_results.clear();
-        result = walker.process_files(fts_collect_matches, rgx);
+        result = walker.process_files(fw_collect_matches, rgx);
         if (result)
         {
             /*
@@ -302,8 +327,8 @@ fts_file_list_test_by_pattern ()
 }
 
 /**
- *  This test is identical to fts_file_list_test_by_pattern(), but
- *  it uses a free function from the ftswalker module, and requires
+ *  This test is identical to fw_file_list_test_by_pattern(), but
+ *  it uses a free function from the filewalker module, and requires
  *  no callback function. It also doesn't test string_has_regex().
  */
 
@@ -317,7 +342,7 @@ find_files_by_pattern ()
     util::info_message("Testing 'find_files_by_pattern()'", rgx);
     paths.push_back(rootdir);
 
-    bool result = util::fts_find_files_by_regex(collected, paths, rgx);
+    bool result = util::file::find_files_by_regex(collected, paths, rgx);
     if (result)
         result = util::compare_tokenizations(collected, s_expected_results);
 
@@ -351,7 +376,7 @@ find_files_by_pattern_2 ()
     lib66::tokenization paths { rootdir };
     util::info_message("Testing 'find_files_by_pattern()' 2", rgx);
 
-    bool result = util::fts_find_files_by_regex(collected, paths, rgx);
+    bool result = util::file::find_files_by_regex(collected, paths, rgx);
     if (result)
         result = util::compare_tokenizations(collected, s_expected_results_2);
 
@@ -390,7 +415,7 @@ find_files_by_pattern_3 ()
     };
     util::info_message("Testing 'find_files_by_pattern()' 3", rgx);
 
-    bool result = util::fts_find_files_by_regex(collected, paths, rgx);
+    bool result = util::file::find_files_by_regex(collected, paths, rgx);
     if (result)
         result = util::compare_tokenizations(collected, s_expected_results_3);
 
@@ -449,23 +474,26 @@ main (int argc, char * argv [])
              * Runs one or all of the test of the helpers module.
              */
 
-            success = fts_get_file_list_test();
+            success = fw_traverse_test();
+            if (success)
+                success = fw_get_file_list_test();
+
             if (success)
             {
                 /*
-                 * Basic test of the ftswalker callback mechanism.
+                 * Basic test of the filewalker callback mechanism.
                  */
 
-                success = fts_callback_test();
+                success = fw_callback_test();
             }
             if (success)
-                success = fts_copy_test();
+                success = fw_copy_test();
 
             if (success)
-                success = fts_delete_test();
+                success = fw_delete_test();
 
             if (success)
-                success = fts_file_list_test_by_pattern();
+                success = fw_file_list_test_by_pattern();
 
             if (success)
                 success = find_files_by_pattern();
@@ -483,7 +511,7 @@ main (int argc, char * argv [])
                  */
 
                 const std::string rootdir { "/run/user/1000/nsm" };
-                util::ftswalker walker(rootdir);
+                util::filewalker walker(rootdir);
                 lib66::tokenization results;
                 (void) walker.find_regular_files(results);
                 std::cout
@@ -495,17 +523,17 @@ main (int argc, char * argv [])
         }
         if (success)
         {
-            std::cout << "util::ftswalker C++ test succeeded" << std::endl;
+            std::cout << "util::filewalker C++ test succeeded" << std::endl;
             rcode = EXIT_SUCCESS;
         }
         else
-            std::cerr << "util::ftswalker C++ test failed" << std::endl;
+            std::cerr << "util::filewalker C++ test failed" << std::endl;
     }
     return rcode;
 }
 
 /*
- * ftswalker_test.cpp
+ * filewalker_test.cpp
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp nowrap
  */
