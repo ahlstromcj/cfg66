@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2026-03-04
+ * \updates       2026-04-06
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -1598,7 +1598,8 @@ make_directory (const std::string & pathname, int mode)
  *      Provides the name of the directory to create.
  *
  * \param mode
- *      The mode_t value for file permissions.
+ *      The mode_t value for file permissions. The default value is
+ *      0755 i.e. rwx-rx-rx.
  *
  * \return
  *      Returns true if the create operation succeeded.  It also returns true
@@ -2156,6 +2157,8 @@ pathname_concatenate (const std::string & path0, const std::string & path1)
  *  will split off the last subdirectory of a path if it does not
  *  contain an extension marker (a period).
  *
+ *  Used in ftswalker and filewalker.
+ *
  * \param source
  *      This is a path or file-specification as obtain via fts_read(),
  *      which must have a path component. Examples: "tests/data/fts/session_2"
@@ -2184,6 +2187,8 @@ filename_target
         std::string base;
         if (util::filename_split(source, path, base))
             result = util::filename_concatenate(target, base);
+        else
+            result = util::filename_concatenate(target, source);
     }
     return result;
 }

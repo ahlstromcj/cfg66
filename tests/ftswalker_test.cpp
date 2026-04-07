@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2025-03-10
- * \updates       2026-03-03
+ * \updates       2026-04-07
  * \license       See above.
  *
  */
@@ -158,24 +158,26 @@ fts_callback_test ()
  * DP: tests/data/fts/session_3                   ------
  * DP: tests/data/fts                             ------
  *
- * Using the second method looks to be a tad more straight-forward.
+ *  Using the second method looks to be a tad more straight-forward.
  *
- * Note that this code is essentially the same as the free function
- * fts_copy_directory() function in the ftswalker module.
+ *  Note that this code is essentially the same as the free function
+ *  fts_copy_directory() function in the ftswalker module.
+ *
+ *  "build/tests/data" becomes "build/tests/data/fts/..."
  */
 
 bool
 fts_copy_test ()
 {
     const std::string rootdir { "tests/data/fts" };
-    const std::string destdir { "build/tests" };   /* -> "build/tests/fts/..." */
+    const std::string destdir { "build/tests/data" };
     util::ftswalker walker(rootdir);
     bool result = walker.process_files
     (
         util::fts_item_copy, destdir, util::compare_files_before_dirs
     );
     if (result)
-        result = util::file_is_directory("build/tests/fts");
+        result = util::file_is_directory("build/tests/data/fts");
 
     return result;
 }
@@ -187,7 +189,7 @@ fts_copy_test ()
 bool
 fts_delete_test ()
 {
-    const std::string rootdir { "build/tests/fts" };
+    const std::string rootdir { "build/tests/data/fts" };
     const std::string matcher { };              /* remove all directories   */
     util::ftswalker walker(rootdir);
     bool result = walker.process_files
@@ -195,7 +197,7 @@ fts_delete_test ()
         util::fts_item_delete, "", util::compare_files_before_dirs
     );
     if (result)
-        result = ! util::file_exists("build/tests/fts");
+        result = ! util::file_exists("build/tests/data/fts");
 
     return result;
 }
@@ -449,6 +451,7 @@ main (int argc, char * argv [])
              * Runs one or all of the test of the helpers module.
              */
 
+            util::status_message("fts_get_file_list_test()...");
             success = fts_get_file_list_test();
             if (success)
             {
@@ -456,25 +459,53 @@ main (int argc, char * argv [])
                  * Basic test of the ftswalker callback mechanism.
                  */
 
+                util::status_message("fts_callback_test()...");
                 success = fts_callback_test();
+                if (! success)
+                    util::error_message("... failed");
             }
             if (success)
+            {
+                util::status_message("fts_copy_test()...");
                 success = fts_copy_test();
-
+                if (! success)
+                    util::error_message("... failed");
+            }
             if (success)
+            {
+                util::status_message("fts_delete_test()...");
                 success = fts_delete_test();
-
+                if (! success)
+                    util::error_message("... failed");
+            }
             if (success)
+            {
+                util::status_message("fts_file_list_test_by_pattern()...");
                 success = fts_file_list_test_by_pattern();
-
+                if (! success)
+                    util::error_message("... failed");
+            }
             if (success)
+            {
+                util::status_message("find_files_by_pattern()...");
                 success = find_files_by_pattern();
-
+                if (! success)
+                    util::error_message("... failed");
+            }
             if (success)
+            {
+                util::status_message("find_files_by_pattern()_2...");
                 success = find_files_by_pattern_2();
-
+                if (! success)
+                    util::error_message("... failed");
+            }
             if (success)
+            {
+                util::status_message("find_files_by_pattern_3()...");
                 success = find_files_by_pattern_3();
+                if (! success)
+                    util::error_message("... failed");
+            }
 
             if (success)
             {

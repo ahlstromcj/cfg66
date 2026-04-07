@@ -22,12 +22,14 @@
 /**
  * \file          filewalker.hpp
  *
- *    This module ...
+ *    This module provides a different version of ftswalker using the
+ *    <filesystem> API of C++17.
  *
  * \library       filewalker
  * \author        Chris Ahlstrom
  * \date          2026-04-02
- * \updates       2026-04-03
+ * \updates       2026-04-07
+ *
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
@@ -94,7 +96,7 @@ private:
      *  functions and operators to manipulate the PATH.
      */
 
-    lib66::tokenization m_search_directories;
+    lib66::tokenization m_search_paths;
 
 public:
 
@@ -105,28 +107,51 @@ public:
     filewalker & operator = (filewalker &&) = default;
     ~filewalker () = default;
 
-    bool find_file
+    bool find_files
     (
         const std::string & target,
         lib66::tokenization & destination
     );
     bool find_regular_files (lib66::tokenization & destination);
-    bool traverse (const std::string & path) const;
+    bool traverse (function fn, const std::string & path) const;
+    bool process_path
+    (
+        const std::string & path,
+        function fn,
+        const std::string & target,
+        comparator cfn = nullptr
+    );
     bool process_files
     (
         function fn,
         const std::string & target,
         comparator cfn = nullptr
     );
+    bool process_bi_path
+    (
+        const std::string & path,
+        bifunction fn,
+        const std::string & source,
+        comparator cfn = nullptr
+    );
     bool process_bi_files
     (
         bifunction fn,
-        const std::string & source,
-        const std::string & dest,
+        const std::string & destination,
         comparator cfn = nullptr
     );
 
+    const lib66::tokenization search_paths () const
+    {
+        return m_search_paths;
+    }
+
 private:
+
+    bool is_actionable_file
+    (
+        const std::filesystem::directory_entry & entry
+    );
 
 };              // class filewalker
 
@@ -154,6 +179,11 @@ extern int compare_files_before_dirs            /* ftswalker::comparator    */
 extern bool show_target
 (
     const std::string & match,
+    std::filesystem::file_type ft
+);
+extern bool show_directory_entry
+(
+    const std::string & description,
     std::filesystem::file_type ft
 );
 extern bool item_copy
@@ -186,6 +216,13 @@ extern bool find_files_by_regex
     filewalker::comparator cfn = nullptr
 );
 extern std::string get_type_name (std::filesystem::file_type ft);
+extern std::string get_last_directory (const std::string & path);
+extern std::string build_destination_path
+(
+    const std::string & rootsource,
+    const std::string & sourcedir,
+    const std::string & rootdest
+);
 
 }               // namespace file
 

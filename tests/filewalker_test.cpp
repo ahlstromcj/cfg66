@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2026-04-03
- * \updates       2026-04-03
+ * \updates       2026-04-07
  * \license       See above.
  *
  */
@@ -51,10 +51,10 @@ cfg::appinfo s_application_info
     cfg::appkind::test,                 // "test"
     "filewalker_test",                  // _app_name (mandatory!)
     "0.1",                              // _app_version
-    "[fts]",                            // _main_cfg_section_name
+    "[fw]",                             // _main_cfg_section_name
     "",                                 // _home_cfg_directory
-    "fts.bogus",                        // _home_cfg_file
-    "fts",                              // _client_name (fake session wart)
+    "fw.bogus",                         // _home_cfg_file
+    "fw",                               // _client_name (fake session wart)
     "",                                 // _app_tag
     "",                                 // _arg_0
     "CFG66",                            // _package_name
@@ -64,7 +64,7 @@ cfg::appinfo s_application_info
     "",                                 // _api_engine (empty by default)
     "0.4",                              // _api_version (empty by default)
     "",                                 // _gui_version (bogus here)
-    "fts66",                            // _client_name_short
+    "fw66",                             // _client_name_short
     "tag"                               // _client_name_tag
 };
 
@@ -87,15 +87,56 @@ const std::string s_desc_intro
 };
 
 /**
- *
+ *  A simple recursive traversal of a directory tree. If "verbose",
+ *  we use the built-in show_directory_entry() function, otherwise
+ *  we provide a function to count entries.
  */
 
+int s_directory_count   { 0 };
+int s_file_count        { 0 };
+int s_other_count       { 0 };
+
 bool
-fw_traverse_test ()
+count_entries (const std::string & /* desc */, std::filesystem::file_type ft)
+{
+    if (ft == std::filesystem::file_type::directory)
+        ++s_directory_count;
+    else if (ft == std::filesystem::file_type::regular)
+        ++s_file_count;
+    else
+        ++s_other_count;
+
+    return ft != std::filesystem::file_type::none;
+}
+
+bool
+fw_traversal_test (bool isverbose)
 {
     const std::string rootdir { "tests/data/fts" };
     util::filewalker walker(rootdir);
-    bool result { walker.traverse(rootdir) };
+    bool result { false };
+    if (isverbose)
+    {
+        result = walker.traverse(util::file::show_directory_entry, rootdir);
+        if (! result)
+            std::cerr << "Showing directory entries failed." << std::endl;
+    }
+    else
+    {
+        s_directory_count = s_file_count = s_other_count = 0;
+        result = walker.traverse(count_entries, rootdir);
+        if (result)
+        {
+            std::cout
+                << s_directory_count << " directories; "
+                << s_file_count << " regular files; and "
+                << s_other_count << " other kinds of entries."
+                << std::endl
+                ;
+        }
+        else
+            std::cerr << "Entry counting failed." << std::endl;
+    }
     return result;
 }
 
@@ -173,28 +214,34 @@ fw_callback_test ()
  * DP: tests/data/fts/session_3                   ------
  * DP: tests/data/fts                             ------
  *
- * Using the second method looks to be a tad more straight-forward.
+ *  Using the second method looks to be a tad more straight-forward.
  *
- * Note that this code is essentially the same as the free function
- * fw_copy_directory() function in the filewalker module.
+ *  Note that this code is essentially the same as the free function
+ *  fw_copy_directory() function in the filewalker module.
+ *
+ *  "build/tests/data" becomes "build/tests/data/fts/..."
  */
 
 bool
 fw_copy_test ()
 {
     const std::string rootdir { "tests/data/fts" };
-    const std::string destdir { "build/tests" };   /* -> "build/tests/fts/..." */
+    const std::string destdir { "build/tests/data" };   /* -> "build/tests/fts/..." */
     util::filewalker walker(rootdir);
+    bool result { util::file_exists(destdir) };
+    if (! result)
+        result = util::make_directory_path(destdir);
 
-    // TO DO:FIXME
-
-    bool result = walker.process_bi_files
-    (
-        util::file::item_copy, rootdir, destdir,
-        util::file::compare_files_before_dirs
-    );
     if (result)
-        result = util::file_is_directory("build/tests/fts");
+    {
+        result = walker.process_bi_files
+        (
+            util::file::item_copy, destdir,
+            util::file::compare_files_before_dirs
+        );
+        if (result)
+            result = util::file_is_directory("build/tests/data/fts");
+    }
 
     return result;
 }
@@ -206,7 +253,7 @@ fw_copy_test ()
 bool
 fw_delete_test ()
 {
-    const std::string rootdir { "build/tests/fts" };
+    const std::string rootdir { "build/tests/data/fts" };
     const std::string matcher { };              /* remove all directories   */
     std::string nul;
     util::filewalker walker(rootdir);
@@ -216,7 +263,7 @@ fw_delete_test ()
         util::file::compare_files_before_dirs
     );
     if (result)
-        result = ! util::file_exists("build/tests/fts");
+        result = ! util::file_exists("build/tests/data/fts");
 
     return result;
 }
@@ -470,40 +517,81 @@ main (int argc, char * argv [])
         }
         else
         {
-            /*
-             * Runs one or all of the test of the helpers module.
-             */
+            util::status_message("fw_copy_test()...");
+            success = fw_copy_test();
+            if (! success)
+                util::error_message("... failed");
 
-            success = fw_traverse_test();
             if (success)
+            {
+                util::status_message("fw_traversal_test()...");
+                success = fw_traversal_test(clip.verbose());
+                if (! success)
+                    util::error_message("... failed");
+            }
+            if (success)
+            {
+                util::status_message("fw_get_file_list_test()...");
                 success = fw_get_file_list_test();
-
+                if (! success)
+                    util::error_message("... failed");
+            }
             if (success)
             {
                 /*
                  * Basic test of the filewalker callback mechanism.
+                 * Very similar to the traversal test.
                  */
 
+                util::status_message("fw_callback_test()...");
                 success = fw_callback_test();
+                if (! success)
+                    util::error_message("... failed");
+            }
+#if 0
+            if (success)
+            {
+                util::status_message("fw_copy_test()...");
+                success = fw_copy_test();
+                if (! success)
+                    util::error_message("... failed");
+            }
+#endif
+            if (success)
+            {
+                util::status_message("fw_delete_test()...");
+                success = fw_delete_test();
+                if (! success)
+                    util::error_message("... failed");
             }
             if (success)
-                success = fw_copy_test();
-
-            if (success)
-                success = fw_delete_test();
-
-            if (success)
+            {
+                util::status_message("fw_file_list_test_by_pattern()...");
                 success = fw_file_list_test_by_pattern();
-
+                if (! success)
+                    util::error_message("... failed");
+            }
             if (success)
+            {
+                util::status_message("find_files_by_pattern()...");
                 success = find_files_by_pattern();
-
+                if (! success)
+                    util::error_message("... failed");
+            }
             if (success)
+            {
+                util::status_message("find_files_by_pattern_2()...");
                 success = find_files_by_pattern_2();
-
+                if (! success)
+                    util::error_message("... failed");
+            }
             if (success)
+            {
+                util::status_message("find_files_by_pattern_3()...");
                 success = find_files_by_pattern_3();
-
+                if (! success)
+                    util::error_message("... failed");
+            }
             if (success)
             {
                 /*
@@ -513,6 +601,7 @@ main (int argc, char * argv [])
                 const std::string rootdir { "/run/user/1000/nsm" };
                 util::filewalker walker(rootdir);
                 lib66::tokenization results;
+                util::status_message("find_regular_files() test...");
                 (void) walker.find_regular_files(results);
                 std::cout
                     << "  Note that " << rootdir

@@ -25,7 +25,7 @@
  * \library       filewalker
  * \author        Chris Ahlstrom
  * \date          2026-04-02
- * \updates       2026-04-03
+ * \updates       2026-04-07
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
@@ -51,12 +51,9 @@
  *      -   Requires C++17 or above.
  */
 
-// #include <cerrno>                    /* #include <errno.h>               */
-// #include <cstring>                   /* std::strerror()                  */
-// #include <cstdlib>                   /* std::getenv(), std::rand()       */
-
 #include <iostream>                     /* std::cout, std::cerr             */
 
+#include "platform_macros.h"            /* PLATFORM_DEBUG macro             */
 #include "util/filewalker.hpp"          /* file-tree traversal declarations */
 #include "util/filefunctions.hpp"       /* cfg66: util::file_write_lines()  */
 #include "util/msgfunctions.hpp"        /* cfg66: util::error_message() etc */
@@ -93,15 +90,40 @@ namespace util
  */
 
 filewalker::filewalker (const std::string & path) :
-    m_search_directories    ()
+    m_search_paths    ()
 {
-    m_search_directories.push_back(path);
+    m_search_paths.push_back(path);
 }
 
 filewalker::filewalker (const lib66::tokenization & paths) :
-    m_search_directories    (paths)
+    m_search_paths    (paths)
 {
     // no code
+}
+
+/**
+ *  Some files need to be ignored. Note sure about symlinks yet.
+ *
+ *      bool bad
+ *      {
+ *          entry.is_none() ||
+ *          entry.is_not_found() ||
+ *          entry.is_block() ||
+ *          entry.is_symlink() ||
+ *          entry.is_character() ||
+ *          entry.is_fifo() ||
+ *          entry.is_socket() ||
+ *          entry.is_unknown()
+ *      };
+ */
+
+bool
+filewalker::is_actionable_file
+(
+    const std::filesystem::directory_entry & entry
+)
+{
+    return entry.is_regular_file() || entry.is_directory();
 }
 
 /**
@@ -109,17 +131,22 @@ filewalker::filewalker (const lib66::tokenization & paths) :
  *  This function searches the path(s) provided during the construction
  *  of this object.
  *
- *  The "compar()" argument is NULL, therefore the directory traversal order
- *  is in the order listed in the root paths parameter, and in the order
- *  listed in the directory for everything else.
  *
  * \param target
- *      Provides the name of the file for which we're searching.
+ *      Provides the base-name of the file for which we're searching.
+ *      This can also be a regular expression. It can be a base-name
+ *      or a full path-name. If the latter, then only one item
+ *      can be found.
+ *
+ *      If target satisfies the util::string_has_regex() function, then
+ *      the full path is checked. Otherwise, the base-name is used for
+ *      an exact match.
  *
  * \param [out] destination
  *      A vector of strings to hold the full path names of the files
- *      found that matched the target. This item is not cleared,
- *      so one theoretically do a number of searches.
+ *      found that matched the target. These are absolute path-names.
+ *      This item is not cleared, so one can theoretically do a number of
+ *      searches to accumulate the results.
  *
  * \return
  *      Returns true if no error occurred and any files were found.
@@ -127,18 +154,47 @@ filewalker::filewalker (const lib66::tokenization & paths) :
  */
 
 bool
-filewalker::find_file
+filewalker::find_files
 (
     const std::string & target,
     lib66::tokenization & destination
 )
 {
-    (void) destination;
-
-    bool result { ! target.empty() };
+    bool result { ! target.empty() && m_search_paths.size() > 0 };
     if (result)
     {
-        // TODO
+        bool rgxtarget { util::string_has_regex(target) };
+#if defined PLATFORM_DEBUG_TMI
+        if (rgxtarget)
+            printf("target is a true regex\n");
+#endif
+        for (const auto & path : m_search_paths)
+        {
+            for
+            (
+                const auto & entry :
+                    std::filesystem::recursive_directory_iterator(path)
+            )
+            {
+                // std::filesystem::file_type ft { entry.status().type() };
+
+                std::filesystem::path p { entry.path() };
+                std::filesystem::path fp { std::filesystem::absolute(p) };
+                std::string fullpath { fp.string() };
+                std::string basename { p.filename().string() };
+                const std::string & t { rgxtarget ? fullpath : basename };
+                bool match { util::regex_match(target, t) };
+
+#if defined PLATFORM_DEBUG_TMI
+                printf
+                (
+                    "Item: %s [%s]\n", CSTR(basename), CSTR(fullpath)
+                );
+#endif
+                if (match)
+                    destination.push_back(fullpath);
+            }
+        }
     }
     return result;
 }
@@ -182,7 +238,7 @@ filewalker::find_regular_files (lib66::tokenization & destination)
  */
 
 bool
-filewalker::traverse (const std::string & path) const
+filewalker::traverse (function fn, const std::string & path) const
 {
     bool result { std::filesystem::exists(path) };
     if (result)
@@ -202,21 +258,98 @@ filewalker::traverse (const std::string & path) const
             )
             {
                 /*
-                 * Get file attributes similar to fts_ent.
+                 * Get file attributes similar to fts_ent. One trick
+                 * is that the iterator, not the directory entry,
+                 * has a depth() function.
                  */
 
                 const auto & entry = *it;
-                std::cout
-                    << std::string(it.depth() * 2, ' ')     // indent by depth
-                    << (entry.is_directory() ? "[D] " : "[F] ")
-                    << entry.path().filename().string()
-                    << std::endl
-                    ;
+                std::filesystem::file_type ft { entry.status().type() };
+                std::string indent { std::string(it.depth() * 4, ' ') };
+                std::string desc
+                {
+                    indent + entry.path().filename().string()
+                };
+                result = fn(desc, ft);
             }
         }
         catch (const std::filesystem::filesystem_error & e)
         {
             std::cerr << "Error: " << e.what() << std::endl;
+            result = false;
+        }
+    }
+    return result;
+}
+
+/**
+ *  Processes the files found in the given path. Remember that the paths
+ *  are set up in the filewalker constructor.
+ *
+ * \param path
+ *      A path into which to descend and examine or process files.
+ *
+ * \param fn
+ *      A single-string function to call for each match.
+ *
+ * \param target
+ *      A filename or a regular expression to be matched.
+ *
+ * \param cfn
+ *      A comparator function. Currently not used.
+ *
+ * \return
+ *      Returns true if the processing can be run and if all matches
+ *      can be successfully processed.
+ */
+
+bool
+filewalker::process_path
+(
+    const std::string & path,
+    function fn,
+    const std::string & target,
+    comparator cfn
+)
+{
+    bool result { not_nullptr(fn) };
+    (void) cfn;                         /* not yet used                     */
+    if (result)
+    {
+        try
+        {
+            for                         /* get file attributes a la fts_ent */
+            (
+                auto i = std::filesystem::recursive_directory_iterator(path);
+                i != std::filesystem::end(i); ++i
+            )
+            {
+                const auto & entry = *i;
+                std::string p { entry.path().filename().string() };
+                if (is_actionable_file(entry))
+                {
+                    bool process_it { true };
+                    if (! target.empty())
+                    {
+                        process_it = util::regex_match(target, p);
+                    }
+                    if (process_it)
+                    {
+                        const std::filesystem::file_status & fs
+                        {
+                            entry.status()
+                        };
+                        std::filesystem::file_type ft { fs.type() };
+                        result = fn(p, ft);
+                        if (! result)
+                            break;
+                    }
+                }
+            }
+        }
+        catch (const std::filesystem::filesystem_error & e)
+        {
+            util::error_message("process_path() failed", e.what());
             result = false;
         }
     }
@@ -230,9 +363,7 @@ filewalker::traverse (const std::string & path) const
  * \param fn
  *      Provides the free function or static function to be called for
  *      every entry. It should at least handle the values in the
- *      filewalker::FTS enumeration.
- *
- *          function = bool (*) (const std::string &, FTS);
+ *      std::filesystem::file_type enumeration.
  *
  * \param target
  *      If not empty, then only matching files will be processed.
@@ -258,14 +389,112 @@ filewalker::process_files
     comparator cfn
 )
 {
-    (void) fn;
-    (void) rgx;
-    (void) cfn;
-
-    bool result { not_nullptr(fn) };
+    bool result { not_nullptr(fn) && ! search_paths().empty() };
     if (result)
     {
-        // TODO
+        for (const auto & path : search_paths())
+        {
+            result = process_path(path, fn, rgx, cfn);
+            if (! result)
+                break;
+        }
+    }
+    return result;
+}
+
+/**
+ *  Processes the files found in the given path. Remember that the path(s)
+ *  are set up in the filewalker constructor.
+ *
+ *  std::filesystem::recursive_directory_iterator() skips the "." and ".."
+ *  entries.
+ *
+ *  One issue with std::filesystem::recursive_directory_iterator() is is that
+ *  it returns a directory entry where only the base name is given. So we need
+ *  to concatenate the path and the directory/filename provided by the
+ *  iterator.
+ *
+ * \param path
+ *      A path into which to descend and examine or process files.
+ *      It is assumed to end with a directory name, not a regular
+ *      file-name.
+ *
+ * \param fn
+ *      A single-string function to call for each match.
+ *
+ * \param destination
+ *      The directory where the matched files are to go. It can be
+ *      an absolute or relative path.
+ *
+ * \param cfn
+ *      A comparator function. Currently not used.
+ *
+ * \return
+ *      Returns true if the processing can be run and if all matches
+ *      can be successfully processed.
+ */
+
+bool
+filewalker::process_bi_path
+(
+    const std::string & path,
+    bifunction bfn,
+    const std::string & destination,
+    comparator cfn
+)
+{
+    bool result { not_nullptr(bfn) };
+    (void) cfn;                         /* not yet used                     */
+    if (result)
+    {
+        std::string lastdir { util::file::get_last_directory(path) };
+        std::string basedest { destination };
+        if (! lastdir.empty())
+            basedest = util::filename_concatenate(destination, lastdir);
+
+        try
+        {
+            int count { 0 };
+            for                         /* Get file attributes a la fts_ent */
+            (
+                auto i = std::filesystem::recursive_directory_iterator(path);
+                i != std::filesystem::end(i); ++i
+            )
+            {
+                const auto & entry = *i;
+                if (is_actionable_file(entry))
+                {
+                    std::filesystem::path p { entry.path() };
+                    const std::filesystem::file_status & fs { entry.status() };
+                    std::filesystem::file_type ft { fs.type() };
+                    std::filesystem::path fp { std::filesystem::absolute(p) };
+                    std::string fullpath { fp.string() };
+                    std::string dest = util::file::build_destination_path
+                    (
+                        lastdir, fullpath, basedest
+                    );
+#if defined PLATFORM_DEBUG_TMI
+                    std::string ftname { file::get_type_name(ft) };
+                    printf
+                    (
+                        "[%2d] src = '%s'; dest = '%s'; %s\n",
+                        (count + 1), CSTR(fullpath), CSTR(dest),
+                        CSTR(ftname)
+                    );
+#endif
+                    result = bfn(fullpath, dest, ft);
+                    if (! result)
+                        break;
+
+                    ++count;
+                }
+            }
+        }
+        catch (const std::filesystem::filesystem_error & e)
+        {
+            std::cerr << "Error: " << e.what() << std::endl;
+            result = false;
+        }
     }
     return result;
 }
@@ -314,7 +543,7 @@ filewalker::process_files
  *             ii. Verify that the destination directory ($LASTDEST) exists.
  *            iii.  Copy the file to the destination.
  *
- * \param fn
+ * \param bfn
  *      The function that takes the source file/directory as retrieved
  *      by fts_read_entry() and the target directory and does some cross
  *      processing, such as copying. Remember that the source directory
@@ -337,20 +566,23 @@ filewalker::process_files
 bool
 filewalker::process_bi_files
 (
-    bifunction fn,
-    const std::string & source,
-    const std::string & dest,
+    bifunction bfn,
+    const std::string & destination,
     comparator cfn
 )
 {
     bool result
     {
-        not_nullptr(fn) && util::file_is_directory(source)
+        not_nullptr(bfn) && util::file_is_directory(destination)
     };
     if (result)
     {
-        (void) dest;
-        (void) cfn;
+        for (const auto & path : search_paths())
+        {
+            result = process_bi_path(path, bfn, /*target,*/ destination, cfn);
+            if (! result)
+                break;
+        }
     }
     return result;
 }
@@ -425,6 +657,46 @@ show_target
     return true;
 }
 
+/**
+ *  This filewalker::function just shows information about the
+ *  directory entry as compiled by the traverse() function.
+ */
+
+bool
+show_directory_entry
+(
+    const std::string & description,
+    std::filesystem::file_type ft
+)
+{
+    bool result { ft != std::filesystem::file_type::none };
+    if (result)
+    {
+        std::string ftname { get_type_name(ft) };
+        std::string msg { description + "  [" + ftname + "]" };
+        util::info_message(msg);    /* show message if --verbose        */
+    }
+    return result;
+}
+
+/**
+ *
+ * \param source
+ *      Provides a file-specification (full path) for either a directory
+ *      or a file that is the item to be created or copied in the
+ *      target directory.
+ *
+ * \param target
+ *      Provides a file-specification (full path) for either a directory
+ *      or a file that is the destination for the source item.
+ *
+ * \param ft
+ *      Provides the file-type for the source item.
+ *
+ * \return
+ *      Returns true if the operation succeeded.
+ */
+
 bool
 item_copy
 (
@@ -437,12 +709,17 @@ item_copy
     if (ft == std::filesystem::file_type::directory)    /* 1st directory    */
     {
         util::info_message("Entered directory", source);
-        result = util::make_directory_path(target);
+        result = util::make_directory_path(target);     /* like 'mkdir -p'  */
     }
     else if (ft == std::filesystem::file_type::regular) /* regular file     */
     {
         util::info_printf("Copying %s to %s", V(source), V(target));
-        result = util::file_copy_to_path(source, target);
+
+        /*
+         * result = util::file_copy_to_path(source, target);
+         */
+
+        result = util::file_copy(source, target);
     }
     else if (ft == std::filesystem::file_type::symlink) /* a symbolic link  */
     {
@@ -519,10 +796,10 @@ copy_directory (const std::string & source, const std::string & dest)
     bool result { file_is_directory(source) && file_is_directory(dest) };
     if (result)
     {
-        util::filewalker walker(source);
+        util::filewalker walker(source);    /* lock in source directory     */
         result = walker.process_bi_files
         (
-            item_copy, source, dest // , util::compare_files_before_dirs
+            item_copy, dest // , util::compare_files_before_dirs
         );
     }
     return result;
@@ -532,32 +809,61 @@ copy_directory (const std::string & source, const std::string & dest)
  *  This function removes the files and directories it encounters, including
  *  sub-directories.
  *
- *  In general, directories are visited two distinguishable times; in
- *  preorder (before any of their descendants are visited) and in
- *  postorder (after all of their descendants have been visited).
- *  Files are visited once.  It is possible to walk the hierarchy
- *  "logically" (visiting the files that symbolic links point to) or
- *  physically (visiting the symbolic links themselves), order the
- *  walk of the hierarchy or prune and/or revisit portions of the
- *  hierarchy.
+ *  In general, directories are visited two distinguishable times; in preorder
+ *  (before any of their descendants are visited) and in postorder (after all
+ *  of their descendants have been visited).  Files are visited once.  It is
+ *  possible to walk the hierarchy "logically" (visiting the files that
+ *  symbolic links point to) or physically (visiting the symbolic links
+ *  themselves), order the walk of the hierarchy or prune and/or revisit
+ *  portions of the hierarchy.
  *
- *  Note that this function is not a callback.
+ *  Note that this function is not a filewalker::function callback.
+ *
+ *  We replace the original implementation with a simple call to remove_all().
+ *
+ * \param path
+ *      The directory to delete. It is checked that it is a directory.
+ *
+ * \return
+ *      Returns true if the directory was deleted. If the path was not a
+ *      directory, false is returned.
  */
 
 bool
 delete_directory (const std::string & path)
 {
-    bool result { file_is_directory(path) };
+    bool result { util::file_is_directory(path) };
     if (result)
     {
+#if defined USE_FILEWALKER_METHOD       /* this is clumsy; use remove_all() */
         util::filewalker walker(path);
         result = walker.process_files
         (
             item_delete, path // , std::filesystem::file_type::directory
         );
+#else
+        const std::uintmax_t s_errcount { static_cast<std::uintmax_t>(-1) };
+        std::error_code ec;             /* we want to use the noexcept call */
+        std::uintmax_t count { std::filesystem::remove_all(path, ec) };
+        result = count != s_errcount;
+#endif
     }
     return result;
 }
+
+/**
+ *  Determines if a file is found in the provided directory.
+ *
+ * \param rootdir
+ *      Provides the path in which to conduct the search.
+ *
+ * \param target
+ *      Provides the base-name of the file to find. This is *not*
+ *      treated as a regular expression.
+ *
+ * \return
+ *      Returns true if the exact base file-name was found.
+ */
 
 bool
 find_file
@@ -567,7 +873,12 @@ find_file
 )
 {
     bool result { ! rootdir.empty() && ! target.empty() };
+    if (result)
+    {
 
+        // TODO
+
+    }
     return result;
 }
 
@@ -619,14 +930,14 @@ find_files_by_regex
     filewalker::comparator cfn
 )
 {
-    (void) collected;
     (void) cfn;
 
-    int count { int(paths.size()) };
-    bool result { count > 0  && ! rgx.empty() };
+
+    bool result { paths.size() > 0 && ! rgx.empty() };
     if (result)
     {
-        // TODO
+        util::filewalker fw(paths);     /* adds paths to m_search_paths     */
+        result = fw.find_files(rgx, collected);
     }
     return result;
 }
@@ -718,255 +1029,126 @@ get_type_name (std::filesystem::file_type ft)
     return result;
 }
 
-/*--------------------------------------------------------------------------
- * Free functions in the util::file namespace
- *--------------------------------------------------------------------------*/
-
-#if 0
-
 /**
- *  Indicates that the file-type has not yet been evaluated, or that
- *  an error occurred when evaluating it.
- */
-
-bool
-is_none (std::filesystem::file_status s)
-{
-    return s.type() == std::filesystem::file_type::none;
-}
-
-bool
-is_none (std::filesystem::file_status s)
-{
-    std::filesystem::path p { pathname };
-    std::filesystem::file_status s { p };
-    return is_none(s);
-}
-
-/**
- *  Not finding a file is not an error.
- */
-
-bool
-is_not_found (std::filesystem::file_status s)
-{
-    return s.type() == std::filesystem::file_type::not_found;
-}
-
-bool
-is_not_found (const std::string & pathname)
-{
-    std::filesystem::path p { pathname };
-    std::filesystem::file_status s { p };
-    return is_not_found(s);
-}
-
-/**
- *  A normal, regular file, found on "disk".
- */
-
-bool
-is_regular_file (std::filesystem::file_status s)
-{
-    return s.type() == std::filesystem::file_type::regular;
-}
-
-bool
-is_regular_file (const std::string & pathname)
-{
-    std::filesystem::path p { pathname };
-    std::filesystem::file_status s { p };
-    return is_regular_file(s);
-}
-
-/**
- *  A directory, what inferior operating systems call a "folder" :-)
- */
-
-bool
-is_directory (std::filesystem::file_status s)
-{
-    return s.type() == std::filesystem::file_type::directory;
-}
-
-bool
-is_directory (const std::string & pathname)
-{
-    std::filesystem::path p { pathname };
-    std::filesystem::file_status s { p };
-    return is_directory(s);
-}
-
-/**
- *  A symbolic link. Probably doesn't distinguish a hard link
- *  versus a soft link.
- */
-
-bool
-is_symlink (std::filesystem::file_status s)
-{
-    return s.type() == std::filesystem::file_type::symlink;
-}
-
-bool
-is_symlink (const std::string & pathname)
-{
-    std::filesystem::path p { pathname };
-    std::filesystem::file_status s { p };
-    return is_symlink(s);
-}
-
-/**
+ *  Peels off the last directory name in a path specification.
+ *  This sub-directory is meant to be the root directory of a source
+ *  for files and sub-directories.
  *
- *  A block special file, e.g. a block device.
- */
-
-bool
-is_block (std::filesystem::file_status s)
-{
-    return s.type() == std::filesystem::file_type::block;
-}
-
-bool
-is_block (const std::string & pathname)
-{
-    std::filesystem::path p { pathname };
-    std::filesystem::file_status s { p };
-    return is_block(s);
-}
-
-/**
+ *  Which method to use? The first builds a vector of path names,
+ *  which the second just uses an iterator to get to the last sub-directory
+ *  name. We use the second method.
  *
- *  A character special file, e.g. a character device.
+ * \param pathspec
+ *      Provides a directory name, such as "tests/data/fts". This function
+ *      assumes it is actually a directory. Should we check that?
+ *
+ * \return
+ *      Returns the last sub-directory, e.g. "fts" in the example above.
  */
 
-bool
-is_character (std::filesystem::file_status s)
+std::string
+get_last_directory (const std::string & pathspec)
 {
-    return s.type() == std::filesystem::file_type::character;
-}
+    std::filesystem::path p { pathspec };
 
-bool
-is_character (const std::string & pathname)
-{
-    std::filesystem::path p { pathname };
-    std::filesystem::file_status s { p };
-    return is_character(s);
-}
+#if defined USE_LIB55_TOKENIZATION_VECTOR
 
-/**
- *  A FIFO, also known as a pipe.
- */
+    lib66::tokenization subdirs;
+    for (const auto & s : p)
+        subdirs.push_back(s);
 
-bool
-is_fifo (std::filesystem::file_status s)
-{
-    return s.type() == std::filesystem::file_type::fifo;
-}
+    return subdirs.empty() ? pathspec : subdirs.back();
 
-bool
-is_fifo (const std::string & pathname)
-{
-    std::filesystem::path p { pathname };
-    std::filesystem::file_status s { p };
-    return is_fifo(s);
-}
+#else
 
-/**
- *  A socket file.
- */
+    std::filesystem::path::const_iterator sit;
+    for (auto it = p.begin(); it != p.end(); ++it)
+        sit = it;
 
-bool
-is_socket (std::filesystem::file_status s)
-{
-    return s.type() == std::filesystem::file_type::socket;
-}
-
-bool
-is_socket (const std::string & pathname)
-{
-    std::filesystem::path p { pathname };
-    std::filesystem::file_status s { p };
-    return is_socket(s);
-}
-
-/**
- *  The file exists, but it's type could not be determined.
- */
-
-bool
-is_unknown (std::filesystem::file_status s)
-{
-    return s.type() == std::filesystem::file_type::unknown;
-}
-
-bool
-is_unknown (const std::string & pathname)
-{
-    std::filesystem::path p { pathname };
-    std::filesystem::file_status s { p };
-    return is_unknown(s);
-}
-
-#if defined PLATFORM_WINDOWS
-
-/**
- *  A NTFS junction file.
- */
-
-bool
-is_ntfs_junction (std::filesystem::file_status s)
-{
-    return s.type() == std::filesystem::file_type::junction;
-}
-
-bool
-is_ntfs_junction (const std::string & pathname)
-{
-    std::filesystem::path p { pathname };
-    std::filesystem::file_status s { p };
-    return is_ntfs_junction(s);
-}
-
-bool
-is_other_file_type (...)
-{
-    return ...
-}
-
-#endif  // defined PLATFORM_WINDOWS
-
-#if 0
-
-bool
-is_leaving_directory (...)
-{
-    return ...
-}
-
-bool
-is_file_error (...)
-{
-    return
-        entry->fts_info == FTS_ERR || entry->fts_info == FTS_DNR ||
-        entry->fts_info == FTS_NS
-        ;
-}
+    if (sit != p.end())
+        return *sit;
+    else
+        return pathspec;
 
 #endif
-
-/**
- *  We need to allow FTS_DP to indicate all subs in the directory
- *  have been traversed.
- */
-
-bool
-is_actionable_file (const std::string & pathname)
-{
-    return ! is_none(pathname) && entry->fts_info != FTS_DOT;
 }
 
-#endif
+/**
+ *  Given a complete path and a root subdirectory name, plus a root
+ *  destination directory, this function assembles the corresponding
+ *  destination directory.
+ *
+ * Example:
+ *
+ *  Assume the Source directory starts as "tests/data/fts" and
+ *  the Destination directory starts as "build/tests/data".
+ *  The Root Source subdirectory is found by get_last_directory() to
+ *  be "fts". The Root Destination directory becomes "build/tests/data/fts".
+ *
+ *  Now assume we've recursed to the file
+ *
+ *      tests/data/fts/session_3/set_1/c_fake_file.midi
+ *
+ *  We iterate through this file-specification using an
+ *  std::filesystem::path() until we find the Root Source "fts".
+ *  Then we re-concatenate the remaining sub-directories, and
+ *  append the to the Destination directory.
+ *
+ * \param rootsource
+ *      Provides the root sub-directory, such as "fts".
+ *
+ * \param srcitem
+ *      Provides the source directory or file, such as
+ *      "tests/data/fts/session_3/set_1/c_fake_file.midi".
+ *
+ * \param rootdest
+ *      Provides the destination root directory, such as
+ *      "build/tests/data/fts".
+ *
+ * \return
+ *      Returns the updated destination file or directory.
+ *      In the examples above, the result would be
+ *      "build/tests/data/fts/session_3/set_1/c_fake_file.midi".
+ */
+
+std::string
+build_destination_path
+(
+    const std::string & rootsource,
+    const std::string & srcitem,
+    const std::string & rootdest
+)
+{
+    std::string result { rootdest };
+    bool good
+    {
+        ! rootsource.empty() && ! srcitem.empty() && ! rootdest.empty()
+    };
+    if (good)
+    {
+        bool collect { false };
+        std::filesystem::path p { srcitem };
+        lib66::tokenization collection;
+        for (auto it = p.begin(); it != p.end(); ++it)
+        {
+            if (*it == rootsource)
+            {
+                collect = true;
+            }
+            else
+            {
+                if (collect)
+                    collection.push_back(*it);
+            }
+        }
+        if (collection.size() > 0)
+        {
+            for (const auto & s : collection)
+                result = util::filename_concatenate(result, s);
+        }
+    }
+    return result;
+}
 
 }           // namespace file
 

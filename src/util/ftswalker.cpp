@@ -25,7 +25,7 @@
  * \library       ftswalker
  * \author        Chris Ahlstrom
  * \date          2025-03-10
- * \updates       2026-04-02
+ * \updates       2026-04-06
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
@@ -41,6 +41,7 @@
 #include <cstdlib>                      /* std::getenv(), std::rand()       */
 #include <fts.h>                        /* directory-traversal functions    */
 
+#include "platform_macros.h"            /* PLATFORM_DEBUG                   */
 #include "util/ftswalker.hpp"           /* file-tree traversal declarations */
 #include "util/filefunctions.hpp"       /* cfg66: util::file_write_lines()  */
 #include "util/msgfunctions.hpp"        /* cfg66: util::error_message() etc */
@@ -210,11 +211,13 @@ ftswalker::~ftswalker ()
  *
  * \param target
  *      Provides the name of the file for which we're searching.
+ *      This is a base file-name, *not* a regular expression.
  *
  * \param [out] destination
  *      A vector of strings to hold the full path names of the files
  *      found that matched the target. This item is not cleared,
- *      so one theoretically do a number of searches.
+ *      so one can theoretically do a number of searches to accumulate
+ *      the results.
  *
  * \return
  *      Returns true if no error occurred and any files were found.
@@ -390,18 +393,7 @@ ftswalker::process_files
                     bool process_it { true };
                     if (! rgx.empty())
                     {
-#if defined USE_SIMPLE_MATCH                            /* DEPRECATED       */
-                        std::string base
-                        {
-                            util::filename_base(ent->fts_path)
-                        };
-                        process_it = util::strcompare(rgx, base);
-#else
-                        process_it = util::regex_match
-                        (
-                            rgx, ent->fts_path
-                        );
-#endif
+                        process_it = util::regex_match(rgx, ent->fts_path);
                     }
                     if (process_it)
                     {
@@ -492,7 +484,7 @@ ftswalker::process_files
 bool
 ftswalker::process_files
 (
-    bifunction fn,
+    bifunction bfn,
     const std::string & target,
     comparator cfn
 )
@@ -513,6 +505,7 @@ ftswalker::process_files
         {
             bool exited_directory { false };
             std::string lastdest { target };
+            int count { 0 };
             for (;;)
             {
                 ::FTSENT * ent { fts_read_entry(ftsp) }; /* next file/dir   */
@@ -542,16 +535,26 @@ ftswalker::process_files
                         }
                         else if (ft == FTS::F || ft == FTS::SL)
                         {
-                            // all work done in the fn() bifunction callback
+                            // all work done in the bfn() bifunction callback
                         }
                         else if (ft == FTS::DP)
                         {
                             exited_directory = true;
                         }
-                        result = fn(p, lastdest, ft);    /* bifunction       */
+#if defined PLATFORM_DEBUG
+                        std::string ftname { get_fts_type_name(ft) };
+                        printf
+                        (
+                            "[%2d] src = '%s'; dest = '%s'; %s\n",
+                            (count + 1), CSTR(p), CSTR(lastdest),
+                            CSTR(ftname)
+                        );
+#endif
+                        result = bfn(p, lastdest, ft);  /* bifunction       */
                         if (! result)
                             break;
                     }
+                    ++count;
                 }
                 else if (is_fts_error(ent))
                 {

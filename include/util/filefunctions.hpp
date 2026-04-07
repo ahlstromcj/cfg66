@@ -121,7 +121,7 @@ extern bool name_has_extension (const std::string & filename);
 extern bool make_directory_path
 (
     const std::string & directory_name,
-    int mode = 0755                         /* rwxr-xr-x */
+    int mode = 0755                         /* rwx-rx-rx */
 );
 extern std::string make_path_relative (const std::string & path);
 extern bool delete_directory (const std::string & filename);
