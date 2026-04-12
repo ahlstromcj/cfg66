@@ -25,7 +25,7 @@
  * \library       filewalker
  * \author        Chris Ahlstrom
  * \date          2026-04-02
- * \updates       2026-04-07
+ * \updates       2026-04-11
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
@@ -102,31 +102,6 @@ filewalker::filewalker (const lib66::tokenization & paths) :
 }
 
 /**
- *  Some files need to be ignored. Note sure about symlinks yet.
- *
- *      bool bad
- *      {
- *          entry.is_none() ||
- *          entry.is_not_found() ||
- *          entry.is_block() ||
- *          entry.is_symlink() ||
- *          entry.is_character() ||
- *          entry.is_fifo() ||
- *          entry.is_socket() ||
- *          entry.is_unknown()
- *      };
- */
-
-bool
-filewalker::is_actionable_file
-(
-    const std::filesystem::directory_entry & entry
-)
-{
-    return entry.is_regular_file() || entry.is_directory();
-}
-
-/**
  *  A generic search to build a list of locations for the target file.
  *  This function searches the path(s) provided during the construction
  *  of this object.
@@ -148,6 +123,12 @@ filewalker::is_actionable_file
  *      This item is not cleared, so one can theoretically do a number of
  *      searches to accumulate the results.
  *
+ * \param notregex
+ *      If true (the default is false), then the caller knows that
+ *      the target is not a regular expression. The presence of a
+ *      dot or other regex characters in a UNIX file-name can be
+ *      misleading.
+ *
  * \return
  *      Returns true if no error occurred and any files were found.
  *      That is, the destination results can be used.
@@ -157,42 +138,54 @@ bool
 filewalker::find_files
 (
     const std::string & target,
-    lib66::tokenization & destination
+    lib66::tokenization & destination,
+    bool notregex
 )
 {
-    bool result { ! target.empty() && m_search_paths.size() > 0 };
+    bool result { ! target.empty() && search_paths().size() > 0 };
     if (result)
     {
         bool rgxtarget { util::string_has_regex(target) };
-#if defined PLATFORM_DEBUG_TMI
-        if (rgxtarget)
-            printf("target is a true regex\n");
-#endif
-        for (const auto & path : m_search_paths)
+        if (notregex)
+            rgxtarget = false;
+
+        result = false;
+        for (const auto & path : search_paths())
         {
-            for
-            (
-                const auto & entry :
-                    std::filesystem::recursive_directory_iterator(path)
-            )
+            try
             {
-                // std::filesystem::file_type ft { entry.status().type() };
-
-                std::filesystem::path p { entry.path() };
-                std::filesystem::path fp { std::filesystem::absolute(p) };
-                std::string fullpath { fp.string() };
-                std::string basename { p.filename().string() };
-                const std::string & t { rgxtarget ? fullpath : basename };
-                bool match { util::regex_match(target, t) };
+                for
+                (
+                    const auto & entry :
+                        std::filesystem::recursive_directory_iterator(path)
+                )
+                {
+                    std::filesystem::path p { entry.path() };
+                    std::filesystem::path fp { std::filesystem::absolute(p) };
+                    std::string relpath { p.string() };
+                    std::string fullpath { fp.string() };
+                    std::string basename { p.filename().string() };
+                    const std::string & t { rgxtarget ? fullpath : basename };
+                    bool match { util::regex_match(target, t) };
 
 #if defined PLATFORM_DEBUG_TMI
-                printf
-                (
-                    "Item: %s [%s]\n", CSTR(basename), CSTR(fullpath)
-                );
+                    printf
+                    (
+                        "Item: %s [%s]\n", CSTR(basename), CSTR(fullpath)
+                    );
 #endif
-                if (match)
-                    destination.push_back(fullpath);
+                    if (match)
+                    {
+                        destination.push_back(relpath); // .push_back(fullpath)
+                        result = true;
+                    }
+                }
+            }
+            catch (const std::filesystem::filesystem_error & e)
+            {
+                util::error_message("find_files() failed", e.what());
+                result = false;
+                break;
             }
         }
     }
@@ -202,8 +195,29 @@ filewalker::find_files
 /**
  *  This function searches the path(s) provided during the construction
  *  of this object. Unlike find_file() above, it does not look for a
- *  specific and collect the occurrences; instead it gets all the regular
- *  files in the directory and collects them.
+ *  specific target and collect the occurrences; instead it gets all
+ *  the regular files in the directory and collects them.
+ *
+ * A no-dots regex (to skip "." and ".."):
+ *
+ *      ^(?!\.{1,2}$)(.+)
+ *
+ *          ^       Anchor to the start of the string.
+ *          (       Begin grouping
+ *          ?       Optional (zero or one)
+ *          !       Negation (see below)
+ *          \.      Dot
+ *          {1,2}   At least 1 dot, at most 2 dots
+ *          $       End of string
+ *          )       End grouping
+ *          (.+)    Matches a string of one or more characters
+ *
+ *      (?!...)     Negative look-ahead, the "..." is not matched
+ *      (?=...)     Positive look-ahead, the "..." is matched
+ *
+ *  Note in the regex in the function body that '(R"( ... )")' is the
+ *  raw string literal that allows using a single backslash for regex
+ *  escapes.
  *
  * \param [out] destination
  *      A vector of strings to hold the full path names of the files
@@ -218,12 +232,50 @@ filewalker::find_files
 bool
 filewalker::find_regular_files (lib66::tokenization & destination)
 {
-    (void) destination;
-
-    bool result { true };
+    bool result { search_paths().size() > 0 };
     if (result)
     {
-        // TODO
+        static const std::string s_no_dots_regex { R"(^(?!\.{1,2}$)(.+))" };
+        result = false;
+        for (const auto & path : search_paths())
+        {
+            try
+            {
+                for
+                (
+                    const auto & entry :
+                        std::filesystem::recursive_directory_iterator(path)
+                )
+                {
+                    std::filesystem::file_type ft { entry.status().type() };
+                    if (ft == std::filesystem::file_type::regular)
+                    {
+                        std::filesystem::path p { entry.path() };
+                        std::string basename { p.filename().string() };
+                        bool match
+                        {
+                            util::regex_match(s_no_dots_regex, basename)
+                        };
+                        if (match)
+                        {
+                            std::filesystem::path fp
+                            {
+                                std::filesystem::absolute(p)
+                            };
+                            std::string fullpath { fp.string() };
+                            destination.push_back(fp.string()); /* full path */
+                            result = true;
+                        }
+                    }
+                }
+            }
+            catch (const std::filesystem::filesystem_error & e)
+            {
+                util::error_message("find_regular_files() failed", e.what());
+                result = false;
+                break;
+            }
+        }
     }
     return result;
 }
@@ -253,8 +305,7 @@ filewalker::traverse (function fn, const std::string & path) const
             for
             (
                 auto it = std::filesystem::recursive_directory_iterator(path);
-                it != std::filesystem::end(it);
-                ++it
+                it != std::filesystem::end(it); ++it
             )
             {
                 /*
@@ -266,16 +317,17 @@ filewalker::traverse (function fn, const std::string & path) const
                 const auto & entry = *it;
                 std::filesystem::file_type ft { entry.status().type() };
                 std::string indent { std::string(it.depth() * 4, ' ') };
+                std::string dep { std::to_string(it.depth()) };
                 std::string desc
                 {
-                    indent + entry.path().filename().string()
+                    dep + " " + indent + entry.path().filename().string()
                 };
                 result = fn(desc, ft);
             }
         }
         catch (const std::filesystem::filesystem_error & e)
         {
-            std::cerr << "Error: " << e.what() << std::endl;
+            util::error_message("traverse() failed", e.what());
             result = false;
         }
     }
@@ -285,6 +337,43 @@ filewalker::traverse (function fn, const std::string & path) const
 /**
  *  Processes the files found in the given path. Remember that the paths
  *  are set up in the filewalker constructor.
+ *
+ * increment():
+ *
+ *      Advances the iterator to the next entry. Invalidates all copies of
+ *      the previous value of *this.
+ *
+ *      If there are no more entries left in the currently iterated
+ *      directory, the iteration is resumed over the parent directory. The
+ *      process is repeated if the parent directory has no sibling entries
+ *      that can to be iterated on. If the parent of the directory hierarchy
+ *      that has been recursively iterated on is reached (there are no
+ *      candidate entries at depth() == 0), *this is set to an end iterator.
+ *
+ *      Otherwise, if *this refers to a directory, it is iterated into if the
+ *      following conditions are met:
+ *
+ *      -   disable_recursion_pending() has not been called before this
+ *          increment, i.e. recursion_pending() == true.
+ *      -   The directory is not a symlink or following symlinks is enabled,
+ *          qi.e., at least one of the following is true:
+ *
+ *          ! is_symlink((*this)->symlink_status()).
+ *
+ *          (options() & directory_options::follow_directory_symlink) !=
+ *              qdirectory_options::none)
+ *
+ * Anyway, the problem we have is when deleting directories containing
+ * files. The increment() call seems not to work as we expect. So, we
+ * have to provide different methods for deletion. For a known, single
+ * directory, we can call util::file::delete_directory(), which also
+ * removes the contents of the directory.
+ *
+ * For deleting items selected by a regular expression, this function
+ * can be called with the item_delete() callback.
+ *
+ * For iterating through an unknown tree of directories, we provide
+ * the member function delete_tree().
  *
  * \param path
  *      A path into which to descend and examine or process files.
@@ -318,34 +407,55 @@ filewalker::process_path
     {
         try
         {
+            int count { 0 };
+            std::error_code ec;
             for                         /* get file attributes a la fts_ent */
             (
-                auto i = std::filesystem::recursive_directory_iterator(path);
-                i != std::filesystem::end(i); ++i
+                auto it = std::filesystem::recursive_directory_iterator(path);
+                it != std::filesystem::end(it); // ++it
+                it.increment(ec)
             )
             {
-                const auto & entry = *i;
-                std::string p { entry.path().filename().string() };
-                if (is_actionable_file(entry))
+                const auto & entry = *it;
+                if (util::file::is_actionable_file(entry))
                 {
                     bool process_it { true };
+                    std::filesystem::path p { entry.path() };
+                    const std::filesystem::file_status & fs { entry.status() };
+                    std::filesystem::file_type ft { fs.type() };
+                    std::filesystem::path fp { std::filesystem::absolute(p) };
+
+                    /*
+                     * Hmmmm, fullpath does not match the p.string()'s
+                     * expected entries.
+                     */
+
+                    std::string relpath { p.string() };
+                    std::string fullpath { fp.string() };
                     if (! target.empty())
                     {
-                        process_it = util::regex_match(target, p);
+                        process_it = util::regex_match(target, fullpath);
                     }
                     if (process_it)
                     {
-                        const std::filesystem::file_status & fs
-                        {
-                            entry.status()
-                        };
-                        std::filesystem::file_type ft { fs.type() };
-                        result = fn(p, ft);
+#if defined PLATFORM_DEBUG_TMI
+                        std::string ftname { file::get_type_name(ft) };
+                        printf
+                        (
+                            "[%2d] item = '%s'; %s\n",
+                            (count + 1), CSTR(fullpath), CSTR(ftname)
+                        );
+#endif
+                        result = fn(relpath, ft); // result = fn(fullpath, ft);
                         if (! result)
                             break;
                     }
+                    ++count;
                 }
             }
+#if defined PLATFORM_DEBUG // _TMI
+            printf("process_path() count = %d\n", count);
+#endif
         }
         catch (const std::filesystem::filesystem_error & e)
         {
@@ -412,7 +522,8 @@ filewalker::process_files
  *  One issue with std::filesystem::recursive_directory_iterator() is is that
  *  it returns a directory entry where only the base name is given. So we need
  *  to concatenate the path and the directory/filename provided by the
- *  iterator.
+ *  iterator. So we have to make the absolute path using
+ *  std::filesystem::absolute().
  *
  * \param path
  *      A path into which to descend and examine or process files.
@@ -457,12 +568,12 @@ filewalker::process_bi_path
             int count { 0 };
             for                         /* Get file attributes a la fts_ent */
             (
-                auto i = std::filesystem::recursive_directory_iterator(path);
-                i != std::filesystem::end(i); ++i
+                auto it = std::filesystem::recursive_directory_iterator(path);
+                it != std::filesystem::end(it); ++it
             )
             {
-                const auto & entry = *i;
-                if (is_actionable_file(entry))
+                const auto & entry = *it;
+                if (util::file::is_actionable_file(entry))
                 {
                     std::filesystem::path p { entry.path() };
                     const std::filesystem::file_status & fs { entry.status() };
@@ -489,10 +600,13 @@ filewalker::process_bi_path
                     ++count;
                 }
             }
+#if defined PLATFORM_DEBUG // _TMI
+            printf("process_bi_path() count = %d\n", count);
+#endif
         }
         catch (const std::filesystem::filesystem_error & e)
         {
-            std::cerr << "Error: " << e.what() << std::endl;
+            util::error_message("process_bi_path() failed", e.what());
             result = false;
         }
     }
@@ -637,6 +751,28 @@ compare_files_before_dirs
 }
 
 /**
+ *  Some files need to be ignored. Note sure about symlinks yet.
+ *
+ *      bool bad
+ *      {
+ *          entry.is_none() ||
+ *          entry.is_not_found() ||
+ *          entry.is_block() ||
+ *          entry.is_symlink() ||
+ *          entry.is_character() ||
+ *          entry.is_fifo() ||
+ *          entry.is_socket() ||
+ *          entry.is_unknown()
+ *      };
+ */
+
+bool
+is_actionable_file (const std::filesystem::directory_entry & entry)
+{
+    return entry.is_regular_file() || entry.is_directory();
+}
+
+/**
  *  Just a simple test callback function; see tests/filewalker_test.
  *  Must apply the --verbose flag to see the output.
  */
@@ -644,7 +780,7 @@ compare_files_before_dirs
 bool
 show_target
 (
-    const std::string & match,          // util::filewalker::FTS ft
+    const std::string & match,
     std::filesystem::file_type ft
 )
 {
@@ -750,21 +886,15 @@ item_copy
 bool
 item_delete (const std::string & item, std::filesystem::file_type ft)
 {
-    bool result { file_exists(item) };
-    if (result)
+    bool result { ! util::file_exists(item) };          /* already gone?    */
+    if (! result)
     {
         if (ft == std::filesystem::file_type::directory) /* 1st directory   */
         {
-            /*
-             * TMI: util::info_message("Entered directory", item);
-             */
+            util::info_message("Deleting directory", item);
+            result = util::file::delete_directory(item);
         }
 #if 0
-        else if (ft == std::filesystem::file_type::directory) /* last dir   */
-        {
-            util::info_message("Deleting directory", item);
-            result = util::delete_directory(item);
-        }
         else if (ft == util::ftswalker::FTS::SLNONE)    /* link w/no target */
         {
             util::info_message("Deleting ophan link", item);
@@ -781,6 +911,9 @@ item_delete (const std::string & item, std::filesystem::file_type ft)
             // TODO
         }
     }
+    if (! result)
+        util::error_message("could not delete item", item);
+
     return result;
 }
 
@@ -821,6 +954,14 @@ copy_directory (const std::string & source, const std::string & dest)
  *
  *  We replace the original implementation with a simple call to remove_all().
  *
+ *  #if defined USE_FILEWALKER_METHOD
+ *      util::filewalker walker(path);
+ *      result = walker.process_files
+ *      (
+ *          item_delete, path // , std::filesystem::file_type::directory
+ *      );
+ *  #else ....
+ *
  * \param path
  *      The directory to delete. It is checked that it is a directory.
  *
@@ -832,29 +973,193 @@ copy_directory (const std::string & source, const std::string & dest)
 bool
 delete_directory (const std::string & path)
 {
-    bool result { util::file_is_directory(path) };
+    bool result { ! util::file_exists(path) };      /* already gone?        */
+    if (! result)                                   /* not yet              */
+        result =  util::file_is_directory(path);
+
     if (result)
     {
-#if defined USE_FILEWALKER_METHOD       /* this is clumsy; use remove_all() */
-        util::filewalker walker(path);
-        result = walker.process_files
-        (
-            item_delete, path // , std::filesystem::file_type::directory
-        );
-#else
         const std::uintmax_t s_errcount { static_cast<std::uintmax_t>(-1) };
-        std::error_code ec;             /* we want to use the noexcept call */
+        std::error_code ec;                         /* use noexcept call    */
         std::uintmax_t count { std::filesystem::remove_all(path, ec) };
         result = count != s_errcount;
-#endif
+        if (! result)
+            util::error_message("could not delete directory", path);
     }
     return result;
 }
 
 /**
- *  Determines if a file is found in the provided directory.
+ *  Collects files and directories in the path. Do we need this?
+ *  See delete_directory_tree().
  *
- * \param rootdir
+ *  The issue is that the directory iterator cannot deal with
+ *  changes in the file tree while iterating, and deletion does
+ *  that. Therefore, we collect the tree (which reduces the period
+ *  of vulnerability as well) to deal with "later".
+ *
+ *  We should also collect the provided path itself, which has no
+ *  depth, and should be the last directory deleted.
+ *
+ * \param path
+ *      Provides the full or relative path to the directory to be
+ *      assessed. We currently do not verify that it is a directory.
+ *
+ * \param [out] collection
+ *      Provides a container to hold information on the files and
+ *      directories in the path.
+ *
+ * \param includeroot
+ *      If true (the default), then path itself is included in the
+ *      collection.
+ *
+ * \return
+ *      Returns true if
+ */
+
+
+bool
+collect_files_from_path
+(
+    const std::string & path,
+    filewalker::pairs & collection,
+    bool includeroot
+)
+{
+    bool result { ! path.empty() };
+    if (result)
+    {
+        try
+        {
+            for                         /* get file attributes a la fts_ent */
+            (
+                auto it = std::filesystem::recursive_directory_iterator(path);
+                it != std::filesystem::end(it); ++it
+            )
+            {
+                const auto & entry = *it;
+                if (is_actionable_file(entry))
+                {
+                    std::filesystem::path p { entry.path() };
+                    const std::filesystem::file_status & fs { entry.status() };
+                    std::filesystem::file_type ft { fs.type() };
+                    std::filesystem::path fp { std::filesystem::absolute(p) };
+                    std::string fullpath { fp.string() };
+                    int fdepth { it.depth() };
+                    filewalker::pair fpair { ft, fullpath };
+                    auto insertpair { std::make_pair(fdepth, fpair) };
+                    (void) collection.insert(insertpair);
+                }
+            }
+            if (includeroot)
+            {
+                int fdepth { -1 };
+                filewalker::pair fpair
+                {
+                    std::filesystem::file_type::directory, path
+                };
+                auto insertpair { std::make_pair(fdepth, fpair) };
+                (void) collection.insert(insertpair);
+            }
+            result = collection.size() > 0;
+        }
+        catch (const std::filesystem::filesystem_error & e)
+        {
+            util::error_message("collect_files_from_path() failed", e.what());
+            result = false;
+        }
+    }
+    return result;
+}
+
+/**
+ *  First, we collect the directories and files in the path, and
+ *  then we systematically, carefully, delete them.
+ */
+
+bool
+delete_directory_tree (const std::string & path)
+{
+    bool result { ! path.empty() };
+    if (result)
+    {
+        filewalker::pairs collection;
+        result = collect_files_from_path(path, collection);
+        if (result)
+            result = delete_collection(collection);
+    }
+    return result;
+}
+
+/**
+ *  Two ways to go:
+ *
+ *      1.  Do remove_all() on all directories in the collection, then
+ *          iterate through the collection deleting any regular files that
+ *          still exist. But what of sub-directories that have disappeared?
+ *          So....
+ *
+ *      2.  Make a pass to delete all the regular files regardless of
+ *          depth, then remove each directory in reverse order of depth.
+ *
+ * \param collection
+ *      Provides a tree of file items as built by
+ *      collection_files_from_path().
+ *
+ * \return
+ *      Returns true if successful.
+ */
+
+bool
+delete_collection (const filewalker::pairs & collection)
+{
+    bool result { collection.size() > 0 };
+    if (result)
+    {
+        /*
+         * Get regular files only, no worries about depth here.
+         * Will handle symlinks later.
+         */
+
+        for (const auto & entry : collection)
+        {
+            const filewalker::pair & p { entry.second };
+            if (p.pfs_type == std::filesystem::file_type::regular)
+            {
+                result = item_delete(p.pfs_name, p.pfs_type);
+                if (! result)
+                    break;
+            }
+        }
+
+        /*
+         * Get the directories starting at the lowest depth, and
+         * delete them.
+         */
+
+        for
+        (
+            auto rit = collection.crbegin(); rit != collection.crend(); ++rit
+        )
+        {
+            const filewalker::pair & p { rit->second };
+            if (p.pfs_type == std::filesystem::file_type::directory)
+            {
+                result = delete_directory(p.pfs_name);
+                if (! result)
+                    break;
+            }
+        }
+    }
+    return result;
+}
+
+/**
+ *  Determines if a file is found in the provided directory. This
+ *  function assumed the target is a file-name, *not* a regular
+ *  expression.
+ *
+ * \param path
  *      Provides the path in which to conduct the search.
  *
  * \param target
@@ -868,16 +1173,17 @@ delete_directory (const std::string & path)
 bool
 find_file
 (
-    const std::string & rootdir,
+    const std::string & path,
     const std::string & target
 )
 {
-    bool result { ! rootdir.empty() && ! target.empty() };
+    bool result { ! path.empty() && ! target.empty() };
     if (result)
     {
-
-        // TODO
-
+        util::filewalker fw(path);              /* just one search-path     */
+        lib66::tokenization collected;          /* wasteful, but easy       */
+        bool not_a_regex { true };
+        result = fw.find_files(target, collected, not_a_regex);
     }
     return result;
 }
@@ -936,7 +1242,7 @@ find_files_by_regex
     bool result { paths.size() > 0 && ! rgx.empty() };
     if (result)
     {
-        util::filewalker fw(paths);     /* adds paths to m_search_paths     */
+        util::filewalker fw(paths);     /* adds paths to search_paths()     */
         result = fw.find_files(rgx, collected);
     }
     return result;
@@ -954,37 +1260,37 @@ get_type_name (std::filesystem::file_type ft)
     {
         case std::filesystem::file_type::none:
 
-            result = "Undetermined/error";
+            result = "undetermined/error";
             break;
 
         case std::filesystem::file_type::not_found:
 
-            result = "File not found";
+            result = "file not found";
             break;
 
         case std::filesystem::file_type::regular:
 
-            result = "Regular file";
+            result = "regular file";
             break;
 
         case std::filesystem::file_type::directory:
 
-            result = "Directory";
+            result = "directory";
             break;
 
         case std::filesystem::file_type::symlink:
 
-            result = "Symbolic link";
+            result = "symbolic link";
             break;
 
         case std::filesystem::file_type::block:
 
-            result = "Block device";
+            result = "block device";
             break;
 
         case std::filesystem::file_type::character:
 
-            result = "Character device";
+            result = "character device";
             break;
 
         case std::filesystem::file_type::fifo:
@@ -994,12 +1300,12 @@ get_type_name (std::filesystem::file_type ft)
 
         case std::filesystem::file_type::socket:
 
-            result = "Socket";
+            result = "socket";
             break;
 
         case std::filesystem::file_type::unknown:
 
-            result = "Unknown file type";
+            result = "unknown file type";
             break;
 
 #if 0

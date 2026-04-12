@@ -27,7 +27,7 @@
  *
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2026-03-04
+ * \updates       2026-04-12
  * \version       $Revision$
  *
  *    Also see the filefunctions.cpp module.  The functions here use
@@ -128,7 +128,11 @@ extern bool delete_directory (const std::string & filename);
 extern bool set_current_directory (const std::string & path);
 extern std::string get_current_directory ();
 extern std::string get_parent_directory (const std::string & path);
-extern std::string get_full_path (const std::string & path);
+extern std::string get_full_path
+(
+    const std::string & path,
+    bool quiet = true
+);
 extern const std::string & path_env_separator ();
 extern const std::string & path_slash ();
 extern char unix_path_slash ();

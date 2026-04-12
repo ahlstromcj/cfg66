@@ -1,6 +1,6 @@
 Exploring reimplementing ftswalker with <filesystem>
 Chris Ahlstrom
-2026-03-29 to 2026-03-31
+2026-03-29 to 2026-04-08
 
 The ftswalker module currently does not compile on Windows... it needs
 Gnulib's fts module. Which probably means downloading and building the
@@ -44,6 +44,14 @@ The functions from the fts API:
     -   fts_open() and fts_close()
     -   fts_read()
     -   fts_read_entry()
+
+RECURSION ORDER
+
+    Unlike FTS, there is no way to change the order of iteration.
+    We need to read all the files and directories, sort them by depth,
+    and deal with files from the bottom up.
+
+    HOW?
 
 =============================================================================
 

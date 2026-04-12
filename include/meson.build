@@ -6,7 +6,7 @@
 # \library     cfg66
 # \author      Chris Ahlstrom
 # \date        2022-06-22
-# \updates     2026-04-02
+# \updates     2026-04-12
 # \license     $XPC_SUITE_GPL_LICENSE$
 #
 #  This file is part of the "cfg66" library. See the top-level meson.build
@@ -43,13 +43,16 @@ libcfg66_headers += files(
    'util/bytevector.hpp',
    'util/filefunctions.hpp',
    'util/filewalker.hpp',
-   'util/ftswalker.hpp',
    'util/msgfunctions.hpp',
    'util/named_bools.hpp',
    'util/searchpath.hpp',
    'util/strconversions.hpp',
    'util/strfunctions.hpp'
    )
+
+if os_unix
+   libcfg66_headers += files('util/ftswalker.hpp')
+endif
 
 configure_file(
    input : 'cfg66-config.h.in',

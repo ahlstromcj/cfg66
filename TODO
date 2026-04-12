@@ -1,6 +1,6 @@
 TODOs for the cfg66 library
 Chris Ahlstrom
-2023-07-16 to 2026-03-06
+2023-07-16 to 2026-04-12
 
 This file lists only the high-priority features and fixtures we need
 to do for Cfg66.
@@ -32,5 +32,12 @@ ftswalker:
         ftswalker::process_files().
     -   Implement a function to delete a directory and all of
         its files and sub-directories.
+
+filewalker:
+
+    -   Figure out how to specify getting basename versus relative
+        path versus absolute path.
+    -   delete_directory_tree() can be extremely simplied unless
+        we do not want to delete the root directory.
 
 # vim: sw=4 ts=4 wm=8 et ft=sh

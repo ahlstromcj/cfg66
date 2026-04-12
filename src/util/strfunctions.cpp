@@ -1205,6 +1205,10 @@ strings_match (const std::string & target, const std::string & x)
  *
  *  The characters are: ". () \ [] {} ^ $ * | ?" }.
  *
+ *  One issue is the period, which is used for file extensions and,
+ *  in Linux, hidden files. Also some enviroments support other
+ *  of these other characters in file-names.
+ *
  *  This function creates a temporary std::regex object in order
  *  to validate it.
  *

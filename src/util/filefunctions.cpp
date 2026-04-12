@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2026-04-06
+ * \updates       2026-04-12
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -1259,7 +1259,7 @@ file_copy
         /*
          * The destination file-specification, if the file does not already
          * exist, will result in a warning in get_full_path() and a
-         * seeming empty string to compare against.
+         * seemingly empty string to compare against.
          */
 
         bool ok { get_full_path(oldfile) != get_full_path(destfilespec) };
@@ -1782,12 +1782,15 @@ get_parent_directory (const std::string & pathname)
  * \param path
  *      Provides the path, which may be relative.
  *
+ * \param
+ *      If true (the default), don't emit a file-error message.
+ *
  * \return
  *      Returns the full path.  If a problem occurs, the result is empty.
  */
 
 std::string
-get_full_path (const std::string & path)
+get_full_path (const std::string & path, bool quiet)
 {
     std::string result;                         /* default empty result     */
     if (file_name_good(path))
@@ -1812,18 +1815,21 @@ get_full_path (const std::string & path)
         }
         else
         {
-            /*
-             *  In Linux we could call string_errno(errno ).
-             */
+            if (! quiet)
+            {
+                /*
+                 *  In Linux we could call string_errno(errno ).
+                 */
 
-#if defined SEQ66_PLATFORM_POSIX_API
-            errno_t errnum { errno };
-            std::string errmsg { "Warning: " };
-            errmsg += string_errno(errnum);
-            file_message(errmsg, path);
+#if defined PLATFORM_POSIX_API
+                errno_t errnum { errno };
+                std::string errmsg { "Warning: " };
+                errmsg += string_errno(errnum);
+                file_message(errmsg, path);
 #else
-            file_message("realpath() error", path);
+                file_message("realpath() error", path);
 #endif
+            }
 
         }
 #endif

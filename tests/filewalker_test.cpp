@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2026-04-03
- * \updates       2026-04-07
+ * \updates       2026-04-11
  * \license       See above.
  *
  */
@@ -248,20 +248,32 @@ fw_copy_test ()
 
 /**
  *  A test of deleting the files and directories created in fw_copy_test().
+ *  We disabled the filewalker direct implementation with
+ *  USE_FILEWALKER_DELETION because it cannot properly iterated through
+ *  a file-tree where some files have already disappeared.
  */
 
 bool
 fw_delete_test ()
 {
     const std::string rootdir { "build/tests/data/fts" };
-    const std::string matcher { };              /* remove all directories   */
-    std::string nul;
+    std::string nul;                            /* no target/regex to match */
+
+#if defined USE_FILEWALKER_DELETION
+
     util::filewalker walker(rootdir);
     bool result = walker.process_files
     (
         util::file::item_delete, nul,
         util::file::compare_files_before_dirs
     );
+
+#else
+
+    bool result = util::file::delete_directory_tree(rootdir);
+
+#endif
+
     if (result)
         result = ! util::file_exists("build/tests/data/fts");
 
@@ -338,7 +350,7 @@ fw_file_list_test_by_pattern ()
     if (result)
     {
         std::cout
-            << "  Note that the 'Invalid regex' error is expected."
+            << "NOTE: this 'Invalid regex' error is *expected*"
             << std::endl
             ;
         util::info_message("Default directory traversal", rootdir);
@@ -355,6 +367,8 @@ fw_file_list_test_by_pattern ()
              * This can't happen directly because of traversal order.
              *
              *      result = s_actual_results == s_expected_results;
+             *
+             * TODO: SORT THE RESULTS and EXPECTED.
              */
 
             result = util::compare_tokenizations
