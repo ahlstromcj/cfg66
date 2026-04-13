@@ -25,7 +25,7 @@
  * \library       filewalker
  * \author        Chris Ahlstrom
  * \date          2026-04-02
- * \updates       2026-04-11
+ * \updates       2026-04-13
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
@@ -453,7 +453,7 @@ filewalker::process_path
                     ++count;
                 }
             }
-#if defined PLATFORM_DEBUG // _TMI
+#if defined PLATFORM_DEBUG_TMI
             printf("process_path() count = %d\n", count);
 #endif
         }
@@ -600,7 +600,7 @@ filewalker::process_bi_path
                     ++count;
                 }
             }
-#if defined PLATFORM_DEBUG // _TMI
+#if defined PLATFORM_DEBUG_TMI
             printf("process_bi_path() count = %d\n", count);
 #endif
         }
@@ -816,6 +816,7 @@ show_directory_entry
 }
 
 /**
+ *  Copies a file or creates a directory.
  *
  * \param source
  *      Provides a file-specification (full path) for either a directory
@@ -919,28 +920,112 @@ item_delete (const std::string & item, std::filesystem::file_type ft)
 
 /**
  *  Copies a directory hierarchy to another directory. See the
- *  copy_test() function in the filewalker_test program
- *  for more explanation.
+ *  fw_copy_test() function in the filewalker_test program.
+ *
+ *  The old method is not suitable, as different systems iterate through
+ *  directories in indeterminate order.
+ *
+ *  In the new method, we collect the sources and then order them, and
+ *  the recreate the destination.
+ *
+ * \param source
+ *      Provides the relative or absolute path to the source directory.
+ *      It must exist.
+ *
+ * \param dest
+ *      Provides the relative or absolute path to the destination directory.
+ *      It does not need to exist; it will be made.
+ *
+ * \return
+ *      Returns true if the copying succeeded in full.
  */
 
 bool
-copy_directory (const std::string & source, const std::string & dest)
+copy_directory_tree
+(
+    const std::string & source,
+    const std::string & destination
+)
 {
-    bool result { file_is_directory(source) && file_is_directory(dest) };
+#if defined USE_PROCESS_BI_FILES
+
+    /*
+     * This does not work on some systems due to the order of recursive
+     * iteration.
+     */
+
+    bool result { file_is_directory(source) && file_is_directory(destination) };
     if (result)
     {
         util::filewalker walker(source);    /* lock in source directory     */
         result = walker.process_bi_files
         (
-            item_copy, dest // , util::compare_files_before_dirs
+            item_copy, destination          /* compare_files_before_dirs    */
         );
     }
+
+#else
+
+    bool result { file_is_directory(source) };
+    if (result)
+    {
+        std::string lastdir { util::file::get_last_directory(source) };
+        std::string basedest { destination };
+        if (! lastdir.empty())
+            basedest = util::filename_concatenate(destination, lastdir);
+
+        filewalker::pairs collection;
+        result = collect_files_from_path(source, collection);
+        if (result)
+        {
+#if defined PLATFORM_DEBUG_TMI
+            std::string collstring { collection_to_string(collection) };
+            std::cout << collstring;
+#endif
+            /*
+             * Iterate through the collection to get the directories first.
+             */
+
+            for (const auto & entry : collection)
+            {
+                const filewalker::pair & p { entry.second };
+                if (p.pfs_type == std::filesystem::file_type::directory)
+                {
+                    std::string dest = util::file::build_destination_path
+                    (
+                        lastdir, p.pfs_name, basedest
+                    );
+                    result = item_copy(p.pfs_name, dest, std::filesystem::file_type::directory);
+                }
+            }
+
+            /*
+             * Iterate through the collection to get the regular files.
+             */
+
+            for (const auto & entry : collection)
+            {
+                const filewalker::pair & p { entry.second };
+                if (p.pfs_type == std::filesystem::file_type::regular)
+                {
+                    std::string dest = util::file::build_destination_path
+                    (
+                        lastdir, p.pfs_name, basedest
+                    );
+                    result = item_copy(p.pfs_name, dest, std::filesystem::file_type::regular);
+                }
+            }
+        }
+    }
+
+#endif  // defined USE_PROCESS_BI_FILES
+
     return result;
 }
 
 /**
  *  This function removes the files and directories it encounters, including
- *  sub-directories.
+ *  sub-directories, all in one call.
  *
  *  In general, directories are visited two distinguishable times; in preorder
  *  (before any of their descendants are visited) and in postorder (after all
@@ -953,6 +1038,7 @@ copy_directory (const std::string & source, const std::string & dest)
  *  Note that this function is not a filewalker::function callback.
  *
  *  We replace the original implementation with a simple call to remove_all().
+ *  Compare this function to delete_directory_tree().
  *
  *  #if defined USE_FILEWALKER_METHOD
  *      util::filewalker walker(path);
@@ -990,6 +1076,31 @@ delete_directory (const std::string & path)
 }
 
 /**
+ *  First, we collect the directories and files in the path, and
+ *  then we systematically, carefully, delete them.
+ */
+
+bool
+delete_directory_tree (const std::string & path)
+{
+    bool result { ! path.empty() };
+    if (result)
+    {
+        filewalker::pairs collection;
+        result = collect_files_from_path(path, collection);
+        if (result)
+        {
+#if defined PLATFORM_DEBUG_TMI
+            std::string collstring { collection_to_string(collection) };
+            std::cout << collstring;
+#endif
+            result = delete_collection(collection);
+        }
+    }
+    return result;
+}
+
+/**
  *  Collects files and directories in the path. Do we need this?
  *  See delete_directory_tree().
  *
@@ -1014,7 +1125,7 @@ delete_directory (const std::string & path)
  *      collection.
  *
  * \return
- *      Returns true if
+ *      Returns true if at least item got collected.
  */
 
 
@@ -1072,21 +1183,22 @@ collect_files_from_path
     return result;
 }
 
-/**
- *  First, we collect the directories and files in the path, and
- *  then we systematically, carefully, delete them.
- */
-
-bool
-delete_directory_tree (const std::string & path)
+std::string
+collection_to_string (const filewalker::pairs & collection)
 {
-    bool result { ! path.empty() };
-    if (result)
+    std::string result { "Collection:\n" };
+    for (const auto & entry : collection)
     {
-        filewalker::pairs collection;
-        result = collect_files_from_path(path, collection);
-        if (result)
-            result = delete_collection(collection);
+        std::string depth { std::to_string(entry.first) };
+        const filewalker::pair & p { entry.second };
+        std::string tname { get_type_name(p.pfs_type) };
+        result += "   [";
+        result += depth;
+        result += "] '";
+        result += p.pfs_name;
+        result += "': ";
+        result += tname;
+        result += "\n";
     }
     return result;
 }

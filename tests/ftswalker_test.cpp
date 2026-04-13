@@ -161,7 +161,7 @@ fts_callback_test ()
  *  Using the second method looks to be a tad more straight-forward.
  *
  *  Note that this code is essentially the same as the free function
- *  fts_copy_directory() function in the ftswalker module.
+ *  fw_copy_directory() function in the filewalker module.
  *
  *  "build/tests/data" becomes "build/tests/data/fts/..."
  */

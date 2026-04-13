@@ -28,7 +28,7 @@
  * \library       filewalker
  * \author        Chris Ahlstrom
  * \date          2026-04-02
- * \updates       2026-04-11
+ * \updates       2026-04-13
  *
  * \version       $Revision$
  * \license       GNU GPL v2 or above
@@ -228,18 +228,22 @@ extern bool item_delete
     const std::string & item,
     std::filesystem::file_type ft
 );
-extern bool copy_directory
+extern bool copy_directory_tree
 (
     const std::string & source,
     const std::string & dest
 );
-extern bool delete_directory (const std::string & path);
 extern bool collect_files_from_path
 (
     const std::string & path,
     filewalker::pairs & collection,
     bool includeroot = true
 );
+extern std::string collection_to_string
+(
+    const filewalker::pairs & collection
+);
+extern bool delete_directory (const std::string & path);
 extern bool delete_directory_tree (const std::string & path);
 extern bool delete_collection (const filewalker::pairs & collection);
 extern bool find_file                   /* uses filewalker::find_files()    */

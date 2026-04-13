@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2026-04-03
- * \updates       2026-04-11
+ * \updates       2026-04-13
  * \license       See above.
  *
  */
@@ -217,7 +217,7 @@ fw_callback_test ()
  *  Using the second method looks to be a tad more straight-forward.
  *
  *  Note that this code is essentially the same as the free function
- *  fw_copy_directory() function in the filewalker module.
+ *  util::file::copy_directory() function in the filewalker module.
  *
  *  "build/tests/data" becomes "build/tests/data/fts/..."
  */
@@ -227,6 +227,14 @@ fw_copy_test ()
 {
     const std::string rootdir { "tests/data/fts" };
     const std::string destdir { "build/tests/data" };   /* -> "build/tests/fts/..." */
+
+#if defined USE_FILEWALKER_TEST
+
+    /*
+     * This process fails on some systems due to a different order
+     * of recursive directory/file iteration.
+     */
+
     util::filewalker walker(rootdir);
     bool result { util::file_exists(destdir) };
     if (! result)
@@ -242,7 +250,11 @@ fw_copy_test ()
         if (result)
             result = util::file_is_directory("build/tests/data/fts");
     }
-
+#else
+    bool result { util::file::copy_directory_tree(rootdir, destdir) };
+    if (result)
+        result = util::file_is_directory("build/tests/data/fts");
+#endif
     return result;
 }
 
@@ -618,8 +630,8 @@ main (int argc, char * argv [])
                 util::status_message("find_regular_files() test...");
                 (void) walker.find_regular_files(results);
                 std::cout
-                    << "  Note that " << rootdir
-                    << " exists only if nsmd is running."
+                    << "NOTE: " << rootdir
+                    << " exists only if nsmd is running, with user 1000."
                     << std::endl
                     ;
             }
@@ -640,4 +652,3 @@ main (int argc, char * argv [])
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp nowrap
  */
-
