@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2026-04-12
+ * \updates       2026-04-15
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -48,7 +48,6 @@
 #include <ctime>                        /* std::strftime()                  */
 #include <filesystem>                   /* std::filesystem::path            */
 #include <limits>                       /* std::numeric_limits<>::max()     */
-#include <glob.h>                       /* ::glob() to get wildcards        */
 #include <regex>                        /* std::regex, smatch, etc.         */
 #include <sys/stat.h>
 
@@ -58,6 +57,10 @@
 #include "util/msgfunctions.hpp"        /* info/error message functions     */
 #include "util/filefunctions.hpp"       /* free functions in util n'space   */
 #include "util/strfunctions.hpp"        /* free functions in util n'space   */
+
+#if ! defined PLATFORM_WINDOWS
+#include <glob.h>                       /* ::glob() to get wildcards        */
+#endif
 
 /**
  *  Kludge for realpath() not readily available in MSYS2, because it is a
@@ -3095,11 +3098,11 @@ get_wildcards
     if (result)
     {
         int flags { GLOB_ERR };
-#if defined PLATFORM_LINUX
-        flags |= GLOB_TILDE;
+#if defined PLATFORM_WINDOWS
+        util::error_message("get_wildcards() not implement on Windows");
+        result = false;
 #else
-        // anything?
-#endif
+        flags |= GLOB_TILDE;
         glob_t g;
         int rc { glob(CSTR(wildpath), flags, nullptr, &g) };
         if (rc != 0)
@@ -3115,6 +3118,7 @@ get_wildcards
                 filelist.push_back(g.gl_pathv[i]);
         }
         globfree(&g);
+#endif
     }
     return result;
 }
