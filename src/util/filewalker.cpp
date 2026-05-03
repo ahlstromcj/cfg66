@@ -25,7 +25,7 @@
  * \library       filewalker
  * \author        Chris Ahlstrom
  * \date          2026-04-02
- * \updates       2026-04-13
+ * \updates       2026-04-14
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
@@ -49,17 +49,7 @@
  *      -   Use symlink_options in the iterator constructor to mimic
  *          FTS_LOGICAL or FTS_PHYSICAL.
  *      -   Requires C++17 or above.
- */
-
-#include <iostream>                     /* std::cout, std::cerr             */
-
-#include "platform_macros.h"            /* PLATFORM_DEBUG macro             */
-#include "util/filewalker.hpp"          /* file-tree traversal declarations */
-#include "util/filefunctions.hpp"       /* cfg66: util::file_write_lines()  */
-#include "util/msgfunctions.hpp"        /* cfg66: util::error_message() etc */
-#include "util/strfunctions.hpp"        /* cfg66: util::strcompare() etc    */
-
-/**
+ *
  *  file_status (const path & p (string_type && s, format = auto_format))
  *
  *      where string_type is a C-type string, a basic_string, a
@@ -80,6 +70,66 @@
  *      FTS_SL      A symbolic link.
  *      FTS_SLNONE Symbolic link with a nonexistent target.
  *
+ * filewalker function survey:
+ *
+ *  -   Class util::filewalker functions:
+ *      -   Constructors. Adds one or more paths to be searched.
+ *      -   find_files(). Looks for files in the search-paths that
+ *          match a target (which could be a regex), and adds them
+ *          to a string vector.
+ *      -   find_regular_files(). Looks for all regular files (except
+ *          "." and "..") in the search-paths and adds them to a vector.
+ *      -   traverse(). Iterates through a directory, calling a
+ *          filewalking::function for each file.
+ *      -   process_path(). Iterates through one path, calling
+ *          filewalker::function for each file matching a target.
+ *      -   process_files(). Calls process_path() for each search-path.
+ *      -   process_bi_path(). Iterates through one path, calling
+ *          a filewalker::bifunction for each file, to transform or copy
+ *          one file to another.
+ *      -   process_bi_files(). Calls process_bi_path() for each search-path.
+ *
+ *  -   Free functions in the util::file namespace
+ *      -   compare_files_before_dirs(). An FTS concept not yet used.
+ *      -   is_actionable_file(). Is an entry regular or directory?
+ *      -   Useful callback functions:
+ *          -   show_target(). Shows the file-name and type.
+ *          -   show_directory_entry(). Shows the file-name and type.
+ *          -   item_copy(). Given a source and a target, copies
+ *              the file or makes the directory at the target.
+ *          -   item_delete(). Deletes the file or removes the directory
+ *              (if empty).
+ *      -   copy_directory_tree(). Collects file and directory names,
+ *          makes the directories at the target, then copies the files.
+ *      -   delete_directory(). Simply calls remove_all() on the path.
+ *      -   delete_directory_tree(). Collects the files then calls
+ *          delete_collection().
+ *      -   collect_files_from_path(). Copies the directory/file-names
+ *          into a filewalker::pairs collection. Includes root path by
+ *          default.
+ *      -   collection_to_string(). Copies all entries to a string.
+ *      -   delete_collection(). First deletes the files in the collection,
+ *          then removes directories upwardly.
+ *      -   find_file(). Determines if a file/directory exists in the path.
+ *      -   find_files_by_regex(). Searchs all given paths, and collects into
+ *          a string vector all file/regex matching items.
+ *      -   get_type_name(). Converts a filesystem::file_type to a name.
+ *      -   get_last_directory(). Returns the last sub-directory in a path
+ *          name.
+ *      -   build_destination_path(). Given a full path and a root
+ *          subdirectory name, plus a destination directory, assembles the
+ *          corresponding destination directory name.
+ */
+
+#include <iostream>                     /* std::cout, std::cerr             */
+
+#include "platform_macros.h"            /* PLATFORM_DEBUG macro             */
+#include "util/filewalker.hpp"          /* file-tree traversal declarations */
+#include "util/filefunctions.hpp"       /* cfg66: util::file_write_lines()  */
+#include "util/msgfunctions.hpp"        /* cfg66: util::error_message() etc */
+#include "util/strfunctions.hpp"        /* cfg66: util::strcompare() etc    */
+
+/**
  */
 
 namespace util
@@ -105,7 +155,6 @@ filewalker::filewalker (const lib66::tokenization & paths) :
  *  A generic search to build a list of locations for the target file.
  *  This function searches the path(s) provided during the construction
  *  of this object.
- *
  *
  * \param target
  *      Provides the base-name of the file for which we're searching.
@@ -701,12 +750,12 @@ filewalker::process_bi_files
     return result;
 }
 
+namespace file
+{
+
 /*-------------------------------------------------------------------------
  * Free functions in the util::file namespace
  *-------------------------------------------------------------------------*/
-
-namespace file
-{
 
 /**
  *  The argument compare_whatever() specifies a user-defined function
@@ -881,7 +930,7 @@ item_copy
  *  and directory hierarchy.
  *
  *  Note that a directory cannot be deleted until all its children
- *  are deleted, which is done once the file type is FTS::DP.
+ *  are deleted.
  */
 
 bool
