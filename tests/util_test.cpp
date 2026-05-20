@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2025-02-07
- * \updates       2026-02-12
+ * \updates       2026-05-20
  * \license       See above.
  *
  *  We generally test only newly-added functions here; others were
@@ -32,7 +32,7 @@
  *
  *  Run this test from the root directory:
  *
- *      $ ./build/tests/util_test
+ *      $ ./build/cc/tests/util_test
  */
 
 #include <cstdlib>                      /* EXIT_SUCCESS, EXIT_FAILURE       */
@@ -44,9 +44,168 @@
 #include "util/msgfunctions.hpp"        /* util::string_format(), V()       */
 #include "util/strfunctions.hpp"        /* util::string_format(), V()       */
 
+namespace       // anonymous
+{
+
 /*
- * Application information.
+ * Application information. None so far.
  */
+
+/*
+ * Tests
+ */
+
+/*
+ *  Tests the function string_format() and string_asprintf() in the
+ *  util namespace.
+ */
+
+bool
+test_string_formatting ()
+{
+    std::string msg_1 { "This is a message about" };
+    std::string msg_2 { "variadic functions" };
+    std::string target
+    {
+        "MSG: This is a message about: variadic functions."
+    };
+    std::string output
+    {
+        util::string_format             /* V() is "vararg" to get POD   */
+        (
+            "MSG: %s: %s.", V(msg_1), V(msg_2)
+        )
+    };
+    bool success { output == target };
+    if (success)
+    {
+        output = util::string_asprintf("MSG: %s: %s.", V(msg_1), V(msg_2));
+        success = output == target;
+    }
+    return success;
+}
+
+/*
+ *  Tests util::file_read_lines(). Note that this function gets only
+ *  lines that are not commented by a "#" and that are non-empty.
+ */
+
+bool
+test_read_lines (bool verbose)
+{
+    std::string file { "tests/data/lines.txt" };
+    lib66::tokenization lines;
+    bool success = util::file_read_lines(file, lines);
+    if (success)
+    {
+        int count { 0 };
+        for (const auto & s : lines)
+        {
+            ++count;
+            if (verbose)
+                std::cout << s << std::endl;
+        }
+        success = count == 11;
+    }
+    else
+    {
+        std::cerr << "Could not read lines from '" << file << "'" << std::endl;
+    }
+    return success;
+}
+
+/*
+ *  Tests util::get_xdg_runtime_directory().
+ */
+
+bool
+test_xdg_runtime_directory ()
+{
+    std::string daemondir
+    {
+        util::get_xdg_runtime_directory("nsm", "d")
+    };
+    bool success = ! daemondir.empty();
+    return success;
+}
+
+/*
+ *  Tests util::tokenize_pairs() and util::lookup_token_pairs().
+ *
+ *  The raw string defined here is a little tricky. First, it starts with a
+ *  newline. Second, the indenting spaces are included in the string.
+ *  Third, a newline terminates every line.
+ *
+ *  So first we tokenize the raw string using "\n" as the delimiter.
+ *  The first newline is not stored, but the last one is, so we
+ *  pop that off for this test.
+ *
+ *  Also note that we use an "=" for the delimiter in the
+ *  "name=value" pairs.
+ */
+
+bool
+test_tokenize_pairs (bool verbose)
+{
+    const std::string c_os_release      /* taken from /etc/os-release       */
+    {
+        R"(
+    PRETTY_NAME="Debian GNU/Linux forky/sid"
+    NAME="Debian GNU/Linux"
+    VERSION_CODENAME=forky
+    ID=debian
+    HOME_URL="https://www.debian.org/"
+    SUPPORT_URL="https://www.debian.org/support"
+    BUG_REPORT_URL="https://bugs.debian.org/"
+        )"
+    };
+    lib66::tokenization c_lines
+    {
+        util::tokenize(c_os_release, "\n")
+    };
+    int count { 0 };
+    c_lines.pop_back();
+    if (verbose)
+    {
+        std::cout << c_os_release << std::endl;
+        for (const auto & line : c_lines)
+        {
+            std::cout << "[" << count << "] " << line << std::endl;
+            ++count;
+        }
+        std::cout << std::endl;
+    }
+    bool success { c_lines.size() == 7 };
+    if (success)
+    {
+        lib66::tokenpairs tp { util::tokenize_pairs(c_lines, "=") };
+        if (verbose)
+        {
+            count = 0;
+            for (const auto & p : tp)
+            {
+                std::cout << "[" << count << "] "
+                    << p.first << " = " << p.second
+                    << std::endl
+                    ;
+                ++count;
+            }
+            std::cout << std::endl;
+        }
+        success = tp.size() == 7;
+        if (success)
+        {
+            std::string value { util::lookup_token_pair(tp, "PRETTY_NAME") };
+            if (verbose)
+                std::cout << "PRETTY_NAME = '" << value << "'" << std::endl;
+
+            success = value == "Debian GNU/Linux forky/sid";
+        }
+    }
+    return success;
+}
+
+}               // namespace anonymous
 
 /*
  *  main() routine.
@@ -92,58 +251,16 @@ main (int argc, char * argv [])
     }
     if (canrun)
     {
-        /*
-         * First test
-         */
+        success = test_string_formatting();
+        if (success)
+            success = test_read_lines(clip.verbose());
 
-        std::string msg_1 { "This is a message about" };
-        std::string msg_2 { "variadic functions" };
-        std::string target
-        {
-            "MSG: This is a message about: variadic functions."
-        };
-        std::string output
-        {
-            util::string_format             /* V() is "vararg" to get POD   */
-            (
-                "MSG: %s: %s.", V(msg_1), V(msg_2)
-            )
-        };
-        bool success { output == target };
         if (success)
-        {
-            output = util::string_asprintf("MSG: %s: %s.", V(msg_1), V(msg_2));
-            success = output == target;
-        }
+            success = test_xdg_runtime_directory();
+
         if (success)
-        {
-            std::string file { "tests/data/lines.txt" };
-            lib66::tokenization lines;
-            success = util::file_read_lines(file, lines);
-            if (success)
-            {
-                for (const auto & s : lines)
-                {
-                    std::cout << s << std::endl;
-                }
-            }
-            else
-            {
-                std::cerr
-                    << "Could not read lines from '"
-                    << file << "'"
-                    << std::endl
-                    ;
-            }
-        }
-        if (success)
-        {
-            std::string daemondir
-            {
-                util::get_xdg_runtime_directory("nsm", "d")
-            };
-            success = ! daemondir.empty();
-        }
+            success = test_tokenize_pairs(clip.verbose());
+
         if (success)
         {
             std::cout << "util C++ test succeeded" << std::endl;

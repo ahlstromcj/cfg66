@@ -1,0 +1,106 @@
+#*****************************************************************************
+# meson.mingw.cross (cfg66)
+#-----------------------------------------------------------------------------
+##
+# \file        meson.mingw.cross
+# \library     cfg66
+# \author      Chris Ahlstrom
+# \date        2026-05-20
+# \updates     2026-05-20
+# \license     $XPC_SUITE_GPL_LICENSE$
+#
+#  This file is part of the "cfg66" library. See the top-level meson.build
+#  file for license information.
+#
+#  See contrib/notes/Meson.text for more information.
+#
+#  In addition to installing a bunch of mingw-related build packages, also
+#  install mingw-w64-qt6-base.
+#
+#  Wine:
+#
+#     Use windeployqt in Wine; example 'windeployqt Seq66qt5/release'.
+#
+#  Arch:
+#
+#     Assuming base-devel is already installed.
+#
+#     # pacman -S mingw-w64-x86_64-toolchain
+#
+#  Debian:
+#
+#     # apt install mingw-w64 g++-mingw-w64 cmake ninja-build
+#
+#  Meson cross-compilation status functions:
+#
+#     meson.is_cross_build()
+#     meson.can_run_host_binaries()
+#     
+#     build_compiler = meson.get_compiler('c', native : true)
+#     host_compiler = meson.get_compiler('c', native : false)
+#     build_int_size = build_compiler.sizeof('int')
+#     host_int_size  = host_compiler.sizeof('int')
+#
+#  [constants]
+#
+#  Some tokes are replace in the machine file before parsing it:
+#
+#     @GLOBAL_SOURCE_ROOT@:
+#
+#        The absolute path to the project's source tree.
+#
+#     @DIRNAME@:
+#
+#        The absolute path to the machine file's parent directory.
+#
+#  ISSUE: x86_64-linux-gnu, not the version below, is being used.
+#
+#     The problem is in your cross file, /usr/bin/pkg-config will return build
+#     machine libraries. There are 2 ways to fix that:
+#
+#     1. Some toolchains provide a pkg-config wrapper script, you could use it
+#        as pkgconfig = '/usr/bin/arm-none-eabi-pkg-config' if that exists, or
+#        if you write one. For example on my Ubuntu I have
+#        /usr/bin/x86_64-w64-mingw32-pkg-config. Those wrappers set
+#        PKG_CONFIG_LIBDIR and PKG_CONFIG_SYSROOT_DIR
+#
+#     2. Keep using /usr/bin/pkg-config in your cross file but add
+#        pkg_config_libdir='/path/to/sysroot/lib/pkgconfig' and
+#        sys_root='/path/to/sysroot' in [properties] section.
+#
+#     Fixed using 1.
+#
+#-----------------------------------------------------------------------------
+
+[constants]
+
+[host_machine]
+
+system = 'windows'
+subsystem = 'windows'
+kernel = 'nt'
+cpu_family = 'x86_64'
+cpu = 'x86_64'
+endian = 'little'
+
+[binaries]
+
+c = 'x86_64-w64-mingw32-gcc'
+cpp = 'x86_64-w64-mingw32-g++'
+ar = 'x86_64-w64-mingw32-ar'
+ld = 'x86_64-w64-mingw32-ld'
+objcopy = 'x86_64-w64-mingw32-objcopy'
+strip = 'x86_64-w64-mingw32-strip'
+windres = 'x86_64-w64-mingw32-windres'
+pkg-config = 'x86_64-w64-mingw32-pkg-config'
+exe_wrapper = 'wine64'           # key step for running binaries; also 'wine'
+
+[properties]
+
+# pkg_config_libdir = '/mnt/ntfs/Qt/5.15.2/mingw81_64/lib/pkgconfig/'
+
+#****************************************************************************
+# meson.mingw.cross
+#----------------------------------------------------------------------------
+# vim: ts=3 sw=3 ft=dosini
+#----------------------------------------------------------------------------

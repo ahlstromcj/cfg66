@@ -25,7 +25,7 @@
  * \library       filewalker
  * \author        Chris Ahlstrom
  * \date          2026-04-02
- * \updates       2026-04-14
+ * \updates       2026-05-20
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
@@ -456,7 +456,9 @@ filewalker::process_path
     {
         try
         {
+#if defined PLATFORM_DEBUG_TMI
             int count { 0 };
+#endif
             std::error_code ec;
             for                         /* get file attributes a la fts_ent */
             (
@@ -499,7 +501,9 @@ filewalker::process_path
                         if (! result)
                             break;
                     }
+#if defined PLATFORM_DEBUG_TMI
                     ++count;
+#endif
                 }
             }
 #if defined PLATFORM_DEBUG_TMI
@@ -614,7 +618,9 @@ filewalker::process_bi_path
 
         try
         {
+#if defined PLATFORM_DEBUG_TMI
             int count { 0 };
+#endif
             for                         /* Get file attributes a la fts_ent */
             (
                 auto it = std::filesystem::recursive_directory_iterator(path);
@@ -646,7 +652,9 @@ filewalker::process_bi_path
                     if (! result)
                         break;
 
+#if defined PLATFORM_DEBUG_TMI
                     ++count;
+#endif
                 }
             }
 #if defined PLATFORM_DEBUG_TMI

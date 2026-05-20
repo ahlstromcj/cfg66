@@ -27,7 +27,7 @@
  *
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2026-03-02
+ * \updates       2026-05-20
  * \version       $Revision$
  *
  *    Also see the strfunctions.cpp module.
@@ -286,7 +286,26 @@ extern lib66::tokenization tokenize
     const std::string & source,
     const std::string & delimiters = " \t"
 );
-extern lib66::tokenization tokenize_quoted (const std::string & source);
+extern bool add_tokenpair
+(
+    lib66::tokenpairs & destination,
+    const lib66::tokenization & t
+);
+extern lib66::tokenpairs tokenize_pairs
+(
+    const lib66::tokenization & source,
+    const std::string & delimiters
+);
+extern std::string lookup_token_pair
+(
+    const lib66::tokenpairs & storage,
+    const std::string & target
+);
+extern lib66::tokenization tokenize_quoted
+(
+    const std::string & source,
+    const std::string & delimiters = " \t"
+);
 extern bool compare_tokenizations
 (
     const lib66::tokenization & a,
