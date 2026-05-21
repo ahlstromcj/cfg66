@@ -34,7 +34,7 @@ export LANG
 CYGWIN=binmode
 export CYGWIN
 export CFG66_SCRIPT_EDIT_DATE="2026-05-21"
-export CFG66_LIBRARY_API_VERSION="0.3"
+export CFG66_LIBRARY_API_VERSION="0.4"
 export CFG66_LIBRARY_VERSION="$CFG66_LIBRARY_API_VERSION.0"
 export CFG66="cfg66"
 export CFG66_LIBRARY="$CFG66-$CFG66_LIBRARY_API_VERSION"
@@ -49,6 +49,7 @@ EXTRAFLAGS=""
 INSTALL_LIBDIR="lib"                # "lib/x86_64-linux-gnu" on Debian
 INSTALL_PREFIX="/usr/local"         # "/usr", what about Windows?
 MAKEFILE="$BUILD_DIR/build.ninja"
+MAKELOG="make.log"
 PLATFORM="UNIX"
 POTEXTDEF=""
 TAGSTRING="pack"
@@ -110,6 +111,7 @@ get_options () {
                DOCROSS="yes"
                BUILD_DIR="$BASE_BUILD_DIR/cross"
                MAKEFILE="$BUILD_DIR/build.ninja"
+               MAKELOG="$BUILD_DIR/make.log"
                CROSSENVSET="PKG_CONFIG_PATH=$CROSS_PKG_PATH:$PKG_CONFIG_PATH"
                export $CROSSENVSET
                echo "CROSSENVSET: PKG_CONFIG_PATH=$PKG_CONFIG_PATH"
@@ -434,7 +436,7 @@ make_projects () {
    # present on older ninjas, so we use -v here.
 
    cd $BUILD_DIR
-   ninja -v > make.log
+   ninja -v > $MAKELOG
    if test $? = 0 ; then
       if test "$DODEBUG" = "yes" ; then
          echo "Debug build in $BUILD_DIR succeeded."
@@ -604,12 +606,12 @@ if test "$DOCROSS" = "yes" ; then
    CROSSFILE="--cross-file meson.mingw.cross"
    meson setup $BUILD_DIR --buildtype=$BUILD_TYPE $CROSSOPTS $CROSSFILE
    if test $? = 0 ; then
-      meson compile -C $BUILD_DIR > make.log
+      meson compile -C $BUILD_DIR > $MAKELOG
       if test $? = 0 ; then
          echo "Cross-build in $BUILD_DIR succeeded."
          exit 0
       else
-         echo "Cross-build failed, check $BUILD_DIR/make.log for errors."
+         echo "Cross-build failed, check $MAKELOG for errors."
          exit 1
       fi
    fi

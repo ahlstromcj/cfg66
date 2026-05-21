@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-24
- * \updates       2026-05-20
+ * \updates       2026-05-21
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -1476,28 +1476,6 @@ toupper (const std::string & source)
     }
     return result;
 }
-
-/*
- *  Returns the source string with the first character converted to uppercase.
- *  Already defined in the strconversions module!
- */
-
-# if 0
-
-std::string
-capitalize (const std::string & source)
-{
-    std::string result;
-    int count { 0 };
-    for (auto c : source)
-    {
-        char c2 { count++ == 0 ? char(std::toupper(c)) : c };
-        result += c2;
-    }
-    return result;
-}
-
-#endif
 
 /**
  *  Easy conversion from boolean to string, "true" or "false".

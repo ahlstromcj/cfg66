@@ -25,7 +25,7 @@
  * \library       filewalker
  * \author        Chris Ahlstrom
  * \date          2026-04-02
- * \updates       2026-05-20
+ * \updates       2026-05-21
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
@@ -1526,7 +1526,7 @@ get_last_directory (const std::string & pathspec)
 {
     std::filesystem::path p { pathspec };
 
-#if defined USE_LIB55_TOKENIZATION_VECTOR
+#if defined USE_LIB66_TOKENIZATION_VECTOR           // undefined
 
     lib66::tokenization subdirs;
     for (const auto & s : p)
@@ -1540,8 +1540,13 @@ get_last_directory (const std::string & pathspec)
     for (auto it = p.begin(); it != p.end(); ++it)
         sit = it;
 
+    /*
+     * Replace *sit with sit->string(). An error occurs when
+     * compiling with x86_64-w64-mingw32-g++.
+     */
+
     if (sit != p.end())
-        return *sit;
+        return sit->string();
     else
         return pathspec;
 
@@ -1606,14 +1611,19 @@ build_destination_path
         lib66::tokenization collection;
         for (auto it = p.begin(); it != p.end(); ++it)
         {
-            if (*it == rootsource)
+            /*
+             * Replace *it with it->string(). An error occurs when
+             * compiling with x86_64-w64-mingw32-g++.
+             */
+
+            if (it->string() == rootsource)
             {
                 collect = true;
             }
             else
             {
                 if (collect)
-                    collection.push_back(*it);
+                    collection.push_back(it->string());
             }
         }
         if (collection.size() > 0)

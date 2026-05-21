@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2026-04-15
+ * \updates       2026-05-21
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -95,6 +95,7 @@ EXTERN_C_END
 #if defined PLATFORM_WINDOWS            /* Microsoft platform               */
 
 #include <dir.h>                        /* file-name info and getcwd()      */
+#include <fcntl.h>                      /* open(2), O_RDWR, O_CREAT         */
 #include <io.h>                         /* _access_s()                      */
 #include <share.h>                      /* _SH_DENYNO                       */
 
@@ -133,7 +134,7 @@ using stat_t = struct _stat;
 #define S_MKDIR     mkdir
 #define S_OPEN      _sopen_s            /* Microsoft's safe open()          */
 #define S_RMDIR     rmdir
-#define S_FCHMOD    fchmod              /* Microsoft's fchmod function ?    */
+#define S_FCHMOD    _chmod              /* Microsoft's fchmod function ?    */
 #define S_FSTAT     fstat
 #define S_STAT      stat
 #define S_UNLINK    _unlink             /* Microsoft file deletion function */
@@ -1124,7 +1125,18 @@ file_read_lines
 
             for (;;)
             {
+#if defined PLATFORM_WINDOWS
+                ssize_t count { 0 };
+                char * p { fgets(destination, maxim, input) };
+                if (not_nullptr(p))
+                    count = std::strlen(destination);
+#else
+                /*
+                 * getline() is *not* in the std namespace.
+                 */
+
                 ssize_t count { getline(&destination, &maxim, input) };
+#endif
                 if (count == 1)                 /* empty line, "\n" only    */
                 {
                     continue;
@@ -1553,6 +1565,7 @@ make_directory (const std::string & pathname, int mode)
         if (S_STAT(CSTR(pathname), &st) == -1)
         {
 #if defined PLATFORM_WINDOWS
+            (void) mode;
             int rcode { S_MKDIR(CSTR(pathname)) };
 #else
             int rcode { S_MKDIR(CSTR(pathname), mode) };
@@ -1785,7 +1798,7 @@ get_parent_directory (const std::string & pathname)
  * \param path
  *      Provides the path, which may be relative.
  *
- * \param
+ * \param quiet
  *      If true (the default), don't emit a file-error message.
  *
  * \return
@@ -1801,6 +1814,7 @@ get_full_path (const std::string & path, bool quiet)
 #if defined PLATFORM_WINDOWS                    /* _MSVC not defined in Qt  */
         char * resolved_path { NULL };          /* what a relic!            */
         char temp [256];
+        (void) quiet;                           /* FIXME */
         resolved_path = _fullpath(temp, CSTR(path), 256);
         if (not_NULL(resolved_path))
             result = resolved_path;
@@ -2869,7 +2883,13 @@ set_env
     bool result { ! v.empty() };
     if (result)
     {
+#if defined PLATFORM_WINDOWS
+        std::string setting { v + "=" + value };
+        int rc { _putenv(CSTR(setting)) };
+        (void) overwrite;
+#else
         int rc { setenv(CSTR(v), CSTR(value), overwrite ? 1 : 0) };
+#endif
         result = rc == 0;
         if (! result)
             util::error_message("set_env() failed", v);
@@ -2906,11 +2926,12 @@ std::string
 user_home (const std::string & appfolder)
 {
     std::string result;
+
 #if defined PLATFORM_WINDOWS
-    char * env { std::getenv(s_env_homedrive) };
+    char * env { std::getenv(CSTR(s_env_homedrive)) };
     if (not_nullptr(env))
     {
-        char * env2 { std::getenv(s_env_homepath) };
+        char * env2 { std::getenv(CSTR(s_env_homepath)) };
         if (not_nullptr(env2))
         {
             result += env;              /* "C:"                             */
@@ -2920,6 +2941,7 @@ user_home (const std::string & appfolder)
 #else
     result = get_env(s_env_home);
 #endif
+
     if (result.empty())
     {
         file_error("std::getenv() failed", "HOME");
@@ -2953,7 +2975,7 @@ user_config (const std::string & appfolder)
 {
     std::string result;
 #if defined PLATFORM_WINDOWS
-    char * env { std::getenv(s_env_config) };               /* tricky code  */
+    char * env { std::getenv(C_STR(s_env_config)) };        /* tricky code  */
     if (not_nullptr(env))
     {
         result = env;                   /* C:\Users\username\AppData\Local  */
@@ -3097,11 +3119,11 @@ get_wildcards
     bool result { ! wildpath.empty() };
     if (result)
     {
-        int flags { GLOB_ERR };
 #if defined PLATFORM_WINDOWS
-        util::error_message("get_wildcards() not implement on Windows");
+        util::error_message("get_wildcards() not implemented on Windows");
         result = false;
 #else
+        int flags { GLOB_ERR };
         flags |= GLOB_TILDE;
         glob_t g;
         int rc { glob(CSTR(wildpath), flags, nullptr, &g) };
@@ -3210,9 +3232,14 @@ file_descriptor_touch (int fd)
     bool result { fd >= 0 };
     if (result)
     {
+#if defined PLATFORM_WINDOWS
+        util::error_message("Windows cannot 'touch' file descriptor", path);
+        result = false;
+#else
         stat_t st;
         if (S_FSTAT(fd, &st) == 0)
             S_FCHMOD(fd, st.st_mode);
+#endif
     }
     return result;
 }
@@ -3359,7 +3386,7 @@ file_path_expand (const std::string & inpath)
  *      char * read_line()
  */
 
-#if defined PLATFORM_LINUX
+#if defined PLATFORM_UNIX
 
 /**
  *  Gets the name of the run-time directory, and verifies its existence,
@@ -3451,7 +3478,17 @@ get_xdg_runtime_directory
  *      Returns the value of the environment variable plus the appended
  *      sub-directory, or an empty string if the directory does not exist.
  *
- *      TODO: adapt for Windows.
+ *      TODO: adapt for Windows. For now, just return an empty directory
+ *            name.
+ *
+ *      On Windows, there is no official XDG Base Directory specification.
+ *      However, when applications or libraries (like adrg/xdg) port the
+ *      XDG standard to Windows, XDG_RUNTIME_DIR generally defaults to
+ *      the user's temporary directory:
+ *
+ *      Default Path: %USERPROFILE%\AppData\Local\Temp (or %TEMP%)
+ *      Alternative Path: Sometimes mapped to %LOCALAPPDATA%\xdg.runtime
+ *      depending on the specific application or framework.
  *
  *  NOTE: compare to nsm::make_xdg_runtime_lock_directory()
  */
@@ -3481,9 +3518,90 @@ make_xdg_runtime_directory (const std::string & subdirectory)
 
 #else
 
-#error make_xdg_runtime_directory() is only for Linux at present
+/*
+ * #error make_xdg_runtime_directory() is only for Linux at present
+ */
 
-#endif      // defined PLATFORM_LINUX
+std::string
+get_xdg_runtime_directory
+(
+    const std::string & sub1,
+    const std::string & sub2
+)
+{
+    std::string result;
+    char * env { std::getenv("XDG_RUNTIME_DIR") };
+    if (not_nullptr(env))
+        result = env;
+
+    if (result.empty())                             /* env var is not set   */
+    {
+        uid_t uid_for_rundir { geteuid() };
+        result = util::string_asprintf
+        (
+            "/run/user/%d/", uid_for_rundir
+        );
+        util::warn_message
+        (
+            "$XDG_RUNTIME_DIR not set; falling back to", result
+        );
+    }
+    if (! util::file_exists(result))
+    {
+        int ec { errno };
+        util::error_printf
+        (
+            "Failed to access FHS run-dir directory %s with error: %s",
+            V(result), std::strerror(ec)
+        );
+        result.clear();
+    }
+    if (! util::file_is_directory(result))
+    {
+        util::error_message
+        (
+            "FHS run-dir is not a directory", result
+        );
+        result.clear();
+    }
+    if (! result.empty())
+    {
+        if (! sub1.empty())
+            result = filename_concatenate(result, sub1);
+
+        if (! sub2.empty())
+            result = filename_concatenate(result, sub2);
+    }
+    if (! result.empty())
+        util::info_message("Run-time/lock directory", result);
+
+    return result;
+}
+
+std::string
+make_xdg_runtime_directory (const std::string & subdirectory)
+{
+    std::string result { get_xdg_runtime_directory(subdirectory) };
+    if (! result.empty())
+    {
+        if (! util::make_directory_path(result, 0771))
+        {
+            int ec { errno };
+            util::error_printf
+            (
+                "Failed to create run-time directory %s with error: %s",
+                V(result), std::strerror(ec)
+            );
+            result.clear();
+        }
+    }
+    if (! result.empty())
+        util::info_message("Run-time (lock) directory", result);
+
+    return result;
+}
+
+#endif      // defined PLATFORM_UNIX
 
 }           // namespace util
 

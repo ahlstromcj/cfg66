@@ -27,7 +27,7 @@
  *
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2026-05-20
+ * \updates       2026-05-21
  * \version       $Revision$
  *
  *    Also see the strfunctions.cpp module.
@@ -264,13 +264,6 @@ extern bool regex_match
 );
 extern std::string tolower (const std::string & source);
 extern std::string toupper (const std::string & source);
-
-/*
- * Already defined in strconversions.
- *
- * extern std::string capitalize (const std::string & source);
- */
-
 extern std::string bool_to_string (bool x, bool yesno = false);
 extern char bool_to_char (bool x);
 extern std::string pointer_to_string (void * ptr);
@@ -344,6 +337,18 @@ extern bool target_terminated (const std::string & s, char target = '\n');
  *--------------------------------------------------------------------------*/
 
 extern std::string simple_hash (const std::string & s);
+
+/*--------------------------------------------------------------------------
+ * Functions defined in the strconversions module, but also declared again
+ * here for convenience.
+ *--------------------------------------------------------------------------*/
+
+extern std::string capitalize (const std::string & str);
+extern std::string uncapitalize (const std::string & str);
+extern std::string abbreviation                         /* short_version()  */
+(
+    std::string orig, std::string::size_type targetlength
+);
 
 }           // namespace util
 

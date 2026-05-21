@@ -6,20 +6,13 @@
 # \library     cfg66
 # \author      Chris Ahlstrom
 # \date        2026-05-20
-# \updates     2026-05-20
+# \updates     2026-05-21
 # \license     $XPC_SUITE_GPL_LICENSE$
 #
 #  This file is part of the "cfg66" library. See the top-level meson.build
 #  file for license information.
 #
 #  See contrib/notes/Meson.text for more information.
-#
-#  In addition to installing a bunch of mingw-related build packages, also
-#  install mingw-w64-qt6-base.
-#
-#  Wine:
-#
-#     Use windeployqt in Wine; example 'windeployqt Seq66qt5/release'.
 #
 #  Arch:
 #
@@ -35,11 +28,6 @@
 #
 #     meson.is_cross_build()
 #     meson.can_run_host_binaries()
-#     
-#     build_compiler = meson.get_compiler('c', native : true)
-#     host_compiler = meson.get_compiler('c', native : false)
-#     build_int_size = build_compiler.sizeof('int')
-#     host_int_size  = host_compiler.sizeof('int')
 #
 #  [constants]
 #
@@ -70,9 +58,40 @@
 #
 #     Fixed using 1.
 #
+#     /usr/bin/x86_64-linux-gnu-pkg-config -> pkgconf
+#
+#     /usr/bin/x86_64-w64-mingw32-pkg-config ->
+#        ../share/mingw-w64/pkg-config-crosswrapper
+#
+#     /usr/bin/x86_64-w64-mingw32ucrt-pkg-config ->
+#        ../share/mingw-w64/pkg-config-crosswrapper
+#
+#     [binaries]
+#     [built-in options]
+#     [cmake]
+#     [constants]
+#     [paths] (deprecated, use built-in instead)
+#     [project options]
+#     [properties]
+#
 #-----------------------------------------------------------------------------
 
 [constants]
+
+usr_bin = '/usr/bin'
+
+[built-in options]
+
+# c_args = [ '' ]
+# cpp_args = [ '' ]
+
+[properties]
+
+# The directory that contain bin, include, and lib:
+
+ming_root = '/usr/x86_64-w64-mingw32/'
+
+# pkg_config_libdir = '/mnt/ntfs/Qt/5.15.2/mingw81_64/lib/pkgconfig/'
 
 [host_machine]
 
@@ -85,19 +104,23 @@ endian = 'little'
 
 [binaries]
 
-c = 'x86_64-w64-mingw32-gcc'
-cpp = 'x86_64-w64-mingw32-g++'
-ar = 'x86_64-w64-mingw32-ar'
-ld = 'x86_64-w64-mingw32-ld'
-objcopy = 'x86_64-w64-mingw32-objcopy'
-strip = 'x86_64-w64-mingw32-strip'
-windres = 'x86_64-w64-mingw32-windres'
-pkg-config = 'x86_64-w64-mingw32-pkg-config'
+c = usr_bin / 'x86_64-w64-mingw32-gcc'
+cpp = usr_bin / 'x86_64-w64-mingw32-g++'
+
+c_ld = 'gold'
+cpp_ld = 'gold'
+
+ar = usr_bin / 'x86_64-w64-mingw32-ar'
+as = usr_bin / 'x86_64-w64-mingw32-as'
+ld = usr_bin / 'x86_64-w64-mingw32-ld'
+nm = usr_bin / 'x86_64-w64-mingw32-nm'
+objcopy = usr_bin / 'x86_64-w64-mingw32-objcopy'
+objdump = usr_bin / 'x86_64-w64-mingw32-objdump'
+ranlib = usr_bin / 'x86_64-w64-mingw32-ranlib'
+strip = usr_bin / 'x86_64-w64-mingw32-strip'
+windres = usr_bin / 'x86_64-w64-mingw32-windres'
+pkg-config = usr_bin / 'x86_64-w64-mingw32-pkg-config'
 exe_wrapper = 'wine64'           # key step for running binaries; also 'wine'
-
-[properties]
-
-# pkg_config_libdir = '/mnt/ntfs/Qt/5.15.2/mingw81_64/lib/pkgconfig/'
 
 #****************************************************************************
 # meson.mingw.cross

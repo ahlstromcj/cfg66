@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2025-02-07
- * \updates       2026-05-20
+ * \updates       2026-05-21
  * \license       See above.
  *
  *  We generally test only newly-added functions here; others were
@@ -205,6 +205,29 @@ test_tokenize_pairs (bool verbose)
     return success;
 }
 
+/*
+ *  Tests util::capitalize() and util::uncapitalize()
+ */
+
+bool
+test_capitalize_uncapitalize (bool verbose)
+{
+    const std::string downword { "linux" };
+    const std::string upword { "Linux" };
+    std::string capped { util::capitalize(downword) };
+    std::string uncapped { util::uncapitalize(upword) };
+    bool success { capped == upword && uncapped == downword };
+    if (verbose && success)
+    {
+        std::cout
+            << std::endl
+            << downword << " ---> " << capped << " ---> " << uncapped << "\n"
+            << std::endl
+            ;
+    }
+    return success;
+}
+
 }               // namespace anonymous
 
 /*
@@ -260,6 +283,9 @@ main (int argc, char * argv [])
 
         if (success)
             success = test_tokenize_pairs(clip.verbose());
+
+        if (success)
+            success = test_capitalize_uncapitalize(clip.verbose());
 
         if (success)
         {

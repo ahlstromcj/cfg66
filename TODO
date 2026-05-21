@@ -1,12 +1,15 @@
 TODOs for the cfg66 library
 Chris Ahlstrom
-2023-07-16 to 2026-04-14
+2023-07-16 to 2026-05-21
 
 This file lists only the high-priority features and fixtures we need
 to do for Cfg66.
 
     -   Finish the documentation of the walker classes.
-    -   Get it working in Windows.
+    -   Get it working in Windows; still have mingw build issues.
+        Currently: _O_RDWR etc in filefunctions.
+    -   Make sure the install and uninstall work.
+        Same for lib66.
 
 ini_test_cpp:
 
