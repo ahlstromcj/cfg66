@@ -8,7 +8,7 @@
 # \library        cfg66
 # \author         Chris Ahlstrom
 # \date           2024-02-06
-# \update         2026-05-20
+# \update         2026-05-21
 # \version        $Revision$
 # \license        $XPC_SUITE_GPL_LICENSE$
 #
@@ -33,7 +33,7 @@ LANG=C
 export LANG
 CYGWIN=binmode
 export CYGWIN
-export CFG66_SCRIPT_EDIT_DATE="2026-05-20"
+export CFG66_SCRIPT_EDIT_DATE="2026-05-21"
 export CFG66_LIBRARY_API_VERSION="0.3"
 export CFG66_LIBRARY_VERSION="$CFG66_LIBRARY_API_VERSION.0"
 export CFG66="cfg66"
@@ -57,24 +57,24 @@ TAGSTRING="pack"
 
 DOCLANG="no"         # --clang. Default is the native compiler.
 DOCLEAN="no"         # --clean
-DOCROSS="no"            # --cross. Build for Windows using a cross-file.
-DODEBUG="no"         # --debug. This is the default Meson build.
+DOCROSS="no"         # --cross. Build for Windows using a cross-file.
+DODEBUG="no"         # --debug. Build for debuggin in build/debug
 DODIST="no"          # --dist. Use Meson "dist" to create a package.
-DOGNU="no"              # --gnu. Default is the native compiler.
-DOHELP="no"             # --help. Duh!
-DOINSTALL="no"          # --install. Requires the release be built already.
-DOMAKE="yes"            # Default action after creating the build directory.
-DOMAKEPDF="no"          # --pdf. Make the manual, always as a separate step.
-DONSIS="no"             # --nsis. Make an NSIS Windows installer.
-DOOPTHELP="no"          # --option-help. Duh!
-DOPACK="no"             # --pack. Clean and create a tar-file.
-DOPOTEXT="no"           # --potext. Use translation [NOT YET SUPPORTED].
-DORELEASE="no"       # --release. as opposed to debug; also PDF is made.
+DOGNU="no"           # --gnu. Default is the native compiler.
+DOHELP="no"          # --help. Duh!
+DOINSTALL="no"       # --install. Requires the release be built already.
+DOMAKE="yes"         # Default action after creating the build directory.
+DOMAKEPDF="no"       # --pdf. Make the manual, always as a separate step.
+DONSIS="no"          # --nsis. Make an NSIS Windows installer.
+DOOPTHELP="no"       # --option-help. Duh!
+DOPACK="no"          # --pack. Clean and create a tar-file.
+DOPOTEXT="no"        # --potext. Use translation [NOT YET SUPPORTED].
+DORELEASE="yes"      # --release. as opposed to debug; also PDF is made.
 DOREMAKE="no"        # currently UNUSED
-DOSETUP="no"            # --setup. Do the setup and then exit.
+DOSETUP="no"         # --setup. Do the setup and then exit.
+DOSTATIC="yes"       # --static
 DOUNINSTALL="no"     # --uninstall. Like --install, requires sudo/root.
 DOUPDATE="no"        # --update. Force a subproject update.
-DOSTATIC="yes"       # --static
 DOVERSION="no"       # --version. Duouble duh!
 
 #******************************************************************************
@@ -408,7 +408,7 @@ make_pack () {
 }
 
 make_projects () {
-   echo "Making the cfg66 library..."
+   echo "Making the $CFG66 library..."
    NINJA_EXISTS="no"
    if test -f "$MAKEFILE" ; then
       NINJA_EXISTS="yes"
@@ -468,7 +468,7 @@ install_project () {
       meson install
       cd ..
    else
-      echo "UID $USERID. We want you as root to install the cfg66 library..."
+      echo "UID $USERID. We want you as root to install the $CFG66 library..."
    fi
 }
 
@@ -485,16 +485,16 @@ install_project () {
 uninstall_project () {
    USERID=$(id -u)
    if test "$USERID" = 0 ; then
-      echo "Uninstalling the cfg66 library..."
+      echo "Uninstalling the $CFG66 library..."
       ninja -C $BUILD_DIR uninstall
       if test "$PLATFORM" = "UNIX" ; then
          rm -rf "$INSTALL_PREFIX/include/$CFG66_LIBRARY"
          rm -rf "$INSTALL_PREFIX/$INSTALL_LIBDIR/$POTEXT_LIBRARY"
          rm -rf "$INSTALL_PREFIX/share/doc/$CFG66"
-         rm -rf "$INSTALL_PREFIX/man/man1/$CFG66.1"
+#        rm -rf "$INSTALL_PREFIX/man/man1/$CFG66.1"
       fi
    else
-      echo "UID $USERID. We want you as root to uninstall the cfg66 library..."
+      echo "UID $USERID. We want you as root to uninstall the $CFG66 library..."
    fi
 }
 
