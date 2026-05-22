@@ -347,12 +347,12 @@ clean_build () {
 
    rm -f doc/dox/*.log
    rm -f doc/latex/*.log
-   echo "Build products removed from the seq66/build sub-directories."
+   echo "Build products removed from the $CFG66/build sub-directories."
    rm -rf subprojects/liblib66/
    rm -rf subprojects/potext/          # available, but code not prep'ed
    echo "Subproject downloaded libraries removed from 'subprojects'."
 
-#  git checkout data/share/doc/seq66-dev-manual.pdf
+#  git checkout data/share/doc/cfg66-dev-manual.pdf
 #  echo "Previous version of developer guide restored."
 #  Problematic when making a release. Just remember to do it.
 
@@ -466,7 +466,7 @@ install_project () {
    USERID=$(id -u)
    if test "$USERID" = 0 ; then
       cd $BUILD_DIR
-      echo "Installing the seq66 library..."
+      echo "Installing the $CFG66 library..."
       meson install
       cd ..
    else
