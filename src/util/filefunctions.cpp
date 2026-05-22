@@ -2975,7 +2975,7 @@ user_config (const std::string & appfolder)
 {
     std::string result;
 #if defined PLATFORM_WINDOWS
-    char * env { std::getenv(C_STR(s_env_config)) };        /* tricky code  */
+    char * env { std::getenv(CSTR(s_env_config)) };         /* tricky code  */
     if (not_nullptr(env))
     {
         result = env;                   /* C:\Users\username\AppData\Local  */
@@ -3120,6 +3120,7 @@ get_wildcards
     if (result)
     {
 #if defined PLATFORM_WINDOWS
+        (void) filelist;
         util::error_message("get_wildcards() not implemented on Windows");
         result = false;
 #else
@@ -3233,7 +3234,7 @@ file_descriptor_touch (int fd)
     if (result)
     {
 #if defined PLATFORM_WINDOWS
-        util::error_message("Windows cannot 'touch' file descriptor", path);
+        util::error_message("Windows cannot 'touch' file descriptor");
         result = false;
 #else
         stat_t st;
@@ -3259,7 +3260,7 @@ file_descriptor_open (const std::string & path)
         int oflags { _O_RDWR | _O_CREAT };
         int shflag { _SH_DENYNO };          /* allow R/W sharing; ok to do? */
         int pmode { _S_IREAD | _S_IWRITE };
-        (void) S_OPEN&(result, fname, oflags, shflag, pmode);
+        (void) S_OPEN(&result, fname, oflags, shflag, pmode);
 #else
         int oflags { O_RDWR | O_CREAT };
         int pmode { 0660 };
@@ -3536,10 +3537,14 @@ get_xdg_runtime_directory
 
     if (result.empty())                             /* env var is not set   */
     {
-        uid_t uid_for_rundir { geteuid() };
+        /*
+         * TODO TODO
+         * int uid_for_rundir { 0 };
+         */
+
         result = util::string_asprintf
         (
-            "/run/user/%d/", uid_for_rundir
+            "%%USERPROFILE%%\AppData\Localr/%d/"    /* , uid_for_rundir     */
         );
         util::warn_message
         (

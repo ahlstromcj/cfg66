@@ -79,7 +79,16 @@ cfg::appinfo s_application_info
 
 /**
  *  Default session options for initialization. See the session::configuration
- *  and session::layout classes.
+ *  and session::layout classes. Currently not finished, and the build
+ *  shows:
+ *
+ *   ‘void __static_initialization_and_destruction_0()’
+ *   at ../../tests/session_cfg_test.cpp:120:1:
+ *
+ *  warning: s_session_cfg.session::layout::anon::sc_cfg66_main....
+ *  may be used uninitialized; session_cfg_test.cpp:85:40
+ *
+ *  Also warnings in manager_test.cpp.
  */
 
 session::layout::session_configuration s_session_cfg
