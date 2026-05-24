@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2026-05-21
+ * \updates       2026-05-23
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -3121,6 +3121,7 @@ get_wildcards
     {
 #if defined PLATFORM_WINDOWS
         (void) filelist;
+        (void) append;
         util::error_message("get_wildcards() not implemented on Windows");
         result = false;
 #else
@@ -3544,7 +3545,7 @@ get_xdg_runtime_directory
 
         result = util::string_asprintf
         (
-            "%%USERPROFILE%%\AppData\Localr/%d/"    /* , uid_for_rundir     */
+            "USERPROFILE\\AppData\\Localr\\0/"      /* , uid_for_rundir     */
         );
         util::warn_message
         (
