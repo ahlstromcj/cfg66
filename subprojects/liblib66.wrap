@@ -2,7 +2,7 @@
 #
 # Lib66 Library Wrapper
 # Chris Ahlstrom
-# 2025-01-30 to 2026-03-10
+# 2025-01-30 to 2026-05-24
 #
 #   Lib66 wrapper for GitHub repository
 #
@@ -10,14 +10,18 @@
 #
 # Errors in Git Bash on Windows. Try SSH instead.
 #
-# url = https://github.com/ahlstromcj/lib66.git
 # url = git@github.com/ahlstromcj/lib66.git
+#
+# Errors in MSYS2 on Windows. Try HTPPS instead.
+#
+# url = https://github.com/ahlstromcj/lib66.git
 #
 #----------------------------------------------------------------------------
 
 [wrap-git]
 
-url = git@github.com:ahlstromcj/lib66.git
+# url = git@github.com:ahlstromcj/lib66.git
+url = https://github.com/ahlstromcj/lib66.git
 revision = head
 depth = 1
 

@@ -6,7 +6,7 @@
 # \library     cfg66
 # \author      Chris Ahlstrom
 # \date        2022-06-22
-# \updates     2026-04-12
+# \updates     2026-05-25
 # \license     $XPC_SUITE_GPL_LICENSE$
 #
 #  This file is part of the "cfg66" library. See the top-level meson.build
@@ -54,7 +54,7 @@ libcfg66_sources += files(
    'util/strfunctions.cpp'
    )
 
-if os_unix
+if use_ftswalker
    libcfg66_sources += files('util/ftswalker.cpp')
 endif
 

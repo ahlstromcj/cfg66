@@ -131,19 +131,26 @@ os_unix     = false
 os_freebsd  = false
 os_linux    = false
 os_win32    = false
+os_cygwin   = false
 os_darwin   = false
+
+use_ftswalker = true
 
 if host_machine.system() == 'darwin'
    os_darwin = true
 elif host_machine.system() == 'windows'
    os_win32 = true
+   use_ftswalker = false
+elif host_machine.system() == 'cygwin'          # MSYS2 sets this.
+   os_cygwin = true
+   use_ftswalker = false
 elif host_machine.system() == 'linux'
    os_linux = true
 elif host_machine.system() == 'freebsd'
    os_freebsd = true
 endif
 
-os_unix = not os_win32
+os_unix = not os_win32 and not os_cygwin
 
 #-----------------------------------------------------------------------------
 # Each include file directory is added to the list passed to the compiler.
@@ -342,6 +349,7 @@ summary(
       'Source Root' : cfg66_info_project_root,
       'Headers Root' : libcfg66_include_top,
       'Sub Dir' : cfg66_project_base,
+      'Host OS' : host_machine.system(),
       'Build Type' : cfg66_info_build_type,
       'Build Root' : cfg66_info_build_root,
       'Library Type' : cfg66_info_lib_type,

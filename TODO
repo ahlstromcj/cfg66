@@ -1,6 +1,6 @@
 TODOs for the cfg66 library
 Chris Ahlstrom
-2023-07-16 to 2026-05-21
+2023-07-16 to 2026-05-25
 
 This file lists only the high-priority features and fixtures we need
 to do for Cfg66.
@@ -10,6 +10,15 @@ to do for Cfg66.
         Currently: _O_RDWR etc in filefunctions.
     -   Make sure the install and uninstall work.
         Same for lib66.
+    -   The cc build works in msys2, but fails in git bash:
+
+        C:/Qt/Tools/mingw810_64/.../include/c++/bits/fs_path.h:237:47:
+
+        error: no match for 'operator!='
+        (operand types are 'std::filesystem::__cxx11::path' and
+        'std::filesystem::__cxx11::path') ||
+        (__p.has_root_name() && __p.root_name() != root_name()))
+                               ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~
 
 ini_test_cpp:
 
