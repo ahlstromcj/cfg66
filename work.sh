@@ -8,7 +8,7 @@
 # \library        cfg66
 # \author         Chris Ahlstrom
 # \date           2024-02-06
-# \update         2026-05-21
+# \update         2026-05-25
 # \version        $Revision$
 # \license        $XPC_SUITE_GPL_LICENSE$
 #
@@ -33,7 +33,7 @@ LANG=C
 export LANG
 CYGWIN=binmode
 export CYGWIN
-export CFG66_SCRIPT_EDIT_DATE="2026-05-21"
+export CFG66_SCRIPT_EDIT_DATE="2026-05-25"
 export CFG66_LIBRARY_API_VERSION="0.4"
 export CFG66_LIBRARY_VERSION="$CFG66_LIBRARY_API_VERSION.0"
 export CFG66="cfg66"
@@ -177,11 +177,11 @@ get_options () {
                DOSETUP="no"
                ;;
 
-            --nsis)
-               DONSIS="yes"
-               DOMAKE="no"
-               DOSETUP="no"
-               ;;
+#           --nsis)
+#              DONSIS="yes"
+#              DOMAKE="no"
+#              DOSETUP="no"
+#              ;;
 
             --potext)
                DOMAKE="yes"
@@ -308,7 +308,6 @@ Many of these commands are best used when setting up the build
  --pdf               Build the PDF documentation. Currently done not by
                      doc/latex/tex/meson.build, but by calling
                      doc/latex/make_pdf.sh.
- --nsis              Use NSIS to make a Windows installer on Linux.
  --clean             Delete the usual derived files from the project. Also
                      do "git checkout doc/cfg66-dev-manual.pdf"
  --rebuild           Clean the project and build from scratch.
