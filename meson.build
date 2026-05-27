@@ -127,17 +127,19 @@ build_args = []
 # This library has platform-dependent characteristics.
 #-----------------------------------------------------------------------------
 
-os_unix     = false
-os_freebsd  = false
-os_linux    = false
-os_win32    = false
 os_cygwin   = false
 os_darwin   = false
+os_freebsd  = false
+os_linux    = false
+os_osx      = false
+os_unix     = false
+os_win32    = false
 
 use_ftswalker = true
 
 if host_machine.system() == 'darwin'
    os_darwin = true
+   os_osx = false
 elif host_machine.system() == 'windows'
    os_win32 = true
    use_ftswalker = false
