@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2026-05-23
+ * \updates       2026-05-27
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -1125,14 +1125,14 @@ file_read_lines
 
             for (;;)
             {
-#if defined PLATFORM_WINDOWS
+#if defined PLATFORM_WINDOWS || defined PLATFORM_MINGW
                 ssize_t count { 0 };
                 char * p { fgets(destination, maxim, input) };
                 if (not_nullptr(p))
                     count = std::strlen(destination);
 #else
                 /*
-                 * getline() is *not* in the std namespace.
+                 * This getline() is *not* in the std namespace.
                  */
 
                 ssize_t count { getline(&destination, &maxim, input) };
