@@ -6,7 +6,7 @@
 # \library     cfg66
 # \author      Chris Ahlstrom
 # \date        2022-06-22
-# \updates     2026-05-22
+# \updates     2026-05-30
 # \license     $XPC_SUITE_GPL_LICENSE$
 #
 #  This file is part of the "cfg66" library. It was part of the libs66
@@ -64,7 +64,7 @@ endif
 cfg66_pkg_description = 'Refactors base Seq66 configuration/utility modules.'
 cfg66_pkg_version = meson.project_version()
 cfg66_api_version = '0.4'
-cfg66_info_date = '2026-05-22'
+cfg66_info_date = '2026-05-30'
 cfg66_info_build_type = get_option('buildtype')
 cfg66_info_build_root = meson.project_build_root()
 cfg66_info_lib_type = get_option('default_library')
@@ -185,6 +185,8 @@ build_args += [
 # else
 #    build_args += '-DLIBPUBLIC=__attribute__((visibility("default")))'
 # endif
+#
+#-----------------------------------------------------------------------------
 
 #-----------------------------------------------------------------------------
 # Set up some "HAVE" macros.  By default the header file is generated in the
@@ -199,6 +201,8 @@ cdata.set10('limits_h', cc.has_header('limits.h'))
 #-----------------------------------------------------------------------------
 # Potential sub-projects
 #-----------------------------------------------------------------------------
+
+cfg_need_static = cfg66_info_lib_type == 'static'
 
 if cfg66_use_potext
 

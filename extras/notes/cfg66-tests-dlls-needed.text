@@ -1,0 +1,116 @@
+DLLs Needed for cfg66 MingW Test
+Chris Ahlstrom
+2026-05-30 to 2026-05-30
+
+/usr/lib/gcc/x86_64-w64-mingw32/15-posix/libcfg66-0.4.dll
+libstdc++-6.dll
+libgcc_s_seh-1.dll
+libwinpthread-1.dll
+
+Debian:
+
+/usr/lib/gcc/x86_64-w64-mingw32/15-posix/       libstdc++-6.dll
+/usr/lib/gcc/x86_64-w64-mingw32/15-win32/       libstdc++-6.dll
+/usr/lib/gcc/x86_64-w64-mingw32ucrt/15/         libstdc++-6.dll
+/usr/lib/gcc/i686-w64-mingw32/15-posix/         libstdc++-6.dll
+/usr/lib/gcc/i686-w64-mingw32/15-win32/         libstdc++-6.dll
+
+/usr/lib/gcc/x86_64-w64-mingw32/15-posix/       libgcc_s_seh-1.dll
+/usr/lib/gcc/x86_64-w64-mingw32/15-win32/       libgcc_s_seh-1.dll
+/usr/lib/gcc/x86_64-w64-mingw32ucrt/15/         libgcc_s_seh-1.dll
+
+/usr/x86_64-w64-mingw32/lib/                    libwinpthread-1.dll
+/usr/x86_64-w64-mingw32ucrt/lib/                libwinpthread-1.dll
+/usr/i686-w64-mingw32/lib/                      libwinpthread-1.dll
+
+Directory descriptions:
+
+/usr/lib/gcc/x86_64-w64-mingw32/15-posix/
+
+    /usr/lib/gcc/: The standard location for the GNU Compiler Collection (GCC)
+    libraries.
+
+    x86_64-w64-mingw32/: The target architecture "triple". It indicates the
+    compiler builds binaries for 64-bit Intel/AMD hardware (x86_64) running
+    native Windows (w64-mingw32) using the MinGW-w64 runtime environment.
+
+    15: Represents GCC major version 15.
+
+    -posix: Dictates that GCC uses the POSIX threading model (winpthreads).
+    This provides native support for modern C++ features like <thread>,
+    <mutex>, and <future> when compiling for Windows.
+
+    This folder holds the backend files the compiler needs during the linking
+    stage to create functional Windows executables:
+
+    Static libraries (.a): Internal object code used to pack compiler helpers
+    into your binary.
+
+    Windows Runtime DLLs (.dll): Runtime libraries such as libstdc++-6.dll
+    (C++ library) and libgcc_s_seh-1.dll (exception handling).
+
+/usr/lib/gcc/x86_64-w64-mingw32/15-win32/
+
+    -win32: Specifies that this directory supports the native Win32 API
+    threading model.
+
+    This directory contains:
+
+    Internal Tools: Executables like cc1 (the actual C compiler) or cc1plus
+    (the C++ compiler) that the frontend gcc driver calls behind the scenes.
+
+    Static Libraries: Core runtime files such as libgcc.a and libgfortran.a.
+
+    Import Libraries: Pointer files like libstdc++.dll.a or libgcc_s.dll.a
+    the linker uses to map the executable to shared Windows DLLs.
+
+    Compiler-Specific Headers: System C/C++ header files and directory-specific
+    includes required for compilation.
+
+/usr/lib/gcc/x86_64-w64-mingw32ucrt/15/
+
+    -ucrt: Target C runtime library. This means the compiler links against the
+    Microsoft modern Universal C Runtime, which ships natively with Windows 10
+    and 11, instead of the older msvcrt.dll.
+
+    include/ and include-fixed/: Internal compiler header files (like stdarg.h,
+    stddef.h) required to build C/C++ programs.
+
+    libgcc.a: The GCC runtime support library, with helper functions for tasks
+    the CPU cannot do in a single instruction.  libstdc++.a: The GNU standard
+    C++ library (if C++ support is installed).  crtbegin.o and crtend.o:
+    Startup and shutdown object files used to initialize and clean up programs
+    when they run.
+
+    Compiler components: Executables like cc1 (the actual C compiler) and
+    cc1plus (the C++ compiler) that the frontend gcc command calls behind the
+    scenes.
+
+To do:
+
+    Which of these library flavors should be used?
+    Are they all compatible (i.e. same entry points)?
+    Where should they be copied, in some deployment area?
+        -   Generally:  Place the .exe and all required .dll files together
+        -   Wine: 
+        -   Windows: C:\Windows\System32
+        -   MSYS2: C:\msys64\ucrt64\bin or C:\msys64\mingw64\bin
+
+            cp /<arch_prefix>/bin/{libgcc_s_seh-1.dll,libstdc++-6.dll,libwinpthread-1.dll} <executable_dir>/
+
+
+
+To deploy MinGW DLLs in a Meson project, the easiest method is to statically link the MinGW runtime to avoid missing DLL dependencies at runtime. If you require shared DLLs, use a custom install script in Meson or the meson install command to automatically copy necessary runtime dependencies. 
+
+meson setup builddir \
+  -Dc_link_args='-static' \
+  -Dcpp_link_args='-static' \
+  -Ddefault_library=static
+
+if host_machine.system() == 'windows'
+  meson.add_install_script('python3', 'install_dlls.py')
+endif
+
+
+
+# vim: sw=4 ts=4 wm=8 et ft=sh

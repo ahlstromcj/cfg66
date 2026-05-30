@@ -8,7 +8,7 @@
 # \library        cfg66
 # \author         Chris Ahlstrom
 # \date           2024-02-06
-# \update         2026-05-25
+# \update         2026-05-30
 # \version        $Revision$
 # \license        $XPC_SUITE_GPL_LICENSE$
 #
@@ -33,7 +33,7 @@ LANG=C
 export LANG
 CYGWIN=binmode
 export CYGWIN
-export CFG66_SCRIPT_EDIT_DATE="2026-05-25"
+export CFG66_SCRIPT_EDIT_DATE="2026-05-30"
 export CFG66_LIBRARY_API_VERSION="0.4"
 export CFG66_LIBRARY_VERSION="$CFG66_LIBRARY_API_VERSION.0"
 export CFG66="cfg66"
@@ -45,7 +45,7 @@ BASE_BUILD_DIR="build"              # 'cfg66/build'
 BUILD_DIR="$BASE_BUILD_DIR/cc"      # "native" compiler (CC/CXX) build
 BUILD_TYPE="release"
 CROSS_PKG_PATH="/usr/lib/pkgconfig" # TO DO TO DO
-EXTRAFLAGS=""
+DEFBUILD=""
 INSTALL_LIBDIR="lib"                # "lib/x86_64-linux-gnu" on Debian
 INSTALL_PREFIX="/usr/local"         # "/usr", what about Windows?
 MAKEFILE="$BUILD_DIR/build.ninja"
@@ -73,7 +73,7 @@ DOPOTEXT="no"        # --potext. Use translation [NOT YET SUPPORTED].
 DORELEASE="yes"      # --release. as opposed to debug; also PDF is made.
 DOREMAKE="no"        # currently UNUSED
 DOSETUP="no"         # --setup. Do the setup and then exit.
-DOSTATIC="yes"       # --static
+DOSTATIC="no"        # --static
 DOUNINSTALL="no"     # --uninstall. Like --install, requires sudo/root.
 DOUPDATE="no"        # --update. Force a subproject update.
 DOVERSION="no"       # --version. Duouble duh!
@@ -111,7 +111,7 @@ get_options () {
                DOCROSS="yes"
                BUILD_DIR="$BASE_BUILD_DIR/cross"
                MAKEFILE="$BUILD_DIR/build.ninja"
-               MAKELOG="$BUILD_DIR/make.log"
+               MAKELOG="make.log"            # MAKELOG="$BUILD_DIR/make.log"
                CROSSENVSET="PKG_CONFIG_PATH=$CROSS_PKG_PATH:$PKG_CONFIG_PATH"
                export $CROSSENVSET
                echo "CROSSENVSET: PKG_CONFIG_PATH=$PKG_CONFIG_PATH"
@@ -134,8 +134,10 @@ get_options () {
                echo "Using the Clang C/C++ compilers..."
                export CC=clang
                export CXX=clang++
-               BUILD_DIR="$BASE_BUILD_DIR/clang"
-               MAKEFILE="$BUILD_DIR/build.ninja"
+               if test "$DOCROSS" = "no" ; then
+                  BUILD_DIR="$BASE_BUILD_DIR/clang"
+                  MAKEFILE="$BUILD_DIR/build.ninja"
+               fi
                ;;
 
             --gnu | gcc)
@@ -143,8 +145,10 @@ get_options () {
                echo "Using the GNU C/C++ compilers..."
                export CC=gcc
                export CXX=g++
-               BUILD_DIR="$BASE_BUILD_DIR/gcc"
-               MAKEFILE="$BUILD_DIR/build.ninja"
+               if test "$DOCROSS" = "no" ; then
+                  BUILD_DIR="$BASE_BUILD_DIR/gcc"
+                  MAKEFILE="$BUILD_DIR/build.ninja"
+               fi
                ;;
 
             --help)
@@ -237,9 +241,8 @@ get_options () {
                ;;
 
             --static)
-               DORELEASE="yes"
-               DODEBUG="no"
                DOSTATIC="yes"
+               DEFBUILD="-Ddefault_library=static"
                ;;
 
             --version)
@@ -292,6 +295,7 @@ Many of these commands are best used when setting up the build
  --update            Force an update of the subprojects.
  --potext            Build with Potext (light gettext) library sypport.
  --release           Build release version (the default).
+ --static            Force a static build of the library/tests.
  --debug             Build debug version. Always builds in 'build/debug'.
  --install           Run 'meson install' to install Seq66 and the PDF manual.
  --uninstall         Run 'ninja uninstall' to uninstall the library.
@@ -350,11 +354,6 @@ clean_build () {
    rm -rf subprojects/liblib66/
    rm -rf subprojects/potext/          # available, but code not prep'ed
    echo "Subproject downloaded libraries removed from 'subprojects'."
-
-#  git checkout data/share/doc/cfg66-dev-manual.pdf
-#  echo "Previous version of developer guide restored."
-#  Problematic when making a release. Just remember to do it.
-
 }
 
 make_pack () {
@@ -417,17 +416,25 @@ make_projects () {
    if test "$DOREMAKE" = "yes" ; then
       if test "$NINJA_EXISTS" = "yes" ; then
          echo "$MAKEFILE exists, reconfiguring..."
+         echo "$ meson setup --reconfigure $MOPTS"
          meson setup --reconfigure $MOPTS
       fi
    fi
    if test "$NINJA_EXISTS" = "no" ; then
       echo "New configuration, creating $MAKEFILE, etc...."
       if test "$DODEBUG" = "yes" ; then
-         meson setup --default-library=static $MOPTS
+         echo "$ meson setup -Ddefault_library=static $MOPTS"
+         meson setup -Ddefault_library=static $MOPTS
          echo "... for debugging"
       else
-         meson setup $MOPTS
-         echo "... for release"
+         if test "$DOSTATIC" = "yes" ; then
+            echo "meson setup $DEFBUILD $MOPTS"
+            meson setup $DEFBUILD $MOPTS
+         else
+            echo "meson setup $MOPTS"
+            meson setup $MOPTS
+         fi
+            echo "... for release"
       fi
    fi
 
@@ -435,6 +442,8 @@ make_projects () {
    # present on older ninjas, so we use -v here.
 
    cd $BUILD_DIR
+   pwd
+   echo "$ ninja -v --> $MAKELOG"
    ninja -v > $MAKELOG
    if test $? = 0 ; then
       if test "$DODEBUG" = "yes" ; then
@@ -581,7 +590,7 @@ MOPTS="--buildtype=$BUILD_TYPE $POTEXTDEF $BUILD_DIR"
 
 if test "$DOSETUP" = "yes"; then
    if test "$DODEBUG" = "yes" ; then
-      meson setup --default-library=static $MOPTS
+      meson setup -Ddefault_library=static $MOPTS
       echo "... for debugging"
    else
       meson setup $MOPTS
@@ -603,8 +612,15 @@ if test "$DOCROSS" = "yes" ; then
 
    CROSSOPTS="-Dpotext=false"
    CROSSFILE="--cross-file meson.mingw.cross"
-   meson setup $BUILD_DIR --buildtype=$BUILD_TYPE $CROSSOPTS $CROSSFILE
+   if test "$DOSTATIC" = "yes" ; then
+      echo "$ meson setup $DEFBUILD $CROSSOPTS $CROSSFILE $MOPTS"
+      meson setup $DEFBUILD $CROSSOPTS $CROSSFILE $MOPTS
+   else
+      echo "$ meson setup $CROSSOPTS $CROSSFILE $MOPTS"
+      meson setup $CROSSOPTS $CROSSFILE $MOPTS
+   fi
    if test $? = 0 ; then
+      echo "$ meson compile -C $BUILD_DIR > $MAKELOG"
       meson compile -C $BUILD_DIR > $MAKELOG
       if test $? = 0 ; then
          echo "Cross-build in $BUILD_DIR succeeded."
