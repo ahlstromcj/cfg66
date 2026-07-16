@@ -244,6 +244,10 @@ get_options () {
             --static)
                DOSTATIC="yes"
                DEFBUILD="-Ddefault_library=static"
+               if test "$DOCROSS" = "no" ; then
+                  BUILD_DIR="$BASE_BUILD_DIR/static"
+                  MAKEFILE="$BUILD_DIR/build.ninja"
+               fi
                ;;
 
             --version)

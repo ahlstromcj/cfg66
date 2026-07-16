@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-01-26
- * \updates       2026-02-12
+ * \updates       2026-07-16
  * \license       See above.
  *
  *  Also includes testing of session::manager.
@@ -77,6 +77,8 @@ cfg::appinfo s_application_info
     ""                                  // m_client_name_tag
 };
 
+#if defined THIS_CODE_IS_READY
+
 /**
  *  Default session options for initialization. See the session::configuration
  *  and session::layout classes.
@@ -118,6 +120,8 @@ session::layout::session_configuration s_session_cfg
         }
     }
 };
+
+#endif  // defined THIS_CODE_IS_READY
 
 /**
  *  Contains additions to the stock command-line options. These are options

@@ -25,7 +25,7 @@
  * \library       ftswalker
  * \author        Chris Ahlstrom
  * \date          2025-03-10
- * \updates       2026-04-06
+ * \updates       2026-07-16
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
@@ -505,7 +505,9 @@ ftswalker::process_files
         {
             bool exited_directory { false };
             std::string lastdest { target };
+#if defined PLATFORM_DEBUG
             int count { 0 };
+#endif
             for (;;)
             {
                 ::FTSENT * ent { fts_read_entry(ftsp) }; /* next file/dir   */
@@ -554,7 +556,9 @@ ftswalker::process_files
                         if (! result)
                             break;
                     }
+#if defined PLATFORM_DEBUG
                     ++count;
+#endif
                 }
                 else if (is_fts_error(ent))
                 {
