@@ -8,7 +8,7 @@
 # \library        cfg66
 # \author         Chris Ahlstrom
 # \date           2024-02-06
-# \update         2026-05-30
+# \update         2026-07-16
 # \version        $Revision$
 # \license        $XPC_SUITE_GPL_LICENSE$
 #
@@ -33,7 +33,7 @@ LANG=C
 export LANG
 CYGWIN=binmode
 export CYGWIN
-export CFG66_SCRIPT_EDIT_DATE="2026-05-30"
+export CFG66_SCRIPT_EDIT_DATE="2026-07-16"
 export CFG66_LIBRARY_API_VERSION="0.4"
 export CFG66_LIBRARY_VERSION="$CFG66_LIBRARY_API_VERSION.0"
 export CFG66="cfg66"
@@ -104,6 +104,7 @@ get_options () {
                   ;;
                esac
                BUILD_DIR="$BASE_BUILD_DIR/$1"
+               MAKEFILE="$BUILD_DIR/build.ninja"
                ;;
 
             --cross)

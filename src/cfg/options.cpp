@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2026-02-11
+ * \updates       2026-07-16
  * \license       See above.
  *
  *  The cli::options class provides a way to hold the state of command-line
@@ -585,8 +585,8 @@ options::check_value
 }
 
 /**
- *  If this function returns true, then the option was already obtained from the
- *  command-line, and should not be overwritten (except from an edit within
+ *  If this function returns true, then the option was already obtained from
+ *  the command-line, and should not be overwritten (except from an edit within
  *  the application).
  */
 
@@ -695,6 +695,14 @@ options::long_name (const std::string & code) const
  *  and don't want to deal with iterators.
  *
  *  Note that the "opt" value found is an std::pair<>.
+ *
+ * \param name
+ *      Provides the code or long option name to look up.
+ *
+ * \return
+ *      Returns a reference to an options::spec. If the name is not
+ *      found, then a bogus one is returned. Check it by calling the
+ *      static function inactive(const spec &).
  */
 
 const options::spec &
@@ -719,8 +727,134 @@ options::find_spec (const std::string & name) const
 options::spec &
 options::find_spec (const std::string & name)
 {
-    return const_cast<spec &>(static_cast<const options &>(*this).find_spec(name));
+    return const_cast<spec &>
+    (
+        static_cast<const options &>(*this).find_spec(name)
+    );
 }
+
+/**
+ *  Looks up an option while also checking for ambiguous matches.
+ *  Useful mainly in checking the command-line for faulty options.
+ *
+ * \param opt
+ *      Provides the option to be found. Examples: --help, --hel, --he,
+ *      and --h. The dashes are assumed to not be present.
+ *
+ * \param [out] matchcount
+ *      Holds the match count, which should be 1. If not one, then
+ *      false is returned.
+ *
+ * \param [out] ambiguous_matches
+ *      Holds all the matches found, so that they can be displayed
+ *      by the caller.
+ *
+ * \return
+ *      Returns true if exactly one match was found.
+ */
+
+bool
+options::find_option
+(
+    const std::string & opt,
+    int & matchcount,
+    lib66::tokenization & ambiguous_matches
+) const
+{
+    bool result { ! opt.empty() };
+    if (result)
+    {
+        matchcount = 0;
+        ambiguous_matches.clear();
+        for (const auto & optpair : option_pairs())
+        {
+            const std::string & optname { optpair.first };
+            std::size_t sz { opt.size() };
+            bool match { util::strncompare(opt, optname, sz) };
+            if (match)
+            {
+                ++matchcount;
+                ambiguous_matches.push_back(optname);
+            }
+        }
+        result = matchcount == 1;
+    }
+    return result;
+}
+
+std::string
+find_option_warning
+(
+    const std::string & opt,
+    const lib66::tokenization & ambiguous_matches
+)
+{
+    std::string result;
+    std::ostringstream ost;
+    ost
+        << "Ambiguous option '--" << opt << "'."
+        << "Matching options are:\n"
+        ;
+    for (const auto & optname : ambiguous_matches)
+    {
+        ost << "  --" << optname << "\n";
+    }
+    result = ost.str();
+    return result;
+}
+
+#if defined THIS_CODE_IS_READY
+
+/**
+ *  These functions are like the find_spec() functions, but they can
+ *  work with incomplete (abbreviated) option names.
+ *
+ * \param name
+ *      Provides the code or long option name to look up.
+ *
+ * \return
+ *      Returns a reference to an options::spec. If the name is not
+ *      found, then a bogus one is returned. Check it by calling the
+ *      static member function inactive(const spec &), which similar to
+ *      the non-static member function option_exists().
+ */
+
+const options::spec &
+options::find_option_spec (const std::string & name) const
+{
+    static spec s_inactive_spec;            /* do not load global options   */
+    int & matchcount;
+    lib66::tokenization & matches;
+    bool found { find_option(name, matchcount, matches) };
+    if (found)
+    {
+        const auto & opt { find_match(matches[0]) };
+        if (option_exists(opt))
+            return opt->second;
+    }
+    else
+    {
+        /* perhaps report the ambiguity */
+    }
+    return s_inactive_spec;
+}
+
+/**
+ *  Note: if we move this project to C++17 the following line could be used:
+ *
+ *      const_cast<spec &>(std::as_const(*this).find_spec(name));
+ */
+
+options::spec &
+options::find_option_spec (const std::string & name)
+{
+    return const_cast<spec &>
+    (
+        static_cast<const options &>(*this).find_option_spec(name)
+    );
+}
+
+#endif      // defined THIS_CODE_IS_READY
 
 /**
  *  Provides a way to get an options spec from the long name.  If the

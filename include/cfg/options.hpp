@@ -28,7 +28,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2022-06-21
- * \updates       2026-02-14
+ * \updates       2026-07-16
  * \license       See above.
  *
  *  Supports variables of the following types:
@@ -321,6 +321,14 @@ private:
 
     container m_option_pairs;
 
+    /**
+     *  We want to support abbreviations of options a la GNU getopt().  We
+     *  also want to support (optionally) detecting when such abbreviations
+     *  match more than one long option.
+     */
+
+    bool m_allow_option_abbreviations { false };
+
 public:
 
     options (bool loadglobal = stock);
@@ -592,8 +600,30 @@ public:
         const std::string & name,
         float & minimum, float & maximum
     ) const;
-
     const spec & find_spec (const std::string & name) const;
+
+    /**
+     * NEW FUNCTIONS
+     */
+
+    bool allow_option_abbreviations () const
+    {
+        return m_allow_option_abbreviations;
+    }
+
+    void allow_option_abbreviations (bool flag)
+    {
+        m_allow_option_abbreviations = flag;
+    }
+
+    bool find_option
+    (
+        const std::string & opt,
+        int & matchcount,
+        lib66::tokenization & ambiguous_matches
+    ) const;
+    const spec & find_option_spec (const std::string & name) const;
+    spec & find_option_spec (const std::string & name);
 
 protected:
 
@@ -639,6 +669,11 @@ extern std::string build_help_line
 (
     const std::string & opt,
     const std::string & desc
+);
+extern std::string find_option_warning
+(
+    const std::string & opt,
+    const lib66::tokenization & ambiguous_matches
 );
 
 }           // namespace cfg

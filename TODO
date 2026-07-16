@@ -1,10 +1,13 @@
 TODOs for the cfg66 library
 Chris Ahlstrom
-2023-07-16 to 2026-05-25
+2023-07-16 to 2026-07-15
 
 This file lists only the high-priority features and fixtures we need
 to do for Cfg66.
 
+    -   Allow abbreviations like "--hel" for "--help".
+    -   Allow detection of ambiguous matches, and write a test
+        for it.
     -   Finish the documentation of the walker classes.
     -   Get it working in Windows; still have mingw build issues.
         Currently: _O_RDWR etc in filefunctions.

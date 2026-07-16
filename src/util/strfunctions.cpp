@@ -363,7 +363,10 @@ strcompare (const std::string & a, const std::string & b)
  * \param n
  *      Provides the number of characters in the "comparing" string (parameter
  *      \a a) that must match.  If equal to 0 (the default value), then the
- *      minimum of the lengths of a and b is used.
+ *      minimum of the lengths of a and b is used. This can be bad for
+ *      option detection if the user-provided option is longer than any
+ *      application option. For example, if the user provides
+ *      "--hello", it could match the option "--hell".
  *
  * \return
  *      Returns true if the strings compare identically for the first \a n

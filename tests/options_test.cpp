@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2023-01-12
- * \updates       2026-02-11
+ * \updates       2026-07-16
  * \license       See above.
  *
  */
@@ -35,6 +35,9 @@
 #include "cfg/options.hpp"              /* cfg::options class               */
 #include "cli/parser.hpp"               /* cli::parser class                */
 #include "test_spec.hpp"                /* s_test_options container         */
+
+namespace       // anonymous
+{
 
 /**
  *  The options in s_test_options are stored in a simple
@@ -76,11 +79,64 @@
  * Explanation text.
  */
 
-static const std::string s_help_intro
+const std::string s_help_intro
 {
     "This test program illustrates/tests the configuration-file parser of\n"
     "the cfg66 library.  The options available are as follows:\n\n"
 };
+
+bool
+ambiguity_tests (cfg::options & optset)                 // clip.option_set()
+{
+    int count;
+    lib66::tokenization matches;
+    bool result { optset.find_option("description", count, matches) };
+    if (result)
+    {
+        result = count == 1 && matches.size() == 1;
+        if (result)
+        {
+            result = optset.find_option("dead-code", count, matches);
+            if (result)
+                result = count == 1 && matches.size() == 1;
+
+            if (result)
+            {
+                /*
+                 * This function should fail, returning a result of
+                 * false, which indicates more than one potential
+                 * match was found.
+                 */
+
+                result = optset.find_option("de", count, matches);
+                if (! result)
+                {
+                    result = count == 2 && matches.size() == 2;
+                    if (result)
+                    {
+                        std::string msg
+                        {
+                            cfg::find_option_warning("de", matches)
+                        };
+                        std::cerr << msg << std::endl;
+#if 0
+                    std::cerr
+                        << "Option '--"
+                        << "de' is ambiguous. Matching options are "
+                        << "'--" << matches[0]
+                        << "' and '--" << matches[1] << "'"
+                        << std::endl
+                        ;
+#endif
+                    }
+                }
+            }
+        }
+    }
+    return result;
+}
+
+}           // namespace anonymous
 
 /*
  * main() routine
@@ -273,6 +329,13 @@ main (int argc, char * argv [])
             }
             else
                 std::cerr << "Integer range check failed" << std::endl;
+
+            if (success)
+            {
+                success = ambiguity_tests(opts);
+                if (! success)
+                    std::cerr << "The find_option() test failed" << std::endl;
+            }
         }
     }
     else
