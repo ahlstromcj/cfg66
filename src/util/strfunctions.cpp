@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-24
- * \updates       2026-05-21
+ * \updates       2026-10-25
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -750,6 +750,28 @@ midi_bytes_to_string (const std::string & s)
         return s;
 }
 
+std::string
+expand_byte_vector
+(
+    const std::vector<unsigned char> & vbytes,
+    bool usehex
+)
+{
+    std::string result;
+    int count { -1 };
+    const char * fmt { usehex ? "0x%02x" : "%u" };
+    for (auto b : vbytes)
+    {
+        char tmp [8];
+        if (++count> 0)
+            result.push_back(' ');
+
+        (void) snprintf(tmp, sizeof tmp, fmt, unsigned(b));
+        result += tmp;
+    }
+    return result;
+}
+
 /**
  *  Converts a string value to a boolean.  Note that an empty string returns
  *  the default value, which is false if the caller does not supply a default
@@ -1449,6 +1471,32 @@ regex_match
 }
 
 /**
+ *  This function is strings_match(), with the added feature that it skips
+ *  leading digits and white-space before doing the match.
+ */
+
+bool
+strings_match_ex (const std::string & target, const std::string & x)
+{
+    bool result = ! target.empty();
+    if (result)
+    {
+        static const std::string s_skip_set
+        {
+            "(!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"   /* ispunct  */
+            "0123456789"                            /* digits   */
+            " \t\r\n\v\f"                           /* white    */
+        };
+        std::string::size_type pos = x.find_first_not_of(s_skip_set);
+        std::string trimmed_x = x.substr(pos);
+        result = ! trimmed_x.empty();
+        if (result)
+            result = strings_match(target, trimmed_x);
+    }
+    return result;
+}
+
+/**
  *  Returns the source string with all characters converted to lowercase.
  */
 
@@ -2120,6 +2168,71 @@ hanging_word_wrap
             result += w;
             linelen += w.length();
         }
+    }
+    return result;
+}
+
+/**
+ *  Converts a tokenization to a (probably long) string.
+ */
+
+std::string
+tokenization_to_string (const lib66::tokenization & tokens)
+{
+    std::string result;
+    for (auto & t : tokens)
+    {
+        result += t;
+    }
+    return result;
+}
+
+/**
+ *  Converts a number represented by a C hex value (e.g. "0x10") to
+ *  the corresponding string in decimal format.
+ *
+ *  Note that an unsigned value is used as the intermediate result,
+ *  rather than using unsigned long. At least for now.
+ *
+ * \param hexstr
+ *      The number expressed in C/C++'s hex notation ("0x10"). Note that
+ *      this also works with octal notation ("020").
+ *
+ * \return
+ *      Returns the string in decimal format.
+ */
+
+std::string
+hex_to_unsigned_decimal (const std::string & hexstr)
+{
+    unsigned value { string_to_unsigned(hexstr) };
+    return std::to_string(value);
+}
+
+/**
+ *  Sort of the inverse of hex_to_unsigned_decimal(), but it can
+ *  deal with signed decimal as well.
+ */
+
+std::string
+decimal_to_hex (const std::string & decstr)
+{
+    std::string result;
+    try
+    {
+        int value { std::stoi(decstr, nullptr, 10) };
+        const char * fmt { value < 256 ? "0x%02X" : "0x%X" };
+        char tmp [32];
+        (void) snprintf(tmp, sizeof tmp, fmt, value);
+        result = tmp;
+    }
+    catch (std::invalid_argument const &)
+    {
+        result = "invalid decimal argument";
+    }
+    catch (std::out_of_range const &)
+    {
+        result = "out of int range";
     }
     return result;
 }

@@ -1,10 +1,10 @@
 NEWS for Cfg66 0.4
 Chris Ahlstrom
-2024-04-15 to 2026-04-04
+2024-04-15 to 2026-10-25
 
 # Changelog
 
-## [0.4] - 2026-04-04
+## [0.4] - 2026-10-25
 
 While working to build a library to support MIDINAM files, we
 borrowed code from the "pdb" and "xml" support portions of
@@ -58,6 +58,11 @@ Supports matching and file-tree navigation.
     - strncasecompare()
     - regex\_match(). This function supports using C++ regular
       expressions.
+    - expand\_byte\_vector()
+    - strings\_match\_ex()
+    - hex\_to\_unsigned\_decimal()
+    - tokenization\_to\_string()
+    - decimal\_to\_hex()
 - Added these functions to the parser class/module:
     - adhoc\_option().
 

@@ -27,7 +27,7 @@
  *
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2026-05-21
+ * \updates       2026-10-25
  * \version       $Revision$
  *
  *    Also see the strfunctions.cpp module.
@@ -96,10 +96,11 @@ namespace util
  *  Lists of characters to trim from strings.
  */
 
+const std::string CFG66_WHITE_CHARS       { " \t\r\n\v\f" };
+const std::string CFG66_DIGIT_CHARS       = "0123456789";
 const std::string CFG66_TRIM_CHARS        { " \t\r\n\v\f" };
 const std::string CFG66_TRIM_CHARS_QUOTES { " \t\r\n\v\f\"'" };
 const std::string CFG66_TRIM_CHARS_PATHS  { " /\\" };
-const std::string CFG66_WHITE_CHARS       { " \t\r\n\v\f" };
 
 /**
  *  Inline functions.  Simple tests for std::string::npos. Why? I dunno, less
@@ -180,7 +181,7 @@ extern std::string string_replace
     const std::string & source,
     const std::string & target,
     const std::string & replacement,
-    int n = -1
+    int n = (-1)
 );
 extern int hex_digit (char c);
 extern std::string string_to_midi_bytes
@@ -188,6 +189,11 @@ extern std::string string_to_midi_bytes
     const std::string & s, std::size_t lim = 0
 );
 extern std::string midi_bytes_to_string (const std::string & s);
+extern std::string expand_byte_vector       //////// NEW
+(
+    const std::vector<unsigned char> & bytev,
+    bool usehex = true
+);
 extern bool string_to_bool (const std::string & s, bool defalt = false);
 extern bool string_to_bool_ex (const std::string & s);
 extern bool string_to_time_signature
@@ -239,6 +245,10 @@ extern bool strings_match
 (
     const std::string & target,
     const std::string & x
+);
+extern bool strings_match_ex            //////// NEW
+(
+    const std::string & target, const std::string & x
 );
 extern bool string_has_regex
 (
@@ -318,6 +328,11 @@ extern std::string hanging_word_wrap
     std::size_t leftmargin   = 28,
     std::size_t rightmargin  = 80
 );
+
+extern std::string tokenization_to_string (const lib66::tokenization & tokens);
+extern std::string hex_to_unsigned_decimal (const std::string & hexstr);
+extern std::string decimal_to_hex (const std::string & decstr);
+
 extern std::string line_comments
 (
     const std::string & source,
