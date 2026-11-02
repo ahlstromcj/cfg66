@@ -1074,16 +1074,14 @@ long_to_string (long value)
 unsigned long
 string_to_unsigned_long (const std::string & s, unsigned long defalt)
 {
-    unsigned long result { defalt };
     try
     {
-        result = std::stoul(s, nullptr, 0);
+        return std::stoul(s, nullptr, 0);
     }
     catch (std::invalid_argument const &)
     {
-        // no code
+        return defalt;
     }
-    return result;
 }
 
 /**

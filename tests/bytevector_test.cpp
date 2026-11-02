@@ -104,7 +104,7 @@ basic_string_io ()
     {
         util::bytevector bv1 { fname };
         std::string all { bv1.peek_string() };
-        bool result { all == fname };
+        result = all == fname;
         if (result)
         {
             std::string data { bv1.peek_string(6, 4) };

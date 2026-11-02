@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2020-03-22
- * \updates       2025-10-27
+ * \updates       2025-11-02
  * \license       GNU GPLv2 or above
  *
  *  What is a session configuration? It is a setup of the following
@@ -117,8 +117,7 @@ configuration::configuration () :
     cfg::basesettings
     (
         "Default Session", "session",
-        "A session specifying only the configuration and log directories.",
-        0
+        "A session specifying only the configuration and log directories."
     )
 {
     // set_configuration_defaults();

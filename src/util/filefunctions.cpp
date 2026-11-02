@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2026-05-27
+ * \updates       2026-11-02
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -1121,8 +1121,10 @@ file_read_lines
             size_t maxim { 512 };
             char * destination { new (std::nothrow) char [maxim] };
             if (is_nullptr(destination))
+            {
+                (void) file_close(input, file);
                 return false;
-
+            }
             for (;;)
             {
 #if defined PLATFORM_WINDOWS || defined PLATFORM_MINGW
@@ -1133,6 +1135,9 @@ file_read_lines
 #else
                 /*
                  * This getline() is *not* in the std namespace.
+                 *
+                 * WTF?  warning: Memory allocated by 'new[]' should be
+                 * deallocated by 'delete[]', not 'getline()'
                  */
 
                 ssize_t count { getline(&destination, &maxim, input) };
@@ -1356,9 +1361,11 @@ file_copy_to_path
                     }
                     okoutput = file_close(output, destfilespec);
                 }
-                okinput = file_close(input, sourcefile);
-                result = okinput && okoutput;
+                // okinput = file_close(input, sourcefile);
+                // result = okinput && okoutput;
             }
+            okinput = file_close(input, sourcefile);
+            result = okinput && okoutput;
         }
     }
     return result;
@@ -1672,7 +1679,7 @@ make_directory_path (const std::string & directory_name, int mode)
                 {
                     if (! make_directory(std::string(currdir), mode))
                     {
-                        more = result = false;
+                        /* more = */ result = false;
                         break;
                     }
                 }

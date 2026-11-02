@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2026-02-14
+ * \updates       2026-11-02
  * \license       GNU GPLv2 or above
  *
  *  std::streamoff is a signed integral type (usually long long) that can
@@ -233,17 +233,23 @@ configfile::parse_list
     int count { get_integer(file, section, "count", position) };
     lib66::tokenization & items { oplist.list_tokens };
     items.clear();
-    if (count == configfile::sm_int_missing)                   /* -9998    */
+    if (count == configfile::sm_int_missing)                /* -9998        */
     {
-        count = 0;
+        /*
+         * count = 0;                                       // value unused
+         */
     }
     else
     {
         oplist.list_count = count;
-        position = line_position();
+
+        /*
+         * position = line_position();                      // value unused
+         */
+
         for (int linenum = 0; linenum < count; /* ++linenum */)
         {
-            if (valuetag.empty())                               /* default  */
+            if (valuetag.empty())                           /* default      */
             {
                 if (next_data_line(file))
                 {

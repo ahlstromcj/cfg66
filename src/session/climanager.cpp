@@ -163,21 +163,26 @@ bool
 climanager::run ()
 {
     bool result { setup_session() };        /* daemonize: session_setup()   */
-    std::string msg { };
-    while (! close_session(msg))            /* daemonize: session_close()   */
+    if (result)
     {
-        result = true;
-        if (manager::save_session())        /* daemonize: session_save()    */
+        result = false;
+
+        std::string msg { };
+        while (! close_session(msg))        /* daemonize: session_close()   */
         {
-            result = save_session(msg, true);
-            if (! result)
+            result = true;
+            if (manager::save_session())    /* daemonize: session_save()    */
             {
-                util::file_error(msg, "CLI");
+                result = save_session(msg, true);
+                if (! result)
+                {
+                    util::file_error(msg, "CLI");
+                }
             }
+            // millisleep(m_poll_period_ms);
         }
-        // millisleep(m_poll_period_ms);
     }
-    return true;
+    return result;
 }
 
 /**

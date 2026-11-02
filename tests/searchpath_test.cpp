@@ -170,6 +170,9 @@ vector_ctor_test ()
  *  Also note the default copy constructor is used.
  *
  *  Question: is it the regular one or the move one? We test both.
+ *
+ * FIXME
+ * warning: Method called on moved-from object 'sp'
  */
 
 bool
@@ -192,6 +195,9 @@ copy_ctor_test ()
  *  Note the default assignment operator is used.
  *
  *  Question: is it the regular one or the move one? We test both.
+ *
+ * FIXME
+ * warning: Method called on moved-from object 'sp'
  */
 
 bool
