@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2026-11-02
+ * \updates       2026-11-04
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -1119,7 +1119,11 @@ file_read_lines
         if (not_nullptr(input))
         {
             size_t maxim { 512 };
-            char * destination { new (std::nothrow) char [maxim] };
+            /*
+             * char * destination { new (std::nothrow) char [maxim] };
+             */
+
+            char * destination { reinterpret_cast<char *>(malloc(maxim)) };
             if (is_nullptr(destination))
             {
                 (void) file_close(input, file);
@@ -1164,7 +1168,12 @@ file_read_lines
                     break;                      /* done or EOF              */
             }
             (void) file_close(input, file);
-            delete [] destination;
+
+            /*
+             * delete [] destination;
+             */
+
+            free(destination);
             result = ! lines.empty();
         }
         else

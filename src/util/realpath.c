@@ -32,7 +32,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-10-08
- * \updates       2026-11-02
+ * \updates       2026-11-04
  * \version       $Revision$
  *
  *      Returns the canonicalized absolute path name.
@@ -91,7 +91,7 @@ realpath_cyg (const char * path, char got_path [])
     int link_len;
 #endif
 
-    if (is_nullptr(path))
+    if (is_nullptr(path) || is_nullptr(got_path))
     {
         __set_errno(EINVAL);
         return nullptr;

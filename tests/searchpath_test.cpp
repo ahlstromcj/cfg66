@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2026-02-22
- * \updates       2026-02-22
+ * \updates       2026-11-04
  * \license       See above.
  *
  *  Run this test from the root directory:
@@ -185,8 +185,16 @@ copy_ctor_test ()
     {
         util::searchpath sp3(std::move(sp));    /* sp is then "destructed"  */
         result = sp3.paths() == sp2.paths();
+
+#if defined IGNORE_SCAN_BUILD_WARNING
+
+        /*
+         * warning: Method called on moved-from object 'sp' [cplusplus.Move]
+         */
+
         if (result)
             result = sp.count() == 0;           /* i.e. container cleared   */
+#endif
     }
     return result;
 }
@@ -210,8 +218,16 @@ operator_equal_test ()
     {
         util::searchpath sp3 = std::move(sp);   /* sp is then "destructed"  */
         result = sp3.paths() == sp2.paths();
+
+#if defined IGNORE_SCAN_BUILD_WARNING
+
+        /*
+         * warning: Method called on moved-from object 'sp' [cplusplus.Move]
+         */
+
         if (result)
             result = sp.count() == 0;           /* i.e. container cleared   */
+#endif
     }
     return result;
 }

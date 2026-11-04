@@ -25,11 +25,11 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2024-05-16
- * \updates       2026-02-12
+ * \updates       2026-11-03
  * \license       GNU GPLv2 or above
  *
  *  The bytevector class is meant to handle big-endian data in a byte-by-byte
- *  manner. We could have called it "bigendianvector" or "bigbytevector.".
+ *  manner. We could have called it "bigendianvector" or "bigbytevector".
  *
  *  One usage for this class is to extract datad from MIDI files. MIDI files,
  *  like network data, are big-endian. (Intel processors are little endian,
@@ -52,36 +52,6 @@ namespace util
 static const int c_util_line_max { 1024 };
 
 /**
- *  Principal constructor.
- *
- * \param filespec
- *      Provides the name of the MIDI file to be read or written. This is the
- *      full path including the file-name.
- *
- * \param p
- *      Provides a mandator player object, which wll hold some important
- *      global parameters (BPM, PPQN, etc.) about the file.
- *
- * \param smf0split
- *      If true (the default), and the MIDI file is an SMF 0 file, then it
- *      will be split into multiple tracks by channel.
- */
-
-#if 0
-bytevector::bytevector () :
-    m_nominal_size      (0),
-    m_offset            (0),
-    m_error_message     (),
-    m_error_is_fatal    (false),
-    m_disable_reported  (false),
-    m_data              (),                 /* vector of bytes              */
-    m_position          (0)                 /* byte position in vector      */
-{
-    // no other code needed
-}
-#endif
-
-/**
  *  Creates a vector of bytes from all characters in a string.
  *
  * \param s
@@ -89,16 +59,6 @@ bytevector::bytevector () :
  */
 
 bytevector::bytevector (const std::string & s)
-#if 0
- :
-    m_nominal_size      (0),
-    m_offset            (0),
-    m_error_message     (),
-    m_error_is_fatal    (false),
-    m_disable_reported  (false),
-    m_data              (),                 /* vector of bytes              */
-    m_position          (0)                 /* byte position in vector      */
-#endif
 {
     assign(s, 0, 0);                        /* use the whole string         */
 }
@@ -124,13 +84,7 @@ bytevector::bytevector
     size_t offset,
     size_t amount
 ) :
-//  m_nominal_size      (0),
     m_offset            (offset)
-//  m_error_message     (),
-//  m_error_is_fatal    (false),
-//  m_disable_reported  (false),
-//  m_data              (),                 /* vector of bytes              */
-//  m_position          (0)                 /* byte position in vector      */
 {
     if (offset == 0 && amount == 0)
     {
@@ -820,4 +774,3 @@ bytevector::set_error_dump (const std::string & msg, unsigned long v) const
  *
  * vim: sw=4 ts=4 wm=4 et ft=cpp
  */
-
