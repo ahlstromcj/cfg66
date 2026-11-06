@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-24
- * \updates       2026-10-25
+ * \updates       2026-11-06
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -1035,6 +1035,10 @@ string_to_float (const std::string & s, float defalt, int rounding)
  *      The desired default for an empty string. The default \a defalt value
  *      is 0.
  *
+ * \param base
+ *      If not 0 (the default), this numeric base is used to make the
+ *      conversion.
+ *
  * \return
  *      Returns the signed long integer value represented by the string.
  *      If the string is empty or has no digits, then the default value is
@@ -1042,14 +1046,14 @@ string_to_float (const std::string & s, float defalt, int rounding)
  */
 
 long
-string_to_long (const std::string & s, long defalt)
+string_to_long (const std::string & s, long defalt, int base)
 {
     long result { defalt };
     if (! s.empty())
     {
         try
         {
-            result = std::stol(s, nullptr, 0);
+            result = std::stol(s, nullptr, base);
         }
         catch (std::invalid_argument const &)
         {
@@ -1060,23 +1064,45 @@ string_to_long (const std::string & s, long defalt)
 }
 
 std::string
-long_to_string (long value)
+long_to_string (long value, int base)
 {
     char temp[32];
-    (void) snprintf(temp, sizeof temp, "%ld", value);
+    const char * fmt { "%l" };
+    if (base == 16)
+        fmt = "0x%2lx";
+    else if (base == 8)
+        fmt = "%#lo";
+
+    (void) snprintf(temp, sizeof temp, fmt, value);
     return std::string(temp);
 }
 
 /**
  *  Converts a string to an unsigned long integer.
+ *
+ * \param s
+ *      Provides the string to convert to a signed long integer.
+ *
+ * \param defalt
+ *      The desired default for an empty string. The default \a defalt value
+ *      is 0.
+ *
+ * \param base
+ *      If not 0 (the default), this numeric base is used to make the
+ *      conversion.
+ *
+ * \return
+ *      Returns the signed long integer value represented by the string.
+ *      If the string is empty or has no digits, then the default value is
+ *      returned.
  */
 
 unsigned long
-string_to_unsigned_long (const std::string & s, unsigned long defalt)
+string_to_unsigned_long (const std::string & s, unsigned long defalt, int base)
 {
     try
     {
-        return std::stoul(s, nullptr, 0);
+        return std::stoul(s, nullptr, base);
     }
     catch (std::invalid_argument const &)
     {
@@ -1086,12 +1112,31 @@ string_to_unsigned_long (const std::string & s, unsigned long defalt)
 
 /**
  *  Converts a string to an unsigned integer.
+ *
+ * \param s
+ *      Provides the string to convert to a signed long integer.
+ *
+ * \param defalt
+ *      The desired default for an empty string. The default \a defalt value
+ *      is 0.
+ *
+ * \param base
+ *      If not 0 (the default), this numeric base is used to make the
+ *      conversion.
+ *
+ * \return
+ *      Returns the signed long integer value represented by the string.
+ *      If the string is empty or has no digits, then the default value is
+ *      returned.
  */
 
 unsigned
-string_to_unsigned (const std::string & s, unsigned defalt)
+string_to_unsigned (const std::string & s, unsigned defalt, int base)
 {
-    return unsigned(string_to_unsigned_long(s, (unsigned long)(defalt)));
+    return unsigned
+    (
+        string_to_unsigned_long(s, (unsigned long)(defalt), base)
+    );
 }
 
 /**
@@ -1100,21 +1145,35 @@ string_to_unsigned (const std::string & s, unsigned defalt)
  * \param s
  *      Provides the string to convert to an integer.
  *
+ * \param defalt
+ *      The desired default for an empty string. The default \a defalt value
+ *      is 0.
+ *
+ * \param base
+ *      If not 0 (the default), this numeric base is used to make the
+ *      conversion.
+ *
  * \return
  *      Returns the integer value represented by the string.
  */
 
 int
-string_to_int (const std::string & s, int defalt)
+string_to_int (const std::string & s, int defalt, int base)
 {
-    return int(string_to_long(s, long(defalt)));
+    return int(string_to_long(s, long(defalt), base));
 }
 
 std::string
-int_to_string (int value)
+int_to_string (int value, int base)
 {
     char temp[32];
-    (void) snprintf(temp, sizeof temp, "%d", value);
+    const char * fmt { "%d" };
+    if (base == 16)
+        fmt = "0x%2x";
+    else if (base == 8)
+        fmt = "%#o";
+
+    (void) snprintf(temp, sizeof temp, fmt, value);
     return std::string(temp);
 }
 

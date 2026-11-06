@@ -27,7 +27,7 @@
  *
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2026-10-25
+ * \updates       2026-11-06
  * \version       $Revision$
  *
  *    Also see the strfunctions.cpp module.
@@ -189,7 +189,7 @@ extern std::string string_to_midi_bytes
     const std::string & s, std::size_t lim = 0
 );
 extern std::string midi_bytes_to_string (const std::string & s);
-extern std::string expand_byte_vector       //////// NEW
+extern std::string expand_byte_vector
 (
     const std::vector<unsigned char> & bytev,
     bool usehex = true
@@ -227,18 +227,21 @@ extern float string_to_float
 (
     const std::string & s, float defalt = 0.0, int rounding = 0
 );
-extern long string_to_long (const std::string & s, long defalt = 0L);
-extern std::string long_to_string (long value);
+extern long string_to_long
+(
+    const std::string & s, long defalt = 0L, int base = 0
+);
+extern std::string long_to_string (long value, int base = 0);
 extern unsigned long string_to_unsigned_long
 (
-    const std::string & s, unsigned long defalt = 0UL
+    const std::string & s, unsigned long defalt = 0UL, int base = 0
 );
 extern unsigned string_to_unsigned
 (
-    const std::string & s, unsigned defalt = 0U
+    const std::string & s, unsigned defalt = 0U, int base = 0
 );
-extern int string_to_int (const std::string & s, int defalt = 0);
-extern std::string int_to_string (int value);
+extern int string_to_int (const std::string & s, int defalt = 0, int base = 0);
+extern std::string int_to_string (int value, int base = 0);
 extern bool string_not_void (const std::string & s);
 extern bool string_is_void (const std::string & s);
 extern bool strings_match
