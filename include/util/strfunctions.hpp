@@ -27,7 +27,7 @@
  *
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2026-11-06
+ * \updates       2026-11-07
  * \version       $Revision$
  *
  *    Also see the strfunctions.cpp module.
@@ -131,6 +131,12 @@ extern const std::string & questionable_string ();
 extern bool is_missing_string (const std::string & item);
 extern bool contains (const std::string & original, const std::string & target);
 extern bool contains (const std::string & original, char c);
+extern bool starts_with
+(
+    const std::string & original,
+    const std::string & target
+);
+extern bool starts_with (const std::string & original, char c);
 extern std::string strip_comments (const std::string & item);
 extern std::string strip_quotes (const std::string & item);
 extern std::string next_quoted_string

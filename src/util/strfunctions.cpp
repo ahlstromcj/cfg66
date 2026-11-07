@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-24
- * \updates       2026-11-06
+ * \updates       2026-11-07
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -148,6 +148,20 @@ contains (const std::string & original, char c)
 {
     auto pos { original.find(c) };
     return pos != std::string::npos;
+}
+
+bool
+starts_with (const std::string & original, const std::string & target)
+{
+    auto pos { original.find(target) };
+    return pos == 0;
+}
+
+bool
+starts_with (const std::string & original, char c)
+{
+    auto pos { original.find(c) };
+    return pos == 0;
 }
 
 /**
