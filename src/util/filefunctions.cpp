@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2026-11-04
+ * \updates       2026-11-13
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -952,6 +952,17 @@ file_append_string (const std::string & filename, const std::string & text)
 /**
  *  Appends a string to file along with the filename and date. If it does not
  *  exist, it is appended to.  Very similar to file_append_log()!
+ *
+ * \param filename
+ *      Provides the path, as applicable, and the file-name.
+ *
+ * \param text
+ *      The text to be written to the file
+ *
+ * \param prepend_and_append
+ *      If true (the default is false), then the file-name, date,
+ *      time, and text are concatenated and appended to the file.
+ *      Otherwise, the text is written as is.
  */
 
 bool
@@ -1084,6 +1095,8 @@ file_read_string (const std::string & file)
  *  Reads a file into a vector of strings. Each element holds
  *  one line. Comment lines (lines starting with a "#") and
  *  empty lines are skipped. Newlines are stripped.
+ *  However, comments at the end of the line are preserved
+ *  and the color must ignore them.
  *
  *  This function is most useful in line-oriented files with short lines.
  *  One minor issue we ignore (for now) is if the lines are longer
@@ -2438,6 +2451,21 @@ file_extension (const std::string & path)
         auto len { path.length() - 2 };         /* incorrect, works anyway  */
         result = path.substr(ppos + 1, len);
     }
+    return result;
+}
+
+/**
+ *  Same as above, except the '.' is preserved.
+ */
+
+std::string
+file_dot_extension (const std::string & path)
+{
+    std::string result;
+    auto ppos = path.find_last_of(".");
+    if (ppos != std::string::npos)
+        result = path.substr(ppos);
+
     return result;
 }
 

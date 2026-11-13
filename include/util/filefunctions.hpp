@@ -27,7 +27,7 @@
  *
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2026-04-12
+ * \updates       2026-11-23
  * \version       $Revision$
  *
  *    Also see the filefunctions.cpp module.  The functions here use
@@ -220,6 +220,7 @@ extern bool file_extension_match
     const std::string & target
 );
 extern std::string file_extension (const std::string & path);
+extern std::string file_dot_extension (const std::string & path);
 extern std::string file_extension_set
 (
     const std::string & path,
