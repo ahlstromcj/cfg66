@@ -25,7 +25,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2026-11-13
+ * \updates       2026-11-15
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -690,7 +690,7 @@ file_is_directory (const std::string & filename)
  *
  *  Another option is to #include <filesystem> and call
  *  std::uintmax_t file_size (const std::filesystem::path& p), which
- *  throws (but there is a noexcept version as well.
+ *  throws (but there is a noexcept version as well).
  *
  * \param filename
  *      The name of the file. If it is a directory, this function will fail.
@@ -880,6 +880,36 @@ file_open_for_read (const std::string & filename)
 }
 
 /**
+ *  A new function for reading a file. The mode parameter is checked for
+ *  beginning with "r".
+ */
+
+std::FILE *
+file_open_for_read (const std::string & filename, const std::string & mode)
+{
+    std::FILE * result { nullptr };
+    if (mode[0] == 'r')
+        result = file_open(filename, mode);
+
+    return result;
+}
+
+/**
+ *  A new function added to match file_open_for_read() with the mode
+ *  parameter. It makes sure the mode starts with "w".
+ */
+
+std::FILE *
+file_open_for_write (const std::string & filename, const std::string & mode)
+{
+    std::FILE * result { nullptr };
+    if (mode[0] == 'w')
+        result = file_open(filename, mode);
+
+    return result;
+}
+
+/**
  *  Recreates a file for binary writing.  This function calls
  *  file_open(filename, "wb").  Replaces fopen().
  *
@@ -900,6 +930,12 @@ file_open_for_read (const std::string & filename)
 
 std::FILE *
 file_create_for_write (const std::string & filename)
+{
+    return file_open(filename, "wb");
+}
+
+std::FILE *
+file_open_for_write (const std::string & filename)
 {
     return file_open(filename, "wb");
 }
@@ -1011,18 +1047,18 @@ bool
 file_write_lines
 (
     const std::string & filename,
-    const lib66::tokenization & textlist,
+    const lib66::tokenization & lines,
     bool prepend_and_append
 )
 {
-    std::string lines;
-    for (const auto & t : textlist)
+    std::string linebuffer;
+    for (const auto & t : lines)
     {
-        lines += t;
+        linebuffer += t;
         if (t.back() != '\n')
-            lines += "\n";
+            linebuffer += "\n";
     }
-    return file_write_string(filename, lines, prepend_and_append);
+    return file_write_string(filename, linebuffer, prepend_and_append);
 }
 
 /**
@@ -1033,14 +1069,14 @@ bool
 file_write_lines
 (
     const std::string & filename,
-    const lib66::tokenization & textlist
+    const lib66::tokenization & lines
 )
 {
     std::FILE * fptr { file_open(filename, "w") };
     bool result { not_nullptr(fptr) };
     if (result)
     {
-        for (auto & t : textlist)
+        for (auto & t : lines)
         {
             std::string t2 { t };
             if (t2.back() != '\n')
@@ -1132,6 +1168,7 @@ file_read_lines
         if (not_nullptr(input))
         {
             size_t maxim { 512 };
+
             /*
              * char * destination { new (std::nothrow) char [maxim] };
              */

@@ -27,7 +27,7 @@
  *
  * \author        Chris Ahlstrom
  * \date          2015-11-20
- * \updates       2026-11-23
+ * \updates       2026-11-15
  * \version       $Revision$
  *
  *    Also see the filefunctions.cpp module.  The functions here use
@@ -57,13 +57,36 @@ extern bool file_is_directory (const std::string & targetfile);
 extern bool file_name_good (const std::string & filename);
 extern bool file_mode_good (const std::string & mode);
 extern size_t file_size (const std::string & filename);
+
+/*
+ * We could merge these functions by providing a default mode parameter,
+ * but need the caller to be clear about what it wants.
+ */
+
 extern std::FILE * file_open
 (
     const std::string & filename,
     const std::string & mode
 );
+extern std::FILE * file_open_for_read
+(
+    const std::string & filename,
+    const std::string & mode
+);
 extern std::FILE * file_open_for_read (const std::string & filename);
+
+/*
+ * These three are basically the same function.
+ */
+
+extern std::FILE * file_open_for_write
+(
+    const std::string & filename,
+    const std::string & mode
+);
 extern std::FILE * file_create_for_write (const std::string & filename);
+extern std::FILE * file_open_for_write (const std::string & filename);
+
 extern std::string current_date_time ();
 extern bool file_append_string
 (
@@ -304,9 +327,9 @@ extern std::string get_xdg_runtime_directory
 );
 extern std::string make_xdg_runtime_directory (const std::string & sub = "");
 
-#endif      // CFG66_UTIL_FILEFUNCTIONS_HPP
-
 }           // namespace util
+
+#endif      // CFG66_UTIL_FILEFUNCTIONS_HPP
 
 /*
  * filefunctions.hpp

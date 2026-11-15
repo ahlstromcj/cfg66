@@ -6,7 +6,7 @@
 # \library     cfg66
 # \author      Chris Ahlstrom
 # \date        2022-06-22
-# \updates     2026-04-12
+# \updates     2026-11-15
 # \license     $XPC_SUITE_GPL_LICENSE$
 #
 #  This file is part of the "cfg66" library. See the top-level meson.build
@@ -98,6 +98,12 @@ endif
 searchpath_test_exe = executable(
    'searchpath_test',
    sources : [ 'searchpath_test.cpp' ],
+   dependencies : [ libcfg66_dep, liblib66_library_dep ]
+   )
+
+file_comparison_test_exe = executable(
+   'filecomparison_test',
+   sources : [ 'filecomparison_test.cpp' ],
    dependencies : [ libcfg66_dep, liblib66_library_dep ]
    )
 
