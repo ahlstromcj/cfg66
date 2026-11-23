@@ -6,7 +6,7 @@
 # \library     cfg66
 # \author      Chris Ahlstrom
 # \date        2022-06-22
-# \updates     2026-05-30
+# \updates     2026-11-23
 # \license     $XPC_SUITE_GPL_LICENSE$
 #
 #  This file is part of the "cfg66" library. It was part of the libs66
@@ -260,7 +260,7 @@ if cfg66_use_potext
    cfg66_library_build = library(
       cfg66_project_base,
       libcfg66_sources,
-      install : not cfg66_subproj,
+      install : true,                        # not cfg66_subproj,
       install_dir : cfg66_libdir,
       c_args : build_args,
       cpp_args : build_args,
@@ -273,7 +273,7 @@ else
    cfg66_library_build = library(
       cfg66_project_base,
       libcfg66_sources,
-      install : not cfg66_subproj,
+      install : true,                        # not cfg66_subproj,
       install_dir : cfg66_libdir,
       c_args : build_args,
       cpp_args : build_args,
