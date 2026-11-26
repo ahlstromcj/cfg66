@@ -27,7 +27,7 @@
  *
  * \author        Chris Ahlstrom
  * \date          2018-11-23
- * \updates       2026-11-07
+ * \updates       2026-11-26
  * \version       $Revision$
  *
  *    Also see the strfunctions.cpp module.
@@ -324,6 +324,11 @@ extern bool compare_tokenizations
     const lib66::tokenization & b
 );
 extern std::string simplify (const std::string & source);
+extern bool get_continuation_line
+(
+    const std::string & in,
+    std::string & out
+);
 extern std::wstring widen_string (const std::string & source);
 extern std::string word_wrap
 (

@@ -24,7 +24,7 @@
  * \library       cfg66
  * \author        Chris Ahlstrom
  * \date          2025-02-07
- * \updates       2026-05-21
+ * \updates       2026-11-26
  * \license       See above.
  *
  *  We generally test only newly-added functions here; others were
@@ -228,6 +228,89 @@ test_capitalize_uncapitalize (bool verbose)
     return success;
 }
 
+bool
+test_get_continuation (bool verbose)
+{
+    static const std::string s_test_in_1  { "  0x00 0x10 0x20\\"     };
+    static const std::string s_test_out_1 { "0x00 0x10 0x20"         };
+    static const std::string s_test_in_2  { "This line continues \\" };
+    static const std::string s_test_out_2 { "This line continues"    };
+    static const std::string s_test_in_3  { " Does not continue \\ " };
+    static const std::string s_test_out_3 { "Does not continue\\"    };
+    bool result { false };
+    std::string out_string;
+    bool continued { util::get_continuation_line(s_test_in_1, out_string) };
+    if (continued)
+    {
+        result = out_string == s_test_out_1;
+        if (verbose)
+        {
+            std::cout
+                << "'" << s_test_in_1 << "' --> '" << out_string << "'"
+                << std::endl
+                ;
+        }
+    }
+    else
+    {
+        std::cerr
+            << "Test failed: '" << s_test_in_1
+            << "' --> '" << out_string << "'"
+            << std::endl
+            ;
+    }
+    if (result)
+    {
+        continued = util::get_continuation_line(s_test_in_2, out_string);
+        if (continued)
+        {
+            result = out_string == s_test_out_2;
+            if (verbose)
+            {
+                std::cout
+                    << "'" << s_test_in_2
+                    << "' --> '" << out_string << "'"
+                    << std::endl
+                    ;
+            }
+        }
+        else
+        {
+            result = false;
+            std::cerr
+                << "Test failed: '" << s_test_in_2
+                << "' --> '" << out_string << "'"
+                << std::endl
+                ;
+        }
+    }
+    if (result)
+    {
+        continued = util::get_continuation_line(s_test_in_3, out_string);
+        if (! continued)
+        {
+            if (verbose)
+            {
+                std::cout
+                    << "'" << s_test_in_3
+                    << "' --> '" << out_string << "'"
+                    << std::endl
+                    ;
+            }
+        }
+        else
+        {
+            result = false;
+            std::cerr
+                << "Test failed: '" << s_test_in_3
+                << "' --> '" << out_string << "'"
+                << std::endl
+                ;
+        }
+    }
+    return result;
+}
+
 }               // namespace anonymous
 
 /*
@@ -286,6 +369,9 @@ main (int argc, char * argv [])
 
         if (success)
             success = test_capitalize_uncapitalize(clip.verbose());
+
+        if (success)
+            success = test_get_continuation(clip.verbose());
 
         if (success)
         {

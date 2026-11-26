@@ -25,7 +25,7 @@
  * \library       cfg66 application
  * \author        Chris Ahlstrom
  * \date          2018-11-24
- * \updates       2026-11-07
+ * \updates       2026-11-26
  * \version       $Revision$
  *
  *    We basically include only the functions we need for Seq66, not
@@ -523,7 +523,7 @@ rtrim (std::string & str, const std::string & chars)
 }
 
 /**
- *  Left- and right-trims a set of characters from the string.  Similar to the
+ *  Left-right-trims a set of characters from the string.  Similar to the
  *  ltrim() and rtrim() functions combined.
  *
  * \param str
@@ -2057,6 +2057,36 @@ simplify (const std::string & source)
                 first_one = true;
             }
         }
+    }
+    return result;
+}
+
+/**
+ *  This function looks for a backslash at the *very end* of a string.
+ *  If found, it is removed and the line is trimmed at both ends.
+ *
+ * \param in
+ *      Provides the string to be processed.
+ *
+ * \param [out] out
+ *      Provides the destination for the stripped string.
+ *
+ * \return
+ *      Returns true if a continuation character was present.
+ */
+
+bool
+get_continuation_line (const std::string & in, std::string & out)
+{
+    bool result { in.back() == '\\' };
+    if (result)
+    {
+        std::string reduced { in.substr(0, in.length() - 1) };
+        out = trim(reduced);
+    }
+    else
+    {
+        out = trim(in);
     }
     return result;
 }

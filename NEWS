@@ -1,10 +1,10 @@
 NEWS for Cfg66 0.4
 Chris Ahlstrom
-2024-04-15 to 2026-10-25
+2024-04-15 to 2026-11-26
 
 # Changelog
 
-## [0.4] - 2026-10-25
+## [0.4] - 2026-11-26
 
 While working to build a library to support MIDINAM files, we
 borrowed code from the "pdb" and "xml" support portions of
@@ -13,6 +13,8 @@ conventions, reworked it, and created additional classes and
 functions to support the functionality. No Glib code needed.
 The biggest feature is functions to wrap the usage of std::regex.
 Supports matching and file-tree navigation.
+
+Note the changes are mostly additions to the existing "APIs".
 
 ### Added
 
@@ -63,6 +65,7 @@ Supports matching and file-tree navigation.
     - hex\_to\_unsigned\_decimal()
     - tokenization\_to\_string()
     - decimal\_to\_hex()
+    - get\_continuation\_line()
 - Added these functions to the parser class/module:
     - adhoc\_option().
 
